@@ -42,8 +42,7 @@ import com.google.gson.JsonParser;
 
 /**
  * This class is used whenever a call to the agent must be performed, except:
- * <p>- invoking action ( use {@link com.axway.ats.agent.webapp.client.executors.RemoteExecutor.HttpClient} )</p>
- * <p>- executing monitoring operation (use {@link com.axway.ats.monitoring.RestHelper})</p>
+ * <p>- when invoking action that is outside of ActionQueue ( use {@link com.axway.ats.agent.webapp.client.executors.RemoteExecutor.HttpClient} )</p>
  * 
  * */
 public class RestHelper {

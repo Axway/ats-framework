@@ -64,9 +64,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "shell command or bat/bash script",
@@ -101,18 +101,18 @@ public class ProcessTalkerRestEntryPoint {
     public Response
             initializeProcessTalker( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String command = null;
         boolean defaultInitialization = false;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (jsonObject.has("defaultInitialization")) {
                 defaultInitialization = jsonObject.get("defaultInitialization").getAsBoolean();
                 if (defaultInitialization) {
@@ -125,17 +125,17 @@ public class ProcessTalkerRestEntryPoint {
                 command = getJsonElement(jsonObject, "command").getAsString();
             }
 
-            int resourceId = ProcessesTalkersManager.initializeProcessTalker(sessionId, command);
+            int resourceId = ProcessesTalkersManager.initializeProcessTalker(callerId, command);
             String response = "{\"resourceId\":" + resourceId + "}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = null;
             if (defaultInitialization) {
-                message = "Unable to perform default initialization for process talker in session with id '"
-                          + sessionId + "'";
+                message = "Unable to perform default initialization for process talker in caller with id '"
+                          + callerId + "'";
             }
-            message = "Unable to initialize process talker for command '" + command + "' in session with id '"
-                      + sessionId + "'";
+            message = "Unable to initialize process talker for command '" + command + "' in caller with id '"
+                      + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -157,9 +157,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "timeout")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The timeout in seconds",
@@ -195,30 +195,30 @@ public class ProcessTalkerRestEntryPoint {
     public Response
             setDefaultOperationTimeout( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int timeout = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             timeout = getJsonElement(jsonObject, "defaultTimeoutSeconds").getAsInt();
-            ProcessesTalkersManager.setDefaultOperationTimeout(sessionId, resourceId, timeout);
+            ProcessesTalkersManager.setDefaultOperationTimeout(callerId, resourceId, timeout);
             return Response.ok("{\"status_message\":\"default operation timeout set to " + timeout + " ms\"}").build();
         } catch (Exception e) {
             String message = "Unable to set detault operation timeout to '" + timeout + "' for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -240,9 +240,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "command")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The command",
@@ -278,18 +278,18 @@ public class ProcessTalkerRestEntryPoint {
     public Response
             setCommand( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String command = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -298,12 +298,12 @@ public class ProcessTalkerRestEntryPoint {
             if (StringUtils.isNullOrEmpty(command)) {
                 throw new NoSuchElementException("command is not provided with the request");
             }
-            ProcessesTalkersManager.setCommand(sessionId, resourceId, command);
+            ProcessesTalkersManager.setCommand(callerId, resourceId, command);
             return Response.ok("{\"status_message\":\"command set to '" + command + "'\"}").build();
         } catch (Exception e) {
             String message = "Unable to set command to '" + command + "' for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -324,9 +324,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/pendingToMatch")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -361,25 +361,25 @@ public class ProcessTalkerRestEntryPoint {
     public Response
             getPendingToMatchContent( @Context HttpServletRequest request,
                                       @QueryParam(
-                                              value = "sessionId") String sessionId,
+                                              value = "callerId") String callerId,
                                       @QueryParam(
                                               value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            String content = ProcessesTalkersManager.getPendingToMatchContent(sessionId, resourceId);
+            String content = ProcessesTalkersManager.getPendingToMatchContent(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(content, content.getClass()) + "}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to get pending to match content for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -400,9 +400,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/current")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -437,25 +437,25 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response getCurrentStdout( @Context HttpServletRequest request,
                                       @QueryParam(
-                                              value = "sessionId") String sessionId,
+                                              value = "callerId") String callerId,
                                       @QueryParam(
                                               value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            String stdout = ProcessesTalkersManager.getCurrentStdout(sessionId, resourceId);
+            String stdout = ProcessesTalkersManager.getCurrentStdout(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to get curent stdout for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -477,9 +477,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some-session-id ( must be unique for each session )",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some-caller-id ( must be unique for each caller )",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID. This resource ID points to an existing process talker",
@@ -524,7 +524,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectStderr( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
@@ -532,11 +532,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -546,12 +546,12 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("pattern is not provided with the request");
             }
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            ProcessesTalkersManager.expectErr(sessionId, resourceId, pattern, timeoutSeconds);
+            ProcessesTalkersManager.expectErr(callerId, resourceId, pattern, timeoutSeconds);
             return Response.ok("{\"status_message\":\"successfull operation 'expect' over STDERR\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect' operation over STDERR for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -572,9 +572,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -619,7 +619,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectStderrByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
@@ -627,11 +627,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -641,13 +641,13 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("pattern is not provided with the request");
             }
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            ProcessesTalkersManager.expectErrByRegex(sessionId, resourceId, pattern, timeoutSeconds);
+            ProcessesTalkersManager.expectErrByRegex(callerId, resourceId, pattern, timeoutSeconds);
             return Response.ok("{\"status_message\":\"successfull operation 'expect by regex' over STDERR\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect by regex' operation over STDERR for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -668,9 +668,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect/all")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -715,7 +715,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAllStderr( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -723,23 +723,23 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             patterns = GSON.fromJson(getJsonElement(jsonObject, "patterns"), String[].class);
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            ProcessesTalkersManager.expectErrAll(sessionId, resourceId, patterns, timeoutSeconds);
+            ProcessesTalkersManager.expectErrAll(callerId, resourceId, patterns, timeoutSeconds);
             return Response.ok("{\"status_message\":\"successfull operation 'expect all' over STDERR\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect all' operation over STDERR for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -760,9 +760,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect/all/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -807,7 +807,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAllStderrByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] regexPatterns = null;
         int timeoutSeconds = -1;
@@ -815,25 +815,25 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             regexPatterns = GSON.fromJson(getJsonElement(jsonObject, "regexPatterns"), String[].class);
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            ProcessesTalkersManager.expectErrAllByRegex(sessionId, resourceId, regexPatterns, timeoutSeconds);
+            ProcessesTalkersManager.expectErrAllByRegex(callerId, resourceId, regexPatterns, timeoutSeconds);
             return Response.ok("{\"status_message\":\"successfull operation 'expect all by regex' over STDERR\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect all by regex' operation over STDERR for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -854,9 +854,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect/any")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -901,7 +901,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAnyStderr( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -909,23 +909,23 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             patterns = GSON.fromJson(getJsonElement(jsonObject, "patterns"), String[].class);
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            int result = ProcessesTalkersManager.expectErrAny(sessionId, resourceId, patterns, timeoutSeconds);
+            int result = ProcessesTalkersManager.expectErrAny(callerId, resourceId, patterns, timeoutSeconds);
             return Response.ok("{\"action_result\":" + result + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect any' operation over STDERR for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -946,9 +946,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/expect/any/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -993,7 +993,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAnyStderrByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -1001,24 +1001,24 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             patterns = GSON.fromJson(getJsonElement(jsonObject, "regexPatterns"), String[].class);
             timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-            int result = ProcessesTalkersManager.expectErrAnyByRegex(sessionId, resourceId, patterns, timeoutSeconds);
+            int result = ProcessesTalkersManager.expectErrAnyByRegex(callerId, resourceId, patterns, timeoutSeconds);
             return Response.ok("{\"action_result\":" + result + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect any by regex' operation over STDERR for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1039,9 +1039,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stderr/current")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1054,9 +1054,9 @@ public class ProcessTalkerRestEntryPoint {
                                        definition = "Successfully get current STDERR details",
                                        description = "Successfully get current STDERR ",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The session ID",
-                                               example = "some-session-id",
-                                               name = "sessionId",
+                                               description = "The caller ID",
+                                               example = "some-caller-id",
+                                               name = "callerId",
                                                type = "string") }),
                                @SwaggerMethodResponse(
                                        code = 500,
@@ -1075,25 +1075,25 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response getCurrentStderr( @Context HttpServletRequest request,
                                       @QueryParam(
-                                              value = "sessionId") String sessionId,
+                                              value = "callerId") String callerId,
                                       @QueryParam(
                                               value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            String stdout = ProcessesTalkersManager.getCurrentStderr(sessionId, resourceId);
+            String stdout = ProcessesTalkersManager.getCurrentStderr(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to get curent stderr for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1115,9 +1115,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some-session-id ( must be unique for each session )",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some-caller-id ( must be unique for each caller )",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID. This resource ID points to an existing process talker",
@@ -1162,7 +1162,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectStdout( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
@@ -1170,11 +1170,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1185,16 +1185,16 @@ public class ProcessTalkerRestEntryPoint {
             }
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                ProcessesTalkersManager.expect(sessionId, resourceId, pattern, timeoutSeconds);
+                ProcessesTalkersManager.expect(callerId, resourceId, pattern, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                ProcessesTalkersManager.expect(sessionId, resourceId, pattern);
+                ProcessesTalkersManager.expect(callerId, resourceId, pattern);
             }
             return Response.ok("{\"status_message\":\"successfull operation 'expect' over STDOUT\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect' operation over STDOUT for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1215,9 +1215,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1262,7 +1262,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectStdoutByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
@@ -1270,11 +1270,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1285,17 +1285,17 @@ public class ProcessTalkerRestEntryPoint {
             }
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                ProcessesTalkersManager.expectByRegex(sessionId, resourceId, pattern, timeoutSeconds);
+                ProcessesTalkersManager.expectByRegex(callerId, resourceId, pattern, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                ProcessesTalkersManager.expectByRegex(sessionId, resourceId, pattern);
+                ProcessesTalkersManager.expectByRegex(callerId, resourceId, pattern);
             }
             return Response.ok("{\"status_message\":\"successfull operation 'expect by regex' over STDOUT\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect by regex' operation over STDOUT for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1316,9 +1316,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect/all")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1363,7 +1363,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAllStdout( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -1371,11 +1371,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1383,16 +1383,16 @@ public class ProcessTalkerRestEntryPoint {
             patterns = GSON.fromJson(getJsonElement(jsonObject, "patterns"), String[].class);
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                ProcessesTalkersManager.expectAll(sessionId, resourceId, patterns, timeoutSeconds);
+                ProcessesTalkersManager.expectAll(callerId, resourceId, patterns, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                ProcessesTalkersManager.expectAll(sessionId, resourceId, patterns);
+                ProcessesTalkersManager.expectAll(callerId, resourceId, patterns);
             }
             return Response.ok("{\"status_message\":\"successfull operation 'expect all' over STDOUT\"}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect all' operation over STDOUT for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1413,9 +1413,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect/all/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1460,7 +1460,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAllStdoutByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] regexPatterns = null;
         int timeoutSeconds = -1;
@@ -1468,11 +1468,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1480,18 +1480,18 @@ public class ProcessTalkerRestEntryPoint {
             regexPatterns = GSON.fromJson(getJsonElement(jsonObject, "regexPatterns"), String[].class);
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                ProcessesTalkersManager.expectAllByRegex(sessionId, resourceId, regexPatterns, timeoutSeconds);
+                ProcessesTalkersManager.expectAllByRegex(callerId, resourceId, regexPatterns, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                ProcessesTalkersManager.expectAllByRegex(sessionId, resourceId, regexPatterns);
+                ProcessesTalkersManager.expectAllByRegex(callerId, resourceId, regexPatterns);
             }
             return Response.ok("{\"status_message\":\"successfull operation 'expect all by regex' over STDOUT\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect all by regex' operation over STDOUT for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1512,9 +1512,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect/any")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1559,7 +1559,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectAnyStdout( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -1567,11 +1567,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1580,16 +1580,16 @@ public class ProcessTalkerRestEntryPoint {
             int result = -1;
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                result = ProcessesTalkersManager.expectAny(sessionId, resourceId, patterns, timeoutSeconds);
+                result = ProcessesTalkersManager.expectAny(callerId, resourceId, patterns, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                result = ProcessesTalkersManager.expectAny(sessionId, resourceId, patterns);
+                result = ProcessesTalkersManager.expectAny(callerId, resourceId, patterns);
             }
             return Response.ok("{\"action_result\":" + result + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect any' operation over STDOUT for process talker '" + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1610,9 +1610,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "content/stdout/expect/any/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1658,7 +1658,7 @@ public class ProcessTalkerRestEntryPoint {
 
     public Response expectAnyStdoutByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
@@ -1666,11 +1666,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -1679,17 +1679,17 @@ public class ProcessTalkerRestEntryPoint {
             int result = -1;
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeoutSeconds").getAsInt();
-                result = ProcessesTalkersManager.expectAnyByRegex(sessionId, resourceId, patterns, timeoutSeconds);
+                result = ProcessesTalkersManager.expectAnyByRegex(callerId, resourceId, patterns, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                result = ProcessesTalkersManager.expectAnyByRegex(sessionId, resourceId, patterns);
+                result = ProcessesTalkersManager.expectAnyByRegex(callerId, resourceId, patterns);
             }
             return Response.ok("{\"action_result\":" + result + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect any by regex' operation over STDOUT for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1710,9 +1710,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "closed/expect")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1727,36 +1727,36 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response expectClose( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int timeoutSeconds = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             try {
                 timeoutSeconds = getJsonElement(jsonObject, "timeOutSeconds").getAsInt();
-                ProcessesTalkersManager.expectClose(sessionId, resourceId, timeoutSeconds);
+                ProcessesTalkersManager.expectClose(callerId, resourceId, timeoutSeconds);
             } catch (NoSuchElementException e) {
                 // no timeoutSeconds provided with the request. The default one will be used
-                ProcessesTalkersManager.expectClose(sessionId, resourceId);
+                ProcessesTalkersManager.expectClose(callerId, resourceId);
             }
             return Response.ok("{\"status_message\":\"successfull operation 'expect close'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'expect close' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1778,9 +1778,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "closed")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1794,9 +1794,9 @@ public class ProcessTalkerRestEntryPoint {
                                        definition = "Successfully check whether process talker is closed details",
                                        description = "Successfully check whether process talker is closed",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The session ID",
-                                               example = "some session ID",
-                                               name = "sessionId",
+                                               description = "The caller ID",
+                                               example = "some caller ID",
+                                               name = "callerId",
                                                type = "string") }),
                                @SwaggerMethodResponse(
                                        code = 500,
@@ -1815,25 +1815,25 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response isClosed( @Context HttpServletRequest request,
                               @QueryParam(
-                                      value = "sessionId") String sessionId,
+                                      value = "callerId") String callerId,
                               @QueryParam(
                                       value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            boolean closed = ProcessesTalkersManager.isClosed(sessionId, resourceId);
+            boolean closed = ProcessesTalkersManager.isClosed(callerId, resourceId);
             return Response.ok("{\"action_result\":" + closed + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'isClosed' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1855,9 +1855,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "exitValue")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1892,25 +1892,25 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response getExitValue( @Context HttpServletRequest request,
                                   @QueryParam(
-                                          value = "sessionId") String sessionId,
+                                          value = "callerId") String callerId,
                                   @QueryParam(
                                           value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            int exitValue = ProcessesTalkersManager.getExitValue(sessionId, resourceId);
+            int exitValue = ProcessesTalkersManager.getExitValue(callerId, resourceId);
             return Response.ok("{\"action_result\":" + exitValue + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute 'getExitValue' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1932,9 +1932,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "kill")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1969,29 +1969,29 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response kill( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            ProcessesTalkersManager.kill(sessionId, resourceId);
+            ProcessesTalkersManager.kill(callerId, resourceId);
             return Response.ok("{\"status_message\":\"successfull operation 'kill'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'killExternalProcess' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2013,9 +2013,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "kill/all")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2050,29 +2050,29 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response killWithChildren( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            ProcessesTalkersManager.killWithChildren(sessionId, resourceId);
+            ProcessesTalkersManager.killWithChildren(callerId, resourceId);
             return Response.ok("{\"status_message\":\"successfull operation 'kill process and its children'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'kill process and its children' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2094,9 +2094,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "send")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2136,31 +2136,31 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response send( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String text = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
             text = getJsonElement(jsonObject, "text").getAsString();
-            ProcessesTalkersManager.send(sessionId, resourceId, text);
+            ProcessesTalkersManager.send(callerId, resourceId, text);
             return Response.ok("{\"status_message\":\"successfull operation 'send'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'send' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2182,9 +2182,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "send/enter")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2219,29 +2219,29 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response sendEnter( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
-            ProcessesTalkersManager.sendEnter(sessionId, resourceId);
+            ProcessesTalkersManager.sendEnter(callerId, resourceId);
             return Response.ok("{\"status_message\":\"successfull operation 'send ENTER key'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'send ENTER key' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2263,9 +2263,9 @@ public class ProcessTalkerRestEntryPoint {
             url = "send/enter/loop")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2315,7 +2315,7 @@ public class ProcessTalkerRestEntryPoint {
     })
     public Response sendEnterInLopp( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String intermediatePattern = null;
         String finalPattern = null;
@@ -2324,11 +2324,11 @@ public class ProcessTalkerRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
@@ -2342,15 +2342,15 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("finalPattern is not provided with the request");
             }
             maxLoopTimes = getJsonElement(jsonObject, "maxLoopTimes").getAsInt();
-            ProcessesTalkersManager.sendEnterInLoop(sessionId, resourceId, intermediatePattern, finalPattern,
+            ProcessesTalkersManager.sendEnterInLoop(callerId, resourceId, intermediatePattern, finalPattern,
                                                     maxLoopTimes);
             return Response.ok("{\"status_message\":\"successfull operation 'send ENTER key in Loop'\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to execute 'send ENTER key in Loop' operation for process talker '"
                              + resourceId
-                             + "' in session with id '"
-                             + sessionId + "'";
+                             + "' in caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

@@ -32,14 +32,14 @@ public class ProcessesExecutorsManager {
     private static final Gson   GSON                      = new Gson();
 
     public static synchronized int
-            initializeProcessExecutor( String sessionId, String command,
+            initializeProcessExecutor( String callerId, String command,
                                        String[] commandArguments ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
                                                                    InstantiationException, IllegalAccessException,
                                                                    IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Internal Process Operations init Process Executor",
                                          new String[]{ String.class.getName(), String[].class.getName() },
                                          new String[]{ GSON.toJson(command), GSON.toJson(commandArguments) });
@@ -55,7 +55,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized Object startProcess( String sessionId,
+    public static synchronized Object startProcess( String callerId,
                                                     int resourceId,
                                                     String workDirectory,
                                                     String standardOutputFile,
@@ -71,7 +71,7 @@ public class ProcessesExecutorsManager {
                                                                                 IllegalArgumentException,
                                                                                 InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal Process Operations start Process",
@@ -92,7 +92,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized String getStandardOutput( String sessionId,
+    public static synchronized String getStandardOutput( String callerId,
                                                          int resourceId ) throws NoSuchActionException,
                                                                           NoCompatibleMethodFoundException,
                                                                           NoSuchComponentException,
@@ -102,14 +102,14 @@ public class ProcessesExecutorsManager {
                                                                           IllegalArgumentException,
                                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Standard Output", null, null);
 
         return (String) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized String getCurrentStandardOutput( String sessionId,
+    public static synchronized String getCurrentStandardOutput( String callerId,
                                                                 int resourceId ) throws NoSuchActionException,
                                                                                  NoCompatibleMethodFoundException,
                                                                                  NoSuchComponentException,
@@ -119,14 +119,14 @@ public class ProcessesExecutorsManager {
                                                                                  IllegalArgumentException,
                                                                                  InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Current Standard Output", null, null);
 
         return (String) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized boolean isStandardOutputFullyRead( String sessionId,
+    public static synchronized boolean isStandardOutputFullyRead( String callerId,
                                                                  int resourceId ) throws NoSuchActionException,
                                                                                   NoCompatibleMethodFoundException,
                                                                                   NoSuchComponentException,
@@ -136,14 +136,14 @@ public class ProcessesExecutorsManager {
                                                                                   IllegalArgumentException,
                                                                                   InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations is Standard Output Fully Read", null, null);
 
         return (boolean) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized String getStandardErrorOutput( String sessionId,
+    public static synchronized String getStandardErrorOutput( String callerId,
                                                               int resourceId ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
                                                                                NoSuchComponentException,
@@ -153,14 +153,14 @@ public class ProcessesExecutorsManager {
                                                                                IllegalArgumentException,
                                                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Error Output", null, null);
 
         return (String) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized String getCurrentStandardErrorOutput( String sessionId,
+    public static synchronized String getCurrentStandardErrorOutput( String callerId,
                                                                      int resourceId ) throws NoSuchActionException,
                                                                                       NoCompatibleMethodFoundException,
                                                                                       NoSuchComponentException,
@@ -170,14 +170,14 @@ public class ProcessesExecutorsManager {
                                                                                       IllegalArgumentException,
                                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Current Error Output", null, null);
 
         return (String) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized boolean isStandardErrorOutputFullyRead( String sessionId,
+    public static synchronized boolean isStandardErrorOutputFullyRead( String callerId,
                                                                       int resourceId ) throws NoSuchActionException,
                                                                                        NoCompatibleMethodFoundException,
                                                                                        NoSuchComponentException,
@@ -187,14 +187,14 @@ public class ProcessesExecutorsManager {
                                                                                        IllegalArgumentException,
                                                                                        InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations is Error Output Fully Read", null, null);
 
         return (boolean) ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized int getProcessExitCode( String sessionId, int resourceId ) throws NoSuchActionException,
+    public static synchronized int getProcessExitCode( String callerId, int resourceId ) throws NoSuchActionException,
                                                                                           NoCompatibleMethodFoundException,
                                                                                           NoSuchComponentException,
                                                                                           ClassNotFoundException,
@@ -203,13 +203,13 @@ public class ProcessesExecutorsManager {
                                                                                           IllegalArgumentException,
                                                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Exit Code", null, null);
 
         return (Integer) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized int getProcessId( String sessionId, int resourceId ) throws NoSuchActionException,
+    public static synchronized int getProcessId( String callerId, int resourceId ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
                                                                                     NoSuchComponentException,
                                                                                     ClassNotFoundException,
@@ -218,13 +218,13 @@ public class ProcessesExecutorsManager {
                                                                                     IllegalArgumentException,
                                                                                     InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Process Id", null, null);
 
         return (Integer) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized void killProcess( String sessionId, int resourceId ) throws NoSuchActionException,
+    public static synchronized void killProcess( String callerId, int resourceId ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
                                                                                     NoSuchComponentException,
                                                                                     ClassNotFoundException,
@@ -233,14 +233,14 @@ public class ProcessesExecutorsManager {
                                                                                     IllegalArgumentException,
                                                                                     InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations kill Process", null, null);
 
         ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized void killProcessWithChildren( String sessionId,
+    public static synchronized void killProcessWithChildren( String callerId,
                                                              int resourceId ) throws NoSuchActionException,
                                                                               NoCompatibleMethodFoundException,
                                                                               NoSuchComponentException,
@@ -250,14 +250,14 @@ public class ProcessesExecutorsManager {
                                                                               IllegalArgumentException,
                                                                               InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations kill Process And Its Children", null, null);
 
         ResourcesManager.executeOverResource(pojo);
 
     }
 
-    public static synchronized int killExternalProcess( String sessionId,
+    public static synchronized int killExternalProcess( String callerId,
                                                          int resourceId,
                                                          String startCommandSnippet ) throws NoSuchActionException,
                                                                                       NoCompatibleMethodFoundException,
@@ -268,7 +268,7 @@ public class ProcessesExecutorsManager {
                                                                                       IllegalArgumentException,
                                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations kill External Process",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(startCommandSnippet) });
@@ -277,7 +277,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized String getEnvironmentVariable( String sessionId, int resourceId, String variableName )
+    public static synchronized String getEnvironmentVariable( String callerId, int resourceId, String variableName )
                                                                                                                       throws NoSuchActionException,
                                                                                                                       NoCompatibleMethodFoundException,
                                                                                                                       NoSuchComponentException,
@@ -287,7 +287,7 @@ public class ProcessesExecutorsManager {
                                                                                                                       IllegalArgumentException,
                                                                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations get Env Variable",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(variableName) });
@@ -295,7 +295,7 @@ public class ProcessesExecutorsManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized void setEnvironmentVariable( String sessionId, int resourceId, String variableName,
+    public static synchronized void setEnvironmentVariable( String callerId, int resourceId, String variableName,
                                                             String variableValue )
                                                                                    throws NoSuchActionException,
                                                                                    NoCompatibleMethodFoundException,
@@ -306,7 +306,7 @@ public class ProcessesExecutorsManager {
                                                                                    IllegalArgumentException,
                                                                                    InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations set Env Variable",
                                          new String[]{ String.class.getName(),
                                                        String.class.getName() },
@@ -317,7 +317,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized void appendToEnvironmentVariable( String sessionId, int resourceId, String variableName,
+    public static synchronized void appendToEnvironmentVariable( String callerId, int resourceId, String variableName,
                                                                  String variableValue )
                                                                                         throws NoSuchActionException,
                                                                                         NoCompatibleMethodFoundException,
@@ -328,7 +328,7 @@ public class ProcessesExecutorsManager {
                                                                                         IllegalArgumentException,
                                                                                         InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Process Operations append To Env Variable",
                                          new String[]{ String.class.getName(),
                                                        String.class.getName() },

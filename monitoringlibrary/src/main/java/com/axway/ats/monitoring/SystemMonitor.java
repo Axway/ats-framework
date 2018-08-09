@@ -259,9 +259,9 @@ public class SystemMonitor {
          * */
         int        resourceId = -1;
         /**
-         * The sessionID/caller that identifies the current thread, host and project (working directory)
+         * The callerId/caller that identifies the current thread, host and project (working directory)
          * */
-        String     sessionId  = null;
+        String     callerId  = null;
     }
 
     /**
@@ -306,11 +306,11 @@ public class SystemMonitor {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
           .append("\"")
-          .append("sessionId")
+          .append("callerId")
           .append("\"")
           .append(":")
           .append("\"")
-          .append(info.sessionId)
+          .append(info.callerId)
           .append("\"")
           .append(",")
           .append("\"")
@@ -352,11 +352,11 @@ public class SystemMonitor {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
           .append("\"")
-          .append("sessionId")
+          .append("callerId")
           .append("\"")
           .append(":")
           .append("\"")
-          .append(info.sessionId)
+          .append(info.callerId)
           .append("\"")
           .append(",")
           .append("\"")
@@ -552,11 +552,11 @@ public class SystemMonitor {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
           .append("\"")
-          .append("sessionId")
+          .append("callerId")
           .append("\"")
           .append(":")
           .append("\"")
-          .append(info.sessionId)
+          .append(info.callerId)
           .append("\"")
           .append(",")
           .append("\"")
@@ -630,11 +630,11 @@ public class SystemMonitor {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
           .append("\"")
-          .append("sessionId")
+          .append("callerId")
           .append("\"")
           .append(":")
           .append("\"")
-          .append(info.sessionId)
+          .append(info.callerId)
           .append("\"")
           .append(",")
           .append("\"")
@@ -705,11 +705,11 @@ public class SystemMonitor {
         StringBuilder sb = new StringBuilder();
         sb.append("{")
           .append("\"")
-          .append("sessionId")
+          .append("callerId")
           .append("\"")
           .append(":")
           .append("\"")
-          .append(info.sessionId)
+          .append(info.callerId)
           .append("\"")
           .append(",")
           .append("\"")
@@ -765,11 +765,11 @@ public class SystemMonitor {
             StringBuilder sb = new StringBuilder();
             sb.append("{")
               .append("\"")
-              .append("sessionId")
+              .append("callerId")
               .append("\"")
               .append(":")
               .append("\"")
-              .append(info.sessionId)
+              .append(info.callerId)
               .append("\"")
               .append(",")
               .append("\"")
@@ -832,11 +832,11 @@ public class SystemMonitor {
             StringBuilder sb = new StringBuilder();
             sb.append("{")
               .append("\"")
-              .append("sessionId")
+              .append("callerId")
               .append("\"")
               .append(":")
               .append("\"")
-              .append(info.sessionId)
+              .append(info.callerId)
               .append("\"")
               .append(",")
               .append("\"")
@@ -883,8 +883,7 @@ public class SystemMonitor {
             TestcaseStateListener.getInstance().onConfigureAtsAgents(Arrays.asList(monitoredHost));
             info = new ConnectionInfo();
             info.helper = new RestHelper();
-            info.sessionId = ExecutorUtils.createExecutorId(monitoredHost, ExecutorUtils.getUserRandomToken(),
-                                                            Thread.currentThread().getName());
+            info.callerId = ExecutorUtils.createCallerId();
         } catch (Exception e) {
             throw new MonitoringException("Unable to configure ATS agent at '" + monitoredHost + "'", e);
         }
@@ -903,10 +902,10 @@ public class SystemMonitor {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append("{")
-              .append("\"sessionId\"")
+              .append("\"callerId\"")
               .append(":")
               .append("\"")
-              .append(info.sessionId)
+              .append(info.callerId)
               .append("\"")
               .append(",")
               .append("\"")
@@ -930,10 +929,10 @@ public class SystemMonitor {
         try {
             StringBuilder sb = new StringBuilder();
             sb.append("{")
-              .append("\"sessionId\"")
+              .append("\"callerId\"")
               .append(":")
               .append("\"")
-              .append(info.sessionId)
+              .append(info.callerId)
               .append("\"")
               .append(",")
               .append("\"")
@@ -963,11 +962,11 @@ public class SystemMonitor {
             StringBuilder sb = new StringBuilder();
             sb.append("{")
               .append("\"")
-              .append("sessionId")
+              .append("callerId")
               .append("\"")
               .append(":")
               .append("\"")
-              .append(info.sessionId)
+              .append(info.callerId)
               .append("\"")
               .append(",")
               .append("\"")

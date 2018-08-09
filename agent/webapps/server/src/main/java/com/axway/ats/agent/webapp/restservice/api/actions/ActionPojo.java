@@ -23,7 +23,7 @@ import com.google.gson.Gson;
 
 public class ActionPojo {
 
-    private String   sessionId;
+    private String   callerId;
 
     private int      resourceId;
 
@@ -69,18 +69,18 @@ public class ActionPojo {
     }
 
     /**
-     * @param sessionId
+     * @param callerId
      * @param resourceId
      * @param componentName
      * @param methodName
      * @param argumentsTypes array of Java class names
      * @param argumentsValues
      * */
-    public ActionPojo( String sessionId, int resourceId, String componentName, String methodName,
+    public ActionPojo( String callerId, int resourceId, String componentName, String methodName,
                        String[] argumentsTypes,
                        String[] argumentsValues ) {
 
-        this.sessionId = sessionId;
+        this.callerId = callerId;
         this.resourceId = resourceId;
         this.componentName = componentName;
         this.methodName = methodName;
@@ -88,14 +88,14 @@ public class ActionPojo {
         this.argumentsValues = argumentsValues;
     }
 
-    public String getSessionId() {
+    public String getCallerId() {
 
-        return sessionId;
+        return callerId;
     }
 
-    public void setSessionId( String sessionId ) {
+    public void setCallerId( String callerId ) {
 
-        this.sessionId = sessionId;
+        this.callerId = callerId;
     }
 
     public int getResourceId() {

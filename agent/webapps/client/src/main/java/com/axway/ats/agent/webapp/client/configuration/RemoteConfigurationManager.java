@@ -44,23 +44,22 @@ public class RemoteConfigurationManager {
     public void pushConfiguration(
                                    String atsAgent,
                                    Configurator configurator ) throws AgentException {
-    	
-    	AgentConfigurationLandscape.getInstance( atsAgent ).cacheConfigurator( configurator );
+
+        AgentConfigurationLandscape.getInstance(atsAgent).cacheConfigurator(configurator);
 
         Map<String, Configurator> configurators = new HashMap<>();
         configurators.put(configurator.getClass().getName(), configurator);
 
         RestHelper restHelper = new RestHelper();
 
-        // create sessionId
-        String sessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
-                                                          Thread.currentThread().getName());
+        // create callerId
+        String callerId = ExecutorUtils.createCallerId();
 
         // create request body
         StringBuilder requestBody = new StringBuilder();
         requestBody.append("{")
-                   .append("\"sessionId\":\"")
-                   .append(sessionId)
+                   .append("\"callerId\":\"")
+                   .append(callerId)
                    .append("\"")
                    .append(",")
                    .append("\"")

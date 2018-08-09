@@ -69,9 +69,9 @@ public class FileSystemRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -101,20 +101,20 @@ public class FileSystemRestEntryPoint {
     })
     public Response initializeFileSystem( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
-            int resourceId = FileSystemManager.initialize(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
+            int resourceId = FileSystemManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize file system resource from session with id '" + sessionId + "'";
+            String message = "Unable to initialize file system resource from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -136,9 +136,9 @@ public class FileSystemRestEntryPoint {
             url = "file/append")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -183,7 +183,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response appendToFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String filePath = null;
         String contentToAdd = null;
@@ -191,11 +191,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -208,12 +208,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(contentToAdd)) {
                 throw new NoSuchElementException("contentToAdd is not provided with the request");
             }
-            FileSystemManager.appendToFile(sessionId, resourceId, filePath, contentToAdd);
+            FileSystemManager.appendToFile(callerId, resourceId, filePath, contentToAdd);
             return Response.ok("{\"status_message\":\"succcessfully append content to file\"}").build();
         } catch (Exception e) {
             String message = "Unable to append content to file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -234,9 +234,9 @@ public class FileSystemRestEntryPoint {
             url = "file/permissions")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -275,7 +275,7 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFilePermissions( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                         @QueryParam(
                                                 value = "resourceId") int resourceId,
                                         @QueryParam(
@@ -283,11 +283,11 @@ public class FileSystemRestEntryPoint {
 
         try {
 
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -295,12 +295,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String filePermissions = FileSystemManager.getFilePermissions(sessionId, resourceId, fileName);
+            String filePermissions = FileSystemManager.getFilePermissions(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(filePermissions) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file permissions using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -321,9 +321,9 @@ public class FileSystemRestEntryPoint {
             url = "file/filegroup")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -362,18 +362,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileGroup( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                   @QueryParam(
                                           value = "resourceId") int resourceId,
                                   @QueryParam(
                                           value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -381,12 +381,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String fileGroup = FileSystemManager.getFileGroup(sessionId, resourceId, fileName);
+            String fileGroup = FileSystemManager.getFileGroup(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileGroup) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file group using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -407,9 +407,9 @@ public class FileSystemRestEntryPoint {
             url = "file/gid")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -448,18 +448,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileGID( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                 @QueryParam(
                                         value = "resourceId") int resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -467,12 +467,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            long fileGroup = FileSystemManager.getFileGID(sessionId, resourceId, fileName);
+            long fileGroup = FileSystemManager.getFileGID(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileGroup) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file GID using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -493,9 +493,9 @@ public class FileSystemRestEntryPoint {
             url = "file/owner")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -534,18 +534,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileOwner( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                   @QueryParam(
                                           value = "resourceId") int resourceId,
                                   @QueryParam(
                                           value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -553,12 +553,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String fileOwner = FileSystemManager.getFileOwner(sessionId, resourceId, fileName);
+            String fileOwner = FileSystemManager.getFileOwner(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileOwner) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file owner using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -579,9 +579,9 @@ public class FileSystemRestEntryPoint {
             url = "file/uid")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -620,18 +620,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileUID( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                 @QueryParam(
                                         value = "resourceId") int resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -639,12 +639,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            long fileUID = FileSystemManager.getFileUID(sessionId, resourceId, fileName);
+            long fileUID = FileSystemManager.getFileUID(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileUID) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file UID using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -665,9 +665,9 @@ public class FileSystemRestEntryPoint {
             url = "file/modificationTime")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -706,18 +706,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileModificationTime( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                              @QueryParam(
                                                      value = "resourceId") int resourceId,
                                              @QueryParam(
                                                      value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -725,12 +725,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            long modificationTime = FileSystemManager.getFileModificationTime(sessionId, resourceId, fileName);
+            long modificationTime = FileSystemManager.getFileModificationTime(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(modificationTime) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file modification time using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -751,9 +751,9 @@ public class FileSystemRestEntryPoint {
             url = "file/size")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -792,18 +792,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileSize( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                  @QueryParam(
                                          value = "resourceId") int resourceId,
                                  @QueryParam(
                                          value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -811,12 +811,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            long fileSize = FileSystemManager.getFileSize(sessionId, resourceId, fileName);
+            long fileSize = FileSystemManager.getFileSize(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileSize) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file size using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -837,9 +837,9 @@ public class FileSystemRestEntryPoint {
             url = "file/uniqueId")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -878,18 +878,18 @@ public class FileSystemRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getFileUniqueID( @Context HttpServletRequest request, @QueryParam(
-            value = "sessionId") String sessionId,
+            value = "callerId") String callerId,
                                      @QueryParam(
                                              value = "resourceId") int resourceId,
                                      @QueryParam(
                                              value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -897,12 +897,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            String uniqueID = FileSystemManager.getFileUniqueID(sessionId, resourceId, fileName);
+            String uniqueID = FileSystemManager.getFileUniqueID(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(uniqueID) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file unique ID using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -923,9 +923,9 @@ public class FileSystemRestEntryPoint {
             url = "file/uid")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -970,7 +970,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setFileUID( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         long uid = -1;
@@ -978,11 +978,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -995,12 +995,12 @@ public class FileSystemRestEntryPoint {
             if (uid < 0) {
                 throw new IllegalArgumentException("uid has invallid value '" + uid + "'");
             }
-            FileSystemManager.setFileUID(sessionId, resourceId, fileName, uid);
+            FileSystemManager.setFileUID(callerId, resourceId, fileName, uid);
             return Response.ok("{\"status_message\":" + "\"successfully set uid to '" + uid + "'" + "\"}").build();
         } catch (Exception e) {
             String message = "Unable to set file U I D using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1021,9 +1021,9 @@ public class FileSystemRestEntryPoint {
             url = "file/gid")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1068,7 +1068,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setFileGID( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         long gid = -1;
@@ -1076,11 +1076,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1093,12 +1093,12 @@ public class FileSystemRestEntryPoint {
             if (gid < 0) {
                 throw new IllegalArgumentException("gid has invallid value '" + gid + "'");
             }
-            FileSystemManager.setFileGID(sessionId, resourceId, fileName, gid);
+            FileSystemManager.setFileGID(callerId, resourceId, fileName, gid);
             return Response.ok("{\"status_message\":" + "\"successfully set gid to '" + gid + "'" + "\"}").build();
         } catch (Exception e) {
             String message = "Unable to set file U I D using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1119,9 +1119,9 @@ public class FileSystemRestEntryPoint {
             url = "file/permissions")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1166,7 +1166,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setFilePermissions( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         String permissions = null;
@@ -1174,11 +1174,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1191,14 +1191,14 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(permissions)) {
                 throw new IllegalArgumentException("permissions is not provided with the request");
             }
-            FileSystemManager.setFilePermissions(sessionId, resourceId, fileName, permissions);
+            FileSystemManager.setFilePermissions(callerId, resourceId, fileName, permissions);
             return Response.ok("{\"status_message\":" + "\"successfully set permissions to '" + permissions + "'"
                                + "\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to set file permissions using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1219,9 +1219,9 @@ public class FileSystemRestEntryPoint {
             url = "file/modificationTime")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1266,7 +1266,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setFileModificationTime( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         long modificationTime = -1;
@@ -1274,11 +1274,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1291,14 +1291,14 @@ public class FileSystemRestEntryPoint {
             if (modificationTime < 0) {
                 throw new IllegalArgumentException("modificationTime has invallid value '" + modificationTime + "'");
             }
-            FileSystemManager.setFileModicationTime(sessionId, resourceId, fileName, modificationTime);
+            FileSystemManager.setFileModicationTime(callerId, resourceId, fileName, modificationTime);
             return Response.ok("{\"status_message\":" + "\"successfully set file modification time to '"
                                + modificationTime + "'" + "\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to set file modification time using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1319,9 +1319,9 @@ public class FileSystemRestEntryPoint {
             url = "file/hidden")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1366,7 +1366,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setFileHiddenAttribute( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         boolean hidden = false;
@@ -1374,11 +1374,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1388,14 +1388,14 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             hidden = getJsonElement(jsonObject, "hidden").getAsBoolean();
-            FileSystemManager.setFileHiddenAttribute(sessionId, resourceId, fileName, hidden);
+            FileSystemManager.setFileHiddenAttribute(callerId, resourceId, fileName, hidden);
             return Response.ok("{\"status_message\":" + "\"successfully set file hidden attribute to '"
                                + hidden + "'" + "\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to set file hidden attribute using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1416,9 +1416,9 @@ public class FileSystemRestEntryPoint {
             url = "file/exist")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1458,18 +1458,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response doesFileExists( @Context HttpServletRequest request,
                                     @QueryParam(
-                                            value = "sessionId") String sessionId,
+                                            value = "callerId") String callerId,
                                     @QueryParam(
                                             value = "resourceId") int resourceId,
                                     @QueryParam(
                                             value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1477,12 +1477,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(fileName)) {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
-            boolean exists = FileSystemManager.doesFileExists(sessionId, resourceId, fileName);
+            boolean exists = FileSystemManager.doesFileExists(callerId, resourceId, fileName);
             return Response.ok("{\"action_result\":" + GSON.toJson(exists) + "}").build();
         } catch (Exception e) {
             String message = "Unable to check whether file exists using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1503,9 +1503,9 @@ public class FileSystemRestEntryPoint {
             url = "file")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1580,7 +1580,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response createFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         String fileContent = null;
@@ -1594,11 +1594,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1618,13 +1618,13 @@ public class FileSystemRestEntryPoint {
             }
             isRandomContent = getJsonElement(jsonObject, "isRandomContent").getAsBoolean();
             isBinary = getJsonElement(jsonObject, "isBinary").getAsBoolean();
-            FileSystemManager.createFile(sessionId, resourceId, fileName, fileContent, fileSize, uid, gid, eol,
+            FileSystemManager.createFile(callerId, resourceId, fileName, fileContent, fileSize, uid, gid, eol,
                                          isRandomContent, isBinary);
             return Response.ok("{\"status_message\":\"file successfully create\"}").build();
         } catch (Exception e) {
             String message = "Unable to create file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1645,9 +1645,9 @@ public class FileSystemRestEntryPoint {
             url = "file")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1687,18 +1687,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response deleteFile( @Context HttpServletRequest request,
                                 @QueryParam(
-                                        value = "sessionId") String sessionId,
+                                        value = "callerId") String callerId,
                                 @QueryParam(
                                         value = "resourceId") int resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1706,12 +1706,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
-            FileSystemManager.deleteFile(sessionId, resourceId, fileName);
+            FileSystemManager.deleteFile(callerId, resourceId, fileName);
             return Response.ok("{\"status_message\":\"file successfully deleted\"}").build();
         } catch (Exception e) {
             String message = "Unable to delete file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1732,9 +1732,9 @@ public class FileSystemRestEntryPoint {
             url = "file")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1784,7 +1784,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response renameFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String oldFileName = null;
         String newFileName = null;
@@ -1793,11 +1793,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1811,12 +1811,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("newFileName is not provided with the request");
             }
             overwrite = getJsonElement(jsonObject, "overwrite").getAsBoolean();
-            FileSystemManager.renameFile(sessionId, resourceId, oldFileName, newFileName, overwrite);
+            FileSystemManager.renameFile(callerId, resourceId, oldFileName, newFileName, overwrite);
             return Response.ok("{\"status_message\":\"file successfully renamed\"}").build();
         } catch (Exception e) {
             String message = "Unable to rename file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1837,9 +1837,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content/lastLines")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1890,7 +1890,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response getLastLines( @Context HttpServletRequest request,
                                   @QueryParam(
-                                          value = "sessionId") String sessionId,
+                                          value = "callerId") String callerId,
                                   @QueryParam(
                                           value = "resourceId") int resourceId,
                                   @QueryParam(
@@ -1901,11 +1901,11 @@ public class FileSystemRestEntryPoint {
                                           value = "charset") String charset ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1916,13 +1916,13 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(charset)) {
                 charset = StandardCharsets.ISO_8859_1.name();
             }
-            String[] lastLines = FileSystemManager.getLastLines(sessionId, resourceId, fileName, numberOfLines,
+            String[] lastLines = FileSystemManager.getLastLines(callerId, resourceId, fileName, numberOfLines,
                                                                 charset);
             return Response.ok("{\"action_result\":" + GSON.toJson(lastLines, String[].class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get last lines from file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1944,9 +1944,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1991,7 +1991,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response readFile( @Context HttpServletRequest request,
                               @QueryParam(
-                                      value = "sessionId") String sessionId,
+                                      value = "callerId") String callerId,
                               @QueryParam(
                                       value = "resourceId") int resourceId,
                               @QueryParam(
@@ -2000,11 +2000,11 @@ public class FileSystemRestEntryPoint {
                                       value = "fileEncoding") String fileEncoding ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2013,12 +2013,12 @@ public class FileSystemRestEntryPoint {
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
 
-            String fileContent = FileSystemManager.readFile(sessionId, resourceId, fileName, fileEncoding);
+            String fileContent = FileSystemManager.readFile(callerId, resourceId, fileName, fileEncoding);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileContent, String.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to read file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2040,9 +2040,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content/tail")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2087,7 +2087,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response readFileFromPosition( @Context HttpServletRequest request,
                                           @QueryParam(
-                                                  value = "sessionId") String sessionId,
+                                                  value = "callerId") String callerId,
                                           @QueryParam(
                                                   value = "resourceId") int resourceId,
                                           @QueryParam(
@@ -2096,11 +2096,11 @@ public class FileSystemRestEntryPoint {
                                                   value = "fromBytePosition") long fromBytePosition ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2109,14 +2109,14 @@ public class FileSystemRestEntryPoint {
             }
             fileName = URLDecoder.decode(fileName, "UTF-8");
 
-            FileTailInfo fileContent = FileSystemManager.readFileFromPosition(sessionId, resourceId, fileName,
+            FileTailInfo fileContent = FileSystemManager.readFileFromPosition(callerId, resourceId, fileName,
                                                                               fromBytePosition);
             return Response.ok("{\"action_result\":" + GSON.toJson(fileContent, FileTailInfo.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to read file from position '" + fromBytePosition
                              + "' using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2138,9 +2138,9 @@ public class FileSystemRestEntryPoint {
             url = "file/md5sum")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2186,7 +2186,7 @@ public class FileSystemRestEntryPoint {
 
     public Response computeMd5Sum( @Context HttpServletRequest request,
                                    @QueryParam(
-                                           value = "sessionId") String sessionId,
+                                           value = "callerId") String callerId,
                                    @QueryParam(
                                            value = "resourceId") int resourceId,
                                    @QueryParam(
@@ -2195,10 +2195,10 @@ public class FileSystemRestEntryPoint {
                                            value = "md5SumMode") String md5SumMode ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2208,12 +2208,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(md5SumMode)) {
                 throw new NoSuchElementException("md5SumMode is not provided with the request");
             }
-            String md5sum = FileSystemManager.computeMd5Sum(sessionId, resourceId, fileName, md5SumMode);
+            String md5sum = FileSystemManager.computeMd5Sum(callerId, resourceId, fileName, md5SumMode);
             return Response.ok("{\"action_result\":" + GSON.toJson(md5sum, String.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file MD5 sum using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2234,9 +2234,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content/replace")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2296,7 +2296,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response findTextInFileAfterGivenPosition( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         String searchString = null;
@@ -2307,11 +2307,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2343,12 +2343,12 @@ public class FileSystemRestEntryPoint {
                     throw new NoSuchElementException("searchTokens is not provided with the request");
                 }
                 searchTokens = GSON.fromJson(searchTokensJSON, Map.class);
-                FileSystemManager.replaceText(sessionId, resourceId, fileName, searchTokens, isRegex);
+                FileSystemManager.replaceText(callerId, resourceId, fileName, searchTokens, isRegex);
             } else {
                 if (!searchStringNotProvided && !newStringNotProvided) {
                     // both are specified
                     // use them instead the searchTokens's map
-                    FileSystemManager.replaceText(sessionId, resourceId, fileName, searchString, newString, isRegex);
+                    FileSystemManager.replaceText(callerId, resourceId, fileName, searchString, newString, isRegex);
                 } else {
                     // one of them is provided, but the other is not
                     // we do not care if searchTokens map is provided, since one of those fields is provided, an error will be thrown
@@ -2358,8 +2358,8 @@ public class FileSystemRestEntryPoint {
             return Response.ok("{\"status_message\":\"file content successfully replaced\"}").build();
         } catch (Exception e) {
             String message = "Unable to replace text in file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2380,9 +2380,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content/find")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2450,7 +2450,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response findTextAfterGivenPositionInFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         boolean isRegex = false;
@@ -2461,11 +2461,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2488,7 +2488,7 @@ public class FileSystemRestEntryPoint {
             if (currentLineNumber < 0) {
                 throw new IllegalArgumentException("currentLineNumber has invallid value '" + resourceId + "'");
             }
-            FileMatchInfo fmi = FileSystemManager.findTextAfterGivenPositionInFile(sessionId, resourceId, fileName,
+            FileMatchInfo fmi = FileSystemManager.findTextAfterGivenPositionInFile(callerId, resourceId, fileName,
                                                                                    searchTexts, isRegex,
                                                                                    searchFromPosition,
                                                                                    currentLineNumber);
@@ -2496,8 +2496,8 @@ public class FileSystemRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to find text after given position in file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2518,9 +2518,9 @@ public class FileSystemRestEntryPoint {
             url = "file/content/grep")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2571,7 +2571,7 @@ public class FileSystemRestEntryPoint {
 
     public Response fileGrep( @Context HttpServletRequest request,
                               @QueryParam(
-                                      value = "sessionId") String sessionId,
+                                      value = "callerId") String callerId,
                               @QueryParam(
                                       value = "resourceId") int resourceId,
                               @QueryParam(
@@ -2582,10 +2582,10 @@ public class FileSystemRestEntryPoint {
                                       value = "isSimpleMode") boolean isSimpleMode ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2595,12 +2595,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(searchPattern)) {
                 throw new NoSuchElementException("searchPattern is not provided with the request");
             }
-            String[] lines = FileSystemManager.fileGrep(sessionId, resourceId, fileName, searchPattern, isSimpleMode);
+            String[] lines = FileSystemManager.fileGrep(callerId, resourceId, fileName, searchPattern, isSimpleMode);
             return Response.ok("{\"action_result\":" + GSON.toJson(lines, String[].class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to execute grep operation on file using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2621,9 +2621,9 @@ public class FileSystemRestEntryPoint {
             url = "file/lock")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2663,18 +2663,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response lockFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2683,13 +2683,13 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(fileName)) {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
-            FileSystemManager.lockFile(sessionId, resourceId, fileName);
+            FileSystemManager.lockFile(callerId, resourceId, fileName);
             return Response.ok("{\"status_message\":\"file successfully locked\"}").build();
         } catch (Exception e) {
             String message = "Unable to lock file file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2710,9 +2710,9 @@ public class FileSystemRestEntryPoint {
             url = "file/unlock")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2752,18 +2752,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response unlockFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fileName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2772,13 +2772,13 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(fileName)) {
                 throw new NoSuchElementException("fileName is not provided with the request");
             }
-            FileSystemManager.unlockFile(sessionId, resourceId, fileName);
+            FileSystemManager.unlockFile(callerId, resourceId, fileName);
             return Response.ok("{\"status_message\":\"file successfully unlocked\"}").build();
         } catch (Exception e) {
             String message = "Unable to unlock file file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2799,9 +2799,9 @@ public class FileSystemRestEntryPoint {
             url = "file/unzip")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2846,7 +2846,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response unzipFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String outputDirPath = null;
         String zipFilePath = null;
@@ -2854,11 +2854,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2871,13 +2871,13 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(zipFilePath)) {
                 throw new NoSuchElementException("zipFilePath is not provided with the request");
             }
-            FileSystemManager.unzipFile(sessionId, resourceId, zipFilePath, outputDirPath);
+            FileSystemManager.unzipFile(callerId, resourceId, zipFilePath, outputDirPath);
             return Response.ok("{\"status_message\":\"file successfully unzipped\"}").build();
         } catch (Exception e) {
             String message = "Unable to unzip file file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2898,9 +2898,9 @@ public class FileSystemRestEntryPoint {
             url = "file/extract")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2945,7 +2945,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response extractFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String archiveFilePath = null;
         String outputDirPath = null;
@@ -2953,11 +2953,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2970,13 +2970,13 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(archiveFilePath)) {
                 throw new NoSuchElementException("archiveFilePath is not provided with the request");
             }
-            FileSystemManager.extractFile(sessionId, resourceId, archiveFilePath, outputDirPath);
+            FileSystemManager.extractFile(callerId, resourceId, archiveFilePath, outputDirPath);
             return Response.ok("{\"status_message\":\"file successfully extracted\"}").build();
         } catch (Exception e) {
             String message = "Unable to extract file file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -2997,9 +2997,9 @@ public class FileSystemRestEntryPoint {
             url = "file/send")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3059,7 +3059,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response sendFileTo( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fromFileName = null;
         String toFileName = null;
@@ -3070,11 +3070,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3096,13 +3096,13 @@ public class FileSystemRestEntryPoint {
                 throw new IllegalArgumentException("port has invallid value '" + resourceId + "'");
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
-            FileSystemManager.sendFileTo(sessionId, resourceId, fromFileName, toFileName, machineIP, port, failOnError);
+            FileSystemManager.sendFileTo(callerId, resourceId, fromFileName, toFileName, machineIP, port, failOnError);
             return Response.ok("{\"status_message\":\"file successfully sent\"}").build();
         } catch (Exception e) {
             String message = "Unable to send file file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3165,7 +3165,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response copyFileLocally( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fromFileName = null;
         String toFileName = null;
@@ -3174,11 +3174,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3192,13 +3192,13 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("toFileName is not provided with the request");
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
-            FileSystemManager.copyFileLocally(sessionId, resourceId, fromFileName, toFileName, failOnError);
+            FileSystemManager.copyFileLocally(callerId, resourceId, fromFileName, toFileName, failOnError);
             return Response.ok("{\"status_message\":\"successfully copy file locally\"}").build();
         } catch (Exception e) {
             String message = "Unable to copy file locally using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3220,9 +3220,9 @@ public class FileSystemRestEntryPoint {
             url = "constructPath")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3267,7 +3267,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response constructFilePath( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String srcFileName = null;
         String dstFilePath = null;
@@ -3275,11 +3275,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3292,14 +3292,14 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(dstFilePath)) {
                 throw new NoSuchElementException("dstFilePath is not provided with the request");
             }
-            String dstFileName = FileSystemManager.constructDestinationFilePath(sessionId, resourceId, srcFileName,
+            String dstFileName = FileSystemManager.constructDestinationFilePath(callerId, resourceId, srcFileName,
                                                                                 dstFilePath);
             return Response.ok("{\"action_result\":" + GSON.toJson(dstFileName, String.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to construct destination file path on file using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3320,9 +3320,9 @@ public class FileSystemRestEntryPoint {
             url = "copyPortRange")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3367,7 +3367,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response setCopyPortRange( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int copyFileStartPort = -1;
         int copyFileEndPort = -1;
@@ -3375,11 +3375,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3395,13 +3395,13 @@ public class FileSystemRestEntryPoint {
             if (copyFileEndPort < copyFileStartPort) {
                 throw new IllegalArgumentException("copyFileEndPort must be greather than the copyFileStartPort");
             }
-            FileSystemManager.setCopyPortRange(sessionId, resourceId, copyFileStartPort, copyFileEndPort);
+            FileSystemManager.setCopyPortRange(callerId, resourceId, copyFileStartPort, copyFileEndPort);
             return Response.ok("{\"status_message\":\"successfully set copy port range\"}").build();
         } catch (Exception e) {
             String message = "Unable to set copy port range using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3422,9 +3422,9 @@ public class FileSystemRestEntryPoint {
             url = "transferSocket")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3459,25 +3459,25 @@ public class FileSystemRestEntryPoint {
     })
     public Response openTransferSocket( @Context HttpServletRequest request,
                                         @QueryParam(
-                                                value = "sessionId") String sessionId,
+                                                value = "callerId") String callerId,
                                         @QueryParam(
                                                 value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            int transferSocket = FileSystemManager.openTransferSocket(sessionId, resourceId);
+            int transferSocket = FileSystemManager.openTransferSocket(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(transferSocket, int.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to open trasfer socket using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3498,9 +3498,9 @@ public class FileSystemRestEntryPoint {
             url = "waitForFileTransferCompletion")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3540,18 +3540,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response waitForFileTransferCompletion( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int port = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3560,13 +3560,13 @@ public class FileSystemRestEntryPoint {
             if (port < 0) {
                 throw new IllegalArgumentException("port has invallid value '" + resourceId + "'");
             }
-            FileSystemManager.waitForTransferToComplete(sessionId, resourceId, port);
+            FileSystemManager.waitForTransferToComplete(callerId, resourceId, port);
             return Response.ok("{\"status_message\":\"successfully wait for transfer to complete\"}").build();
         } catch (Exception e) {
             String message = "Unable to wait for transfer to complete using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3588,9 +3588,9 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
 
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3648,7 +3648,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response findFiles( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String location = null;
         String searchString = null;
@@ -3659,11 +3659,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3679,14 +3679,14 @@ public class FileSystemRestEntryPoint {
             isRegex = getJsonElement(jsonObject, "isRegex").getAsBoolean();
             acceptDirectories = getJsonElement(jsonObject, "acceptDirectories").getAsBoolean();
             recursiveSearch = getJsonElement(jsonObject, "recursiveSearch").getAsBoolean();
-            String[] files = FileSystemManager.findFiles(sessionId, resourceId, location, searchString, isRegex,
+            String[] files = FileSystemManager.findFiles(callerId, resourceId, location, searchString, isRegex,
                                                          acceptDirectories, recursiveSearch);
             return Response.ok("{\"action_result\":" + GSON.toJson(files, String[].class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to find files using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3707,9 +3707,9 @@ public class FileSystemRestEntryPoint {
             url = "directory/exist")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3749,18 +3749,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response doesDirectoryExists( @Context HttpServletRequest request,
                                          @QueryParam(
-                                                 value = "sessionId") String sessionId,
+                                                 value = "callerId") String callerId,
                                          @QueryParam(
                                                  value = "resourceId") int resourceId,
                                          @QueryParam(
                                                  value = "dirName") String dirName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3768,12 +3768,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(dirName)) {
                 throw new NoSuchElementException("dirName is not provided with the request");
             }
-            boolean exists = FileSystemManager.doesDirectoryExists(sessionId, resourceId, dirName);
+            boolean exists = FileSystemManager.doesDirectoryExists(callerId, resourceId, dirName);
             return Response.ok("{\"action_result\":" + GSON.toJson(exists) + "}").build();
         } catch (Exception e) {
             String message = "Unable to check whether directory exists using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3794,9 +3794,9 @@ public class FileSystemRestEntryPoint {
             url = "directory")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3846,7 +3846,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response createDirectory( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String directoryName = null;
         long uid = -1;
@@ -3855,11 +3855,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -3870,12 +3870,12 @@ public class FileSystemRestEntryPoint {
             }
             uid = getJsonElement(jsonObject, "uid").getAsLong();
             gid = getJsonElement(jsonObject, "gid").getAsLong();
-            FileSystemManager.createDirectory(sessionId, resourceId, directoryName, uid, gid);
+            FileSystemManager.createDirectory(callerId, resourceId, directoryName, uid, gid);
             return Response.ok("{\"status_message\":\"directory successfully create\"}").build();
         } catch (Exception e) {
             String message = "Unable to create directory using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3896,9 +3896,9 @@ public class FileSystemRestEntryPoint {
             url = "directory")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -3938,7 +3938,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response deleteDirectory( @Context HttpServletRequest request,
                                      @QueryParam(
-                                             value = "sessionId") String sessionId,
+                                             value = "callerId") String callerId,
                                      @QueryParam(
                                              value = "resourceId") int resourceId,
                                      @QueryParam(
@@ -3947,11 +3947,11 @@ public class FileSystemRestEntryPoint {
                                              value = "deleteRecursively") boolean deleteRecursively ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3959,12 +3959,12 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("directoryName is not provided with the request");
             }
             directoryName = URLDecoder.decode(directoryName, "UTF-8");
-            FileSystemManager.deleteDirectory(sessionId, resourceId, directoryName, deleteRecursively);
+            FileSystemManager.deleteDirectory(callerId, resourceId, directoryName, deleteRecursively);
             return Response.ok("{\"status_message\":\"directory successfully deleted\"}").build();
         } catch (Exception e) {
             String message = "Unable to delete directory using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -3985,9 +3985,9 @@ public class FileSystemRestEntryPoint {
             url = "directory/purgeContent")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -4027,18 +4027,18 @@ public class FileSystemRestEntryPoint {
     })
     public Response purgeDirectoryContent( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String directoryName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -4047,12 +4047,12 @@ public class FileSystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(directoryName)) {
                 throw new NoSuchElementException("directoryName is not provided with the request");
             }
-            FileSystemManager.purgeDirectoryContent(sessionId, resourceId, directoryName);
+            FileSystemManager.purgeDirectoryContent(callerId, resourceId, directoryName);
             return Response.ok("{\"status_message\":" + "\"directory content successfully purged\"}").build();
         } catch (Exception e) {
             String message = "Unable to purge directory content using filesystem resource with id '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -4072,9 +4072,9 @@ public class FileSystemRestEntryPoint {
             summary = "Send directory",
             url = "directory/send")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
-            example = "some session ID",
-            name = "sessionId",
+            description = "The caller ID",
+            example = "some caller ID",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -4138,7 +4138,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response sendDirectoryTo( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fromDirName = null;
         String toDirName = null;
@@ -4150,11 +4150,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -4177,14 +4177,14 @@ public class FileSystemRestEntryPoint {
             }
             isRecursive = getJsonElement(jsonObject, "isRecursive").getAsBoolean();
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
-            FileSystemManager.sendDirectoryTo(sessionId, resourceId, fromDirName, toDirName, machineIP, port,
+            FileSystemManager.sendDirectoryTo(callerId, resourceId, fromDirName, toDirName, machineIP, port,
                                               isRecursive, failOnError);
             return Response.ok("{\"status_message\":\"directory successfully sent\"}").build();
         } catch (Exception e) {
             String message = "Unable to send directory using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -4252,7 +4252,7 @@ public class FileSystemRestEntryPoint {
     })
     public Response copyDirectoryLocally( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String fromDirName = null;
         String toDirName = null;
@@ -4262,11 +4262,11 @@ public class FileSystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -4280,13 +4280,13 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("toDirName is not provided with the request");
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
-            FileSystemManager.copyDirectoryLocally(sessionId, resourceId, fromDirName, toDirName, failOnError, isRecursive);
+            FileSystemManager.copyDirectoryLocally(callerId, resourceId, fromDirName, toDirName, failOnError, isRecursive);
             return Response.ok("{\"status_message\":\"successfully copy directory locally\"}").build();
         } catch (Exception e) {
             String message = "Unable to copy directory locally using filesystem resource with id '"
                              + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

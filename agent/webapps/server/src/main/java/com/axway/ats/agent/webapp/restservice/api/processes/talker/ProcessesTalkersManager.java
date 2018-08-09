@@ -32,13 +32,13 @@ public class ProcessesTalkersManager {
     private static final Gson   GSON                      = new Gson();
 
     public static synchronized int
-            initializeProcessTalker( String sessionId,
+            initializeProcessTalker( String callerId,
                                      String command ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
                                                       IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "InternalProcessTalker init Process Talker",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(command) });
@@ -54,13 +54,13 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            setDefaultOperationTimeout( String sessionId, int resourceId,
+            setDefaultOperationTimeout( String callerId, int resourceId,
                                         int timeout ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
                                                       IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker set Default Operation Timeout",
                                          new String[]{ int.class.getName() },
                                          new String[]{ GSON.toJson(timeout) });
@@ -71,12 +71,12 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            setCommand( String sessionId, int resourceId,
+            setCommand( String callerId, int resourceId,
                         String command ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker set Command",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(command) });
@@ -87,13 +87,13 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized String
-            getPendingToMatchContent( String sessionId,
+            getPendingToMatchContent( String callerId,
                                       int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
                                                        IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker get Pending To Match Content",
                                          null,
                                          null);
@@ -103,13 +103,13 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized String
-            getCurrentStdout( String sessionId,
+            getCurrentStdout( String callerId,
                               int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker get Current Standard Out Contents",
                                          null,
                                          null);
@@ -119,13 +119,13 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized String
-            getCurrentStderr( String sessionId,
+            getCurrentStderr( String callerId,
                               int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker get Current Standard Err Contents",
                                          null,
                                          null);
@@ -135,13 +135,13 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expectErr( String sessionId, int resourceId, String pattern,
+            expectErr( String callerId, int resourceId, String pattern,
                        int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err",
                                          new String[]{ String.class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(pattern), GSON.toJson(timeoutSeconds) });
 
@@ -149,7 +149,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrByRegex( String sessionId, int resourceId, String pattern,
+    public static void expectErrByRegex( String callerId, int resourceId, String pattern,
                                          int timeoutSeconds ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException,
@@ -157,7 +157,7 @@ public class ProcessesTalkersManager {
                                                               IllegalAccessException, IllegalArgumentException,
                                                               InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Err By Regex",
                                          new String[]{ String.class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(pattern), GSON.toJson(timeoutSeconds) });
@@ -166,14 +166,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrAll( String sessionId, int resourceId, String[] patterns,
+    public static void expectErrAll( String callerId, int resourceId, String[] patterns,
                                      int timeoutSeconds ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException,
                                                           NoSuchComponentException, ClassNotFoundException,
                                                           InstantiationException, IllegalAccessException,
                                                           IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err All",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err All",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
 
@@ -181,14 +181,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrAllByRegex( String sessionId, int resourceId, String[] patterns,
+    public static void expectErrAllByRegex( String callerId, int resourceId, String[] patterns,
                                             int timeoutSeconds ) throws NoSuchActionException,
                                                                  NoCompatibleMethodFoundException,
                                                                  NoSuchComponentException, ClassNotFoundException,
                                                                  InstantiationException, IllegalAccessException,
                                                                  IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Err All By Regex",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
@@ -197,13 +197,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectErrAny( String sessionId, int resourceId, String[] patterns,
+    public static int expectErrAny( String callerId, int resourceId, String[] patterns,
                                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
                                                          InstantiationException, IllegalAccessException,
                                                          IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err Any",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Err Any",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
 
@@ -211,7 +211,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectErrAnyByRegex( String sessionId, int resourceId, String[] patterns,
+    public static int expectErrAnyByRegex( String callerId, int resourceId, String[] patterns,
                                            int timeoutSeconds ) throws NoSuchActionException,
                                                                 NoCompatibleMethodFoundException,
                                                                 NoSuchComponentException,
@@ -219,7 +219,7 @@ public class ProcessesTalkersManager {
                                                                 IllegalAccessException, IllegalArgumentException,
                                                                 InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Err Any By Regex",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
@@ -228,12 +228,12 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expect( String sessionId, int resourceId, String pattern,
+            expect( String callerId, int resourceId, String pattern,
                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect",
                                          new String[]{ String.class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(pattern), GSON.toJson(timeoutSeconds) });
 
@@ -242,12 +242,12 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expect( String sessionId, int resourceId,
+            expect( String callerId, int resourceId,
                     String pattern ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                      NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(pattern) });
 
@@ -255,14 +255,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectByRegex( String sessionId, int resourceId, String pattern,
+    public static void expectByRegex( String callerId, int resourceId, String pattern,
                                       int timeoutSeconds ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException, NoSuchComponentException,
                                                            ClassNotFoundException, InstantiationException,
                                                            IllegalAccessException, IllegalArgumentException,
                                                            InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect By Regex",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect By Regex",
                                          new String[]{ String.class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(pattern), GSON.toJson(timeoutSeconds) });
 
@@ -270,13 +270,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectByRegex( String sessionId, int resourceId,
+    public static void expectByRegex( String callerId, int resourceId,
                                       String pattern ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
                                                        IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect By Regex",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect By Regex",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(pattern) });
 
@@ -284,13 +284,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAll( String sessionId, int resourceId,
+    public static void expectAll( String callerId, int resourceId,
                                   String[] patterns ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
                                                       IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect All",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect All",
                                          new String[]{ String[].class.getName() },
                                          new String[]{ GSON.toJson(patterns) });
 
@@ -298,13 +298,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAll( String sessionId, int resourceId, String[] patterns,
+    public static void expectAll( String callerId, int resourceId, String[] patterns,
                                   int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
                                                        IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect All",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect All",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
 
@@ -312,14 +312,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAllByRegex( String sessionId, int resourceId,
+    public static void expectAllByRegex( String callerId, int resourceId,
                                          String[] patterns ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException, NoSuchComponentException,
                                                              ClassNotFoundException, InstantiationException,
                                                              IllegalAccessException, IllegalArgumentException,
                                                              InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect All By Regex",
                                          new String[]{ String[].class.getName() },
                                          new String[]{ GSON.toJson(patterns) });
@@ -328,14 +328,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAllByRegex( String sessionId, int resourceId, String[] patterns,
+    public static void expectAllByRegex( String callerId, int resourceId, String[] patterns,
                                          int timeoutSeconds ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException, ClassNotFoundException,
                                                               InstantiationException, IllegalAccessException,
                                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect All By Regex",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
@@ -344,13 +344,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAny( String sessionId, int resourceId, String[] patterns,
+    public static int expectAny( String callerId, int resourceId, String[] patterns,
                                  int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
                                                       IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Any",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Any",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
 
@@ -358,13 +358,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAny( String sessionId, int resourceId,
+    public static int expectAny( String callerId, int resourceId,
                                  String[] patterns ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Any",
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME, "InternalProcessTalker expect Any",
                                          new String[]{ String[].class.getName() },
                                          new String[]{ GSON.toJson(patterns) });
 
@@ -372,14 +372,14 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAnyByRegex( String sessionId, int resourceId,
+    public static int expectAnyByRegex( String callerId, int resourceId,
                                         String[] patterns ) throws NoSuchActionException,
                                                             NoCompatibleMethodFoundException, NoSuchComponentException,
                                                             ClassNotFoundException, InstantiationException,
                                                             IllegalAccessException, IllegalArgumentException,
                                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Any By Regex",
                                          new String[]{ String[].class.getName() },
                                          new String[]{ GSON.toJson(patterns) });
@@ -387,14 +387,14 @@ public class ProcessesTalkersManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static int expectAnyByRegex( String sessionId, int resourceId, String[] patterns,
+    public static int expectAnyByRegex( String callerId, int resourceId, String[] patterns,
                                         int timeoutSeconds ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException, NoSuchComponentException,
                                                              ClassNotFoundException, InstantiationException,
                                                              IllegalAccessException, IllegalArgumentException,
                                                              InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Any By Regex",
                                          new String[]{ String[].class.getName(), int.class.getName() },
                                          new String[]{ GSON.toJson(patterns), GSON.toJson(timeoutSeconds) });
@@ -402,13 +402,13 @@ public class ProcessesTalkersManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static void expectClose( String sessionId,
+    public static void expectClose( String callerId,
                                     int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Close",
                                          null,
                                          null);
@@ -416,13 +416,13 @@ public class ProcessesTalkersManager {
         ResourcesManager.executeOverResource(pojo);
     }
 
-    public static void expectClose( String sessionId, int resourceId,
+    public static void expectClose( String callerId, int resourceId,
                                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
                                                          InstantiationException, IllegalAccessException,
                                                          IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker expect Close",
                                          new String[]{ int.class.getName() },
                                          new String[]{ GSON.toJson(timeoutSeconds) });
@@ -431,13 +431,13 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static boolean isClosed( String sessionId,
+    public static boolean isClosed( String callerId,
                                     int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker is Closed",
                                          null,
                                          null);
@@ -445,13 +445,13 @@ public class ProcessesTalkersManager {
         return (boolean) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static int getExitValue( String sessionId,
+    public static int getExitValue( String callerId,
                                     int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker get Exit Value",
                                          null,
                                          null);
@@ -459,13 +459,13 @@ public class ProcessesTalkersManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static void kill( String sessionId, int resourceId ) throws NoSuchActionException,
+    public static void kill( String callerId, int resourceId ) throws NoSuchActionException,
                                                                 NoCompatibleMethodFoundException,
                                                                 NoSuchComponentException, ClassNotFoundException,
                                                                 InstantiationException, IllegalAccessException,
                                                                 IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker kill External Process",
                                          null,
                                          null);
@@ -474,7 +474,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void killWithChildren( String sessionId, int resourceId ) throws NoSuchActionException,
+    public static void killWithChildren( String callerId, int resourceId ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
                                                                             NoSuchComponentException,
                                                                             ClassNotFoundException,
@@ -483,7 +483,7 @@ public class ProcessesTalkersManager {
                                                                             IllegalArgumentException,
                                                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker kill External Process With Children",
                                          null,
                                          null);
@@ -492,12 +492,12 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void send( String sessionId, int resourceId,
+    public static void send( String callerId, int resourceId,
                              String text ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker send",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(text) });
@@ -507,12 +507,12 @@ public class ProcessesTalkersManager {
     }
 
     public static void
-            sendEnter( String sessionId,
+            sendEnter( String callerId,
                        int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker send Enter Key",
                                          null,
                                          null);
@@ -522,14 +522,14 @@ public class ProcessesTalkersManager {
     }
 
     public static void
-            sendEnterInLoop( String sessionId, int resourceId, String intermediatePattern, String finalPattern,
+            sendEnterInLoop( String callerId, int resourceId, String intermediatePattern, String finalPattern,
                              int maxLoopTimes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                 NoSuchComponentException, ClassNotFoundException,
                                                 InstantiationException,
                                                 IllegalAccessException, IllegalArgumentException,
                                                 InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalProcessTalker send Enter Key In Loop",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        int.class.getName() },

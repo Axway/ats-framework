@@ -23,47 +23,47 @@ import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 
 public class SystemMonitorsManager {
 
-    public synchronized static int initialize( String sessionId ) {
+    public synchronized static int initialize() {
 
-        return ResourcesManager.addResource(sessionId, new RestSystemMonitor());
+        return ResourcesManager.addResource(new RestSystemMonitor());
     }
 
-    public synchronized static int deinitialize( String sessionId,
+    public synchronized static int deinitialize(
                                                  int resourceId ) {
 
-        return ResourcesManager.deinitializeResource(sessionId, resourceId);
+        return ResourcesManager.deinitializeResource(resourceId);
 
     }
 
     public synchronized static void initializeMonitoringContext(
-                                                                 String sessionId,
+
                                                                  int resourceId,
                                                                  String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
 
         monitor.initializeMonitoringContext(atsAgent);
 
     }
 
-    public synchronized static void scheduleSystemMonitoring( String sessionId,
+    public synchronized static void scheduleSystemMonitoring(
                                                               int resourceId,
                                                               String[] systemReadingTypes,
                                                               String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleSystemMonitoring(atsAgent, systemReadingTypes);
         monitor.setScheduledReadingTypes(readings);
 
     }
 
-    public synchronized static void scheduleMonitoring( String sessionId,
+    public synchronized static void scheduleMonitoring(
                                                         int resourceId,
                                                         String readingType,
                                                         Map<String, String> readingParameters,
                                                         String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleMonitoring(atsAgent,
                                                                readingType,
                                                                readingParameters);
@@ -71,17 +71,17 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void scheduleUserActivity( String sessionId, int resourceId, String atsAgent ) {
+    public synchronized static void scheduleUserActivity( int resourceId, String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         monitor.scheduleUserActivity(atsAgent);
 
     }
 
-    public synchronized static void startMonitoring( String sessionId, int resourceId, int pollingInterval,
+    public synchronized static void startMonitoring( int resourceId, int pollingInterval,
                                                      long startTimestamp, String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
 
         // calculate the time offset between the agent and the test executor
         long timeOffset = System.currentTimeMillis() - startTimestamp;
@@ -90,15 +90,15 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void stopMonitoring( String sessionId, int resourceId, String atsAgent ) {
+    public synchronized static void stopMonitoring( int resourceId, String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
 
         monitor.stopMonitoring(atsAgent);
 
     }
 
-    public synchronized static void scheduleChildProcessMonitoring( String sessionId,
+    public synchronized static void scheduleChildProcessMonitoring(
                                                                     int resourceId,
                                                                     String parentProcess,
                                                                     String processPattern,
@@ -107,7 +107,7 @@ public class SystemMonitorsManager {
                                                                     String[] processReadingTypes,
                                                                     String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleChildProcessMonitoring(atsAgent, parentProcess, processPattern,
                                                                            processAlias,
                                                                            processUsername, processReadingTypes);
@@ -115,7 +115,7 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void scheduleChildProcessMonitoring( String sessionId,
+    public synchronized static void scheduleChildProcessMonitoring(
                                                                     int resourceId,
                                                                     String parentProcess,
                                                                     String processPattern,
@@ -123,7 +123,7 @@ public class SystemMonitorsManager {
                                                                     String[] processReadingTypes,
                                                                     String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleChildProcessMonitoring(atsAgent, parentProcess, processPattern,
                                                                            processAlias,
                                                                            processReadingTypes);
@@ -131,52 +131,52 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void scheduleProcessMonitoring( String sessionId,
+    public synchronized static void scheduleProcessMonitoring(
                                                                int resourceId,
                                                                String processPattern,
                                                                String processAlias,
                                                                String[] processReadingTypes,
                                                                String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleProcessMonitoring(atsAgent, processPattern, processAlias,
                                                                       processReadingTypes);
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleProcessMonitoring( String sessionId, int resourceId, String processPattern,
+    public synchronized static void scheduleProcessMonitoring( int resourceId, String processPattern,
                                                                String processAlias, String processUsername,
                                                                String[] processReadingTypes,
                                                                String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleProcessMonitoring(atsAgent, processPattern, processAlias,
                                                                       processUsername, processReadingTypes);
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleJvmMonitoring( String sessionId, int resourceId, String jvmPort,
+    public synchronized static void scheduleJvmMonitoring( int resourceId, String jvmPort,
                                                            String[] jvmReadingTypes, String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleJvmMonitoring(atsAgent, jvmPort, "", jvmReadingTypes);
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleJvmMonitoring( String sessionId, int resourceId, String jvmPort,
+    public synchronized static void scheduleJvmMonitoring( int resourceId, String jvmPort,
                                                            String alias,
                                                            String[] jvmReadingTypes, String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleJvmMonitoring(atsAgent, jvmPort, alias, jvmReadingTypes);
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public static void scheduleCustomJvmMonitoring( String sessionId, int resourceId, String jmxPort, String alias,
+    public static void scheduleCustomJvmMonitoring( int resourceId, String jmxPort, String alias,
                                                     String mbeanName, String unit, String[] mbeanAttributes,
                                                     String atsAgent ) {
 
-        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(sessionId, resourceId);
+        RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         Set<ReadingBean> readings = monitor.scheduleCustomJvmMonitoring(atsAgent, jmxPort, alias, mbeanName, unit,
                                                                         mbeanAttributes);
         monitor.setScheduledReadingTypes(readings);

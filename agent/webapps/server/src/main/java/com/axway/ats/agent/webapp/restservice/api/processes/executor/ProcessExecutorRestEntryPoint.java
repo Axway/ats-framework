@@ -65,9 +65,9 @@ public class ProcessExecutorRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "shell command or bat/bash script",
@@ -107,7 +107,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response
             initializeProcessExecutor( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String command = null;
         String[] commandArguments = null;
         boolean defaultInitialization = false;
@@ -115,11 +115,11 @@ public class ProcessExecutorRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (jsonObject.has("defaultInitialization")) {
                 defaultInitialization = jsonObject.get("defaultInitialization").getAsBoolean();
                 if (defaultInitialization) {
@@ -134,19 +134,19 @@ public class ProcessExecutorRestEntryPoint {
                 commandArguments = GSON.fromJson(getJsonElement(jsonObject, "commandArguments"), String[].class);
             }
 
-            int resourceId = ProcessesExecutorsManager.initializeProcessExecutor(sessionId, command, commandArguments);
+            int resourceId = ProcessesExecutorsManager.initializeProcessExecutor(callerId, command, commandArguments);
             String response = "{\"resourceId\":" + resourceId + "}";
 
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = null;
             if (defaultInitialization) {
-                message = "Unable to perform default initialization for process executor in session with id '"
-                          + sessionId + "'";
+                message = "Unable to perform default initialization for process executor in caller with id '"
+                          + callerId + "'";
             }
             message = "Unable to initialize process executor for command '" + command
                       + "' with command arguments '" + Arrays.asList(commandArguments).toString() + "' "
-                      + " in session with id '" + sessionId + "'";
+                      + " in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -168,9 +168,9 @@ public class ProcessExecutorRestEntryPoint {
             url = "start")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -234,7 +234,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response startProcess( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String workDirectory = null;
         String standardOutputFile = null;
@@ -246,11 +246,11 @@ public class ProcessExecutorRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -261,14 +261,14 @@ public class ProcessExecutorRestEntryPoint {
             logStandardOutput = GSON.fromJson(jsonObject.get("logStandardOutput"), boolean.class);
             logErrorOutput = GSON.fromJson(jsonObject.get("logErrorOutput"), boolean.class);
             waitForCompletion = GSON.fromJson(jsonObject.get("waitForCompletion"), boolean.class);
-            ProcessesExecutorsManager.startProcess(sessionId, resourceId, workDirectory, standardOutputFile,
+            ProcessesExecutorsManager.startProcess(callerId, resourceId, workDirectory, standardOutputFile,
                                                    errorOutputFile, logStandardOutput, logErrorOutput,
                                                    waitForCompletion);
 
             return Response.ok("{\"status_message\":\"process successfully started\"}").build();
         } catch (Exception e) {
-            String message = "Unable to start process with resourceId '" + resourceId + "' from session with id '"
-                             + sessionId + "'";
+            String message = "Unable to start process with resourceId '" + resourceId + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -290,9 +290,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Kill process executor",
             url = "kill")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -326,27 +326,27 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response killProcess( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            ProcessesExecutorsManager.killProcess(sessionId, resourceId);
+            ProcessesExecutorsManager.killProcess(callerId, resourceId);
 
             return Response.ok("{\"status_message\":\"process successfully killed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to kill process with resourceId '" + resourceId + "' from session with id '"
-                             + sessionId + "'";
+            String message = "Unable to kill process with resourceId '" + resourceId + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -368,9 +368,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Kill process (executor)",
             url = "kill/all")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -404,28 +404,28 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response killAll( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            ProcessesExecutorsManager.killProcessWithChildren(sessionId, resourceId);
+            ProcessesExecutorsManager.killProcessWithChildren(callerId, resourceId);
 
             return Response.ok("{\"status_message\":\"process and its children successfully killed\"}").build();
         } catch (Exception e) {
             String message = "Unable to kill process ( and its children ) with resourceId '" + resourceId
-                             + "' from session with id '"
-                             + sessionId + "'";
+                             + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -447,9 +447,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Kill external process",
             url = "kill/external")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -489,7 +489,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response killExternalProcess( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String startCommandSnippet = null;
         int numOfKilledProcesses = -1;
@@ -497,11 +497,11 @@ public class ProcessExecutorRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -510,14 +510,14 @@ public class ProcessExecutorRestEntryPoint {
             if (StringUtils.isNullOrEmpty(startCommandSnippet)) {
                 throw new NoSuchElementException("startCommandSnippet is not provided with the request");
             }
-            numOfKilledProcesses = ProcessesExecutorsManager.killExternalProcess(sessionId, resourceId,
+            numOfKilledProcesses = ProcessesExecutorsManager.killExternalProcess(callerId, resourceId,
                                                                                  startCommandSnippet);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(numOfKilledProcesses, int.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to kill external process with start command snippet '" + startCommandSnippet
-                             + "' using resource with id '" + resourceId + "' from session with id '"
-                             + sessionId + "'";
+                             + "' using resource with id '" + resourceId + "' from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -538,9 +538,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get process's exit code",
             url = "exitCode")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -572,24 +572,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          name = "exceptionClass",
                                                                          type = "string") })
     })
-    public Response getProcessExitCode( @Context HttpServletRequest request, @QueryParam( "sessionId") String sessionId,
+    public Response getProcessExitCode( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                         @QueryParam( "resourceId") int resourceId ) {
 
         int exitCode = -1;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            exitCode = ProcessesExecutorsManager.getProcessExitCode(sessionId, resourceId);
+            exitCode = ProcessesExecutorsManager.getProcessExitCode(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(exitCode, int.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get exit code for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -610,9 +610,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get process's ID",
             url = "pid")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -645,24 +645,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          name = "exceptionClass",
                                                                          type = "string") })
     })
-    public Response getProcessId( @Context HttpServletRequest request, @QueryParam( "sessionId") String sessionId,
+    public Response getProcessId( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                   @QueryParam( "resourceId") int resourceId ) {
 
         int exitCode = -1;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            exitCode = ProcessesExecutorsManager.getProcessId(sessionId, resourceId);
+            exitCode = ProcessesExecutorsManager.getProcessId(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(exitCode, int.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get pid for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -683,9 +683,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get process's STDOUT content",
             url = "stdout")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -717,24 +717,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          name = "exceptionClass",
                                                                          type = "string") })
     })
-    public Response getStandardOutput( @Context HttpServletRequest request, @QueryParam( "sessionId") String sessionId,
+    public Response getStandardOutput( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                        @QueryParam( "resourceId") int resourceId ) {
 
         String stdout = null;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            stdout = ProcessesExecutorsManager.getStandardOutput(sessionId, resourceId);
+            stdout = ProcessesExecutorsManager.getStandardOutput(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get standard output for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -755,9 +755,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get current process's STDOUT content",
             url = "stdout/current")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -791,24 +791,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getCurrentStandardOutput( @Context HttpServletRequest request,
-                                              @QueryParam( "sessionId") String sessionId,
+                                              @QueryParam( "callerId") String callerId,
                                               @QueryParam( "resourceId") int resourceId ) {
 
         String stdout = null;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            stdout = ProcessesExecutorsManager.getCurrentStandardOutput(sessionId, resourceId);
+            stdout = ProcessesExecutorsManager.getCurrentStandardOutput(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get current standard output for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -829,9 +829,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get whether process's STDOUT is fully read",
             url = "stdout/fullyread")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -865,25 +865,25 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response isStandardOutputFullyRead( @Context HttpServletRequest request,
-                                               @QueryParam( "sessionId") String sessionId,
+                                               @QueryParam( "callerId") String callerId,
                                                @QueryParam( "resourceId") int resourceId ) {
 
         boolean fullyRead = false;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            fullyRead = ProcessesExecutorsManager.isStandardOutputFullyRead(sessionId, resourceId);
+            fullyRead = ProcessesExecutorsManager.isStandardOutputFullyRead(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(fullyRead, boolean.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get whether standard output is fully read for process with resourceId '"
                              + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -904,9 +904,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get process's STDERR content",
             url = "stderr")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -940,24 +940,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getStandardErrorOutput( @Context HttpServletRequest request,
-                                            @QueryParam( "sessionId") String sessionId,
+                                            @QueryParam( "callerId") String callerId,
                                             @QueryParam( "resourceId") int resourceId ) {
 
         String stdout = null;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            stdout = ProcessesExecutorsManager.getStandardErrorOutput(sessionId, resourceId);
+            stdout = ProcessesExecutorsManager.getStandardErrorOutput(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get standard error output for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -978,9 +978,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get current process's STDERR content",
             url = "stderr/current")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1014,24 +1014,24 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getCurrentStandardErrorOutput( @Context HttpServletRequest request,
-                                                   @QueryParam( "sessionId") String sessionId,
+                                                   @QueryParam( "callerId") String callerId,
                                                    @QueryParam( "resourceId") int resourceId ) {
 
         String stdout = null;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            stdout = ProcessesExecutorsManager.getCurrentStandardErrorOutput(sessionId, resourceId);
+            stdout = ProcessesExecutorsManager.getCurrentStandardErrorOutput(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(stdout, stdout.getClass()) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get current standard error output for process with resourceId '" + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1052,9 +1052,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get whether process's STDERR is fully read",
             url = "stderr/fullyread")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1088,25 +1088,25 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response isStandardErrorOutputFullyRead( @Context HttpServletRequest request,
-                                                    @QueryParam( "sessionId") String sessionId,
+                                                    @QueryParam( "callerId") String callerId,
                                                     @QueryParam( "resourceId") int resourceId ) {
 
         boolean fullyRead = false;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            fullyRead = ProcessesExecutorsManager.isStandardErrorOutputFullyRead(sessionId, resourceId);
+            fullyRead = ProcessesExecutorsManager.isStandardErrorOutputFullyRead(callerId, resourceId);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(fullyRead, boolean.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get whether Standard error output is fully read for process with resourceId '"
                              + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1127,9 +1127,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Get process environment variable's value",
             url = "envvars")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1167,29 +1167,29 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getEnvironmentVariable( @Context HttpServletRequest request,
-                                            @QueryParam( "sessionId") String sessionId,
+                                            @QueryParam( "callerId") String callerId,
                                             @QueryParam( "resourceId") int resourceId,
                                             @QueryParam( "variableName") String variableName ) {
 
         String envVar = null;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
             if (StringUtils.isNullOrEmpty(variableName)) {
                 throw new IllegalArgumentException("variableName not provided with the request");
             }
-            envVar = ProcessesExecutorsManager.getEnvironmentVariable(sessionId, resourceId, variableName);
+            envVar = ProcessesExecutorsManager.getEnvironmentVariable(callerId, resourceId, variableName);
 
             return Response.ok("{\"action_result\":" + GSON.toJson(envVar, String.class) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get environment variable '" + variableName + "' using resourceId '"
                              + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1210,9 +1210,9 @@ public class ProcessExecutorRestEntryPoint {
             summary = "Set process environment variable",
             url = "envvars")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1256,7 +1256,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response setEnvironmentVariable( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String variableName = null;
         String variableValue = null;
@@ -1264,11 +1264,11 @@ public class ProcessExecutorRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1278,7 +1278,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new IllegalArgumentException("variableName not provided with the request");
             }
             variableValue = getJsonElement(jsonObject, "variableValue").getAsString();
-            ProcessesExecutorsManager.setEnvironmentVariable(sessionId, resourceId, variableName, variableValue);
+            ProcessesExecutorsManager.setEnvironmentVariable(callerId, resourceId, variableName, variableValue);
 
             return Response.ok("{\"status_message\":\"value of environment variable '" + variableName
                                + "' successfully set to '" + variableValue
@@ -1287,7 +1287,7 @@ public class ProcessExecutorRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to set environment variable '" + variableName + "' using resourceId '"
                              + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -1309,9 +1309,9 @@ public class ProcessExecutorRestEntryPoint {
             url = "envvars")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1355,7 +1355,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response appendToEnvironmentVariable( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String variableName = null;
         String variableValue = null;
@@ -1363,11 +1363,11 @@ public class ProcessExecutorRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1377,11 +1377,11 @@ public class ProcessExecutorRestEntryPoint {
                 throw new IllegalArgumentException("variableName not provided with the request");
             }
             variableValue = getJsonElement(jsonObject, "variableValueToAppend").getAsString();
-            ProcessesExecutorsManager.appendToEnvironmentVariable(sessionId, resourceId, variableName, variableValue);
+            ProcessesExecutorsManager.appendToEnvironmentVariable(callerId, resourceId, variableName, variableValue);
         } catch (Exception e) {
             String message = "Unable to append to environment variable '" + variableName + "' using resourceId '"
                              + resourceId
-                             + "' from session with id '" + sessionId + "'";
+                             + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

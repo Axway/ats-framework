@@ -61,9 +61,9 @@ public class EnvironmentsRestEntryPoint {
             url = "restore")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The component name",
@@ -110,7 +110,7 @@ public class EnvironmentsRestEntryPoint {
     })
     public Response restoreEnvironment( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String componentName = null;
         String environmentName = null;
         String folderPath = null;
@@ -118,11 +118,11 @@ public class EnvironmentsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             try {
                 componentName = getJsonElement(jsonObject, "componentName").getAsString();
             } catch (Exception e) {
@@ -173,9 +173,9 @@ public class EnvironmentsRestEntryPoint {
             url = "backup")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The component name",
@@ -222,7 +222,7 @@ public class EnvironmentsRestEntryPoint {
     })
     public Response backupEnvironment( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String componentName = null;
         String environmentName = null;
         String folderPath = null;
@@ -230,11 +230,11 @@ public class EnvironmentsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             try {
                 componentName = getJsonElement(jsonObject, "componentName").getAsString();
             } catch (Exception e) {

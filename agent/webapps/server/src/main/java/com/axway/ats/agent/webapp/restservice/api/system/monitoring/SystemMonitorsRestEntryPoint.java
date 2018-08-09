@@ -64,9 +64,9 @@ public class SystemMonitorsRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -96,19 +96,19 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response initialize( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(), "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
-            int resourceId = SystemMonitorsManager.initialize(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
+            int resourceId = SystemMonitorsManager.initialize();
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize system monitor resource from session with id '" + sessionId + "'";
+            String message = "Unable to initialize system monitor resource from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -129,9 +129,9 @@ public class SystemMonitorsRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
+                                                  description = "The caller ID",
                                                   example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "sessionId",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -165,25 +165,25 @@ public class SystemMonitorsRestEntryPoint {
                                                                          type = "string") })
     })
     public Response deinitialize( @Context HttpServletRequest request,
-                                  @QueryParam( "sessionId") String sessionId,
+                                  @QueryParam( "callerId") String callerId,
                                   @QueryParam( "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId must be >= 0, but was" + resourceId);
             }
 
-            resourceId = SystemMonitorsManager.deinitialize(sessionId, resourceId);
+            resourceId = SystemMonitorsManager.deinitialize(resourceId);
             String response = "{\"status_message\":\"System monitor with resource id '" + resourceId
                               + "' successfully deleted\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to deinitialize system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -205,9 +205,9 @@ public class SystemMonitorsRestEntryPoint {
             url = "initializeMonitoringContext")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -243,28 +243,29 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response initializeMonitoringContext( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemMonitorsManager.initializeMonitoringContext(sessionId, resourceId,
+            SystemMonitorsManager.initializeMonitoringContext(resourceId,
                                                               request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"monitoring context successfully initialized\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
-            String message = "Unable to initialize monitoring context for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+            String message = "Unable to initialize monitoring context for system monitor with resource id '"
+                             + resourceId
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -313,30 +314,30 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleSystemMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String[] systemReadingTypes = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
             systemReadingTypes = GSON.fromJson(getJsonElement(jsonObject, "systemReadingTypes"), String[].class);
-            SystemMonitorsManager.scheduleSystemMonitoring(sessionId, resourceId, systemReadingTypes,
+            SystemMonitorsManager.scheduleSystemMonitoring(resourceId, systemReadingTypes,
                                                            request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"successfully scheduled system monitoring\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to schedule system monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -385,7 +386,7 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String readingType = null;
         Map<String, String> readingParameters = null;
@@ -393,11 +394,11 @@ public class SystemMonitorsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -407,13 +408,13 @@ public class SystemMonitorsRestEntryPoint {
                 throw new NoSuchElementException("readingType is not provided with the request");
             }
             readingParameters = GSON.fromJson(getJsonElement(jsonObject, "readingParameters"), Map.class);
-            SystemMonitorsManager.scheduleMonitoring(sessionId, resourceId, readingType, readingParameters,
+            SystemMonitorsManager.scheduleMonitoring(resourceId, readingType, readingParameters,
                                                      request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"successfully scheduled monitoring\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to schedule monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -462,7 +463,7 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleProcessMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String parentProcess = null;
         String processPattern = null;
@@ -475,11 +476,11 @@ public class SystemMonitorsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -518,13 +519,13 @@ public class SystemMonitorsRestEntryPoint {
 
             if (hasUsername) {
                 if (isChildProcessMonitoring) {
-                    SystemMonitorsManager.scheduleChildProcessMonitoring(sessionId, resourceId, parentProcess,
+                    SystemMonitorsManager.scheduleChildProcessMonitoring(resourceId, parentProcess,
                                                                          processPattern, processAlias, processUsername,
                                                                          processReadingTypes,
                                                                          request.getLocalAddr() + ":"
                                                                                               + request.getLocalPort());
                 } else {
-                    SystemMonitorsManager.scheduleProcessMonitoring(sessionId, resourceId, processPattern, processAlias,
+                    SystemMonitorsManager.scheduleProcessMonitoring(resourceId, processPattern, processAlias,
                                                                     processUsername,
                                                                     processReadingTypes,
                                                                     request.getLocalAddr() + ":"
@@ -532,13 +533,13 @@ public class SystemMonitorsRestEntryPoint {
                 }
             } else {
                 if (isChildProcessMonitoring) {
-                    SystemMonitorsManager.scheduleChildProcessMonitoring(sessionId, resourceId, parentProcess,
+                    SystemMonitorsManager.scheduleChildProcessMonitoring(resourceId, parentProcess,
                                                                          processPattern, processAlias,
                                                                          processReadingTypes,
                                                                          request.getLocalAddr() + ":"
                                                                                               + request.getLocalPort());
                 } else {
-                    SystemMonitorsManager.scheduleProcessMonitoring(sessionId, resourceId, processPattern, processAlias,
+                    SystemMonitorsManager.scheduleProcessMonitoring(resourceId, processPattern, processAlias,
                                                                     processReadingTypes,
                                                                     request.getLocalAddr() + ":"
                                                                                          + request.getLocalPort());
@@ -549,7 +550,7 @@ public class SystemMonitorsRestEntryPoint {
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to schedule process monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -598,7 +599,7 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleJvmMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String jvmPort = null;
         String alias = null;
@@ -607,11 +608,11 @@ public class SystemMonitorsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -626,19 +627,19 @@ public class SystemMonitorsRestEntryPoint {
                 if (StringUtils.isNullOrEmpty(jvmPort)) {
                     throw new NoSuchElementException("alias is not provided with the request");
                 }
-                SystemMonitorsManager.scheduleJvmMonitoring(sessionId, resourceId, jvmPort, alias, jvmReadingTypes,
+                SystemMonitorsManager.scheduleJvmMonitoring(resourceId, jvmPort, alias, jvmReadingTypes,
                                                             request.getLocalAddr() + ":" + request.getLocalPort());
             } catch (Exception e) {
                 // optional parameter
                 // do not throw an exception
-                SystemMonitorsManager.scheduleJvmMonitoring(sessionId, resourceId, jvmPort, "", jvmReadingTypes,
+                SystemMonitorsManager.scheduleJvmMonitoring(resourceId, jvmPort, "", jvmReadingTypes,
                                                             request.getLocalAddr() + ":" + request.getLocalPort());
             }
             String response = "{\"status_message\":\"successfully scheduled JVM monitoring\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to schedule JVM monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -688,7 +689,7 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleCustomJvmMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String jmxPort = null;
         String alias = null;
@@ -699,11 +700,11 @@ public class SystemMonitorsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -726,7 +727,7 @@ public class SystemMonitorsRestEntryPoint {
                 throw new NoSuchElementException("unit is not provided with the request");
             }
             mbeanAttributes = GSON.fromJson(getJsonElement(jsonObject, "mbeanAttributes"), String[].class);
-            SystemMonitorsManager.scheduleCustomJvmMonitoring(sessionId, resourceId, jmxPort, alias, mbeanName, unit,
+            SystemMonitorsManager.scheduleCustomJvmMonitoring(resourceId, jmxPort, alias, mbeanName, unit,
                                                               mbeanAttributes,
                                                               request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"successfully scheduled custom JVM monitoring\"}";
@@ -734,7 +735,7 @@ public class SystemMonitorsRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to schedule custom JVM monitoring for system monitor with resource id'"
                              + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -784,28 +785,28 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response scheduleUserActivity( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemMonitorsManager.scheduleUserActivity(sessionId, resourceId,
+            SystemMonitorsManager.scheduleUserActivity(resourceId,
                                                        request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"successfully scheduled user activity monitoring\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to schedule monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -854,7 +855,7 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response startMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int pollingInterval = -1;
         long startTimestamp = -1;
@@ -862,11 +863,11 @@ public class SystemMonitorsRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -879,13 +880,13 @@ public class SystemMonitorsRestEntryPoint {
             if (startTimestamp < 0) {
                 throw new IllegalArgumentException("startTimestamp has invallid value '" + resourceId + "'");
             }
-            SystemMonitorsManager.startMonitoring(sessionId, resourceId, pollingInterval, startTimestamp,
+            SystemMonitorsManager.startMonitoring(resourceId, pollingInterval, startTimestamp,
                                                   request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"monitoring successfully started\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to start monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -934,28 +935,28 @@ public class SystemMonitorsRestEntryPoint {
     })
     public Response stopMonitoring( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemMonitorsManager.stopMonitoring(sessionId, resourceId,
+            SystemMonitorsManager.stopMonitoring(resourceId,
                                                  request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"monitoring successfully stopped\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to stop monitoring for system monitor with resource id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

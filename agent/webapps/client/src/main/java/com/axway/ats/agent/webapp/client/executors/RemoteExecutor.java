@@ -72,7 +72,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     }
 
     protected String   atsAgent;
-    protected String   atsAgentSessionId;
+    protected String   callerId;
     protected int      resourceId = -1;
     protected String   initializeRequestUrl;
     protected String   executeRequestUrl;
@@ -109,21 +109,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
      */
     public RemoteExecutor( String atsAgent, boolean configureAgent ) throws AgentException {
 
-        // we assume the ATS Agent address here comes with IP and PORT
-        this.atsAgent = atsAgent;
-        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
-                                                                Thread.currentThread().getName());
-
-        if (configureAgent) {
-            //configure the remote executor(an ATS agent)
-            try {
-                TestcaseStateEventsDispacher.getInstance().onConfigureAtsAgents(Arrays.asList(atsAgent));
-            } catch (Exception e) {
-                // we know for sure this is an AgentException, but as the interface declaration is in Core library,
-                // we could not declare the AgentException, but its parent - the regular java Exception
-                throw(AgentException) e;
-            }
-        }
+        this(atsAgent, null, configureAgent);
     }
 
     /**
@@ -139,8 +125,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
-        this.atsAgentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
-                                                                Thread.currentThread().getName());
+        this.callerId = ExecutorUtils.createCallerId();
         if (StringUtils.isNullOrEmpty(initializeRequestUrl)) {
             // we assume that we have a custom action
             this.initializeRequestUrl = "/actions/";
@@ -314,7 +299,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId
+        String requestBody = "{\"callerId\":\"" + callerId
                              + "\",\"operation\":\"isComponentLoaded\",\"value\":\"" + actionRequest.getComponentName()
                              + "\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
@@ -327,7 +312,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public String getAgentHome() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getAgentHome\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getAgentHome\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                                             requestBody);
         String agentHome = httpClient.gson.fromJson(responseBody.get("agent_home"), String.class);
@@ -337,7 +322,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     public List<String> getClassPath() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getClassPath\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getClassPath\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                                             requestBody);
         String[] classPath = httpClient.gson.fromJson(responseBody.get("classpath"), String[].class);
@@ -347,14 +332,14 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     public void logClassPath() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"logClassPath\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"logClassPath\"}";
         httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                   requestBody);
     }
 
     public List<String> getDuplicatedJars() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getDuplicatedJars\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getDuplicatedJars\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                                             requestBody);
         String[] duplicatedJars = httpClient.gson.fromJson(responseBody.get("duplicated_jars"), String[].class);
@@ -364,7 +349,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     public void logDuplicatedJars() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"logDuplicatedJars\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"logDuplicatedJars\"}";
         httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                   requestBody);
     }
@@ -372,7 +357,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
-        String requestBody = "{\"sessionId\":\"" + atsAgentSessionId + "\",\"operation\":\"getDuplicatedJars\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getDuplicatedJars\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                                             requestBody);
         int pendingLogEvents = httpClient.gson.fromJson(responseBody.get("getNumberPendingLogEvents"), int.class);
@@ -516,10 +501,10 @@ public class RemoteExecutor extends AbstractClientExecutor {
             CloseableHttpResponse httpResponse = null;
             try {
 
-                // add sessionId to the request body
+                // add callerId to the request body
                 JsonObject requestBodyObject = new JsonParser().parse(requestBody).getAsJsonObject();
-                if (!requestBodyObject.has("sessionId")) {
-                    requestBodyObject.addProperty("sessionId", atsAgentSessionId);
+                if (!requestBodyObject.has("callerId")) {
+                    requestBodyObject.addProperty("callerId", callerId);
                 }
                 if (resourceId > -1 && !requestBodyObject.has("resourceId")) {
                     // add resourceId to the request body

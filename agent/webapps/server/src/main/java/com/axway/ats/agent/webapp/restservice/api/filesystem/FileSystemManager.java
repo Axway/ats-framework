@@ -35,11 +35,11 @@ public class FileSystemManager {
     private static final Gson   GSON                      = new Gson();
 
     public synchronized static int
-            initialize( String sessionId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+            initialize( String callerId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Internal File System Operations initialize",
                                          null,
                                          null);
@@ -54,7 +54,7 @@ public class FileSystemManager {
         return resourceId;
     }
 
-    public synchronized static void appendToFile( String sessionId, int resourceId, String filePath,
+    public synchronized static void appendToFile( String callerId, int resourceId, String filePath,
                                                   String contentToAdd ) throws NoSuchActionException,
                                                                         NoCompatibleMethodFoundException,
                                                                         NoSuchComponentException,
@@ -63,7 +63,7 @@ public class FileSystemManager {
                                                                         IllegalArgumentException,
                                                                         InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations Append To File",
@@ -77,13 +77,13 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFilePermissions( String sessionId, int resourceId,
+            getFilePermissions( String callerId, int resourceId,
                                 String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Permissions",
@@ -94,13 +94,13 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileGroup( String sessionId, int resourceId,
+            getFileGroup( String callerId, int resourceId,
                           String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Group",
@@ -111,13 +111,13 @@ public class FileSystemManager {
     }
 
     public synchronized static long
-            getFileGID( String sessionId, int resourceId,
+            getFileGID( String callerId, int resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException,
                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File G I D",
@@ -128,13 +128,13 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileOwner( String sessionId, int resourceId,
+            getFileOwner( String callerId, int resourceId,
                           String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Owner",
@@ -145,13 +145,13 @@ public class FileSystemManager {
     }
 
     public synchronized static long
-            getFileUID( String sessionId, int resourceId,
+            getFileUID( String callerId, int resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException,
                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File U I D",
@@ -161,7 +161,7 @@ public class FileSystemManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getFileModificationTime( String sessionId, int resourceId,
+    public synchronized static long getFileModificationTime( String callerId, int resourceId,
                                                              String fileName ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
                                                                                NoSuchComponentException,
@@ -171,7 +171,7 @@ public class FileSystemManager {
                                                                                IllegalArgumentException,
                                                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Modification Time",
@@ -181,14 +181,14 @@ public class FileSystemManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getFileSize( String sessionId, int resourceId,
+    public synchronized static long getFileSize( String callerId, int resourceId,
                                                  String fileName ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
                                                                    InstantiationException, IllegalAccessException,
                                                                    IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Size",
@@ -199,13 +199,13 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileUniqueID( String sessionId, int resourceId,
+            getFileUniqueID( String callerId, int resourceId,
                              String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get File Unique Id",
@@ -215,7 +215,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void setFileUID( String sessionId, int resourceId, String fileName,
+    public synchronized static void setFileUID( String callerId, int resourceId, String fileName,
                                                 long uid ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -223,7 +223,7 @@ public class FileSystemManager {
                                                            IllegalAccessException, IllegalArgumentException,
                                                            InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set File U I D",
@@ -234,7 +234,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileGID( String sessionId, int resourceId, String fileName,
+    public synchronized static void setFileGID( String callerId, int resourceId, String fileName,
                                                 long gid ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -242,7 +242,7 @@ public class FileSystemManager {
                                                            IllegalAccessException, IllegalArgumentException,
                                                            InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set File G I D",
@@ -253,7 +253,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFilePermissions( String sessionId, int resourceId, String fileName,
+    public synchronized static void setFilePermissions( String callerId, int resourceId, String fileName,
                                                         String permissions ) throws NoSuchActionException,
                                                                              NoCompatibleMethodFoundException,
                                                                              NoSuchComponentException,
@@ -263,7 +263,7 @@ public class FileSystemManager {
                                                                              IllegalArgumentException,
                                                                              InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set File Permissions",
@@ -274,7 +274,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileModicationTime( String sessionId, int resourceId, String fileName,
+    public synchronized static void setFileModicationTime( String callerId, int resourceId, String fileName,
                                                            long modificationTime ) throws NoSuchActionException,
                                                                                    NoCompatibleMethodFoundException,
                                                                                    NoSuchComponentException,
@@ -284,7 +284,7 @@ public class FileSystemManager {
                                                                                    IllegalArgumentException,
                                                                                    InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set File Modification Time",
@@ -295,7 +295,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileHiddenAttribute( String sessionId, int resourceId, String fileName,
+    public synchronized static void setFileHiddenAttribute( String callerId, int resourceId, String fileName,
                                                             boolean hidden ) throws NoSuchActionException,
                                                                              NoCompatibleMethodFoundException,
                                                                              NoSuchComponentException,
@@ -305,7 +305,7 @@ public class FileSystemManager {
                                                                              IllegalArgumentException,
                                                                              InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set File Hidden Attribute",
@@ -317,13 +317,13 @@ public class FileSystemManager {
     }
 
     public synchronized static boolean
-            doesFileExists( String sessionId, int resourceId,
+            doesFileExists( String callerId, int resourceId,
                             String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                               IllegalAccessException, IllegalArgumentException,
                                               InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations does File Exist",
@@ -334,7 +334,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            createFile( String sessionId, int resourceId, String fileName, String fileContent, long fileSize,
+            createFile( String callerId, int resourceId, String fileName, String fileContent, long fileSize,
                         long uid, long gid, String eol,
                         boolean isRandomContent,
                         boolean isBinary ) throws NoSuchActionException, NoCompatibleMethodFoundException,
@@ -342,7 +342,7 @@ public class FileSystemManager {
                                            InstantiationException, IllegalAccessException,
                                            IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations Create File",
@@ -369,12 +369,12 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            deleteFile( String sessionId, int resourceId,
+            deleteFile( String callerId, int resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations delete File",
@@ -385,7 +385,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void renameFile( String sessionId, int resourceId, String oldFileName,
+    public synchronized static void renameFile( String callerId, int resourceId, String oldFileName,
                                                 String newFileName,
                                                 boolean overwrite ) throws NoSuchActionException,
                                                                     NoCompatibleMethodFoundException,
@@ -394,7 +394,7 @@ public class FileSystemManager {
                                                                     IllegalArgumentException,
                                                                     InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations rename File",
@@ -408,14 +408,14 @@ public class FileSystemManager {
     }
 
     public synchronized static String[]
-            getLastLines( String sessionId, int resourceId, String fileName, int numberOfLines,
+            getLastLines( String callerId, int resourceId, String fileName, int numberOfLines,
                           String charset ) throws NoSuchActionException,
                                            NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException,
                                            InstantiationException, IllegalAccessException,
                                            IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations get Last Lines",
@@ -427,7 +427,7 @@ public class FileSystemManager {
         return (String[]) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String readFile( String sessionId, int resourceId, String fileName,
+    public synchronized static String readFile( String callerId, int resourceId, String fileName,
                                                 String fileEncoding ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -435,7 +435,7 @@ public class FileSystemManager {
                                                                       IllegalArgumentException,
                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations read File",
@@ -445,7 +445,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static FileTailInfo readFileFromPosition( String sessionId, int resourceId, String fileName,
+    public synchronized static FileTailInfo readFileFromPosition( String callerId, int resourceId, String fileName,
                                                                   long fromBytePosition ) throws NoSuchActionException,
                                                                                           NoCompatibleMethodFoundException,
                                                                                           NoSuchComponentException,
@@ -455,7 +455,7 @@ public class FileSystemManager {
                                                                                           IllegalArgumentException,
                                                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations read File From Position",
@@ -465,7 +465,7 @@ public class FileSystemManager {
         return (FileTailInfo) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String computeMd5Sum( String sessionId, int resourceId, String fileName,
+    public synchronized static String computeMd5Sum( String callerId, int resourceId, String fileName,
                                                      String md5SumMode ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
                                                                          NoSuchComponentException,
@@ -475,7 +475,7 @@ public class FileSystemManager {
                                                                          IllegalArgumentException,
                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations compute Md5 Sum",
@@ -485,7 +485,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void replaceText( String sessionId, int resourceId, String fileName,
+    public synchronized static void replaceText( String callerId, int resourceId, String fileName,
                                                  Map<String, String> searchTokens,
                                                  boolean isRegex ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
@@ -493,7 +493,7 @@ public class FileSystemManager {
                                                                    InstantiationException, IllegalAccessException,
                                                                    IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations replace Text In File",
@@ -506,7 +506,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void replaceText( String sessionId, int resourceId, String fileName, String searchString,
+    public synchronized static void replaceText( String callerId, int resourceId, String fileName, String searchString,
                                                  String newString,
                                                  boolean isRegex ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
@@ -514,7 +514,7 @@ public class FileSystemManager {
                                                                    InstantiationException, IllegalAccessException,
                                                                    IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations replace Text In File",
@@ -527,7 +527,7 @@ public class FileSystemManager {
     }
 
     public synchronized static FileMatchInfo
-            findTextAfterGivenPositionInFile( String sessionId, int resourceId, String fileName,
+            findTextAfterGivenPositionInFile( String callerId, int resourceId, String fileName,
                                               String[] searchTexts, boolean isRegex,
                                               long searchFromPosition,
                                               int currentLineNumber ) throws NoSuchActionException,
@@ -537,7 +537,7 @@ public class FileSystemManager {
                                                                       IllegalArgumentException,
                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations find Text In File After Given Position",
@@ -552,7 +552,7 @@ public class FileSystemManager {
         return (FileMatchInfo) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String[] fileGrep( String sessionId, int resourceId, String fileName,
+    public synchronized static String[] fileGrep( String callerId, int resourceId, String fileName,
                                                   String searchPattern,
                                                   boolean isSimpleMode ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
@@ -562,7 +562,7 @@ public class FileSystemManager {
                                                                          IllegalArgumentException,
                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations file Grep",
@@ -575,12 +575,12 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            lockFile( String sessionId, int resourceId,
+            lockFile( String callerId, int resourceId,
                       String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations lock File",
@@ -592,12 +592,12 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            unlockFile( String sessionId, int resourceId,
+            unlockFile( String callerId, int resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations unlock File",
@@ -608,7 +608,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void unzipFile( String sessionId, int resourceId, String zipFilePath,
+    public synchronized static void unzipFile( String callerId, int resourceId, String zipFilePath,
                                                String outputDirPath ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -616,7 +616,7 @@ public class FileSystemManager {
                                                                       IllegalArgumentException,
                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations unzip",
@@ -627,7 +627,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void extractFile( String sessionId, int resourceId, String archiveFilePath,
+    public synchronized static void extractFile( String callerId, int resourceId, String archiveFilePath,
                                                  String outputDirPath ) throws NoSuchActionException,
                                                                         NoCompatibleMethodFoundException,
                                                                         NoSuchComponentException,
@@ -636,7 +636,7 @@ public class FileSystemManager {
                                                                         IllegalArgumentException,
                                                                         InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations extract",
@@ -648,14 +648,14 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            sendFileTo( String sessionId, int resourceId, String fromFileName, String toFileName,
+            sendFileTo( String callerId, int resourceId, String fromFileName, String toFileName,
                         String machineIP, int port,
                         boolean failOnError ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
                                               InstantiationException, IllegalAccessException,
                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations send File To",
@@ -670,7 +670,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static String constructDestinationFilePath( String sessionId, int resourceId,
+    public synchronized static String constructDestinationFilePath( String callerId, int resourceId,
                                                                     String srcFileName,
                                                                     String dstFilePath ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
@@ -681,7 +681,7 @@ public class FileSystemManager {
                                                                                          IllegalArgumentException,
                                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations construct destination file path",
@@ -691,7 +691,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void setCopyPortRange( String sessionId, int resourceId, int copyFileStartPort,
+    public synchronized static void setCopyPortRange( String callerId, int resourceId, int copyFileStartPort,
                                                       int copyFileEndPort ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
                                                                             NoSuchComponentException,
@@ -701,7 +701,7 @@ public class FileSystemManager {
                                                                             IllegalArgumentException,
                                                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations set Copy File Port Range",
@@ -713,13 +713,13 @@ public class FileSystemManager {
     }
 
     public synchronized static int
-            openTransferSocket( String sessionId, int resourceId ) throws NoSuchActionException,
+            openTransferSocket( String callerId, int resourceId ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
                                                                    InstantiationException, IllegalAccessException,
                                                                    IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations open File Transfer Socket",
@@ -730,13 +730,13 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            waitForTransferToComplete( String sessionId, int resourceId,
+            waitForTransferToComplete( String callerId, int resourceId,
                                        int port ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations wait For File Transfer Completion",
@@ -748,14 +748,14 @@ public class FileSystemManager {
     }
 
     public synchronized static String[]
-            findFiles( String sessionId, int resourceId, String location, String searchString,
+            findFiles( String callerId, int resourceId, String location, String searchString,
                        boolean isRegex, boolean acceptDirectories,
                        boolean recursiveSearch ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                  NoSuchComponentException, ClassNotFoundException,
                                                  InstantiationException, IllegalAccessException,
                                                  IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations find Files",
@@ -771,14 +771,14 @@ public class FileSystemManager {
     }
 
     public synchronized static boolean
-            doesDirectoryExists( String sessionId, int resourceId,
+            doesDirectoryExists( String callerId, int resourceId,
                                  String dirName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException,
                                                   IllegalAccessException, IllegalArgumentException,
                                                   InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations does Directory Exist",
@@ -789,13 +789,13 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            createDirectory( String sessionId, int resourceId, String directoryName,
+            createDirectory( String callerId, int resourceId, String directoryName,
                              long uid, long gid ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations Create Directory",
@@ -812,7 +812,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            deleteDirectory( String sessionId, int resourceId,
+            deleteDirectory( String callerId, int resourceId,
                              String directoryName,
                              boolean deleteRecursively ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
@@ -820,7 +820,7 @@ public class FileSystemManager {
                                                          IllegalAccessException, IllegalArgumentException,
                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations delete Directory",
@@ -832,7 +832,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            purgeDirectoryContent( String sessionId, int resourceId,
+            purgeDirectoryContent( String callerId, int resourceId,
                                    String directoryName ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException,
                                                           NoSuchComponentException, ClassNotFoundException,
@@ -840,7 +840,7 @@ public class FileSystemManager {
                                                           IllegalAccessException, IllegalArgumentException,
                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations purge Directory Contents",
@@ -851,7 +851,7 @@ public class FileSystemManager {
 
     }
 
-    public static void sendDirectoryTo( String sessionId, int resourceId, String fromDirName, String toDirName,
+    public static void sendDirectoryTo( String callerId, int resourceId, String fromDirName, String toDirName,
                                         String machineIP, int port, boolean isRecursive,
                                         boolean failOnError ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
@@ -859,7 +859,7 @@ public class FileSystemManager {
                                                               InstantiationException, IllegalAccessException,
                                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations send Directory To",
@@ -877,14 +877,14 @@ public class FileSystemManager {
 
     }
 
-    public static void copyFileLocally( String sessionId, int resourceId, String fromFileName, String toFileName,
+    public static void copyFileLocally( String callerId, int resourceId, String fromFileName, String toFileName,
                                         boolean failOnError ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException, ClassNotFoundException,
                                                               InstantiationException, IllegalAccessException,
                                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations Copy Directory Locally",
@@ -898,7 +898,7 @@ public class FileSystemManager {
 
     }
 
-    public static void copyDirectoryLocally( String sessionId, int resourceId, String fromFileName, String toFileName,
+    public static void copyDirectoryLocally( String callerId, int resourceId, String fromFileName, String toFileName,
                                              boolean failOnError, boolean isRecursive ) throws NoSuchActionException,
                                                                                         NoCompatibleMethodFoundException,
                                                                                         NoSuchComponentException,
@@ -908,7 +908,7 @@ public class FileSystemManager {
                                                                                         IllegalArgumentException,
                                                                                         InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal File System Operations Copy Directory Locally",

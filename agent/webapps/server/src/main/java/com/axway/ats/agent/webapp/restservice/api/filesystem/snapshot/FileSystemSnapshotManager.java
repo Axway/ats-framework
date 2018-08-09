@@ -33,7 +33,7 @@ public class FileSystemSnapshotManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initFileSystemSnapshot( String sessionId, String name,
+    public synchronized static int initFileSystemSnapshot( String callerId, String name,
                                                            SnapshotConfiguration configuration ) throws NoSuchActionException,
                                                                                                  NoCompatibleMethodFoundException,
                                                                                                  NoSuchComponentException,
@@ -43,7 +43,7 @@ public class FileSystemSnapshotManager {
                                                                                                  IllegalArgumentException,
                                                                                                  InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot init File System Snapshot",
                                          new String[]{ String.class.getName(), SnapshotConfiguration.class.getName() },
                                          new String[]{ GSON.toJson(name), GSON.toJson(configuration) });
@@ -58,7 +58,7 @@ public class FileSystemSnapshotManager {
         return resourceId;
     }
 
-    public synchronized static void addDirectory( String sessionId, int resourceId, String directoryAlias,
+    public synchronized static void addDirectory( String callerId, int resourceId, String directoryAlias,
                                                   String directoryPath ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
                                                                          NoSuchComponentException,
@@ -68,7 +68,7 @@ public class FileSystemSnapshotManager {
                                                                          IllegalArgumentException,
                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot add Directory",
                                          new String[]{ String.class.getName(), String.class.getName() },
                                          new String[]{ GSON.toJson(directoryAlias), GSON.toJson(directoryPath) });
@@ -78,7 +78,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void takeSnapshot( String sessionId, int resourceId ) throws NoSuchActionException,
+    public synchronized static void takeSnapshot( String callerId, int resourceId ) throws NoSuchActionException,
                                                                                      NoCompatibleMethodFoundException,
                                                                                      NoSuchComponentException,
                                                                                      ClassNotFoundException,
@@ -87,7 +87,7 @@ public class FileSystemSnapshotManager {
                                                                                      IllegalArgumentException,
                                                                                      InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot take Snapshot",
                                          new String[]{},
                                          new String[]{});
@@ -98,13 +98,13 @@ public class FileSystemSnapshotManager {
     }
 
     public synchronized static LocalFileSystemSnapshot
-            getFileSystemSnapshot( String sessionId,
+            getFileSystemSnapshot( String callerId,
                                    int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                     NoSuchComponentException, ClassNotFoundException,
                                                     InstantiationException, IllegalAccessException,
                                                     IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot get File System Snapshot",
                                          new String[]{},
                                          new String[]{});
@@ -114,12 +114,12 @@ public class FileSystemSnapshotManager {
     }
 
     public synchronized static void
-            toFile( String sessionId, int resourceId,
+            toFile( String callerId, int resourceId,
                     String backupFile ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot to File",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(backupFile) });
@@ -129,7 +129,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void loadFromFile( String sessionId, int resourceId,
+    public synchronized static void loadFromFile( String callerId, int resourceId,
                                                   String sourceFile ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -137,7 +137,7 @@ public class FileSystemSnapshotManager {
                                                                       IllegalArgumentException,
                                                                       InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot load From File",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(sourceFile) });
@@ -147,7 +147,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void pushFileSystemSnapshot( String sessionId, int resourceId,
+    public synchronized static void pushFileSystemSnapshot( String callerId, int resourceId,
                                                             LocalFileSystemSnapshot newSnapshot ) throws NoSuchActionException,
                                                                                                   NoCompatibleMethodFoundException,
                                                                                                   NoSuchComponentException,
@@ -157,7 +157,7 @@ public class FileSystemSnapshotManager {
                                                                                                   IllegalArgumentException,
                                                                                                   InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot push File System Snapshot",
                                          new String[]{ LocalFileSystemSnapshot.class.getName() },
                                          new String[]{ GSON.toJson(newSnapshot) });
@@ -167,7 +167,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void newFileSystemSnapshot( String sessionId, int resourceId,
+    public synchronized static void newFileSystemSnapshot( String callerId, int resourceId,
                                                            LocalFileSystemSnapshot srcFileSystemSnapshot,
                                                            String newSnapshotName ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
@@ -178,7 +178,7 @@ public class FileSystemSnapshotManager {
                                                                                     IllegalArgumentException,
                                                                                     InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot new Snapshot",
                                          new String[]{ LocalFileSystemSnapshot.class.getName(),
                                                        String.class.getName() },
@@ -190,7 +190,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void setName( String sessionId, int resourceId,
+    public synchronized static void setName( String callerId, int resourceId,
                                              String name ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -198,7 +198,7 @@ public class FileSystemSnapshotManager {
                                                            IllegalAccessException, IllegalArgumentException,
                                                            InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot set Name",
                                          new String[]{ String.class.getName() },
                                          new String[]{ GSON.toJson(name) });
@@ -208,7 +208,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void checkFile( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void checkFile( String callerId, int resourceId, String rootDirectoryAlias,
                                                String relativeFilePath,
                                                int[] checkRules ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
@@ -216,7 +216,7 @@ public class FileSystemSnapshotManager {
                                                                   InstantiationException, IllegalAccessException,
                                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot check File",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        int[].class.getName() },
@@ -229,7 +229,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipDirectory( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipDirectory( String callerId, int resourceId, String rootDirectoryAlias,
                                                    String relativeDirectoryPath ) throws NoSuchActionException,
                                                                                   NoCompatibleMethodFoundException,
                                                                                   NoSuchComponentException,
@@ -239,7 +239,7 @@ public class FileSystemSnapshotManager {
                                                                                   IllegalArgumentException,
                                                                                   InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Directory",
                                          new String[]{ String.class.getName(), String.class.getName()
                                          },
@@ -252,7 +252,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipDirectoryByRegex( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipDirectoryByRegex( String callerId, int resourceId, String rootDirectoryAlias,
                                                           String relativeDirectoryPath ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
                                                                                          NoSuchComponentException,
@@ -262,7 +262,7 @@ public class FileSystemSnapshotManager {
                                                                                          IllegalArgumentException,
                                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Directory By Regex",
                                          new String[]{ String.class.getName(), String.class.getName()
                                          },
@@ -275,7 +275,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipFile( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipFile( String callerId, int resourceId, String rootDirectoryAlias,
                                               String relativeFilePath, int[] skipRules ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
                                                                                          NoSuchComponentException,
@@ -285,7 +285,7 @@ public class FileSystemSnapshotManager {
                                                                                          IllegalArgumentException,
                                                                                          InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip File",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        int[].class.getName()
@@ -300,7 +300,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipFileByRegex( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipFileByRegex( String callerId, int resourceId, String rootDirectoryAlias,
                                                      String relativeFilePath,
                                                      int[] skipRules ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
@@ -311,7 +311,7 @@ public class FileSystemSnapshotManager {
                                                                        IllegalArgumentException,
                                                                        InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip File By Regex",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        int[].class.getName()
@@ -326,7 +326,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipTextLine( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipTextLine( String callerId, int resourceId, String rootDirectoryAlias,
                                                   String relativeFilePath, String line,
                                                   String matchType ) throws NoSuchActionException,
                                                                      NoCompatibleMethodFoundException,
@@ -335,7 +335,7 @@ public class FileSystemSnapshotManager {
                                                                      IllegalArgumentException,
                                                                      InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Text Line",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName() },
@@ -349,7 +349,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipPropertyWithKey( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipPropertyWithKey( String callerId, int resourceId, String rootDirectoryAlias,
                                                          String relativeFilePath, String key,
                                                          String matchType ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
@@ -360,7 +360,7 @@ public class FileSystemSnapshotManager {
                                                                             IllegalArgumentException,
                                                                             InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Property With Key",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName() },
@@ -374,7 +374,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipPropertyWithValue( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipPropertyWithValue( String callerId, int resourceId, String rootDirectoryAlias,
                                                            String relativeFilePath, String value,
                                                            String matchType ) throws NoSuchActionException,
                                                                               NoCompatibleMethodFoundException,
@@ -385,7 +385,7 @@ public class FileSystemSnapshotManager {
                                                                               IllegalArgumentException,
                                                                               InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Property With Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName() },
@@ -399,7 +399,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipNodeByAttribute( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipNodeByAttribute( String callerId, int resourceId, String rootDirectoryAlias,
                                                          String relativeFilePath, String nodeXpath, String attributeKey,
                                                          String attributeValue,
                                                          String attributeValueMatchType ) throws NoSuchActionException,
@@ -411,7 +411,7 @@ public class FileSystemSnapshotManager {
                                                                                           IllegalArgumentException,
                                                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Node By Attribute",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName(),
@@ -428,7 +428,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipNodeByValue( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipNodeByValue( String callerId, int resourceId, String rootDirectoryAlias,
                                                      String relativeFilePath, String nodeXpath,
                                                      String value,
                                                      String matchType ) throws NoSuchActionException,
@@ -440,7 +440,7 @@ public class FileSystemSnapshotManager {
                                                                         IllegalArgumentException,
                                                                         InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Node By Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName(),
@@ -456,7 +456,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniSection( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipIniSection( String callerId, int resourceId, String rootDirectoryAlias,
                                                     String relativeFilePath, String section,
                                                     String matchType ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
@@ -465,7 +465,7 @@ public class FileSystemSnapshotManager {
                                                                        IllegalArgumentException,
                                                                        InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Ini Section",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName() },
@@ -479,7 +479,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniPropertyWithKey( String sessionId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipIniPropertyWithKey( String callerId, int resourceId, String rootDirectoryAlias,
                                                             String relativeFilePath, String section, String key,
                                                             String matchType ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
@@ -490,7 +490,7 @@ public class FileSystemSnapshotManager {
                                                                                IllegalArgumentException,
                                                                                InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Ini Property With Key",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName(),
@@ -506,7 +506,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniPropertyWithValue( String sessionId, int resourceId,
+    public synchronized static void skipIniPropertyWithValue( String callerId, int resourceId,
                                                               String rootDirectoryAlias,
                                                               String relativeFilePath, String section, String value,
                                                               String matchType ) throws NoSuchActionException,
@@ -518,7 +518,7 @@ public class FileSystemSnapshotManager {
                                                                                  IllegalArgumentException,
                                                                                  InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot skip Ini Property With Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName(),
@@ -534,14 +534,14 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public static String getDescription( String sessionId,
+    public static String getDescription( String callerId,
                                          int resourceId ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException, NoSuchComponentException,
                                                           ClassNotFoundException, InstantiationException,
                                                           IllegalAccessException, IllegalArgumentException,
                                                           InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "InternalFileSystemSnapshot get Description",
                                          new String[]{},
                                          new String[]{});

@@ -31,13 +31,13 @@ public class SystemInputManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initialize( String sessionId ) throws NoSuchActionException,
+    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
                                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Internal System Input Operations initialize",
                                          null,
                                          null);
@@ -52,13 +52,13 @@ public class SystemInputManager {
         return resourceId;
     }
 
-    public synchronized static void clickAt( String sessionId, int resourceId, int x,
+    public synchronized static void clickAt( String callerId, int resourceId, int x,
                                              int y ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations click At",
@@ -70,12 +70,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            type( String sessionId, int resourceId,
+            type( String callerId, int resourceId,
                   int[] keyCodes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                    NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                    IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations type",
@@ -86,13 +86,13 @@ public class SystemInputManager {
 
     }
 
-    public synchronized static void type( String sessionId, int resourceId,
+    public synchronized static void type( String callerId, int resourceId,
                                           String text ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                         NoSuchComponentException, ClassNotFoundException,
                                                         InstantiationException, IllegalAccessException,
                                                         IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations type",
@@ -104,12 +104,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            type( String sessionId, int resourceId, String text,
+            type( String callerId, int resourceId, String text,
                   int[] keyCodes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                    NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                    IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations type",
@@ -121,12 +121,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            keyPress( String sessionId, int resourceId,
+            keyPress( String callerId, int resourceId,
                       int keyCode ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                     NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                     IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations key Press",
@@ -138,12 +138,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            keyRelease( String sessionId, int resourceId,
+            keyRelease( String callerId, int resourceId,
                         int keyCode ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                       NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                       IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations key Release",
@@ -155,12 +155,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            pressAltF4( String sessionId,
+            pressAltF4( String callerId,
                         int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations press Alt F4",
@@ -172,12 +172,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            pressEsc( String sessionId,
+            pressEsc( String callerId,
                       int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                        NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations press Esc",
@@ -189,12 +189,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            pressEnter( String sessionId,
+            pressEnter( String callerId,
                         int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations press Enter",
@@ -206,12 +206,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            pressTab( String sessionId,
+            pressTab( String callerId,
                       int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                        NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations press Tab",
@@ -223,12 +223,12 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            pressSpace( String sessionId,
+            pressSpace( String callerId,
                         int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId,
+        ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
                                          COMPONENT_NAME,
                                          "Internal System Input Operations press Space",

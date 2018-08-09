@@ -17,7 +17,10 @@ package com.axway.ats.agent.webapp.client.listeners;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -39,20 +42,21 @@ import com.axway.ats.log.autodb.TestCaseState;
  */
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                log = Logger.getLogger(TestcaseStateListener.class);
+    private static Logger                    log = Logger.getLogger(TestcaseStateListener.class);
 
     // List of agents with configured logging.
     // They know the database to work with.
     // FIXME: as this list only grows, we must clean it up at some appropriate moment
-    private static List<String>          logConfiguredAgents;
+    private static List<String>              logConfiguredAgents;
 
     // List of test configured agents.
     // They know the particular test to work with.
-    private static List<String>          testConfiguredAgents;
+    // {callerId = [AGENT_HOST_1,AGENT_HOST2...]}
+    private static Map<String, List<String>> testConfiguredAgents;
 
-    private static TestcaseStateListener instance;
+    private static TestcaseStateListener     instance;
 
-    private final Object                 configurationMutex;
+    private final Object                     configurationMutex;
 
     // force using getInstace()
     private TestcaseStateListener() {
@@ -60,7 +64,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         // hidden constructor body
 
         logConfiguredAgents = new ArrayList<String>();
-        testConfiguredAgents = new ArrayList<>();
+        testConfiguredAgents = Collections.synchronizedMap(new HashMap<String, List<String>>());
 
         configurationMutex = new Object();
     }
@@ -84,35 +88,40 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         // FIXME: this must be split per testcase in case of parallel tests
         waitImportantThreadsToFinish();
 
-        List<String> endedSessions = new ArrayList<>();
-        String thisThread = Thread.currentThread().getName();
+        List<String> endedCallerIds = new ArrayList<>();
+        String thisThreadId = Thread.currentThread().getId() + "";
 
         // need synchronization when running parallel tests
         synchronized (configurationMutex) {
-            for (String agentSessionId : testConfiguredAgents) {
+            for (String agentCallerId : testConfiguredAgents.keySet()) {
 
-                String thread = ExecutorUtils.extractThread(agentSessionId);
+                // get the thread ID from the caller
+                String threadId = ExecutorUtils.extractThreadId(agentCallerId);
 
-                if (thisThread.equals(thread)) {
-                    // found the agent host
-                    String agentHost = ExecutorUtils.extractHost(agentSessionId);
-                    try {
-                        RestHelper helper = new RestHelper();
-                        helper.executeRequest(agentHost,
-                                              "/testcases?sessionId=" + URLEncoder.encode(agentSessionId, "UTF-8"),
-                                              "DELETE", null, null,
-                                              null);
-                    } catch (Exception e) {
-                        log.error("Can't send onTestEnd event to ATS agent '" + agentHost + "'", e);
+                // the current thread is associated with this caller
+                // so we can proceed with sending onTestEnd event to the agents, configured by this caller
+                if (thisThreadId.equals(threadId)) {
+                    RestHelper helper = new RestHelper();
+                    // send onTestEvent to all agents what were configured by agentCallerId
+                    for (String atsAgent : testConfiguredAgents.get(agentCallerId)) {
+                        try {
+                            helper.executeRequest(atsAgent,
+                                                  "/testcases?callerId=" + URLEncoder.encode(agentCallerId, "UTF-8"),
+                                                  "DELETE", null, null,
+                                                  null);
+                        } catch (Exception e) {
+                            log.error("Can't send onTestEnd event to ATS agent '" + atsAgent
+                                      + "'", e);
+                        }
                     }
-                    // remember the ended sessions
-                    endedSessions.add(agentSessionId);
+                    // remember the ended caller IDs
+                    endedCallerIds.add(agentCallerId);
                 }
             }
 
             // cleanup
-            for (String agentSessionId : endedSessions) {
-                testConfiguredAgents.remove(agentSessionId);
+            for (String agentCallerId : endedCallerIds) {
+                testConfiguredAgents.remove(agentCallerId);
             }
         }
     }
@@ -125,7 +134,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
-        
+
         if (ActiveDbAppender.getCurrentInstance() == null) {
             // database logger attached/specified in log4j.xml
             return;
@@ -133,11 +142,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         for (String atsAgent : atsAgents) {
 
-            // the remote end-point is defined by Agent host and Test Executor's current thread(in case of parallel tests)
-            String agentSessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
-                                                                   Thread.currentThread().getName());
+            String callerId = ExecutorUtils.createCallerId();
 
-            if (!testConfiguredAgents.contains(agentSessionId)) {
+            if (!testConfiguredAgents.keySet().contains(callerId)) {
 
                 // need synchronization when running parallel tests
                 synchronized (configurationMutex) {
@@ -154,25 +161,28 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                     // Pass the testcase configuration to the remote agent.
                     // We do this each time a new test is started
-                    if (!testConfiguredAgents.contains(agentSessionId)) {
-                        String agentHost = null;
+                    if (!testConfiguredAgents.keySet().contains(callerId)) {
                         TestCaseState testCaseState = null;
                         try {
-                            agentHost = ExecutorUtils.extractHost(agentSessionId);
                             testCaseState = getCurrentTestCaseState();
                             RestHelper helper = new RestHelper();
-                            helper.executeRequest(agentHost, "/testcases",
+                            helper.executeRequest(atsAgent, "/testcases",
                                                   "PUT",
-                                                  "{\"sessionId\":\"" + agentSessionId
+                                                  "{\"callerId\":\"" + callerId
                                                          + "\",\"testCaseState\":"
                                                          + helper.serializeJavaObject(testCaseState) + "}",
                                                   null, null);
-
-                            testConfiguredAgents.add(agentSessionId);
+                            // add this agent to the list of already test configured (agents that received onTestStart event) list fo the caller
+                            List<String> alreadyTestConfiguredAgents = testConfiguredAgents.get(callerId);
+                            if (alreadyTestConfiguredAgents == null) {
+                                alreadyTestConfiguredAgents = new ArrayList<>();
+                            }
+                            alreadyTestConfiguredAgents.add(atsAgent);
+                            testConfiguredAgents.put(callerId, alreadyTestConfiguredAgents);
                         } catch (Exception e) {
                             String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
                                              + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
-                                             + agentHost
+                                             + atsAgent
                                              + "'";
                             log.error(message);
                             throw new AgentException(message, e);
@@ -191,7 +201,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      */
     private TestCaseState getCurrentTestCaseState() {
 
-    	/** We want to send event to the agents, even if db appender is not attached, so we skip that check **/
+        /** We want to send event to the agents, even if db appender is not attached, so we skip that check **/
         com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName(), true)
                                                                           .getCurrentTestCaseState();
         if (testCaseState == null) {

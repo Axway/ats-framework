@@ -60,9 +60,9 @@ public class ActionsRestEntryPoint {
             summary = "Initialize custom action class",
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The action method name. Note that this is not the actual Java method name, but instead the value of the @Action annotation name attribute",
@@ -110,20 +110,20 @@ public class ActionsRestEntryPoint {
     public Response initialize( @Context HttpServletRequest request, ActionPojo pojo ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(pojo.getSessionId())) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(pojo.getCallerId())) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(pojo.getSessionId());
+            ThreadsPerCaller.registerThread(pojo.getCallerId());
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Initializing of action class for method '" + pojo.getMethodName()
-                          + "' in session with id '" + pojo.getSessionId() + "'");
+                          + "' in caller with id '" + pojo.getCallerId() + "'");
             }
             int resourceId = ResourcesManager.initializeResource(pojo);
             String response = "{\"resourceId\":" + resourceId + "}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to initialize action class for method '" + pojo.getMethodName()
-                             + "' in session with id '" + pojo.getResourceId() + "'";
+                             + "' in caller with id '" + pojo.getCallerId() + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -144,9 +144,9 @@ public class ActionsRestEntryPoint {
             summary = "Execute custom action",
             url = "execute")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -201,18 +201,18 @@ public class ActionsRestEntryPoint {
     public Response execute( @Context HttpServletRequest request, ActionPojo pojo ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(pojo.getSessionId())) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(pojo.getCallerId())) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
             if (pojo.getResourceId() < 0) {
                 throw new IllegalArgumentException("resourceId must be >=0, but was" + pojo.getResourceId());
             }
-            ThreadsPerCaller.registerThread(pojo.getSessionId());
+            ThreadsPerCaller.registerThread(pojo.getCallerId());
             if (LOG.isDebugEnabled()) {
                 String message = "Executing action '" + pojo.getMethodName() + "' from component '"
                                  + pojo.getComponentName() + "' using the following arguments '"
                                  + Arrays.toString(pojo.getArgumentsValues()) + "'. Action class's resource ID is '"
-                                 + pojo.getResourceId() + "'and session ID is '" + pojo.getSessionId()
+                                 + pojo.getResourceId() + "' and caller ID is '" + pojo.getCallerId()
                                  + "'";
                 LOG.debug(message);
             }
@@ -225,7 +225,7 @@ public class ActionsRestEntryPoint {
             String message = "Unable to execute action '" + pojo.getMethodName() + "' from component '"
                              + pojo.getComponentName() + "' using the following arguments '"
                              + Arrays.toString(pojo.getArgumentsValues()) + "'. Action class's resourceId was '"
-                             + pojo.getResourceId() + "'and sessionId  was '" + pojo.getSessionId()
+                             + pojo.getResourceId() + "' and callerId  was '" + pojo.getCallerId()
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -246,9 +246,9 @@ public class ActionsRestEntryPoint {
             summary = "Deinitialize custom action class",
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -286,30 +286,30 @@ public class ActionsRestEntryPoint {
                                                                          type = "string") })
     })
     public Response deinitialize( @Context HttpServletRequest request,
-                                  @QueryParam( "sessionId") String sessionId,
+                                  @QueryParam( "callerId") String callerId,
                                   @QueryParam( "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId must be >= 0, but was" + resourceId);
             }
 
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Deinitialization of action class with id '" + resourceId + "' for session with id '"
-                          + sessionId + "'");
+                LOG.debug("Deinitialization of action class with id '" + resourceId + "' for caller with id '"
+                          + callerId + "'");
             }
 
-            resourceId = ResourcesManager.deinitializeResource(sessionId, resourceId);
+            resourceId = ResourcesManager.deinitializeResource(resourceId);
             String response = "{\"status_message\":\"Action class with resource id '" + resourceId
                               + "' successfully deleted\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
             String message = "Unable to deinitialize action class with id'" + resourceId
-                             + "' in session with id '" + sessionId + "'";
+                             + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

@@ -61,9 +61,9 @@ public class SystemInputRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -93,20 +93,20 @@ public class SystemInputRestEntryPoint {
     })
     public Response initializeSystemInput( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
-            int resourceId = SystemInputManager.initialize(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
+            int resourceId = SystemInputManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize system input resource from session with id '" + sessionId + "'";
+            String message = "Unable to initialize system input resource from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -128,9 +128,9 @@ public class SystemInputRestEntryPoint {
             url = "mouse/click")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -175,7 +175,7 @@ public class SystemInputRestEntryPoint {
     })
     public Response clickAt( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int x = -1;
         int y = -1;
@@ -183,21 +183,21 @@ public class SystemInputRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
             x = getJsonElement(jsonObject, "x").getAsInt();
             y = getJsonElement(jsonObject, "y").getAsInt();
-            SystemInputManager.clickAt(sessionId, resourceId, x, y);
+            SystemInputManager.clickAt(callerId, resourceId, x, y);
             return Response.ok("{\"status_message\":\"operation 'click at' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'click at' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'click at' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -220,9 +220,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/type")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -270,7 +270,7 @@ public class SystemInputRestEntryPoint {
     })
     public Response type( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String text = null;
         int[] keyCodes = null;
@@ -278,19 +278,19 @@ public class SystemInputRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
             try {
                 text = getJsonElement(jsonObject, "text").getAsString();
-                if (StringUtils.isNullOrEmpty(sessionId)) {
-                    throw new NoSuchElementException("sessionId is not provided with the request");
+                if (StringUtils.isNullOrEmpty(callerId)) {
+                    throw new NoSuchElementException("callerId is not provided with the request");
                 }
             } catch (Exception e) {
                 // text is optional
@@ -309,18 +309,18 @@ public class SystemInputRestEntryPoint {
                 if (keyCodes == null) {
                     throw new IllegalArgumentException("Atleast one of 'text' and 'keyCodes' fields must be presented in the request");
                 } else {
-                    SystemInputManager.type(sessionId, resourceId, keyCodes);
+                    SystemInputManager.type(callerId, resourceId, keyCodes);
                 }
             } else {
                 if (keyCodes == null) {
-                    SystemInputManager.type(sessionId, resourceId, text);
+                    SystemInputManager.type(callerId, resourceId, text);
                 } else {
-                    SystemInputManager.type(sessionId, resourceId, text, keyCodes);
+                    SystemInputManager.type(callerId, resourceId, text, keyCodes);
                 }
             }
             return Response.ok("{\"status_message\":\"operation 'type' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'type' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'type' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -343,9 +343,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -385,18 +385,18 @@ public class SystemInputRestEntryPoint {
     })
     public Response keyPress( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int keyCode = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -405,10 +405,10 @@ public class SystemInputRestEntryPoint {
             if (keyCode < 0) {
                 throw new IllegalArgumentException("keyCode has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.keyPress(sessionId, resourceId, keyCode);
+            SystemInputManager.keyPress(callerId, resourceId, keyCode);
             return Response.ok("{\"status_message\":\"operation 'keyPress' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'keyPress' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'keyPress' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -431,9 +431,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/release")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -473,18 +473,18 @@ public class SystemInputRestEntryPoint {
     })
     public Response keyRelease( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         int keyCode = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -493,10 +493,10 @@ public class SystemInputRestEntryPoint {
             if (keyCode < 0) {
                 throw new IllegalArgumentException("keyCode has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.keyRelease(sessionId, resourceId, keyCode);
+            SystemInputManager.keyRelease(callerId, resourceId, keyCode);
             return Response.ok("{\"status_message\":\"operation 'keyRelease' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'keyRelease' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'keyRelease' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -519,9 +519,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/alt/with/functional/4/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -556,25 +556,25 @@ public class SystemInputRestEntryPoint {
     })
     public Response pressAltF4( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.pressAltF4(sessionId, resourceId);
+            SystemInputManager.pressAltF4(callerId, resourceId);
             return Response.ok("{\"status_message\":\"operation 'pressAltF4' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'pressAltF4' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'pressAltF4' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -597,9 +597,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/escape/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -634,25 +634,25 @@ public class SystemInputRestEntryPoint {
     })
     public Response pressEsc( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.pressEsc(sessionId, resourceId);
+            SystemInputManager.pressEsc(callerId, resourceId);
             return Response.ok("{\"status_message\":\"operation 'pressEsc' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'pressEsc' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'pressEsc' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -675,9 +675,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/space/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -712,25 +712,25 @@ public class SystemInputRestEntryPoint {
     })
     public Response pressSpace( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.pressSpace(sessionId, resourceId);
+            SystemInputManager.pressSpace(callerId, resourceId);
             return Response.ok("{\"status_message\":\"operation 'pressSpace' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'pressSpace' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'pressSpace' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -753,9 +753,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/enter/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -790,25 +790,25 @@ public class SystemInputRestEntryPoint {
     })
     public Response pressEnter( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.pressEnter(sessionId, resourceId);
+            SystemInputManager.pressEnter(callerId, resourceId);
             return Response.ok("{\"status_message\":\"operation 'pressEnter' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'pressEnter' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'pressEnter' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -831,9 +831,9 @@ public class SystemInputRestEntryPoint {
             url = "keyboard/key/tab/press")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -868,25 +868,25 @@ public class SystemInputRestEntryPoint {
     })
     public Response pressTab( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemInputManager.pressTab(sessionId, resourceId);
+            SystemInputManager.pressTab(callerId, resourceId);
             return Response.ok("{\"status_message\":\"operation 'pressTab' successfully executed\"}").build();
         } catch (Exception e) {
-            String message = "Unable to execute system input operation 'pressTab' from session with id '" + sessionId
+            String message = "Unable to execute system input operation 'pressTab' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()

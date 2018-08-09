@@ -62,9 +62,9 @@ public class MachineDescriptionRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -94,25 +94,25 @@ public class MachineDescriptionRestEntryPoint {
     })
     public Response initialize( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             // Uncomment this before push to git
             /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
             }*/
-            int resourceId = MachineDescriptionManager.initialize(sessionId);
+            int resourceId = MachineDescriptionManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize machine description operations resource from session with id '"
-                             + sessionId
+            String message = "Unable to initialize machine description operations resource from caller with id '"
+                             + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -135,9 +135,9 @@ public class MachineDescriptionRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -171,22 +171,22 @@ public class MachineDescriptionRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getDescription( @Context HttpServletRequest request,
-                                    @QueryParam( "sessionId") String sessionId,
+                                    @QueryParam( "callerId") String callerId,
                                     @QueryParam( "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String description = MachineDescriptionManager.getDescription(sessionId, resourceId);
+            String description = MachineDescriptionManager.getDescription(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(description) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get machine description from resource with id '" + resourceId
-                             + "' and session with id '" + sessionId
+                             + "' and caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()

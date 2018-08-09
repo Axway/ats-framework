@@ -64,9 +64,9 @@ public class SystemRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -96,20 +96,20 @@ public class SystemRestEntryPoint {
     })
     public Response initializeSystem( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
-            int resourceId = SystemManager.initialize(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
+            int resourceId = SystemManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize system resource from session with id '" + sessionId + "'";
+            String message = "Unable to initialize system resource from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -130,9 +130,9 @@ public class SystemRestEntryPoint {
             url = "os")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -167,24 +167,24 @@ public class SystemRestEntryPoint {
     })
     public Response getOperatingSystemType( @Context HttpServletRequest request,
                                             @QueryParam(
-                                                    value = "sessionId") String sessionId,
+                                                    value = "callerId") String callerId,
                                             @QueryParam(
                                                     value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            OperatingSystemType osType = SystemManager.getOsType(sessionId, resourceId);
+            OperatingSystemType osType = SystemManager.getOsType(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(osType) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get OS type using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -206,9 +206,9 @@ public class SystemRestEntryPoint {
             url = "property")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -248,29 +248,29 @@ public class SystemRestEntryPoint {
     })
     public Response getProperty( @Context HttpServletRequest request,
                                             @QueryParam(
-                                                    value = "sessionId") String sessionId,
+                                                    value = "callerId") String callerId,
                                             @QueryParam(
                                                     value = "resourceId") int resourceId,
                                             @QueryParam(
                                                     value = "propertyName") String propertyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
             if (StringUtils.isNullOrEmpty(propertyName)) {
                 throw new NoSuchElementException("propertyName is not provided with the request");
             }
-            String propertyValue = SystemManager.getSystemProperty(sessionId, resourceId, propertyName);
+            String propertyValue = SystemManager.getSystemProperty(callerId, resourceId, propertyName);
             return Response.ok("{\"action_result\":" + GSON.toJson(propertyValue) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get system property using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -292,9 +292,9 @@ public class SystemRestEntryPoint {
             url = "time")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -334,26 +334,26 @@ public class SystemRestEntryPoint {
     })
     public Response getTime( @Context HttpServletRequest request,
                              @QueryParam(
-                                     value = "sessionId") String sessionId,
+                                     value = "callerId") String callerId,
                              @QueryParam(
                                      value = "resourceId") int resourceId,
                              @QueryParam(
                                      value = "inMilliseconds") boolean inMilliseconds ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String time = SystemManager.getTime(sessionId, resourceId, inMilliseconds);
+            String time = SystemManager.getTime(callerId, resourceId, inMilliseconds);
             return Response.ok("{\"action_result\":" + GSON.toJson(time) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get system property using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -375,9 +375,9 @@ public class SystemRestEntryPoint {
             url = "atsVersion")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -412,24 +412,24 @@ public class SystemRestEntryPoint {
     })
     public Response getAtsVersion( @Context HttpServletRequest request,
                                    @QueryParam(
-                                           value = "sessionId") String sessionId,
+                                           value = "callerId") String callerId,
                                    @QueryParam(
                                            value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String atsVersion = SystemManager.getAtsVersion(sessionId, resourceId);
+            String atsVersion = SystemManager.getAtsVersion(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(atsVersion) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get ATS version using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -451,9 +451,9 @@ public class SystemRestEntryPoint {
             url = "hostname")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -488,24 +488,24 @@ public class SystemRestEntryPoint {
     })
     public Response getHostName( @Context HttpServletRequest request,
                                  @QueryParam(
-                                         value = "sessionId") String sessionId,
+                                         value = "callerId") String callerId,
                                  @QueryParam(
                                          value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String hostName = SystemManager.getHostName(sessionId, resourceId);
+            String hostName = SystemManager.getHostName(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(hostName) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get host name using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -527,9 +527,9 @@ public class SystemRestEntryPoint {
             url = "classpath")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -564,24 +564,24 @@ public class SystemRestEntryPoint {
     })
     public Response getClasspath( @Context HttpServletRequest request,
                                   @QueryParam(
-                                          value = "sessionId") String sessionId,
+                                          value = "callerId") String callerId,
                                   @QueryParam(
                                           value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String[] classpath = SystemManager.getClasspath(sessionId, resourceId);
+            String[] classpath = SystemManager.getClasspath(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(classpath) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get classpath using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -603,9 +603,9 @@ public class SystemRestEntryPoint {
             url = "classpath/duplicatedJars")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -640,24 +640,24 @@ public class SystemRestEntryPoint {
     })
     public Response getDuplicatedJars( @Context HttpServletRequest request,
                                        @QueryParam(
-                                               value = "sessionId") String sessionId,
+                                               value = "callerId") String callerId,
                                        @QueryParam(
                                                value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String[] duplicatedJars = SystemManager.getDuplicatedJars(sessionId, resourceId);
+            String[] duplicatedJars = SystemManager.getDuplicatedJars(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(duplicatedJars) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get classpath's duplicated jars using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -680,9 +680,9 @@ public class SystemRestEntryPoint {
             url = "classpath/log")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -717,27 +717,27 @@ public class SystemRestEntryPoint {
     })
     public Response logClasspath( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemManager.logClasspath(sessionId, resourceId);
+            SystemManager.logClasspath(callerId, resourceId);
             return Response.ok("{\"status_message\":\"classpath successfully logged\"}").build();
         } catch (Exception e) {
             String message = "Unable to log classpath using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -760,9 +760,9 @@ public class SystemRestEntryPoint {
             url = "classpath/duplicatedJars/log")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -797,27 +797,27 @@ public class SystemRestEntryPoint {
     })
     public Response logDuplicatedJars( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            SystemManager.logDuplicatedJars(sessionId, resourceId);
+            SystemManager.logDuplicatedJars(callerId, resourceId);
             return Response.ok("{\"status_message\":\"classpath's duplicated jars successfully logged\"}").build();
         } catch (Exception e) {
             String message = "Unable to log classpath's duplicated jars using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -840,9 +840,9 @@ public class SystemRestEntryPoint {
             url = "time")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -888,7 +888,7 @@ public class SystemRestEntryPoint {
     })
     public Response setTime( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String timestamp = null;
         boolean inMilliseconds = false;
@@ -896,11 +896,11 @@ public class SystemRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -909,12 +909,12 @@ public class SystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(timestamp)) {
                 throw new NoSuchElementException("timestamp is not provided with the request");
             }
-            SystemManager.setTime(sessionId, resourceId, timestamp, inMilliseconds);
+            SystemManager.setTime(callerId, resourceId, timestamp, inMilliseconds);
             return Response.ok("{\"status_message\":\"system time successfully changed\"}").build();
         } catch (Exception e) {
             String message = "Unable to set system time using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -937,9 +937,9 @@ public class SystemRestEntryPoint {
             url = "screenshot")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -979,18 +979,18 @@ public class SystemRestEntryPoint {
     })
     public Response createScreenshot( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String filePath = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -999,12 +999,12 @@ public class SystemRestEntryPoint {
             if (StringUtils.isNullOrEmpty(filePath)) {
                 throw new NoSuchElementException("filePath is not provided with the request");
             }
-            String screenshotFilepath = SystemManager.createScreenshot(sessionId, resourceId, filePath);
+            String screenshotFilepath = SystemManager.createScreenshot(callerId, resourceId, filePath);
             return Response.ok("{\"action_result\":" + GSON.toJson(screenshotFilepath) + "}").build();
         } catch (Exception e) {
             String message = "Unable to take screensot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1026,9 +1026,9 @@ public class SystemRestEntryPoint {
             url = "listening")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1078,7 +1078,7 @@ public class SystemRestEntryPoint {
     })
     public Response isListening( @Context HttpServletRequest request,
                                  @QueryParam(
-                                         value = "sessionId") String sessionId,
+                                         value = "callerId") String callerId,
                                  @QueryParam(
                                          value = "resourceId") int resourceId,
                                  @QueryParam(
@@ -1089,23 +1089,23 @@ public class SystemRestEntryPoint {
                                          value = "timeout") int timeout ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            boolean listening = SystemManager.isListening(sessionId, resourceId, host, port, timeout);
+            boolean listening = SystemManager.isListening(callerId, resourceId, host, port, timeout);
             return Response.ok("{\"action_result\":" + GSON.toJson(listening) + "}").build();
         } catch (Exception e) {
             String message = "Unable to check if process is listening on port '" + port + "' on host '" + host
                              + "' using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()

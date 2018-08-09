@@ -37,7 +37,6 @@ import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.system.LocalSystemOperations;
-import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
@@ -251,20 +250,6 @@ public final class AgentConfigurationClient extends ActionClient {
         }
     }
 
-    /**
-     * The usage of this method concerns the very rare case when same user on same host is running 
-     * simultaneous executions of more than one test runs and these tests are sending requests to one and same ATS Agent!
-     * If this is not your case, you do not have to worry about the meaning of this method.
-     * An example of such rare case is if some CI machine is running some scheduled test using same CI user on same CI host
-     * and you want to run other test, using the same agent for executing them, without interrupting any previous test on the agent.
-     * 
-     * @throws AgentException
-     */
-    @PublicAtsApi
-    public void setUseNewCallerIdOnEachRun() throws AgentException {
-
-        ExecutorUtils.setReuseUserRandomToken( true );
-    }
 
     /**
      * Set using of HTTPS communication protocol

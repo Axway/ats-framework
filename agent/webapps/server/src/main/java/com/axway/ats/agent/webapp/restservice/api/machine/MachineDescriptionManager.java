@@ -28,13 +28,13 @@ public class MachineDescriptionManager {
     private static final int    UNINITIALIZED_RESOURCE_ID = -1;
     private static final String COMPONENT_NAME            = "auto-system-operations";
 
-    public synchronized static int initialize( String sessionId ) throws NoSuchActionException,
+    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
                                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Machine Description Operations Get Description",
                                          null,
                                          null);
@@ -47,13 +47,13 @@ public class MachineDescriptionManager {
     }
 
     public synchronized static String
-            getDescription( String sessionId, int resourceId ) throws NoSuchActionException,
+            getDescription( String callerId, int resourceId ) throws NoSuchActionException,
                                                                NoCompatibleMethodFoundException,
                                                                NoSuchComponentException, ClassNotFoundException,
                                                                InstantiationException, IllegalAccessException,
                                                                IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Machine Description Operations Get Description",
                                          null,
                                          null);

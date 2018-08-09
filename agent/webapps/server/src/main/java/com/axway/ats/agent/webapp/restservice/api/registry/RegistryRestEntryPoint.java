@@ -39,6 +39,7 @@ import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.Swag
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinitions;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponse;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponses;
+import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.StringUtils;
 import com.google.gson.Gson;
@@ -64,9 +65,9 @@ public class RegistryRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string")
     })
     @SwaggerMethodResponses( {
@@ -96,24 +97,23 @@ public class RegistryRestEntryPoint {
     })
     public Response initialize( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            ThreadsPerCaller.registerThread(callerId);
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
-            int resourceId = RegistryManager.initialize(sessionId);
+            }
+            int resourceId = RegistryManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize registry operation resource from session with id '" + sessionId
+            String message = "Unable to initialize registry operation resource from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -136,9 +136,9 @@ public class RegistryRestEntryPoint {
             url = "path")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -183,7 +183,7 @@ public class RegistryRestEntryPoint {
     })
     public Response createPath( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootKey = null;
         String keyPath = null;
@@ -191,19 +191,18 @@ public class RegistryRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             rootKey = getJsonElement(jsonObject, "rootKey").getAsString();
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
@@ -212,10 +211,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyPath)) {
                 throw new NoSuchElementException("keyPath is not provided with the request");
             }
-            RegistryManager.createPath(sessionId, resourceId, rootKey, keyPath);
+            RegistryManager.createPath(callerId, resourceId, rootKey, keyPath);
             return Response.ok("{\"status_message\":\"registry path successfully created\"}").build();
         } catch (Exception e) {
-            String message = "Unable to create registry path from session with id '" + sessionId
+            String message = "Unable to create registry path from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -238,9 +237,9 @@ public class RegistryRestEntryPoint {
             url = "key")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -289,24 +288,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response deleteKey( @Context HttpServletRequest request,
-                               @QueryParam( "sessionId") String sessionId,
+                               @QueryParam( "callerId") String callerId,
                                @QueryParam( "resourceId") int resourceId,
                                @QueryParam( "rootKey") String rootKey,
                                @QueryParam( "keyPath") String keyPath,
                                @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -316,10 +314,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            RegistryManager.deleteKey(sessionId, resourceId, rootKey, keyPath, keyName);
+            RegistryManager.deleteKey(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"status_message\":\"registry key successfully deleted\"}").build();
         } catch (Exception e) {
-            String message = "Unable to delete registry key from session with id '" + sessionId
+            String message = "Unable to delete registry key from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -342,9 +340,9 @@ public class RegistryRestEntryPoint {
             url = "key")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -393,24 +391,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response isKeyPresented( @Context HttpServletRequest request,
-                                    @QueryParam( "sessionId") String sessionId,
+                                    @QueryParam( "callerId") String callerId,
                                     @QueryParam( "resourceId") int resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -420,10 +417,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            boolean isKeyPresented = RegistryManager.isKeyPresent(sessionId, resourceId, rootKey, keyPath, keyName);
+            boolean isKeyPresented = RegistryManager.isKeyPresent(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"action_result\":\"" + GSON.toJson(isKeyPresented) + "\"}").build();
         } catch (Exception e) {
-            String message = "Unable to check if registry key is presented from session with id '" + sessionId
+            String message = "Unable to check if registry key is presented from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -446,9 +443,9 @@ public class RegistryRestEntryPoint {
             url = "key/binary")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -497,24 +494,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getBinaryValue( @Context HttpServletRequest request,
-                                    @QueryParam( "sessionId") String sessionId,
+                                    @QueryParam( "callerId") String callerId,
                                     @QueryParam( "resourceId") int resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -524,10 +520,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            byte[] value = RegistryManager.getBinaryValue(sessionId, resourceId, rootKey, keyPath, keyName);
+            byte[] value = RegistryManager.getBinaryValue(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"action_result\":\"" + GSON.toJson(value) + "\"}").build();
         } catch (Exception e) {
-            String message = "Unable to get registry's key as binary from session with id '" + sessionId
+            String message = "Unable to get registry's key as binary from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -550,9 +546,9 @@ public class RegistryRestEntryPoint {
             url = "key/int")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -601,24 +597,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getIntValue( @Context HttpServletRequest request,
-                                 @QueryParam( "sessionId") String sessionId,
+                                 @QueryParam( "callerId") String callerId,
                                  @QueryParam( "resourceId") int resourceId,
                                  @QueryParam( "rootKey") String rootKey,
                                  @QueryParam( "keyPath") String keyPath,
                                  @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -628,10 +623,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            int value = RegistryManager.getIntValue(sessionId, resourceId, rootKey, keyPath, keyName);
+            int value = RegistryManager.getIntValue(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"action_result\":\"" + GSON.toJson(value) + "\"}").build();
         } catch (Exception e) {
-            String message = "Unable to get registry's key as integer from session with id '" + sessionId
+            String message = "Unable to get registry's key as integer from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -654,9 +649,9 @@ public class RegistryRestEntryPoint {
             url = "key/long")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -705,24 +700,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getLongValue( @Context HttpServletRequest request,
-                                  @QueryParam( "sessionId") String sessionId,
+                                  @QueryParam( "callerId") String callerId,
                                   @QueryParam( "resourceId") int resourceId,
                                   @QueryParam( "rootKey") String rootKey,
                                   @QueryParam( "keyPath") String keyPath,
                                   @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -732,10 +726,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            long value = RegistryManager.getLongValue(sessionId, resourceId, rootKey, keyPath, keyName);
+            long value = RegistryManager.getLongValue(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"action_result\":\"" + GSON.toJson(value) + "\"}").build();
         } catch (Exception e) {
-            String message = "Unable to get registry's key as long from session with id '" + sessionId
+            String message = "Unable to get registry's key as long from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -758,9 +752,9 @@ public class RegistryRestEntryPoint {
             url = "key/string")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -809,24 +803,23 @@ public class RegistryRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getStringValue( @Context HttpServletRequest request,
-                                    @QueryParam( "sessionId") String sessionId,
+                                    @QueryParam( "callerId") String callerId,
                                     @QueryParam( "resourceId") int resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
             }
@@ -836,10 +829,10 @@ public class RegistryRestEntryPoint {
             if (StringUtils.isNullOrEmpty(keyName)) {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
-            String value = RegistryManager.getStringValue(sessionId, resourceId, rootKey, keyPath, keyName);
+            String value = RegistryManager.getStringValue(callerId, resourceId, rootKey, keyPath, keyName);
             return Response.ok("{\"action_result\":\"" + GSON.toJson(value) + "\"}").build();
         } catch (Exception e) {
-            String message = "Unable to get registry's key as String from session with id '" + sessionId
+            String message = "Unable to get registry's key as String from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -862,9 +855,9 @@ public class RegistryRestEntryPoint {
             url = "key/binary")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -919,7 +912,7 @@ public class RegistryRestEntryPoint {
     })
     public Response setBinaryValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootKey = null;
         String keyPath = null;
@@ -929,19 +922,18 @@ public class RegistryRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             rootKey = getJsonElement(jsonObject, "rootKey").getAsString();
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
@@ -959,10 +951,10 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("keyValue is not provided with the request");
             }
             keyValue = GSON.fromJson(keyValueJSON, byte[].class);
-            RegistryManager.setBinaryValue(sessionId, resourceId, rootKey, keyPath, keyName, keyValue);
+            RegistryManager.setBinaryValue(callerId, resourceId, rootKey, keyPath, keyName, keyValue);
             return Response.ok("{\"status_message\":\"successfully set new binary value for registry key\"}").build();
         } catch (Exception e) {
-            String message = "Unable to set new binary value for registry key from session with id '" + sessionId
+            String message = "Unable to set new binary value for registry key from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -985,9 +977,9 @@ public class RegistryRestEntryPoint {
             url = "key/int")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1042,7 +1034,7 @@ public class RegistryRestEntryPoint {
     })
     public Response setIntValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootKey = null;
         String keyPath = null;
@@ -1052,19 +1044,18 @@ public class RegistryRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             rootKey = getJsonElement(jsonObject, "rootKey").getAsString();
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
@@ -1078,10 +1069,10 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
             keyValue = getJsonElement(jsonObject, "keyValue").getAsInt();
-            RegistryManager.setIntValue(sessionId, resourceId, rootKey, keyPath, keyName, keyValue);
+            RegistryManager.setIntValue(callerId, resourceId, rootKey, keyPath, keyName, keyValue);
             return Response.ok("{\"status_message\":\"successfully set new int value for registry key\"}").build();
         } catch (Exception e) {
-            String message = "Unable to set new int value for registry key from session with id '" + sessionId
+            String message = "Unable to set new int value for registry key from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1104,9 +1095,9 @@ public class RegistryRestEntryPoint {
             url = "key/long")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1161,7 +1152,7 @@ public class RegistryRestEntryPoint {
     })
     public Response setLongValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootKey = null;
         String keyPath = null;
@@ -1171,19 +1162,18 @@ public class RegistryRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             rootKey = getJsonElement(jsonObject, "rootKey").getAsString();
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
@@ -1197,10 +1187,10 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
             keyValue = getJsonElement(jsonObject, "keyValue").getAsLong();
-            RegistryManager.setLongValue(sessionId, resourceId, rootKey, keyPath, keyName, keyValue);
+            RegistryManager.setLongValue(callerId, resourceId, rootKey, keyPath, keyName, keyValue);
             return Response.ok("{\"status_message\":\"successfully set new long value for registry key\"}").build();
         } catch (Exception e) {
-            String message = "Unable to set new long value for registry key from session with id '" + sessionId
+            String message = "Unable to set new long value for registry key from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1223,9 +1213,9 @@ public class RegistryRestEntryPoint {
             url = "key/string")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1280,7 +1270,7 @@ public class RegistryRestEntryPoint {
     })
     public Response setStringValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootKey = null;
         String keyPath = null;
@@ -1290,19 +1280,18 @@ public class RegistryRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
+            if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
+            }
             rootKey = getJsonElement(jsonObject, "rootKey").getAsString();
             if (StringUtils.isNullOrEmpty(rootKey)) {
                 throw new NoSuchElementException("rootKey is not provided with the request");
@@ -1316,10 +1305,10 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("keyName is not provided with the request");
             }
             keyValue = getJsonElement(jsonObject, "keyValue").getAsString();
-            RegistryManager.setStringValue(sessionId, resourceId, rootKey, keyPath, keyName, keyValue);
+            RegistryManager.setStringValue(callerId, resourceId, rootKey, keyPath, keyName, keyValue);
             return Response.ok("{\"status_message\":\"successfully set new String value for registry key\"}").build();
         } catch (Exception e) {
-            String message = "Unable to set new String value for registry key from session with id '" + sessionId
+            String message = "Unable to set new String value for registry key from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()

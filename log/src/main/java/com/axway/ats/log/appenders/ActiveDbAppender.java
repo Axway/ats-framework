@@ -193,8 +193,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
         String executorId = null;
 
         if (event != null) {
-            // the executor might be comming from the logging event
-            executorId = event.getProperty(ExecutorUtils.ATS_RANDOM_TOKEN);
+            // the executor might be coming from the logging event's properties
+            executorId = event.getProperty(ExecutorUtils.ATS_CALLER_ID);
         }
 
         if (executorId == null) {

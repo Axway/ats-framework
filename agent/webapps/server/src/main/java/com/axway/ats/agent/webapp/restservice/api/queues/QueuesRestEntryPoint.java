@@ -79,9 +79,9 @@ public class QueuesRestEntryPoint {
             summary = "Schedule queue",
             url = "schedule")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;RANDOM_TOKEN:3be2ae1c-6b72-40bb-bfbc-17d3d2e4182d;THREAD_ID",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The queue name",
@@ -146,7 +146,7 @@ public class QueuesRestEntryPoint {
     })
     public Response scheduleQueue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String queueName = null;
         int queueId = -1;
         ActionPojo[] actions = null;
@@ -157,11 +157,11 @@ public class QueuesRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             queueName = getJsonElement(jsonObject, "queueName").getAsString();
             if (StringUtils.isNullOrEmpty(queueName)) {
                 throw new NoSuchElementException("queueName is not provided with the request");
@@ -206,7 +206,7 @@ public class QueuesRestEntryPoint {
                                                                 pojo.getActualArguments());
                 actionRequests.add(actionRequest);
             }
-            MultiThreadedActionHandler.getInstance(sessionId).scheduleActions(sessionId,
+            MultiThreadedActionHandler.getInstance(callerId).scheduleActions(callerId,
                                                                               queueName,
                                                                               queueId,
                                                                               actionRequests,
@@ -216,7 +216,7 @@ public class QueuesRestEntryPoint {
 
             return Response.ok("{\"status_message\":\"queue '" + queueId + "' successfully scheduled\"}").build();
         } catch (Exception e) {
-            String message = "Unable to schedule queue from session with id '" + sessionId + "'";
+            String message = "Unable to schedule queue from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -237,9 +237,9 @@ public class QueuesRestEntryPoint {
             summary = "Queue operations",
             url = "opts")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;RANDOM_TOKEN:3be2ae1c-6b72-40bb-bfbc-17d3d2e4182d;THREAD_ID",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The queue operation",
@@ -280,30 +280,30 @@ public class QueuesRestEntryPoint {
     })
     public Response executeQueueOperation( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String operation = null;
         String queueName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             operation = getJsonElement(jsonObject, "operation").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
+            if (StringUtils.isNullOrEmpty(callerId)) {
                 throw new NoSuchElementException("operation is not provided with the request");
             }
             if (!operation.equals(CANCEL_ALL_QUEUES_OPERATION) && !operation.equals(WAIT_UNTIL_ALL_QUEUES_FINISH)) {
                 queueName = getJsonElement(jsonObject, "queueName").getAsString();
-                if (StringUtils.isNullOrEmpty(sessionId)) {
+                if (StringUtils.isNullOrEmpty(callerId)) {
                     throw new NoSuchElementException("queueName is not provided with the request");
                 }
             }
             if (LOG.isDebugEnabled()) {
-                LOG.debug("Execution of operation '" + operation + "' from session '" + sessionId + "'");
+                LOG.debug("Execution of operation '" + operation + "' from caller '" + callerId + "'");
                 // maybe add more details for the operation arguments (queueName, etc)
             }
             switch (operation) {
@@ -311,34 +311,34 @@ public class QueuesRestEntryPoint {
                     // initialize the structure which will keep info about the execution results of this queue
                     QueueExecutionStatistics.getInstance().initActionExecutionResults(queueName);
 
-                    MultiThreadedActionHandler.getInstance(sessionId).startQueue(queueName);
+                    MultiThreadedActionHandler.getInstance(callerId).startQueue(queueName);
                     return Response.ok("{\"status_message\":\"queue '" + queueName + "' successfully started\"}")
                                    .build();
                 case RESUME_QUEUE_OPERATION:
-                    MultiThreadedActionHandler.getInstance(sessionId).resumeQueue(queueName);
+                    MultiThreadedActionHandler.getInstance(callerId).resumeQueue(queueName);
                     return Response.ok("{\"status_message\":\"queue '" + queueName + "' successfully resumed\"}")
                                    .build();
                 case CANCEL_ALL_QUEUES_OPERATION:
-                    MultiThreadedActionHandler.getInstance(sessionId).cancelAllQueues();
+                    MultiThreadedActionHandler.getInstance(callerId).cancelAllQueues();
                     return Response.ok("{\"status_message\":\"all queues successfully cancelled\"}").build();
                 case CANCEL_QUEUE:
-                    MultiThreadedActionHandler.getInstance(sessionId).cancelQueue(queueName);
+                    MultiThreadedActionHandler.getInstance(callerId).cancelQueue(queueName);
                     return Response.ok("{\"status_message\":\"queue '" + queueName + "' successfully cancelled\"}")
                                    .build();
                 case IS_QUEUE_RUNNING:
-                    boolean running = MultiThreadedActionHandler.getInstance(sessionId).isQueueRunning(queueName);
+                    boolean running = MultiThreadedActionHandler.getInstance(callerId).isQueueRunning(queueName);
                     return Response.ok("{\"running\":" + running + "}").build();
                 case WAIT_UNTIL_QUEUE_IS_PAUSED:
-                    boolean paused = MultiThreadedActionHandler.getInstance(sessionId)
+                    boolean paused = MultiThreadedActionHandler.getInstance(callerId)
                                                                .waitUntilQueueIsPaused(queueName);
                     return Response.ok("{\"paused\":" + paused + "}").build();
                 case WAIT_UNTIL_QUEUE_FINISH:
-                    MultiThreadedActionHandler.getInstance(sessionId)
+                    MultiThreadedActionHandler.getInstance(callerId)
                                               .waitUntilQueueFinish(queueName);
                     return Response.ok("{\"status_message\":\"queue '" + queueName + "' successfully finished\"}")
                                    .build();
                 case WAIT_UNTIL_ALL_QUEUES_FINISH:
-                    MultiThreadedActionHandler.getInstance(sessionId).waitUntilAllQueuesFinish();
+                    MultiThreadedActionHandler.getInstance(callerId).waitUntilAllQueuesFinish();
                     return Response.ok("{\"status_message\":\"all queues successfully finished\"}").build();
                 case GET_ACTION_EXECUTION_RESULTS:
                     List<ActionExecutionStatistic> results = QueueExecutionStatistics.getInstance()
@@ -352,7 +352,7 @@ public class QueuesRestEntryPoint {
                     throw new IllegalArgumentException("Queue operation '" + operation + "' is not supported");
             }
         } catch (Exception e) {
-            String message = "Unable to execute operation '" + operation + "' from session with id '" + sessionId + "'";
+            String message = "Unable to execute operation '" + operation + "' from caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

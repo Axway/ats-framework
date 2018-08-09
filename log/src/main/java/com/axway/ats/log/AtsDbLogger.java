@@ -513,11 +513,11 @@ public class AtsDbLogger {
     /**
      * End the current suite
      */
-    public void endSuite( String threadName ) {
+    public void endSuite( int threadId ) {
 
         // We need to attach this event to the provided thread
         EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
-        event.setProperty(ExecutorUtils.ATS_RANDOM_TOKEN, threadName);
+        event.setProperty(ExecutorUtils.ATS_THREAD_ID, threadId + "");
 
         sendEvent(event);
     }

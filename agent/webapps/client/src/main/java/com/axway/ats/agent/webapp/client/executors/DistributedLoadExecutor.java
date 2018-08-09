@@ -44,6 +44,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
     private List<String> atsAgents;
     private int          queueSequence;
     private RestHelper   restHelper;
+    private String       callerId;
 
     public DistributedLoadExecutor( String name, int sequence, List<String> atsAgents,
                                     ThreadingPattern threadingPattern,
@@ -57,6 +58,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
         this.threadingPattern = threadingPattern;
         this.loaderDataConfig = loaderDataConfig;
         this.restHelper = new RestHelper();
+        this.callerId = ExecutorUtils.createCallerId();
 
         //configure the remote loaders(ATS agents)
         try {
@@ -107,15 +109,12 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 }
 
                 //schedule the actions, but do not execute
-                String sessionId = ExecutorUtils.createExecutorId(atsAgents.get(i), ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
-
                 StringBuilder sb = new StringBuilder();
                 sb.append("{")
                   .append("\"")
-                  .append("sessionId")
+                  .append("callerId")
                   .append("\":\"")
-                  .append(sessionId)
+                  .append(callerId)
                   .append("\",")
                   .append("\"")
                   .append("queueName")
@@ -202,11 +201,9 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 log.info("Waiting until action queue '" + queueName + "' finish its execution on agent '"
                          + host + "'");
 
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 // wait until finished on this host
                 restHelper.executeRequest(host, "/queues/opts", "POST",
-                                          "{\"sessionId\":\"" + sessionId
+                                          "{\"callerId\":\"" + callerId
                                                                         + "\",\"queueName\":\"" + queueName
                                                                         + "\", \"operation\":\"waitUntilFinish\"}",
                                           null, null);
@@ -230,11 +227,9 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
                 log.info("Cancelling action queue '" + queueName + "' on agent '" + host + "'");
 
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 //cancel any running queues
                 restHelper.executeRequest(host, "/queues/opts", "POST",
-                                          "{\"sessionId\":\"" + sessionId + "\", \"operation\":\"cancelAll\"}",
+                                          "{\"callerId\":\"" + callerId + "\", \"operation\":\"cancelAll\"}",
                                           null, null);
 
                 log.info("Cancelled action queue '" + queueName + "' on agent '" + host + "'");
@@ -248,10 +243,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         for (String host : atsAgents) {
             try {
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 boolean running = (boolean) restHelper.executeRequest(host, "/queues/opts", "POST",
-                                                                      "{\"sessionId\":\"" + sessionId
+                                                                      "{\"callerId\":\"" + callerId
                                                                                                     + "\",\"queueName\":\""
                                                                                                     + queueName
                                                                                                     + "\", \"operation\":\"isRunning\"}",
@@ -285,10 +278,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             for (int i = 0; i < atsAgents.size(); i++) {
                 String host = atsAgents.get(i);
 
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 restHelper.executeRequest(host, "/queues/opts", "POST",
-                                          "{\"sessionId\":\"" + sessionId
+                                          "{\"callerId\":\"" + callerId
                                                                         + "\",\"queueName\":\""
                                                                         + queueName
                                                                         + "\", \"operation\":\"start\"}",
@@ -335,10 +326,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 String host = atsAgents.get(i);
 
                 log.info("Waiting until queue '" + queueName + "' finish on '" + host + "'");
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 restHelper.executeRequest(host, "/queues/opts", "POST",
-                                          "{\"sessionId\":\"" + sessionId
+                                          "{\"callerId\":\"" + callerId
                                                                         + "\",\"queueName\":\""
                                                                         + queueName
                                                                         + "\", \"operation\":\"waitUntilFinish\"}",
@@ -373,10 +362,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         try {
             for (String host : atsAgents) {
-                String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                  Thread.currentThread().getName());
                 restHelper.executeRequest(host, "/queues/opts", "POST",
-                                          "{\"sessionId\":\"" + sessionId
+                                          "{\"callerId\":\"" + callerId
                                                                         + "\",\"queueName\":\""
                                                                         + queueName
                                                                         + "\", \"operation\":\"start\"}",
@@ -405,11 +392,9 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 Iterator<String> agentsIterator = atsAgentsTmp.iterator();
                 while (agentsIterator.hasNext()) {
                     String host = agentsIterator.next();
-                    String sessionId = ExecutorUtils.createExecutorId(host, ExecutorUtils.getUserRandomToken(),
-                                                                      Thread.currentThread().getName());
                     boolean needToRunAgain = (boolean) restHelper.executeRequest(host, "/queues/opts",
                                                                                  "POST",
-                                                                                 "{\"sessionId\":\"" + sessionId
+                                                                                 "{\"callerId\":\"" + callerId
                                                                                          + "\",\"queueName\":\""
                                                                                          + queueName
                                                                                          + "\", \"operation\":\"waitUntilPaused\"}",
@@ -425,10 +410,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
                 // resume the actions on all agents
                 for (String agent : atsAgentsTmp) {
-                    String sessionId = ExecutorUtils.createExecutorId(agent, ExecutorUtils.getUserRandomToken(),
-                                                                      Thread.currentThread().getName());
                     restHelper.executeRequest(agent, "/queues/opts", "POST",
-                                              "{\"sessionId\":\"" + sessionId
+                                              "{\"callerId\":\"" + callerId
                                                                              + "\",\"queueName\":\""
                                                                              + queueName
                                                                              + "\", \"operation\":\"resume\"}",
@@ -515,13 +498,11 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             getActionExecutionResults( String atsAgent, String queueName ) throws AgentException {
 
         try {
-            String sessionId = ExecutorUtils.createExecutorId(atsAgent, ExecutorUtils.getUserRandomToken(),
-                                                              Thread.currentThread().getName());
             ActionExecutionStatistic[] result = (ActionExecutionStatistic[]) restHelper.executeRequest(atsAgent,
                                                                                                        "/queues/opts",
                                                                                                        "POST",
-                                                                                                       "{\"sessionId\":\""
-                                                                                                               + sessionId
+                                                                                                       "{\"callerId\":\""
+                                                                                                               + callerId
                                                                                                                + "\",\"queueName\":\""
                                                                                                                + queueName
                                                                                                                + "\", \"operation\":\"getActionExecutionResults\"}",

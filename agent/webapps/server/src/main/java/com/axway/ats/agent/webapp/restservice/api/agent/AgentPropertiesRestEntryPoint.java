@@ -75,9 +75,9 @@ public class AgentPropertiesRestEntryPoint {
             summary = "Get or set Ats Agent property",
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The sessionID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The operation's name for obtaining the property name",
@@ -117,18 +117,18 @@ public class AgentPropertiesRestEntryPoint {
     })
     public Response getProperty( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String operation = null;
         String value = null; // optional
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             operation = getJsonElement(jsonObject, "operation").getAsString();
             if (StringUtils.isNullOrEmpty(operation)) {
                 throw new NoSuchElementException("operation is not provided with the request");
@@ -138,7 +138,7 @@ public class AgentPropertiesRestEntryPoint {
             switch (operation) {
                 case GET_CLASSPATH_OPERATION:
                     // create action pojo
-                    actionPojo = new ActionPojo(sessionId, -1, "auto-system-operations",
+                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
                                                 "Internal System Operations get Class Path", new String[]{},
                                                 new String[]{});
                     // initialize resource
@@ -147,12 +147,12 @@ public class AgentPropertiesRestEntryPoint {
                     // execute the operation
                     String[] classPath = (String[]) ResourcesManager.executeOverResource(actionPojo);
                     // deinitialize the resource
-                    ResourcesManager.deinitializeResource(sessionId, resourceId);
+                    ResourcesManager.deinitializeResource(resourceId);
 
                     return Response.ok("{\"classpath\":" + GSON.toJson(classPath) + "}").build();
                 case LOG_CLASSPATH_OPERATION:
                     // create action pojo
-                    actionPojo = new ActionPojo(sessionId, -1, "auto-system-operations",
+                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
                                                 "Internal System Operations log Class Path", new String[]{},
                                                 new String[]{});
                     // initialize resource
@@ -161,12 +161,12 @@ public class AgentPropertiesRestEntryPoint {
                     // execute the operation
                     ResourcesManager.executeOverResource(actionPojo);
                     // deinitialize the resource
-                    ResourcesManager.deinitializeResource(sessionId, resourceId);
+                    ResourcesManager.deinitializeResource(resourceId);
 
                     return Response.ok("{\"status_message\":\"classpath successfully logged\"}").build();
                 case GET_DUPLICATED_JARS_OPERATION:
                     // create action pojo
-                    actionPojo = new ActionPojo(sessionId, -1, "auto-system-operations",
+                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
                                                 "Internal System Operations get Duplicated Jars", new String[]{},
                                                 new String[]{});
                     // initialize resource
@@ -175,12 +175,12 @@ public class AgentPropertiesRestEntryPoint {
                     // execute the operation
                     String[] duplicatedJars = (String[]) ResourcesManager.executeOverResource(actionPojo);
                     // deinitialize the resource
-                    ResourcesManager.deinitializeResource(sessionId, resourceId);
+                    ResourcesManager.deinitializeResource(resourceId);
 
                     return Response.ok("{\"duplicated_jars\":" + GSON.toJson(duplicatedJars) + "}").build();
                 case LOG_DUPLICATED_JARS_OPERATION:
                     // create action pojo
-                    actionPojo = new ActionPojo(sessionId, -1, "auto-system-operations",
+                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
                                                 "Internal System Operations log Duplicated Jars", new String[]{},
                                                 new String[]{});
                     // initialize resource
@@ -189,7 +189,7 @@ public class AgentPropertiesRestEntryPoint {
                     // execute the operation
                     ResourcesManager.executeOverResource(actionPojo);
                     // deinitialize the resource
-                    ResourcesManager.deinitializeResource(sessionId, resourceId);
+                    ResourcesManager.deinitializeResource(resourceId);
 
                     return Response.ok("{\"status_message\":\"duplicated jars successfully logged\"}").build();
                 case GET_AGENT_HOME_OPERATION:

@@ -31,13 +31,13 @@ public class RegistryManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initialize( String sessionId ) throws NoSuchActionException,
+    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
                                                                   IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Internal Registry Operations initialize",
                                          null,
                                          null);
@@ -53,12 +53,12 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            createPath( String sessionId, int resourceId, String rootKey,
+            createPath( String callerId, int resourceId, String rootKey,
                         String keyPath ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Create Path",
                                          new String[]{ String.class.getName(), String.class.getName() },
                                          new String[]{ GSON.toJson(rootKey), GSON.toJson(keyPath) });
@@ -68,12 +68,12 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            deleteKey( String sessionId, int resourceId, String rootKey, String keyPath,
+            deleteKey( String callerId, int resourceId, String rootKey, String keyPath,
                        String keyName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Delete Key",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -85,12 +85,12 @@ public class RegistryManager {
     }
 
     public synchronized static boolean
-            isKeyPresent( String sessionId, int resourceId, String rootKey, String keyPath,
+            isKeyPresent( String callerId, int resourceId, String rootKey, String keyPath,
                           String keyName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Is Key Present",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -101,7 +101,7 @@ public class RegistryManager {
 
     }
 
-    public synchronized static String getStringValue( String sessionId, int resourceId, String rootKey, String keyPath,
+    public synchronized static String getStringValue( String callerId, int resourceId, String rootKey, String keyPath,
                                                       String keyName ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
                                                                        NoSuchComponentException, ClassNotFoundException,
@@ -109,7 +109,7 @@ public class RegistryManager {
                                                                        IllegalArgumentException,
                                                                        InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Get String Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -119,7 +119,7 @@ public class RegistryManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static int getIntValue( String sessionId, int resourceId, String rootKey, String keyPath,
+    public synchronized static int getIntValue( String callerId, int resourceId, String rootKey, String keyPath,
                                                 String keyName ) throws NoSuchActionException,
                                                                  NoCompatibleMethodFoundException,
                                                                  NoSuchComponentException, ClassNotFoundException,
@@ -127,7 +127,7 @@ public class RegistryManager {
                                                                  IllegalArgumentException,
                                                                  InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Get Int Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -137,7 +137,7 @@ public class RegistryManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getLongValue( String sessionId, int resourceId, String rootKey, String keyPath,
+    public synchronized static long getLongValue( String callerId, int resourceId, String rootKey, String keyPath,
                                                   String keyName ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
@@ -145,7 +145,7 @@ public class RegistryManager {
                                                                    IllegalArgumentException,
                                                                    InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Get Long Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -155,7 +155,7 @@ public class RegistryManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static byte[] getBinaryValue( String sessionId, int resourceId, String rootKey, String keyPath,
+    public synchronized static byte[] getBinaryValue( String callerId, int resourceId, String rootKey, String keyPath,
                                                       String keyName ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
                                                                        NoSuchComponentException, ClassNotFoundException,
@@ -163,7 +163,7 @@ public class RegistryManager {
                                                                        IllegalArgumentException,
                                                                        InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Get Binary Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName() },
@@ -174,13 +174,13 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setStringValue( String sessionId, int resourceId, String rootKey, String keyPath, String keyName,
+            setStringValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
                             String keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
                                               InstantiationException, IllegalAccessException,
                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Set String Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), String.class.getName() },
@@ -192,13 +192,13 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setIntValue( String sessionId, int resourceId, String rootKey, String keyPath, String keyName,
+            setIntValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
                          int keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException,
                                         InstantiationException, IllegalAccessException,
                                         IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Set Int Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), int.class.getName() },
@@ -210,13 +210,13 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setLongValue( String sessionId, int resourceId, String rootKey, String keyPath, String keyName,
+            setLongValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
                           long keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException,
                                           InstantiationException, IllegalAccessException,
                                           IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Set Long Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), long.class.getName() },
@@ -228,13 +228,13 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setBinaryValue( String sessionId, int resourceId, String rootKey, String keyPath, String keyName,
+            setBinaryValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
                             byte[] keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
                                               InstantiationException, IllegalAccessException,
                                               IllegalArgumentException, InvocationTargetException {
 
-        ActionPojo pojo = new ActionPojo(sessionId, resourceId, COMPONENT_NAME,
+        ActionPojo pojo = new ActionPojo(callerId, resourceId, COMPONENT_NAME,
                                          "Internal Registry Operations Set Binary Value",
                                          new String[]{ String.class.getName(), String.class.getName(),
                                                        String.class.getName(), byte[].class.getName() },

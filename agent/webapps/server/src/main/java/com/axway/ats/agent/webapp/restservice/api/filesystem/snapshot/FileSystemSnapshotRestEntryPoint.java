@@ -65,9 +65,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The snapshot name",
@@ -124,18 +124,18 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response initializeFileSystem( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         String name = null;
         SnapshotConfiguration configuration = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             name = getJsonElement(jsonObject, "name").getAsString();
             if (StringUtils.isNullOrEmpty(name)) {
                 throw new NoSuchElementException("name is not provided with the request");
@@ -145,10 +145,10 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("configuration is not provided with the request");
             }
             configuration = GSON.fromJson(snapshotConfigurationJSON, SnapshotConfiguration.class);
-            int resourceId = FileSystemSnapshotManager.initFileSystemSnapshot(sessionId, name, configuration);
+            int resourceId = FileSystemSnapshotManager.initFileSystemSnapshot(callerId, name, configuration);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
-            String message = "Unable to initialize file system snapshot resource from session with id '" + sessionId
+            String message = "Unable to initialize file system snapshot resource from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -171,9 +171,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "directory/add")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -218,7 +218,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response addDirectory( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String directoryAlias = null;
         String directoryPath = null;
@@ -226,11 +226,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -243,12 +243,12 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(directoryPath)) {
                 throw new NoSuchElementException("directoryPath is not provided with the request");
             }
-            FileSystemSnapshotManager.addDirectory(sessionId, resourceId, directoryAlias, directoryPath);
+            FileSystemSnapshotManager.addDirectory(callerId, resourceId, directoryAlias, directoryPath);
             return Response.ok("{\"status_message\":" + "\"directory successfully added to file system snapshot\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to add directory to file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -271,9 +271,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "take")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -308,27 +308,27 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response takeSnapshot( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            FileSystemSnapshotManager.takeSnapshot(sessionId, resourceId);
+            FileSystemSnapshotManager.takeSnapshot(callerId, resourceId);
             return Response.ok("{\"status_message\":" + "\"file system snapshot successfully taken\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to take file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -350,9 +350,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -500,23 +500,23 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response getFileSystemSnapshot( @Context HttpServletRequest request,
                                            @QueryParam(
-                                                   value = "sessionId") String sessionId,
+                                                   value = "callerId") String callerId,
                                            @QueryParam(
                                                    value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            LocalFileSystemSnapshot snapshot = FileSystemSnapshotManager.getFileSystemSnapshot(sessionId, resourceId);
+            LocalFileSystemSnapshot snapshot = FileSystemSnapshotManager.getFileSystemSnapshot(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(snapshot) + "}").build();
         } catch (Exception e) {
             String message = "Unable to get file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -539,9 +539,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "toFile")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -581,18 +581,18 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response toFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String backupFile = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -601,12 +601,12 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(backupFile)) {
                 throw new NoSuchElementException("backupFile is not provided with the request");
             }
-            FileSystemSnapshotManager.toFile(sessionId, resourceId, backupFile);
+            FileSystemSnapshotManager.toFile(callerId, resourceId, backupFile);
             return Response.ok("{\"status_message\":" + "\"file system snapshot successfully saved to file\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to save file system snapshot to file using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -629,9 +629,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "loadFromFile")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -671,18 +671,18 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response loadFromFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String sourceFile = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -691,12 +691,12 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(sourceFile)) {
                 throw new NoSuchElementException("sourceFile is not provided with the request");
             }
-            FileSystemSnapshotManager.loadFromFile(sessionId, resourceId, sourceFile);
+            FileSystemSnapshotManager.loadFromFile(callerId, resourceId, sourceFile);
             return Response.ok("{\"status_message\":" + "\"file system snapshot successfully loaded from file\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to load file system snapshot from file using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -719,9 +719,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -874,18 +874,18 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response pushFileSystemSnapshot( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         LocalFileSystemSnapshot newSnapshot = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -895,12 +895,12 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("newSnapshot is not provided with the request");
             }
             newSnapshot = GSON.fromJson(newSnapshotJSON, LocalFileSystemSnapshot.class);
-            FileSystemSnapshotManager.pushFileSystemSnapshot(sessionId, resourceId, newSnapshot);
+            FileSystemSnapshotManager.pushFileSystemSnapshot(callerId, resourceId, newSnapshot);
             return Response.ok("{\"status_message\":" + "\"new file system snapshot successfully pushed\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to push new file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -923,9 +923,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "new")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1083,7 +1083,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response newFileSystemSnapshot( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         LocalFileSystemSnapshot srcFileSystemSnapshot = null;
         String newSnapshotName = null;
@@ -1091,11 +1091,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1109,7 +1109,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(newSnapshotName)) {
                 throw new NoSuchElementException("newSnapshotName is not provided with the request");
             }
-            FileSystemSnapshotManager.newFileSystemSnapshot(sessionId, resourceId, srcFileSystemSnapshot,
+            FileSystemSnapshotManager.newFileSystemSnapshot(callerId, resourceId, srcFileSystemSnapshot,
                                                             newSnapshotName);
             return Response.ok("{\"status_message\":"
                                + "\"new file system snapshot successfully created from existig one\"}")
@@ -1117,7 +1117,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to create new file system snapshot from existing one using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1140,9 +1140,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "name")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1182,18 +1182,18 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response setName( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String name = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1202,12 +1202,12 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(name)) {
                 throw new NoSuchElementException("name is not provided with the request");
             }
-            FileSystemSnapshotManager.setName(sessionId, resourceId, name);
+            FileSystemSnapshotManager.setName(callerId, resourceId, name);
             return Response.ok("{\"status_message\":" + "\"file system snapshot name successfully changed\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to set new name for file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1230,9 +1230,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/check")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1289,7 +1289,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response checkFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -1298,11 +1298,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1320,13 +1320,13 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("checkRules is not provided with the request");
             }
             checkRules = GSON.fromJson(checkRulesJSON, int[].class);
-            FileSystemSnapshotManager.checkFile(sessionId, resourceId, rootDirectoryAlias, relativeFilePath,
+            FileSystemSnapshotManager.checkFile(callerId, resourceId, rootDirectoryAlias, relativeFilePath,
                                                 checkRules);
             return Response.ok("{\"status_message\":" + "\"file from file system snapshot name successfully checked\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to check file from file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1349,9 +1349,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "directory/skip")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1396,7 +1396,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipDirectory( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeDirectoryPath = null;
@@ -1404,11 +1404,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1421,12 +1421,12 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(relativeDirectoryPath)) {
                 throw new NoSuchElementException("relativeDirectoryPath is not provided with the request");
             }
-            FileSystemSnapshotManager.skipDirectory(sessionId, resourceId, rootDirectoryAlias, relativeDirectoryPath);
+            FileSystemSnapshotManager.skipDirectory(callerId, resourceId, rootDirectoryAlias, relativeDirectoryPath);
             return Response.ok("{\"status_message\":" + "\"directory successfully skipped\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to skip directory in file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1449,9 +1449,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "directory/skip/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1496,7 +1496,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipDirectoryByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeDirectoryPath = null;
@@ -1504,11 +1504,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1521,14 +1521,14 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(relativeDirectoryPath)) {
                 throw new NoSuchElementException("relativeDirectoryPath is not provided with the request");
             }
-            FileSystemSnapshotManager.skipDirectoryByRegex(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipDirectoryByRegex(callerId, resourceId, rootDirectoryAlias,
                                                            relativeDirectoryPath);
             return Response.ok("{\"status_message\":" + "\"directory by regex successfully skipped\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to skip directory by regex in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1551,9 +1551,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/skip")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1607,7 +1607,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipFile( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -1616,11 +1616,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1638,12 +1638,12 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("skipRules is not provided with the request");
             }
             skipRules = GSON.fromJson(skipRulesJSON, int[].class);
-            FileSystemSnapshotManager.skipFile(sessionId, resourceId, rootDirectoryAlias, relativeFilePath, skipRules);
+            FileSystemSnapshotManager.skipFile(callerId, resourceId, rootDirectoryAlias, relativeFilePath, skipRules);
             return Response.ok("{\"status_message\":" + "\"file successfully skipped\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to skip file in file system snapshot using resource with id '" + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1666,9 +1666,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/skip/byRegex")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1722,7 +1722,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipFileByRegex( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -1731,11 +1731,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1753,14 +1753,14 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("skipRules is not provided with the request");
             }
             skipRules = GSON.fromJson(skipRulesJSON, int[].class);
-            FileSystemSnapshotManager.skipFileByRegex(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipFileByRegex(callerId, resourceId, rootDirectoryAlias,
                                                       relativeFilePath, skipRules);
             return Response.ok("{\"status_message\":" + "\"file by regex successfully skipped\"}")
                            .build();
         } catch (Exception e) {
             String message = "Unable to skip file by regex in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1783,9 +1783,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/skip/line")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1843,7 +1843,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipTextLine( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -1853,11 +1853,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -1878,7 +1878,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipTextLine(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipTextLine(callerId, resourceId, rootDirectoryAlias,
                                                    relativeFilePath,
                                                    line,
                                                    matchType);
@@ -1887,7 +1887,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip line from file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -1910,9 +1910,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/property/skip/key")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -1970,7 +1970,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipPropertyWithKey( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -1980,11 +1980,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2005,7 +2005,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipPropertyWithKey(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipPropertyWithKey(callerId, resourceId, rootDirectoryAlias,
                                                           relativeFilePath,
                                                           key,
                                                           matchType);
@@ -2014,7 +2014,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip key from property file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2038,9 +2038,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/property/skip/value")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2098,7 +2098,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipPropertyWithValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2108,11 +2108,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2133,7 +2133,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipPropertyWithValue(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipPropertyWithValue(callerId, resourceId, rootDirectoryAlias,
                                                             relativeFilePath,
                                                             value,
                                                             matchType);
@@ -2142,7 +2142,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip value from property file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2166,9 +2166,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/xml/skip/node/attribute")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2236,7 +2236,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipNodeByAttribute( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2248,11 +2248,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2285,7 +2285,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(attributeValueMatchType)) {
                 throw new NoSuchElementException("attributeValueMatchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipNodeByAttribute(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipNodeByAttribute(callerId, resourceId, rootDirectoryAlias,
                                                           relativeFilePath,
                                                           nodeXpath,
                                                           attributeKey,
@@ -2296,7 +2296,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip XML node by attribute from XML file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2319,9 +2319,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/xml/skip/node/value")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2384,7 +2384,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipNodeByValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2395,11 +2395,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2424,7 +2424,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipNodeByValue(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipNodeByValue(callerId, resourceId, rootDirectoryAlias,
                                                       relativeFilePath,
                                                       nodeXpath,
                                                       value,
@@ -2434,7 +2434,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip XML node by value from XML file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2457,9 +2457,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/ini/skip/section")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2517,7 +2517,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipIniSection( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2527,11 +2527,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2552,7 +2552,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipIniSection(sessionId, resourceId, rootDirectoryAlias,
+            FileSystemSnapshotManager.skipIniSection(callerId, resourceId, rootDirectoryAlias,
                                                      relativeFilePath,
                                                      section,
                                                      matchType);
@@ -2561,7 +2561,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip section from INI file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2584,9 +2584,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/ini/skip/property/key")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2649,7 +2649,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipIniPropertyWithKey( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2660,11 +2660,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2689,7 +2689,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipIniPropertyWithKey(sessionId,
+            FileSystemSnapshotManager.skipIniPropertyWithKey(callerId,
                                                              resourceId,
                                                              rootDirectoryAlias,
                                                              relativeFilePath,
@@ -2701,7 +2701,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip property by key from INI file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2724,9 +2724,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "file/ini/skip/property/value")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2789,7 +2789,7 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response skipIniPropertyWithValue( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         int resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
@@ -2800,11 +2800,11 @@ public class FileSystemSnapshotRestEntryPoint {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
@@ -2829,7 +2829,7 @@ public class FileSystemSnapshotRestEntryPoint {
             if (StringUtils.isNullOrEmpty(matchType)) {
                 throw new NoSuchElementException("matchType is not provided with the request");
             }
-            FileSystemSnapshotManager.skipIniPropertyWithValue(sessionId,
+            FileSystemSnapshotManager.skipIniPropertyWithValue(callerId,
                                                                resourceId,
                                                                rootDirectoryAlias,
                                                                relativeFilePath,
@@ -2841,7 +2841,7 @@ public class FileSystemSnapshotRestEntryPoint {
         } catch (Exception e) {
             String message = "Unable to skip property by value from INI file in file system snapshot using resource with id '"
                              + resourceId
-                             + "' from session with id '" + sessionId
+                             + "' from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -2864,9 +2864,9 @@ public class FileSystemSnapshotRestEntryPoint {
             url = "description")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
@@ -2901,22 +2901,22 @@ public class FileSystemSnapshotRestEntryPoint {
     })
     public Response getDescription( @Context HttpServletRequest request,
                                     @QueryParam(
-                                            value = "sessionId") String sessionId,
+                                            value = "callerId") String callerId,
                                     @QueryParam(
                                             value = "resourceId") int resourceId ) {
 
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
-            String description = FileSystemSnapshotManager.getDescription(sessionId, resourceId);
+            String description = FileSystemSnapshotManager.getDescription(callerId, resourceId);
             return Response.ok("{\"action_result\":" + GSON.toJson(description) + "}").build();
         } catch (Exception e) {
-            String message = "Unable to get file system snapshot description from session with id '" + sessionId
+            String message = "Unable to get file system snapshot description from caller with id '" + callerId
                              + "'";
             LOG.error(message, e);
             return Response.serverError()

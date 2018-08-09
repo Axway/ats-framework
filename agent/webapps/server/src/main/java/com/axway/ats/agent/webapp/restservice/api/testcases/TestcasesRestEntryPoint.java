@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
+import com.axway.ats.agent.webapp.restservice.api.ResourcesManager;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerClass;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethod;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinition;
@@ -57,7 +58,8 @@ public class TestcasesRestEntryPoint {
 
     private static final Logger      LOG       = Logger.getLogger(TestcasesRestEntryPoint.class);
     private static final Gson        GSON      = new Gson();
-    private static final AtsDbLogger log       = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.restservice.api", true);
+    private static final AtsDbLogger log       = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.restservice.api",
+                                                                       true);
 
     private static int               lastRunId = -1;
 
@@ -71,9 +73,9 @@ public class TestcasesRestEntryPoint {
             summary = "Start testcase",
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The TestCaseState object",
@@ -108,23 +110,23 @@ public class TestcasesRestEntryPoint {
     public Response startTestcase( @Context HttpServletRequest request ) {
 
         TestCaseState testCaseState = null;
-        String sessionId = null;
+        String callerId = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             String testCaseStateJson = getJsonElement(jsonObject, "testCaseState").toString();
             if (StringUtils.isNullOrEmpty(testCaseStateJson)) {
                 throw new NoSuchElementException("testcaseState is not provided with the request");
             }
             testCaseState = GSON.fromJson(testCaseStateJson, TestCaseState.class);
-            // cancel all action tasks, that are started on an agent by session with id sessionId
-            MultiThreadedActionHandler.cancellAllQueuesFromAgent(sessionId);
+            // cancel all action tasks, that are started on an agent by caller with id callerId
+            MultiThreadedActionHandler.cancellAllQueuesFromAgent(callerId);
 
             // get the current state on the remote machine
             TestCaseState currentState = log.getCurrentTestCaseState();
@@ -143,7 +145,9 @@ public class TestcasesRestEntryPoint {
 
                     log.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
                               + " Now we cancel any further logging from the agent.");
-                    log.leaveTestCase(sessionId);
+                    //TODO commented in order to add the file for commit about changing sessionId to callerId
+                    //ResourcesManager.deinitializeTestcaseResources();
+                    log.leaveTestCase(callerId);
                 } else {
                     joinToNewTescase = false;
 
@@ -152,7 +156,7 @@ public class TestcasesRestEntryPoint {
 
             if (joinToNewTescase) {
                 // connect to the new test case
-                log.joinTestCase(testCaseState, sessionId);
+                log.joinTestCase(testCaseState, callerId);
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestStart();
@@ -163,8 +167,8 @@ public class TestcasesRestEntryPoint {
                            .build();
         } catch (Exception e) {
             String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
-                             + "' from run with id '" + testCaseState.getRunId() + "' received from session with id '"
-                             + sessionId + "'";
+                             + "' from run with id '" + testCaseState.getRunId() + "' received from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
@@ -182,12 +186,12 @@ public class TestcasesRestEntryPoint {
     @SwaggerMethod(
             httpOperation = "DELETE",
             parametersDefinition = "",
-            summary = "Delete the last testcase, started by the current session",
+            summary = "Delete the last testcase, started by the current caller",
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The session ID",
+            description = "The caller ID",
             example = "HOST_ID:localhost:8089;RANDOM_TOKEN_IN:<SOME_UUID>;THREAD_ID:main",
-            name = "sessionId",
+            name = "callerId",
             type = "string") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -214,16 +218,16 @@ public class TestcasesRestEntryPoint {
                                                                          name = "exceptionClass",
                                                                          type = "string") })
     })
-    public Response endTestcase( @Context HttpServletRequest request, @QueryParam( "sessionId") String sessionId ) {
+    public Response endTestcase( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId ) {
 
         int currentRunId = -1;
         int currentTestcaseId = -1;
         try {
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            sessionId = URLDecoder.decode(sessionId, "UTF-8");
-            ThreadsPerCaller.registerThread(sessionId);
+            callerId = URLDecoder.decode(callerId, "UTF-8");
+            ThreadsPerCaller.registerThread(callerId);
             TestCaseState currentState = log.getCurrentTestCaseState();
             currentRunId = currentState.getRunId();
             currentTestcaseId = currentState.getTestcaseId();
@@ -231,14 +235,16 @@ public class TestcasesRestEntryPoint {
              * Ignore this event.
              */
             if (currentState != null && currentState.isInitialized()) {
-                log.leaveTestCase(sessionId);
+                //TODO commented in order to add the file for commit about changing sessionId to callerId
+                //ResourcesManager.deinitializeTestcaseResources();
+                log.leaveTestCase(callerId);
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestEnd();
             }
         } catch (Exception e) {
-            String message = "Unable to end testcase started from session with id '"
-                             + sessionId + "'";
+            String message = "Unable to end testcase started from caller with id '"
+                             + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
                            .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()

@@ -68,9 +68,9 @@ public class AgentConfigurationsRestEntryPoint {
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The session ID",
-                                                  example = "some session ID",
-                                                  name = "sessionId",
+                                                  description = "The caller ID",
+                                                  example = "some caller ID",
+                                                  name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The configurators and its actual Java class names in a map ( className => JSON serialized configurator object )",
@@ -110,17 +110,17 @@ public class AgentConfigurationsRestEntryPoint {
     })
     public Response pushConfiguration( @Context HttpServletRequest request ) {
 
-        String sessionId = null;
+        String callerId = null;
         List<Configurator> configurators = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
                                                     .getAsJsonObject();
-            sessionId = getJsonElement(jsonObject, "sessionId").getAsString();
-            if (StringUtils.isNullOrEmpty(sessionId)) {
-                throw new NoSuchElementException("sessionId is not provided with the request");
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
             }
-            ThreadsPerCaller.registerThread(sessionId);
+            ThreadsPerCaller.registerThread(callerId);
             String configuratorsJson = getJsonElement(jsonObject, "configurators").toString();
             if (StringUtils.isNullOrEmpty(configuratorsJson)) {
                 throw new NoSuchElementException("configurators are not provided with the request");

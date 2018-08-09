@@ -22,6 +22,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
@@ -61,12 +62,14 @@ public class PassiveDbAppender extends AbstractDbAppender {
                            LoggingEvent event ) {
 
         if( ThreadsPerCaller.getCaller() == null ) {
+            new AtsConsoleLogger(ThreadsPerCaller.class).trace("No caller for event '"+event+"'");
             return;
         }
-
+        
         // Remember the caller prior passing this event to the logging queue.
         // We use the log4j's map inside, this is some kind of misuse. 
-        event.setProperty( ExecutorUtils.ATS_RANDOM_TOKEN, ThreadsPerCaller.getCaller() );
+        event.setProperty( ExecutorUtils.ATS_CALLER_ID, ThreadsPerCaller.getCaller() );
+        
 
         getDbChannel( null ).append( event );
     }
@@ -74,10 +77,10 @@ public class PassiveDbAppender extends AbstractDbAppender {
     @Override
     public GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event ) {
 
-        if( ThreadsPerCaller.getCaller() == null ) {
+        if (ThreadsPerCaller.getCaller() == null) {
             return null;
         } else {
-            event.setTestCaseState( getDbChannel( null ).testCaseState );
+            event.setTestCaseState(getDbChannel(null).testCaseState);
             return event;
         }
     }
@@ -88,15 +91,15 @@ public class PassiveDbAppender extends AbstractDbAppender {
      *
      * @return the current DB appender instance
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings( "unchecked")
     public static PassiveDbAppender getCurrentInstance() {
 
         Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while( appenders.hasMoreElements() ) {
+        while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
 
-            if( appender instanceof PassiveDbAppender ) {
-                PassiveDbAppender passiveAppender = ( PassiveDbAppender ) appender;
+            if (appender instanceof PassiveDbAppender) {
+                PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
                 return passiveAppender;
             }
         }
@@ -110,12 +113,12 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public void setTestcaseState(
                                   TestCaseState testCaseState ) {
 
-        getDbChannel( null ).testCaseState = testCaseState;
+        getDbChannel(null).testCaseState = testCaseState;
     }
 
     public DbEventRequestProcessor getDbEventRequestProcessor() {
 
-        return getDbChannel( null ).eventProcessor;
+        return getDbChannel(null).eventProcessor;
     }
 
     @Override
