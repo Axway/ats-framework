@@ -88,7 +88,7 @@ public class AtsDbLogger {
                 if (!isWarningMessageLogged) {
                     this.logger.warn(
                             "ATS Database appender is not attached in root logger element in log4j.xml file. "
-                            + "No test data will be sent to ATS Log database and some methods from this class will not work as expected");
+                            + "No test data will be sent to ATS Log database and some methods from '"+AtsDbLogger.class.getName()+"' class will not work as expected");
                     isWarningMessageLogged = true;
                 }
             }
