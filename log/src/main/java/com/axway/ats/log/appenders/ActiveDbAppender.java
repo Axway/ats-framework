@@ -89,6 +89,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public void activateOptions(){
         super.activateOptions();
         
+        /* this flag is changed here, since this is the first place where the Apache log4j package interacts with this class
+         */
         isAttached = true;
     }
 
