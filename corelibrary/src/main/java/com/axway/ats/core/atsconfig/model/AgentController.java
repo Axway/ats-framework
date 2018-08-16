@@ -41,6 +41,9 @@ public class AgentController extends AbstractApplicationController {
 
     private AtsSourceProjectInfo     sourceProjectInfo;
     
+    // initial time to wait for the CMD windows to start
+	private int 					 initialStartUpLatency = 4;
+
     public AgentController( AgentInfo agentInfo, AtsSourceProjectInfo sourceProjectInfo,
                             Map<String, String> sshClientConfigurationProperties ) {
 
@@ -233,17 +236,14 @@ public class AgentController extends AbstractApplicationController {
         final String restartCommandExecutionResult = sshClient.getLastCommandExecutionResult();
         if (restartCommandExitCode == 0 && StringUtils.isNullOrEmpty(sshClient.getErrorOutput())) {
 
-            if (!anyApplicationInfo.isUnix()) {
-                // Windows only - wait for some time to bring up the CMD
-                // window
-                int startupLatency = anyApplicationInfo.startupLatency;
-                if (startupLatency > 0) {
-                    log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait "
-                             + startupLatency + " seconds for the CMD window to show up");
-                    try {
-                        Thread.sleep(startupLatency * 1000);
-                    } catch (InterruptedException e) {}
-                }
+            // Wait for some time to bring up the CMD window
+            int startupLatency = anyApplicationInfo.startupLatency;
+            if (startupLatency > 0) {
+                log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description + " wait "
+                         + initialStartUpLatency + " seconds for the CMD window to show up");
+                try {
+                    Thread.sleep(initialStartUpLatency * 1000);
+                } catch (InterruptedException e) {}
             }
 
             log.info(TOP_LEVEL_ACTION_PREFIX + anyApplicationInfo.description
