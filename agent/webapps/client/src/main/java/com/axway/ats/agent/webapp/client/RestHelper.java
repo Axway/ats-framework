@@ -136,7 +136,7 @@ public class RestHelper {
             if (log.isDebugEnabled()) {
                 log.debug("Received HTTP response with body '" + responseString + "'");
             }
-            if (!httpResponse.getFirstHeader("Content-type").getValue().equalsIgnoreCase("application/json")) {
+            if (!"application/json".equalsIgnoreCase(httpResponse.getFirstHeader("Content-type").getValue())) {
                 throw new RuntimeException("Response's Content-type is not 'application/json', but '"
                                            + httpResponse.getFirstHeader("Content-type").getValue()
                                            + "'. Status line is '" + httpResponse.getStatusLine().toString());
