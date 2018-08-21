@@ -25,6 +25,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.appenders.DbChannel;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
@@ -874,6 +875,7 @@ public class AtsDbLogger {
 
     /**
      * Leave the test case to which we have joined
+     * <br> Also delete the {@link DbChannel} associated with the testcase
      */
     public void leaveTestCase( String executorId ) {
 

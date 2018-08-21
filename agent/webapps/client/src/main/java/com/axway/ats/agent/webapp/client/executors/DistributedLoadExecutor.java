@@ -105,7 +105,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 //wrap all the action requests
                 List<ActionPojo> actionPojos = new ArrayList<ActionPojo>();
                 for (ActionRequest actionRequest : actionRequests) {
-                    actionPojos.add(new ActionPojo(actionRequest));
+                    actionPojos.add(new ActionPojo(actionRequest, -1, null)); // we are not interested in providing resource and caller ID here
                 }
 
                 //schedule the actions, but do not execute

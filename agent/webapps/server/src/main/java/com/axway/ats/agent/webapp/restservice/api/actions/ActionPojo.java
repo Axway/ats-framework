@@ -52,8 +52,10 @@ public class ActionPojo {
 
     public ActionPojo() {}
 
-    public ActionPojo( ActionRequest actionRequest ) {
-
+    public ActionPojo( ActionRequest actionRequest, int resourceId, String callerId ) {
+        
+        this.callerId = callerId;
+        this.resourceId = resourceId;
         this.componentName = actionRequest.getComponentName();
         this.methodName = actionRequest.getActionName();
         if (actionRequest.getArguments() != null) {
