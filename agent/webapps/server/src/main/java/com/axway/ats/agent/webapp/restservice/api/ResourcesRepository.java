@@ -18,58 +18,108 @@ package com.axway.ats.agent.webapp.restservice.api;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.appenders.PassiveDbAppender;
 
 /**
- * <p> This class keeps all of resources on the agent.</p>
- * <p> Resource on the ATS agent means Action class instance or other Java objects (like RestSystemMonitor)</p>
- * **/
+ * A class that is responsible for keeping track which resource (JAVA object) is linked with certain testcase and caller.
+ * <br>Note that currently resource and testcase resource are the same, since there is no implementation for suite and run resources yet.
+ * */
 public class ResourcesRepository {
 
-    /**
-     * Map that keeps the resources for each caller
-     * < callerId, < resourceId, resource > >
-     * */
-    private static Map<String, Map<Integer, Object>> resourcesMap = Collections.synchronizedMap(new HashMap<String, Map<Integer, Object>>());
-    private static int                               resourceId   = -1;
-
-    private static final ResourcesRepository         instance     = new ResourcesRepository();
+    private static Map<String, CallerResources> resourcesMap = Collections.synchronizedMap(new HashMap<String, CallerResources>());
+    private static int                          resourceId   = -1;
+    private static final ResourcesRepository   instance     = new ResourcesRepository();
 
     public synchronized static ResourcesRepository getInstance() {
 
         return instance;
     }
 
-    public synchronized int putResource( String callerId, Object resource ) {
+    public synchronized int putResource( Object resource ) {
 
-        Map<Integer, Object> map = resourcesMap.get(callerId);
-        if (map == null) {
-            map = new HashMap<>();
+        String callerId = ThreadsPerCaller.getCaller();
+        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        CallerResources callerResources = resourcesMap.get(callerId);
+        if (callerResources == null) {
+            callerResources = new CallerResources();
         }
-        map.put(++resourceId, resource);
-        resourcesMap.put(callerId, map);
+        callerResources.addTestcaseResource(testcaseId, ++resourceId, resource);
+
+        resourcesMap.put(callerId, callerResources);
         return resourceId;
     }
 
-    public synchronized Object getResource( String callerId, int resourceId ) {
+    public synchronized Object getResource( int resourceId ) {
 
-        return resourcesMap.get(callerId).get(resourceId);
+        String callerId = ThreadsPerCaller.getCaller();
+        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        CallerResources callerResources = resourcesMap.get(callerId);
+        return callerResources.getTestcaseResource(testcaseId, resourceId);
+
     }
 
-    public synchronized Object deleteResource( String callerId, int resourceId ) {
+    public synchronized Object deleteResource( int resourceId ) {
 
-        return resourcesMap.get(callerId).remove(resourceId);
+        String callerId = ThreadsPerCaller.getCaller();
+        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        CallerResources callerResources = resourcesMap.get(callerId);
+        return callerResources.deleteTestcaseResource(testcaseId, resourceId);
+    }
+
+    public synchronized Set<Integer> deleteResources() {
+
+        String callerId = ThreadsPerCaller.getCaller();
+        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        CallerResources callerResources = resourcesMap.get(callerId);
+        if (callerResources != null) {
+            return callerResources.deleteAllTestcaseResources(testcaseId);
+        } else {
+            return null;
+        }
     }
 
     /**
-     * Delete all resources created by the provided caller
-     * 
-     * @param callerId
-     * 
-     * @return the deleted caller's resources
+     * Class that keeps resources, created from the same caller
      * */
-    public synchronized Map<Integer, Object> deleteAllCallerResources( String callerId ) {
+    class CallerResources {
 
-        return resourcesMap.remove(callerId);
+        Map<Integer, Map<Integer, Object>> testcasesResources = new HashMap<>();
+
+        public void addTestcaseResource( int testcaseId, int resourceId, Object resource ) {
+
+            Map<Integer, Object> testcasesRes = testcasesResources.get(testcaseId);
+            if (testcasesRes == null) {
+                testcasesRes = new HashMap<>();
+            }
+            testcasesRes.put(resourceId, resource);
+            testcasesResources.put(testcaseId, testcasesRes);
+        }
+
+        /**
+         * Delete a certain testcase resource
+         * */
+        public Object deleteTestcaseResource( int testcaseId, int resourceId ) {
+
+            return testcasesResources.get(testcaseId).remove(resourceId);
+        }
+
+        public Object getTestcaseResource( int testcaseId, int resourceId ) {
+
+            return testcasesResources.get(testcaseId).get(resourceId);
+        }
+
+        /**
+         * Delete all testcase resources for the provided testcase ID
+         * @return 
+         * */
+        public Set<Integer> deleteAllTestcaseResources( int testcaseId ) {
+
+            return testcasesResources.remove(testcaseId).keySet();
+        }
+
     }
 
 }

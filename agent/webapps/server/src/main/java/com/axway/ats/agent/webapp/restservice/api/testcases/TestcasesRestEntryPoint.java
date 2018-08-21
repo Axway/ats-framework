@@ -145,8 +145,8 @@ public class TestcasesRestEntryPoint {
 
                     log.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
                               + " Now we cancel any further logging from the agent.");
-                    //TODO commented in order to add the file for commit about changing sessionId to callerId
-                    //ResourcesManager.deinitializeTestcaseResources();
+                    
+                    ResourcesManager.deinitializeTestcaseResources();
                     log.leaveTestCase(callerId);
                 } else {
                     joinToNewTescase = false;
@@ -235,8 +235,7 @@ public class TestcasesRestEntryPoint {
              * Ignore this event.
              */
             if (currentState != null && currentState.isInitialized()) {
-                //TODO commented in order to add the file for commit about changing sessionId to callerId
-                //ResourcesManager.deinitializeTestcaseResources();
+                ResourcesManager.deinitializeTestcaseResources();
                 log.leaveTestCase(callerId);
 
                 // take care of chained ATS agents(if there are any)

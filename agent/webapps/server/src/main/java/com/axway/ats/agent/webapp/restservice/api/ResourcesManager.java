@@ -19,6 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -27,6 +28,8 @@ import com.axway.ats.agent.core.exceptions.NoCompatibleMethodFoundException;
 import com.axway.ats.agent.core.exceptions.NoSuchActionException;
 import com.axway.ats.agent.core.exceptions.NoSuchComponentException;
 import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
+import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.google.gson.Gson;
 
 /**
@@ -39,6 +42,8 @@ public class ResourcesManager {
 
     /**
      * Initialize resource to some InternalXYZOperation's class
+     * 
+     * @param pojo the Action information
      */
     public synchronized static int initializeResource( ActionPojo pojo )
                                                                          throws NoSuchActionException,
@@ -51,38 +56,38 @@ public class ResourcesManager {
 
         // get the actual Action class instance
         Object actionClassInstance = method.getDeclaringClass().newInstance();
-        // put it in the resource map for that session
 
-        int actionId = ResourcesRepository.getInstance().putResource(pojo.getSessionId(), actionClassInstance);
+        // put it in the resource map for that caller
+        // also return resource ID for this action class instance
+        int resourceId = ResourcesRepository.getInstance().putResource(actionClassInstance);
 
         if (LOG.isDebugEnabled()) {
-            LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' added to session '"
-                      + pojo.getSessionId() + ". Its resourceID is '" + actionId + "'");
+            LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' added to caller '"
+                      + pojo.getCallerId() + ". Its resource ID is '" + resourceId + "'");
         }
 
-        return actionId;
+        return resourceId;
 
     }
 
     /**
      * <p>
-     * Add non-action resource to the current session
+     * Add non-action resource to the current caller
      * </p>
      * <p>
      * This method is used when we want to access a resource (an JAVA object) that
      * is not an action class
      * </p>
      * 
-     * @param sessionId
-     *            the sessionID (caller)
      * @param resource
-     *            the resource that we want to add to this session
+     *            the resource that we want to add to this caller
      */
-    public synchronized static int addResource( String sessionId, Object resource ) {
+    public synchronized static int addResource( Object resource ) {
 
-        int resourceId = ResourcesRepository.getInstance().putResource(sessionId, resource);
+        int resourceId = ResourcesRepository.getInstance().putResource(resource);
         if (LOG.isDebugEnabled()) {
-            LOG.debug("New object from class '" + resource.getClass().getName() + "' added to session '" + sessionId
+            LOG.debug("New object from class '" + resource.getClass().getName() + "' added to caller '"
+                      + ThreadsPerCaller.getCaller()
                       + "'. Its resourceID is '" + resourceId + "'");
         }
 
@@ -93,12 +98,13 @@ public class ResourcesManager {
     /**
      * Deinitialize resource to some InternalXYZOperation's class
      */
-    public synchronized static int deinitializeResource( String sessionId, int resourceId ) {
+    public synchronized static int deinitializeResource( int resourceId ) {
 
-        Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(sessionId, resourceId);
+        Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(resourceId);
         if (actionClassInstance == null) {
             throw new NoSuchElementException("Unable to delete resource with id '" + resourceId
-                                             + "' for session with id '" + sessionId + "'. No such actionId exists");
+                                             + "' for caller with id '" + ThreadsPerCaller.getCaller()
+                                             + "'. No such actionId exists");
         }
 
         if (LOG.isDebugEnabled()) {
@@ -106,6 +112,28 @@ public class ResourcesManager {
         }
 
         return resourceId;
+    }
+
+    /**
+     * Deinitialize all testcase resources by using the current caller ID and testcase ID
+     * */
+    public synchronized static void deinitializeTestcaseResources() {
+
+        if (LOG.isDebugEnabled()) {
+            LOG.debug("Deleting all testcase resources from caller '" + ThreadsPerCaller.getCaller()
+                      + "' and testcase '" + PassiveDbAppender.getCurrentInstance().getTestCaseId() + "' ...");
+        }
+        Set<Integer> deletedResources = ResourcesRepository.getInstance().deleteResources();
+        if (deletedResources != null) {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("Resources with IDs " + deletedResources.toString() + " were deleted");
+            }
+        } else {
+            if (LOG.isDebugEnabled()) {
+                LOG.debug("No resources where found and nothing was deleted");
+            }
+        }
+
     }
 
     /**
@@ -120,8 +148,13 @@ public class ResourcesManager {
                                                                              IllegalArgumentException,
                                                                              InvocationTargetException {
 
-        Object actionClassInstance = ResourcesRepository.getInstance().getResource(pojo.getSessionId(),
+        Object actionClassInstance = ResourcesRepository.getInstance().getResource(
                                                                                    pojo.getResourceId());
+
+        if (actionClassInstance == null) {
+            throw new RuntimeException("There is no initialized action class for action '" + pojo.getMethodName()
+                                       + "'");
+        }
         Method method = getActionMethod(pojo);
         if (pojo.getArgumentsTypes() == null) {
             return method.invoke(actionClassInstance, new Object[]{});
@@ -137,17 +170,17 @@ public class ResourcesManager {
             LOG.debug("Execution of action method '" + method.getDeclaringClass().getName() + "@" + method.getName()
                       + "' with arguments {"
                       + Arrays.asList(args).toString().substring(1, Arrays.asList(args).toString().length() - 1)
-                      + "} using resource with id '" + pojo.getResourceId() + "' from session with id '"
-                      + pojo.getSessionId() + "'");
+                      + "} using resource with id '" + pojo.getResourceId() + "' from caller with id '"
+                      + pojo.getCallerId() + "'");
         }
 
         return method.invoke(actionClassInstance, args);
 
     }
 
-    public synchronized static Object getResource( String sessionId, int resourceId ) {
+    public synchronized static Object getResource( int resourceId ) {
 
-        return ResourcesRepository.getInstance().getResource(sessionId, resourceId);
+        return ResourcesRepository.getInstance().getResource(resourceId);
 
     }
 
