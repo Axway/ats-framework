@@ -114,10 +114,10 @@ public class DbChannel {
         testCaseState = new TestCaseState();
 
         // the logging queue
-        queue = new ArrayBlockingQueue<LogEventRequest>( appenderConfig.getMaxNumberLogEvents() );
+        queue = new ArrayBlockingQueue<LogEventRequest>(appenderConfig.getMaxNumberLogEvents());
 
-        isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean( AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
-                                                                            false );
+        isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
+                                                                           false);
     }
 
     protected void initialize( AtsConsoleLogger atsConsoleLogger, Layout layout,
@@ -126,20 +126,20 @@ public class DbChannel {
         this.atsConsoleLogger = atsConsoleLogger;
 
         EventRequestProcessorListener listener = null;
-        if( attachRequestProcessorListener ) {
-            listener = new SimpleEventRequestProcessorListener( listenerMutex );
+        if (attachRequestProcessorListener) {
+            listener = new SimpleEventRequestProcessorListener(listenerMutex);
         }
 
         // create new event processor
         try {
-        	/*if (!ActiveDbAppender.isAttached) {
-        		eventProcessor = new DbEventRequestProcessor( );
-        	} else {
-        		eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener, appenderConfig.isBatchMode() );
-        	}*/
+            /*if (!ActiveDbAppender.isAttached) {
+            	eventProcessor = new DbEventRequestProcessor( );
+            } else {
+            	eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener, appenderConfig.isBatchMode() );
+            }*/
         	eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener, appenderConfig.isBatchMode() );
-        } catch( DatabaseAccessException e ) {
-        		throw new RuntimeException( "Unable to create DB event processor", e );
+        } catch (DatabaseAccessException e) {
+            throw new RuntimeException("Unable to create DB event processor", e);
         }
 
         // start the logging thread
@@ -149,25 +149,25 @@ public class DbChannel {
     public void close() {
 
         // When the appender is unloaded, terminate the logging thread
-        if( queueLogger != null ) {
+        if (queueLogger != null) {
             queueLogger.interrupt();
         }
     }
-    
+
     /**
      * Wait for queue logger thread to process all events
      * */
     public void waitForQueueToProcessAllEvents() {
-    	
+
     	this.atsConsoleLogger.info("Waiting for queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' to process all log events ...");
-    	
-    	while (getNumberPendingLogEvents() > 0) {
-    		try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-    	}
+
+        while (getNumberPendingLogEvents() > 0) {
+            try {
+                Thread.sleep(42); // do not change, result obtained after many research hours
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -178,30 +178,30 @@ public class DbChannel {
 
         // All events from all threads come into here
         long eventTimestamp;
-        if( event instanceof AbstractLoggingEvent ) {
-            eventTimestamp = ( ( AbstractLoggingEvent ) event ).getTimestamp();
+        if (event instanceof AbstractLoggingEvent) {
+            eventTimestamp = ((AbstractLoggingEvent) event).getTimestamp();
         } else {
             eventTimestamp = System.currentTimeMillis();
         }
-        LogEventRequest packedEvent = new LogEventRequest( Thread.currentThread().getName(), // Remember which thread this event belongs to
-                                                           event, eventTimestamp ); // Remember the event time
+        LogEventRequest packedEvent = new LogEventRequest(Thread.currentThread().getName(), // Remember which thread this event belongs to
+                                                          event, eventTimestamp); // Remember the event time
 
-        if( !queueLogger.isAlive() ) {
+        if (!queueLogger.isAlive()) {
             initializeLoggerThread();
         }
 
-        if( event instanceof AbstractLoggingEvent ) {
-            AbstractLoggingEvent dbLoggingEvent = ( AbstractLoggingEvent ) event;
-            switch( dbLoggingEvent.getEventType() ){
+        if (event instanceof AbstractLoggingEvent) {
+            AbstractLoggingEvent dbLoggingEvent = (AbstractLoggingEvent) event;
+            switch (dbLoggingEvent.getEventType()) {
 
                 /* NEXT EVENTS HAPPEN ON TEST EXECUTOR SIDE */
                 case START_TEST_CASE: {
 
                     // on Test Executor side we block until the test case start is committed in the DB
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, true );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     // remember the test case id, which we will later pass to ATS agent
-                    testCaseState.setTestcaseId( eventProcessor.getTestCaseId() );
+                    testCaseState.setTestcaseId(eventProcessor.getTestCaseId());
 
                     // clear last testcase id
                     testCaseState.clearLastExecutedTestcaseId();
@@ -212,10 +212,10 @@ public class DbChannel {
                 case END_TEST_CASE: {
 
                     // on Test Executor side we block until the test case start is committed in the DB
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, true );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     // remember the last executed test case id
-                    testCaseState.setLastExecutedTestcaseId( testCaseState.getTestcaseId() );
+                    testCaseState.setLastExecutedTestcaseId(testCaseState.getTestcaseId());
 
                     // clear test case id
                     testCaseState.clearTestcaseId();
@@ -224,7 +224,7 @@ public class DbChannel {
                 }
                 case GET_CURRENT_TEST_CASE_STATE: {
                     // get current test case id which will be passed to ATS agent
-                    ( ( GetCurrentTestCaseEvent ) event ).setTestCaseState( testCaseState );
+                    ((GetCurrentTestCaseEvent) event).setTestCaseState(testCaseState);
 
                     //this event should not go through the queue
                     return;
@@ -236,20 +236,20 @@ public class DbChannel {
                      *      We also check the integrity of the DB schema.
                      * If we fail here, it does not make sense to run tests at all
                      */
-                    atsConsoleLogger.info( "Waiting for " + event.getClass().getSimpleName()
-                                           + " event completion" );
+                    atsConsoleLogger.info("Waiting for " + event.getClass().getSimpleName()
+                                          + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
                     Level level = Logger.getRootLogger().getLevel();
-                    Logger.getRootLogger().setLevel( Level.OFF );
+                    Logger.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.level = level;
 
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, false );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, false);
                     //this event has already been through the queue
 
                     /*Revert Logger's level*/
-                    Logger.getRootLogger().setLevel( level );
+                    Logger.getRootLogger().setLevel(level);
                     AtsConsoleLogger.level = null;
 
                     return;
@@ -259,19 +259,19 @@ public class DbChannel {
                      * the JVM will not be shutdown prior to committing all events in the DB, as
                      * the END_RUN event is the last one in the queue
                      */
-                    atsConsoleLogger.info( "Waiting for " + event.getClass().getSimpleName()
-                                           + " event completion" );
+                    atsConsoleLogger.info("Waiting for " + event.getClass().getSimpleName()
+                                          + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
                     level = Logger.getRootLogger().getLevel();
-                    Logger.getRootLogger().setLevel( Level.OFF );
+                    Logger.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.level = level;
 
-                    waitForEventToBeExecuted( packedEvent, dbLoggingEvent, true );
+                    waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     /*Revert Logger's level*/
-                    Logger.getRootLogger().setLevel( level );
+                    Logger.getRootLogger().setLevel(level);
                     AtsConsoleLogger.level = null;
 
                     //this event has already been through the queue
@@ -280,7 +280,7 @@ public class DbChannel {
                 case DELETE_TEST_CASE: {
                     // tell the thread on the other side of the queue, that this test case is to be deleted
                     // on first chance
-                    eventProcessor.requestTestcaseDeletion( ( ( DeleteTestCaseEvent ) dbLoggingEvent ).getTestCaseId() );
+                    eventProcessor.requestTestcaseDeletion( ((DeleteTestCaseEvent) dbLoggingEvent).getTestCaseId());
                     // this event is not going through the queue
                     return;
                 }
@@ -288,8 +288,11 @@ public class DbChannel {
                 /* NEXT EVENTS HAPPEN ON ATS AGENT SIDE */
                 case JOIN_TEST_CASE: {
                     // remember test case id
-                    testCaseState.setTestcaseId( ( ( JoinTestCaseEvent ) event ).getTestCaseState()
-                                                                                .getTestcaseId() );
+                    testCaseState.setTestcaseId( ((JoinTestCaseEvent) event).getTestCaseState()
+                                                                            .getTestcaseId());
+                    // remember run id
+                    testCaseState.setRunId( ((JoinTestCaseEvent) event).getTestCaseState()
+                                                                       .getRunId());
                     break;
                 }
                 case LEAVE_TEST_CASE: {
@@ -302,9 +305,10 @@ public class DbChannel {
                     // do nothing about this event
                     break;
             }
+
         }
 
-        passEventToLoggerQueue( packedEvent );
+        passEventToLoggerQueue(packedEvent);
     }
 
     /**
@@ -323,8 +327,8 @@ public class DbChannel {
     private void initializeLoggerThread() {
 
         // create the logging thread and start it
-        queueLogger = new QueueLoggerThread( queue, eventProcessor, appenderConfig.isBatchMode() );
-        queueLogger.setDaemon( true );
+        queueLogger = new QueueLoggerThread(queue, eventProcessor, appenderConfig.isBatchMode());
+        queueLogger.setDaemon(true);
         queueLogger.start();
     }
 
@@ -333,24 +337,24 @@ public class DbChannel {
         // Events on both Test Executor and Agent sides are processed here.
 
         // Events on Agent get their timestamps aligned with Test Executor time.
-        if( timeOffset != 0 ) {
-            packedEvent.applyTimeOffset( timeOffset );
+        if (timeOffset != 0) {
+            packedEvent.applyTimeOffset(timeOffset);
         }
 
-        if( isMonitoringEventsQueue ) {
+        if (isMonitoringEventsQueue) {
             // Tell the user how many new events can be placed in the queue.
             // Do this every second.
             long newTick = System.currentTimeMillis();
-            if( newTick - lastQueueCapacityTick > 1000 ) {
-                if( minRemainingQueueCapacity == -1 ) {
+            if (newTick - lastQueueCapacityTick > 1000) {
+                if (minRemainingQueueCapacity == -1) {
                     minRemainingQueueCapacity = queue.remainingCapacity();
                 } else {
-                    minRemainingQueueCapacity = Math.min( minRemainingQueueCapacity,
-                                                          queue.remainingCapacity() );
+                    minRemainingQueueCapacity = Math.min(minRemainingQueueCapacity,
+                                                         queue.remainingCapacity());
                 }
-                atsConsoleLogger.info( "Remaining queue capacity is " + queue.remainingCapacity() + " out of "
-                                       + ( queue.remainingCapacity() + queue.size() )
-                                       + ". Bottom remaining capacity is " + minRemainingQueueCapacity );
+                atsConsoleLogger.info("Remaining queue capacity is " + queue.remainingCapacity() + " out of "
+                                      + (queue.remainingCapacity() + queue.size())
+                                      + ". Bottom remaining capacity is " + minRemainingQueueCapacity);
                 lastQueueCapacityTick = newTick;
             }
         }
@@ -358,13 +362,13 @@ public class DbChannel {
         // this thread passes the events to the queue,
         // while another thread is reading them on the other side
         try {
-            queue.add( packedEvent );
-        } catch( IllegalStateException ex ) {
-            if( queue.remainingCapacity() < 1 ) {
-                throw new IllegalStateException( "There are too many messages queued"
-                                                 + " for TestExplorer DB logging. Decrease messages count"
-                                                 + " by lowering effective log4j severity or check whether"
-                                                 + " connection to DB is too slow", ex );
+            queue.add(packedEvent);
+        } catch (IllegalStateException ex) {
+            if (queue.remainingCapacity() < 1) {
+                throw new IllegalStateException("There are too many messages queued"
+                                                + " for TestExplorer DB logging. Decrease messages count"
+                                                + " by lowering effective log4j severity or check whether"
+                                                + " connection to DB is too slow", ex);
             } else {
                 throw ex;
             }
@@ -381,10 +385,10 @@ public class DbChannel {
     public void waitForEventToBeExecuted( LogEventRequest packedEvent, LoggingEvent event,
                                           boolean waitMoreTime ) {
 
-        synchronized( listenerMutex ) {
+        synchronized (listenerMutex) {
 
             //we need to wait for the event to be handled
-            queue.add( packedEvent );
+            queue.add(packedEvent);
 
             try {
 
@@ -392,20 +396,20 @@ public class DbChannel {
                 // handled or if an exception occurs. In case handling the event hangs - we put some timeout
                 long startTime = System.currentTimeMillis();
                 long timeout = EVENT_WAIT_TIMEOUT;
-                if( waitMoreTime ) {
+                if (waitMoreTime) {
                     timeout = EVENT_WAIT_LONG_TIMEOUT;
                 }
 
-                listenerMutex.wait( timeout );
+                listenerMutex.wait(timeout);
 
-                if( System.currentTimeMillis() - startTime > timeout - 100 ) {
-                    atsConsoleLogger.warn( "The expected " + event.getClass().getSimpleName()
-                                           + " logging event did not complete in " + timeout + " ms" );
+                if (System.currentTimeMillis() - startTime > timeout - 100) {
+                    atsConsoleLogger.warn("The expected " + event.getClass().getSimpleName()
+                                          + " logging event did not complete in " + timeout + " ms");
                 }
-            } catch( InterruptedException ie ) {
-                throw new DbAppenederException( TimeUtils.getFormattedDateTillMilliseconds() + ": "
-                                                + "Main thread interrupted while waiting for event "
-                                                + event.getClass().getSimpleName(), ie );
+            } catch (InterruptedException ie) {
+                throw new DbAppenederException(TimeUtils.getFormattedDateTillMilliseconds() + ": "
+                                               + "Main thread interrupted while waiting for event "
+                                               + event.getClass().getSimpleName(), ie);
             }
         }
 
@@ -416,13 +420,13 @@ public class DbChannel {
     private synchronized void checkForExceptions() {
 
         Throwable loggingExceptionWrraper = queueLogger.readLoggingException();
-        if( loggingExceptionWrraper != null ) {
+        if (loggingExceptionWrraper != null) {
             Throwable loggingException = loggingExceptionWrraper.getCause();
             //re-throw the exception in the main thread
-            if( loggingException instanceof RuntimeException ) {
-                throw ( RuntimeException ) loggingException;
+            if (loggingException instanceof RuntimeException) {
+                throw(RuntimeException) loggingException;
             } else {
-                throw new RuntimeException( loggingException.getMessage(), loggingException );
+                throw new RuntimeException(loggingException.getMessage(), loggingException);
             }
         }
     }
@@ -437,12 +441,12 @@ public class DbChannel {
 
     public void calculateTimeOffset( long executorTimestamp ) {
 
-        this.timeOffset = ( System.currentTimeMillis() - executorTimestamp );
+        this.timeOffset = (System.currentTimeMillis() - executorTimestamp);
     }
 
     public EventRequestProcessorListener getEventRequestProcessorListener() {
 
-        return new SimpleEventRequestProcessorListener( listenerMutex );
+        return new SimpleEventRequestProcessorListener(listenerMutex);
     }
 
     /**
@@ -453,33 +457,34 @@ public class DbChannel {
         private Object listenerMutex;
 
         SimpleEventRequestProcessorListener( Object listenerMutex ) {
+
             this.listenerMutex = listenerMutex;
         }
 
         public void onRunStarted() {
 
-            synchronized( listenerMutex ) {
+            synchronized (listenerMutex) {
                 listenerMutex.notifyAll();
             }
         }
 
         public void onRunFinished() {
 
-            synchronized( listenerMutex ) {
+            synchronized (listenerMutex) {
                 listenerMutex.notifyAll();
             }
         }
 
         public void onTestcaseStarted() {
 
-            synchronized( listenerMutex ) {
+            synchronized (listenerMutex) {
                 listenerMutex.notifyAll();
             }
         }
 
         public void onTestcaseFinished() {
 
-            synchronized( listenerMutex ) {
+            synchronized (listenerMutex) {
                 listenerMutex.notifyAll();
             }
         }
