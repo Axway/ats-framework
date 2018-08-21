@@ -28,6 +28,7 @@ import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 
 /**
  * This appender is capable of arranging the database storage and storing messages into it.
@@ -61,17 +62,22 @@ public class PassiveDbAppender extends AbstractDbAppender {
     protected void append(
                            LoggingEvent event ) {
 
-        if( ThreadsPerCaller.getCaller() == null ) {
-            new AtsConsoleLogger(ThreadsPerCaller.class).trace("No caller for event '"+event+"'");
+        if (ThreadsPerCaller.getCaller() == null) {
+            new AtsConsoleLogger(ThreadsPerCaller.class).trace("No caller for event '" + event + "'");
             return;
         }
-        
+
         // Remember the caller prior passing this event to the logging queue.
         // We use the log4j's map inside, this is some kind of misuse. 
-        event.setProperty( ExecutorUtils.ATS_CALLER_ID, ThreadsPerCaller.getCaller() );
-        
+        event.setProperty(ExecutorUtils.ATS_CALLER_ID, ThreadsPerCaller.getCaller());
 
-        getDbChannel( null ).append( event );
+        getDbChannel(null).append(event);
+
+        if (event instanceof LeaveTestCaseEvent) {// || event instanceof EndTestCaseEvent
+            getDbChannel(event).waitForQueueToProcessAllEvents();
+            destroyDbChannel(getDbChannelKey(event));
+        }
+
     }
 
     @Override

@@ -570,15 +570,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void updateRun( UpdateRunEvent updateRunEvent ) throws DatabaseAccessException {
 
-        dbAccess.updateRun(_state.getRunId(), updateRunEvent.getRunName(), updateRunEvent.getOsName(),
+        dbAccess.updateRun(_startRunState.getRunId(), updateRunEvent.getRunName(), updateRunEvent.getOsName(),
                            updateRunEvent.getProductName(), updateRunEvent.getVersionName(),
                            updateRunEvent.getBuildName(), updateRunEvent.getUserNote(),
                            updateRunEvent.getHostName(), true);
         if (updateRunEvent.getRunName() != null) {
-            _state.setRunName(updateRunEvent.getRunName());
+            _startRunState.setRunName(updateRunEvent.getRunName());
         }
         if (updateRunEvent.getUserNote() != null) {
-            _state.setRunUserNote(updateRunEvent.getUserNote());
+            _startRunState.setRunUserNote(updateRunEvent.getUserNote());
         }
     }
 
@@ -1243,9 +1243,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         try {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
-            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
+            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _startRunState.getRunId());
             if (dbConnection instanceof DbConnPostgreSQL) {
-                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _state.getRunId());
+                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _startRunState.getRunId());
             }
             ResultSet rs = stmt.executeQuery();
             rs.next();

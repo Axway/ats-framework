@@ -406,8 +406,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         logger.endRun();
 
         // clear channels for the ended run
-        // commented in order to add this file to commit for changing sessionId to callerId
-        //channels.clear();
+        channels.clear();
     }
 
     private void logSystemInformation() {
