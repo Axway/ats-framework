@@ -89,15 +89,13 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         DbChannel channel = this.channels.get(channelKey);
         if (channel == null) {
             channel = new DbChannel(this.appenderConfig);
-            
+            channel.initialize(atsConsoleLogger, this.layout, true);
             // check whether the configuration is valid first
             try {
                 this.appenderConfig.validate();
             } catch (InvalidAppenderConfigurationException iace) {
                 throw new DbAppenederException(iace);
             }
-
-            channel.initialize(atsConsoleLogger, this.layout, true);
 
             this.channels.put(channelKey, channel);
         }
@@ -106,8 +104,6 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     }
 
     protected void destroyDbChannel( String channelKey ) {
-
-        DbChannel channel = this.channels.get( channelKey );
         
         this.channels.remove(channelKey);
     }
@@ -162,10 +158,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         // remember it 
         this.layout = layout;
-
-        // set the layout to the event processor as well
-        DbChannel channel = getDbChannel(null);
-        channel.eventProcessor.setLayout(layout);
+        
     }
 
     /**
