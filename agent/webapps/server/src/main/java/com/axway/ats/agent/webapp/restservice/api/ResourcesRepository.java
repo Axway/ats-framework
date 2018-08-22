@@ -17,6 +17,7 @@ package com.axway.ats.agent.webapp.restservice.api;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,11 +75,21 @@ public class ResourcesRepository {
         String callerId = ThreadsPerCaller.getCaller();
         int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
         CallerResources callerResources = resourcesMap.get(callerId);
+        Set<Integer> deletedResources = null;
         if (callerResources != null) {
-            return callerResources.deleteAllTestcaseResources(testcaseId);
+            deletedResources = callerResources.deleteAllTestcaseResources(testcaseId);
+            if(callerResources.testcasesResources.isEmpty()) {
+                /*
+                 * There is no more testcase resources for this caller,
+                 * so delete the entire caller resources information
+                 * */
+                resourcesMap.remove(callerId);
+            }
         } else {
-            return null;
+            deletedResources = new HashSet<Integer>();
         }
+        
+        return deletedResources;
     }
 
     /**
@@ -116,8 +127,12 @@ public class ResourcesRepository {
          * @return 
          * */
         public Set<Integer> deleteAllTestcaseResources( int testcaseId ) {
-
-            return testcasesResources.remove(testcaseId).keySet();
+            Map<Integer,Object> testcaseResources = testcasesResources.remove(testcaseId);
+            if(testcaseResources != null) {
+                return testcaseResources.keySet();
+            } else {
+                return new HashSet<Integer>();
+            }
         }
 
     }
