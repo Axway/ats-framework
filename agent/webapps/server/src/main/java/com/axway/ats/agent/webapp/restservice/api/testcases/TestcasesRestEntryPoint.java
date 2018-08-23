@@ -125,6 +125,8 @@ public class TestcasesRestEntryPoint {
                 throw new NoSuchElementException("testcaseState is not provided with the request");
             }
             testCaseState = GSON.fromJson(testCaseStateJson, TestCaseState.class);
+            log.info("Starting testcase with id '" + testCaseState.getTestcaseId() + "' and run id '"
+                     + testCaseState.getRunId() + "' from caller '" + callerId + "'");
             // cancel all action tasks, that are started on an agent by caller with id callerId
             MultiThreadedActionHandler.cancellAllQueuesFromAgent(callerId);
 
@@ -145,7 +147,7 @@ public class TestcasesRestEntryPoint {
 
                     log.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
                               + " Now we cancel any further logging from the agent.");
-                    
+
                     ResourcesManager.deinitializeTestcaseResources();
                     log.leaveTestCase(callerId);
                 } else {
@@ -235,6 +237,8 @@ public class TestcasesRestEntryPoint {
              * Ignore this event.
              */
             if (currentState != null && currentState.isInitialized()) {
+                log.info("Ending testcase with id '" + currentState.getTestcaseId() + "' and run id '"
+                         + currentState.getRunId() + "' from caller '" + callerId + "'");
                 ResourcesManager.deinitializeTestcaseResources();
                 log.leaveTestCase(callerId);
 
