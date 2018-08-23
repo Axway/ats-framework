@@ -62,7 +62,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /** Skip checking whether ActiveDbAppender is attached. 
      *  This is done in order to enable execution of tests when that appender is not attached/presented
      **/
-	private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats", true);
+    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats",
+                                                                                                   true);
 
     private static final String      MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
 
@@ -99,7 +100,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private Channel getChannel() {
 
-        String threadId = Thread.currentThread().getName();
+        String threadId = Thread.currentThread().getId() + "";
 
         Channel channel = channels.get(threadId);
         if (channel == null) {
@@ -944,30 +945,15 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     }
 
     /**
-     * End a suite for a particular channel.
-     * Called just before ending a run.
-     * 
+     * End a suite, started from thread, associated with the provided thread name.
+     * <br>This way is ending suites is executed when a parallel execution took place and all of the suites must be ended prior to processing an EndRunEvent
      * @param threadName
      * @param channel
      */
-    private void endSuite( String threadName, Channel channel ) {
+    private void endSuite( String threadId, Channel channel ) {
 
         channel.currentSuiteName = null;
-        logger.endSuite(Integer.parseInt(getThreadId(threadName)));
-    }
-
-    public String getThreadId( String threadName ) {
-
-        Thread[] threads = new Thread[Thread.activeCount() * 2];
-        Thread.enumerate(threads);
-        for (Thread t : threads) {
-            if (t != null) {
-                if (t.getName().equals(threadName)) {
-                    return t.getId() + "";
-                }
-            }
-        }
-        return null;
+        logger.endSuite(Integer.parseInt(threadId));
     }
 
 }

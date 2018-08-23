@@ -110,7 +110,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * The current state of the event processor
      */
-    private EventProcessorState           _startRunState             = new EventProcessorState();
     private EventProcessorState           _state;
 
     /**
@@ -191,17 +190,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             _state = new EventProcessorState();
         }
 
-        if (_state.getRunId() == 0) {
-            // this event is sent from a spawn thread and is missing some important data
-            _state.injectRunInformation(_startRunState);
-        }
     }
-
-    /*public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
-                                    boolean isBatchMode ) throws DatabaseAccessException {
-    
-        this( appenderConfig, layout, null, isBatchMode );
-    }*/
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     EventRequestProcessorListener listener,
@@ -325,11 +314,11 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                                                      : null;
 
         if (dbAppenderEvent != null && dbAppenderEvent.getEventType() == LoggingEventType.START_RUN) {
-            if (_startRunState.getPreviousRunId() > 0) {
+            if (ActiveDbAppender.runState.getPreviousRunId() > 0) {
                 // we already have started a run
                 // join this run with it
-                _startRunState.setRunId(_startRunState.getPreviousRunId());
-                _startRunState.setLifeCycleState(LifeCycleState.RUN_STARTED);
+                ActiveDbAppender.runState.setRunId(ActiveDbAppender.runState.getPreviousRunId());
+                ActiveDbAppender.runState.setLifeCycleState(LifeCycleState.RUN_STARTED);
                 //notify the listener that the run started successfully
                 if (listener != null) {
                     listener.onRunStarted();
@@ -344,7 +333,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         if (_state.getRunId() == 0) {
             // this event is sent from a spawn thread and is missing some important data
-            _state.injectRunInformation(_startRunState);
+            _state.injectRunInformation(ActiveDbAppender.runState);
         }
 
         if (dbAppenderEvent != null) {
@@ -512,7 +501,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         // this temporary map must be cleared prior to each run
         suiteIdsCache.clear();
 
-        int previousRunId = _startRunState.getPreviousRunId();
+        int previousRunId = _state.getPreviousRunId();
 
         int newRunId;
         if (previousRunId == 0) {
@@ -541,10 +530,19 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                      + newRunId);
         }
 
-        _startRunState.setRunId(newRunId);
-        _startRunState.setRunName(startRunEvent.getRunName());
-        _startRunState.setRunUserNote(null);
-        _startRunState.setLifeCycleState(LifeCycleState.RUN_STARTED);
+        /*
+         * preserve the some run information
+         * This is done in order to be able to execute tests in parallel
+         */
+        ActiveDbAppender.runState.setRunId(newRunId);
+        ActiveDbAppender.runState.setRunName(startRunEvent.getRunName());
+        ActiveDbAppender.runState.setRunUserNote(null);
+        ActiveDbAppender.runState.setLifeCycleState(LifeCycleState.RUN_STARTED);
+        
+        _state.setRunId(newRunId);
+        _state.setRunName(startRunEvent.getRunName());
+        _state.setRunUserNote(null);
+        _state.setLifeCycleState(LifeCycleState.RUN_STARTED);
 
         //notify the listener that the run started successfully
         if (listener != null) {
@@ -554,14 +552,21 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void endRun( long timeStamp ) throws DatabaseAccessException {
 
-        int currentRunId = _startRunState.getRunId();
+        int currentRunId = ActiveDbAppender.runState.getRunId();
 
         dbAccess.endRun(timeStamp, currentRunId, true);
 
-        //set the current appender state
-        _startRunState.setPreviousRunId(currentRunId);
-        _startRunState.setRunId(0);
-        _startRunState.setLifeCycleState(LifeCycleState.INITIALIZED);
+        /*
+         * preserve the some run information
+         * This is done in order to be able to execute tests in parallel
+         */
+        ActiveDbAppender.runState.setRunId(0);
+        ActiveDbAppender.runState.setPreviousRunId(currentRunId);
+        ActiveDbAppender.runState.setLifeCycleState(LifeCycleState.INITIALIZED);
+        
+        _state.setRunId(0);
+        _state.setPreviousRunId(currentRunId);
+        _state.setLifeCycleState(LifeCycleState.INITIALIZED);
 
         if (listener != null) {
             listener.onRunFinished();
@@ -570,15 +575,15 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void updateRun( UpdateRunEvent updateRunEvent ) throws DatabaseAccessException {
 
-        dbAccess.updateRun(_startRunState.getRunId(), updateRunEvent.getRunName(), updateRunEvent.getOsName(),
+        dbAccess.updateRun(_state.getRunId(), updateRunEvent.getRunName(), updateRunEvent.getOsName(),
                            updateRunEvent.getProductName(), updateRunEvent.getVersionName(),
                            updateRunEvent.getBuildName(), updateRunEvent.getUserNote(),
                            updateRunEvent.getHostName(), true);
         if (updateRunEvent.getRunName() != null) {
-            _startRunState.setRunName(updateRunEvent.getRunName());
+            _state.setRunName(updateRunEvent.getRunName());
         }
         if (updateRunEvent.getUserNote() != null) {
-            _startRunState.setRunUserNote(updateRunEvent.getUserNote());
+            _state.setRunUserNote(updateRunEvent.getUserNote());
         }
     }
 
@@ -793,7 +798,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         _state.setRunId(joinTestCaseEvent.getTestCaseState().getRunId());
 
         // set the run id to the run state as well
-        _startRunState.setRunId(joinTestCaseEvent.getTestCaseState().getRunId());
+        _state.setRunId(joinTestCaseEvent.getTestCaseState().getRunId());
 
         /*
          * Now the Agent can log into this test case
@@ -1243,9 +1248,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         try {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
-            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _startRunState.getRunId());
+            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
             if (dbConnection instanceof DbConnPostgreSQL) {
-                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _startRunState.getRunId());
+                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _state.getRunId());
             }
             ResultSet rs = stmt.executeQuery();
             rs.next();

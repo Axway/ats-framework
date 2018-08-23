@@ -25,6 +25,8 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.autodb.DbEventRequestProcessor;
+import com.axway.ats.log.autodb.EventProcessorState;
 import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 
@@ -34,17 +36,26 @@ import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
  */
 public class ActiveDbAppender extends AbstractDbAppender {
 
-    private static ActiveDbAppender instance                                 = null;
+    private static ActiveDbAppender   instance                                 = null;
 
-    public static boolean           isAttached                               = false;
+    public static boolean             isAttached                               = false;
 
     /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
-    public static boolean           isBeforeAndAfterMessagesLoggingSupported = false;
+    public static boolean             isBeforeAndAfterMessagesLoggingSupported = false;
 
-    public static final String      DUMMY_DB_HOST                            = "ATS_NO_DB_HOST_SET";
-    public static final String      DUMMY_DB_DATABASE                        = "ATS_NO_DB_NAME_SET";
-    public static final String      DUMMY_DB_USER                            = "ATS_NO_DB_USER_SET";
-    public static final String      DUMMY_DB_PASSWORD                        = "ATS_NO_DB_PASSWORD_SET";
+    /**
+     * Holds information about the run (id, name, etc)
+     * <br>The information is populated inside {@link DbEventRequestProcessor} startRun method
+     * <br> Even when we have parallel test execution, the starting and ending of a Run,
+     * is performed on the main thread, so this is where we populate the run information.
+     * <br> Each other thread does not have that Run information.
+     * */
+    public static EventProcessorState runState                                 = new EventProcessorState();
+
+    public static final String        DUMMY_DB_HOST                            = "ATS_NO_DB_HOST_SET";
+    public static final String        DUMMY_DB_DATABASE                        = "ATS_NO_DB_NAME_SET";
+    public static final String        DUMMY_DB_USER                            = "ATS_NO_DB_USER_SET";
+    public static final String        DUMMY_DB_PASSWORD                        = "ATS_NO_DB_PASSWORD_SET";
 
     /**
      * Constructor
@@ -60,7 +71,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         appenderConfig.setDatabase(DUMMY_DB_DATABASE);
         appenderConfig.setUser(DUMMY_DB_USER);
         appenderConfig.setPassword(DUMMY_DB_PASSWORD);
-        
+
         isAttached = true;
 
     }
@@ -76,11 +87,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
         event.getThreadName();
 
         getDbChannel(event).append(event);
-        
+
         if (event instanceof EndRunEvent) {
-        	destroyAllChannels(true);
+            destroyAllChannels(true);
         }
-        
+
     }
 
     @Override
@@ -194,7 +205,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         if (event != null) {
             // the executor might be coming from the logging event's properties
-            executorId = event.getProperty(ExecutorUtils.ATS_CALLER_ID);
+            executorId = event.getProperty(ExecutorUtils.ATS_THREAD_ID);
         }
 
         if (executorId == null) {
@@ -204,7 +215,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 executorId = ((ImportantThread) thisThread).getExecutorId();
             } else {
                 // use the thread name
-                executorId = thisThread.getName();
+                executorId = thisThread.getId()+"";
             }
         }
 
