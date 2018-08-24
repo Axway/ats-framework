@@ -19,7 +19,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
  * Helps identifying who is running some job.
- * It contains the localhost, the thread ID and the project's directory
+ * It contains the IP of the test executor, the project's directory and the thread ID
  */
 public class ExecutorUtils {
 
@@ -31,10 +31,11 @@ public class ExecutorUtils {
     public final static String ATS_CALLER_ID                 = "CALLER_ID";
 
     public static String createCallerId() {
-
+        
         return ATS_HOST_ID + ATS_TOKEN_DELIMITER + HostUtils.getLocalHostIP() + ATS_CALLER_ID_TOKEN_DELIMITER
-               + ATS_WORKDIR + ATS_TOKEN_DELIMITER + AtsSystemProperties.SYSTEM_USER_DIR
-               + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_ID + ATS_TOKEN_DELIMITER + Thread.currentThread().getId();
+                + ATS_WORKDIR + ATS_TOKEN_DELIMITER + IoUtils.normalizeUnixDir(AtsSystemProperties.SYSTEM_USER_DIR)
+                + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_ID + ATS_TOKEN_DELIMITER + Thread.currentThread().getId();
+        
     }
 
     public static String extractHost( String callerId ) {
