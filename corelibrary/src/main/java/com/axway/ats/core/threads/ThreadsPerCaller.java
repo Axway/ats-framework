@@ -20,7 +20,7 @@ import java.util.Map;
 
 /**
  * This class keeps track of all the threads, that each caller has triggered.
- * It is used in AgentWsImpl, LocalExecutor and LocalLoadExecutor classes.
+ * It is used in each XYZRestEntryPoint class, LocalExecutor and LocalLoadExecutor classes.
  */
 public class ThreadsPerCaller {
 
@@ -36,6 +36,12 @@ public class ThreadsPerCaller {
     synchronized public static void registerThread(
                                                     String caller ) {
 
+        String currentThreadName = Thread.currentThread().getName();
+        
+        if (!currentThreadName.endsWith(caller)) {
+            Thread.currentThread().setName(currentThreadName + "___" + caller);
+        }
+        
         threads.put(Thread.currentThread().getName(), caller);
     }
 
@@ -46,7 +52,16 @@ public class ThreadsPerCaller {
      */
     synchronized public static void unregisterThread() {
 
+        String caller = getCaller();
+
         threads.remove(Thread.currentThread().getName());
+
+        String currentThreadName = Thread.currentThread().getName();
+
+        if (currentThreadName.endsWith(caller)) {
+            Thread.currentThread().setName(currentThreadName.replace(caller, "").replace("___", ""));
+        }
+
     }
 
     /**
