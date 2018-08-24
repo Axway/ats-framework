@@ -168,6 +168,7 @@ public class DbChannel {
                 e.printStackTrace();
             }
         }
+        this.atsConsoleLogger.info("All log events from queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' were processed");
     }
 
     /**
