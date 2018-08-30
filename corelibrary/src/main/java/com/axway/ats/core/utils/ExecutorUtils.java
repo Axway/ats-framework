@@ -19,33 +19,46 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
  * Helps identifying who is running some job.
- * It contains the IP of the test executor, the project's directory and the thread ID
+ * It contains the IP of the test executor, the project's directory, the thread ID and the thread name
  */
 public class ExecutorUtils {
 
     public final static String ATS_HOST_ID                   = "HOST_ID";
     public final static String ATS_WORKDIR                   = "WORKDIR";
     public final static String ATS_THREAD_ID                 = "THREAD_ID";
+    public final static String ATS_THREAD_NAME               = "THREAD_NAME";
     public final static String ATS_CALLER_ID_TOKEN_DELIMITER = ";";
     public final static String ATS_TOKEN_DELIMITER           = ":";
     public final static String ATS_CALLER_ID                 = "CALLER_ID";
 
     public static String createCallerId() {
-        
+
         return ATS_HOST_ID + ATS_TOKEN_DELIMITER + HostUtils.getLocalHostIP() + ATS_CALLER_ID_TOKEN_DELIMITER
-                + ATS_WORKDIR + ATS_TOKEN_DELIMITER + IoUtils.normalizeUnixDir(AtsSystemProperties.SYSTEM_USER_DIR)
-                + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_ID + ATS_TOKEN_DELIMITER + Thread.currentThread().getId();
-        
+               + ATS_WORKDIR + ATS_TOKEN_DELIMITER + IoUtils.normalizeUnixDir(AtsSystemProperties.SYSTEM_USER_DIR)
+               + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_ID + ATS_TOKEN_DELIMITER + Thread.currentThread().getId()
+               + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_NAME + ATS_TOKEN_DELIMITER
+               + Thread.currentThread().getName();
+
     }
 
     public static String extractHost( String callerId ) {
 
         return extractToken(callerId, ATS_HOST_ID);
     }
+    
+    public static String extractWorkDir( String callerId ) {
+
+        return extractToken(callerId, ATS_WORKDIR);
+    }
 
     public static String extractThreadId( String callerId ) {
 
         return extractToken(callerId, ATS_THREAD_ID);
+    }
+    
+    public static String extractThreadName( String callerId ) {
+
+        return extractToken(callerId, ATS_THREAD_NAME);
     }
 
     private static String extractToken( String callerId, String key ) {
