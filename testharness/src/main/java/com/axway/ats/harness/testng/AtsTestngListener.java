@@ -43,6 +43,7 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite.ParallelMode;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
@@ -54,6 +55,7 @@ import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
+import com.axway.ats.log.appenders.AbstractDbAppender;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.model.TestCaseResult;
 
@@ -75,11 +77,11 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private static final String      MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
 
-    private final String             JAVA_FILE_EXTENSION                   = ".java";
-
     private static boolean           testDescAvailable                     = false;
 
     private static Integer           BEFORE_METHOD_INDEX                   = 0;
+
+    private final String             JAVA_FILE_EXTENSION                   = ".java";
 
     private String                   javaFileContent;
     private String                   projectSourcesFolder;
@@ -104,6 +106,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         Channel channel = channels.get(threadId);
         if (channel == null) {
+            if (!AbstractDbAppender.parallel) {
+                if (!this.channels.isEmpty()) {
+                    // get the first channel from the map
+                    return this.channels.get(this.channels.keySet().iterator().next());
+                }
+            }
             channel = new Channel();
             channels.put(threadId, channel);
         }
@@ -359,6 +367,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         if (!ActiveDbAppender.isAttached) {
             return;
+        }
+
+        if (!ParallelMode.NONE.name().equalsIgnoreCase(suite.getParallel())) {
+            AbstractDbAppender.parallel = true;
         }
 
         // get the run name specified by the user

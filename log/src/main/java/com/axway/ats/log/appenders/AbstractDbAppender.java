@@ -25,10 +25,13 @@ import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.log.aspect.LogAspect;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.events.InsertMessageEvent;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
+import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 
 /**
  * This appender is capable of arranging the database storage and storing
@@ -36,10 +39,21 @@ import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
+    // indicated whether run/suites/testcases are running in parallel
+    public static boolean             parallel         = false;
+
     // the channels for each test case
     private Map<String, DbChannel>    channels         = new HashMap<String, DbChannel>();
 
     protected AtsConsoleLogger        atsConsoleLogger = new AtsConsoleLogger(getClass());
+
+    /** Holds information about the parent of each thread
+     * <br>
+     * child thread id -> parent thread id
+     * <br>
+     * it is populated by the @After method in {@link LogAspect} AspectJ Java class
+     */
+    public static Map<String, String> threadsMap       = new HashMap<>();
 
     /**
      * The configuration for this appender
@@ -88,6 +102,27 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         DbChannel channel = this.channels.get(channelKey);
         if (channel == null) {
+            // check if TestNG does NOT run in parallel
+            if (!parallel) {
+                // see if there is at least one db channel created
+                if (!this.channels.isEmpty()) {
+                    // get the first channel from the map
+                    return this.channels.get(this.channels.keySet().iterator().next());
+                }
+            } else {
+                if ( (event instanceof InsertMessageEvent) || ( (event instanceof AbstractLoggingEvent) == false)) {
+                    // the event is only of class InsertMessageEvent
+                    if(threadsMap.containsKey(channelKey)) {
+                        return channels.get(threadsMap.get(channelKey));
+                    }
+                }
+            }
+            /* 
+             * We've ended up here because:
+             * - TestNG runs in parallel or
+             * - the channels map is empty or
+             * - the parent of the current thread is not associated with any of the already created DbChannel(s)
+            */
             channel = new DbChannel(this.appenderConfig);
             channel.initialize(atsConsoleLogger, this.layout, true);
             // check whether the configuration is valid first
@@ -104,23 +139,23 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     }
 
     protected void destroyDbChannel( String channelKey ) {
-        
+
         this.channels.remove(channelKey);
     }
-    
+
     /**
      * Destroy all db channels
      * 
      * @param flushEventQueue whether to wait for each channel's queue logger thread to finish execution of all events
      * */
-    protected void destroyAllChannels(boolean waitForQueueToProcessAllEvents) {
-    	
-    	for (DbChannel channel : channels.values()) {
-    		if (waitForQueueToProcessAllEvents) {
-    			channel.waitForQueueToProcessAllEvents();
-    		}
-    	}
-    	channels.clear();
+    protected void destroyAllChannels( boolean waitForQueueToProcessAllEvents ) {
+
+        for (DbChannel channel : channels.values()) {
+            if (waitForQueueToProcessAllEvents) {
+                channel.waitForQueueToProcessAllEvents();
+            }
+        }
+        channels.clear();
     }
 
     public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
@@ -158,7 +193,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         // remember it 
         this.layout = layout;
-        
+
     }
 
     /**
@@ -294,5 +329,5 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // FIXME make the next working
         getDbChannel(null).calculateTimeOffset(executorTimestamp);
     }
-    
+
 }

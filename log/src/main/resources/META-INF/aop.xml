@@ -1,0 +1,10 @@
+<aspectj>
+	<aspects>
+		<concrete-aspect
+			name="com.axway.ats.log.aspect.LogAspect.java">
+		</concrete-aspect>
+		<weaver options="-verbose -showWeaveInfo">
+			<include within="java.lang.*" />
+		</weaver>
+	</aspects>
+</aspectj>
