@@ -169,22 +169,29 @@ public class DbConnSQLServer extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
         updateConnectionSettings();
 
-        if (!useSSL) {
-            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-            url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
-
-            if (db != null) {
-                url.append("/").append(db);
-            }
+        url.append( jdbcDriverPrefix ).append( host ).append( ":" ).append( this.port );
+        
+        if( !useSSL && db != null ) {
+            url.append( db );
         } else {
-            // url prefix is missing the ':jtds:' part in SSL connection
-            // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-            url.append("jdbc:sqlserver://").append(host).append(":").append(this.port);
+            if( DEFAULT_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
+                if( db != null ) {
+                    url.append( "/" ).append( db );
+                }
+                url.append( ";ssl=require" );
+            } else if( MSSQL_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
+                // url prefix is missing the ':jtds:' part in SSL connection
+                // because the port can be changed after execution of the parent constructor, use this.port, instead of port
+                url.append( MSSQL_JDBC_DRIVER_PREFIX ).append( host ).append( ":" ).append( this.port );
 
-            if (db != null) {
-                url.append(";databaseName=")
-                   .append(db)
-                   .append(";integratedSecurity=false;encrypt=true;trustServerCertificate=true");
+                if( db != null ) {
+                    url.append( ";databaseName=" )
+                       .append( db )
+                       .append( ";integratedSecurity=false;encrypt=true;trustServerCertificate=true" );
+                }
+            } else {
+                throw new DbException( "SSL connection is not possible for the provided driver \""
+                                       + System.getProperty( JDBC_DRIVER_CLASS_KEY ) + "\"." );
             }
         }
     }
