@@ -172,7 +172,7 @@ public class DbConnSQLServer extends DbConnection {
         url.append( jdbcDriverPrefix ).append( host ).append( ":" ).append( this.port );
         
         if( !useSSL && db != null ) {
-            url.append( db );
+            url.append( "/" ).append( db );
         } else {
             if( DEFAULT_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
                 if( db != null ) {
