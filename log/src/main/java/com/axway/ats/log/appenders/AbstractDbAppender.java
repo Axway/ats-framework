@@ -39,7 +39,9 @@ import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
-    // indicated whether run/suites/testcases are running in parallel
+    /**
+     * indicated whether run/suites/testcases are running in parallel
+     */
     public static boolean             parallel         = false;
 
     // the channels for each test case
@@ -112,7 +114,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
             } else {
                 if ( (event instanceof InsertMessageEvent) || ( (event instanceof AbstractLoggingEvent) == false)) {
                     // the event is only of class InsertMessageEvent
-                    if(threadsMap.containsKey(channelKey)) {
+                    if (threadsMap.containsKey(channelKey)) {
                         return channels.get(threadsMap.get(channelKey));
                     }
                 }
