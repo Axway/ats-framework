@@ -52,6 +52,11 @@ public class SystemManager {
 
         return resourceId;
     }
+    
+    public synchronized static int deinitialize( int resourceId ) {
+        
+        return ResourcesManager.deinitializeResource(resourceId);
+    }
 
     public synchronized static OperatingSystemType
             getOsType( String callerId,

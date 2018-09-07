@@ -31,17 +31,17 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.ActionHandler;
 import com.axway.ats.agent.core.ComponentRepository;
-import com.axway.ats.agent.webapp.restservice.api.ResourcesManager;
-import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerClass;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethod;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinition;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinitions;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponse;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodResponses;
+import com.axway.ats.agent.webapp.restservice.api.system.SystemManager;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.google.gson.Gson;
@@ -133,75 +133,39 @@ public class AgentPropertiesRestEntryPoint {
             if (StringUtils.isNullOrEmpty(operation)) {
                 throw new NoSuchElementException("operation is not provided with the request");
             }
-            ActionPojo actionPojo = null;
             int resourceId = -1;
             switch (operation) {
                 case GET_CLASSPATH_OPERATION:
-                    // create action pojo
-                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
-                                                "Internal System Operations get Class Path", new String[]{},
-                                                new String[]{});
-                    // initialize resource
-                    resourceId = ResourcesManager.initializeResource(actionPojo);
-                    actionPojo.setResourceId(resourceId);
-                    // execute the operation
-                    String[] classPath = (String[]) ResourcesManager.executeOverResource(actionPojo);
-                    // deinitialize the resource
-                    ResourcesManager.deinitializeResource(resourceId);
-
+                    resourceId = SystemManager.initialize(callerId);
+                    String[] classPath = SystemManager.getClasspath(callerId, resourceId);
+                    SystemManager.deinitialize(resourceId);
                     return Response.ok("{\"classpath\":" + GSON.toJson(classPath) + "}").build();
                 case LOG_CLASSPATH_OPERATION:
-                    // create action pojo
-                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
-                                                "Internal System Operations log Class Path", new String[]{},
-                                                new String[]{});
-                    // initialize resource
-                    resourceId = ResourcesManager.initializeResource(actionPojo);
-                    actionPojo.setResourceId(resourceId);
-                    // execute the operation
-                    ResourcesManager.executeOverResource(actionPojo);
-                    // deinitialize the resource
-                    ResourcesManager.deinitializeResource(resourceId);
-
+                    resourceId = SystemManager.initialize(callerId);
+                    SystemManager.logClasspath(callerId, resourceId);
+                    SystemManager.deinitialize(resourceId);
                     return Response.ok("{\"status_message\":\"classpath successfully logged\"}").build();
                 case GET_DUPLICATED_JARS_OPERATION:
-                    // create action pojo
-                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
-                                                "Internal System Operations get Duplicated Jars", new String[]{},
-                                                new String[]{});
-                    // initialize resource
-                    resourceId = ResourcesManager.initializeResource(actionPojo);
-                    actionPojo.setResourceId(resourceId);
-                    // execute the operation
-                    String[] duplicatedJars = (String[]) ResourcesManager.executeOverResource(actionPojo);
-                    // deinitialize the resource
-                    ResourcesManager.deinitializeResource(resourceId);
-
+                    resourceId = SystemManager.initialize(callerId);
+                    String[] duplicatedJars = SystemManager.getDuplicatedJars(callerId, resourceId);
+                    SystemManager.deinitialize(resourceId);
                     return Response.ok("{\"duplicated_jars\":" + GSON.toJson(duplicatedJars) + "}").build();
                 case LOG_DUPLICATED_JARS_OPERATION:
-                    // create action pojo
-                    actionPojo = new ActionPojo(callerId, -1, "auto-system-operations",
-                                                "Internal System Operations log Duplicated Jars", new String[]{},
-                                                new String[]{});
-                    // initialize resource
-                    resourceId = ResourcesManager.initializeResource(actionPojo);
-                    actionPojo.setResourceId(resourceId);
-                    // execute the operation
-                    ResourcesManager.executeOverResource(actionPojo);
-                    // deinitialize the resource
-                    ResourcesManager.deinitializeResource(resourceId);
-
+                    resourceId = SystemManager.initialize(callerId);
+                    SystemManager.logDuplicatedJars(callerId, resourceId);
+                    SystemManager.deinitialize(resourceId);
                     return Response.ok("{\"status_message\":\"duplicated jars successfully logged\"}").build();
                 case GET_AGENT_HOME_OPERATION:
-                    return Response.ok("{\"agent_home\":" + System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER)
-                                       + "}")
-                                   .build();
+                    resourceId = SystemManager.initialize(callerId);
+                    String agentHome = IoUtils.normalizeDirPath(System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER));
+                    SystemManager.deinitialize(resourceId);
+                    return Response.ok("{\"agent_home\":\"" + agentHome + "\"}").build();
                 case IS_COMPONENT_LOADED_OPERATION:
                     value = getJsonElement(jsonObject, "value").getAsString(); // here the value acts as the component name
                     boolean loaded = ActionHandler.isComponentLoaded(ComponentRepository.DEFAULT_CALLER, value);
                     return Response.ok("{\"loaded\":" + loaded + "}").build();
                 case GET_ATS_VERSION_OPERATION:
-                    return Response.ok("{\"ats_version\":" + AtsVersion.getAtsVersion() + "}").build();
+                    return Response.ok("{\"ats_version\":" + AtsVersion.getAtsVersion() + "\"}").build();
                 case GET_NUMBER_PENDING_LOG_EVENTS:
                     int pendingLogEvents = -1;
                     PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance();
