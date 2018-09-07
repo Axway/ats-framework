@@ -357,10 +357,10 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
-        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getDuplicatedJars\"}";
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getNumberPendingLogEvents\"}";
         JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
                                                             requestBody);
-        int pendingLogEvents = httpClient.gson.fromJson(responseBody.get("getNumberPendingLogEvents"), int.class);
+        int pendingLogEvents = httpClient.gson.fromJson(responseBody.get("number_of_pending_log_events"), int.class);
 
         return pendingLogEvents;
     }
