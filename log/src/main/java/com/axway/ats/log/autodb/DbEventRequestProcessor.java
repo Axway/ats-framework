@@ -248,6 +248,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         } catch (UnknownHostException uhe) {
             this.machineName = "unknown host";
         }
+
+        if (_state == null) {
+            _state = new EventProcessorState();
+        }
     }
 
     /**
@@ -325,10 +329,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 }
                 return;
             }
-        }
-
-        if (_state == null) {
-            _state = new EventProcessorState();
         }
 
         if (_state.getRunId() == 0) {
@@ -538,7 +538,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         ActiveDbAppender.runState.setRunName(startRunEvent.getRunName());
         ActiveDbAppender.runState.setRunUserNote(null);
         ActiveDbAppender.runState.setLifeCycleState(LifeCycleState.RUN_STARTED);
-        
+
         _state.setRunId(newRunId);
         _state.setRunName(startRunEvent.getRunName());
         _state.setRunUserNote(null);
@@ -563,7 +563,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         ActiveDbAppender.runState.setRunId(0);
         ActiveDbAppender.runState.setPreviousRunId(currentRunId);
         ActiveDbAppender.runState.setLifeCycleState(LifeCycleState.INITIALIZED);
-        
+
         _state.setRunId(0);
         _state.setPreviousRunId(currentRunId);
         _state.setLifeCycleState(LifeCycleState.INITIALIZED);
@@ -787,6 +787,18 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         /*
          * This event happens on the Agent side.
          */
+
+        // check if testcaseId is not negative number
+        if (joinTestCaseEvent.getTestCaseState().getTestcaseId() < 0) {
+            // check if lastExecutedTestcaseId is not negative number
+            if (joinTestCaseEvent.getTestCaseState().getLastExecutedTestcaseId() < 0) {
+                throw new IllegalArgumentException("Could not join testcase. Both testcaseId and lastExecutedTestcaseId are negative numbers.");
+            } else {
+                // after this call lastTestcaseId and testcaseId will have the same value
+                joinTestCaseEvent.getTestCaseState()
+                                 .setTestcaseId(joinTestCaseEvent.getTestCaseState().getLastExecutedTestcaseId());
+            }
+        }
 
         //set test case id
         _state.setTestCaseState(joinTestCaseEvent.getTestCaseState());
