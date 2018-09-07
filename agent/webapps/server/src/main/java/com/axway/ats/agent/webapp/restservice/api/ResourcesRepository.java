@@ -42,7 +42,15 @@ public class ResourcesRepository {
     public synchronized int putResource( Object resource ) {
 
         String callerId = ThreadsPerCaller.getCaller();
-        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        int testcaseId = -1;
+        /*
+         * There are cases when we want to execute action on the agent, before that agent is configured.
+         * Since the agent is not configured, there is no PassiveDbAppender available.
+         * In that case testcaseId will be -1
+         * */
+        if (PassiveDbAppender.getCurrentInstance() != null) {
+            testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        }
         CallerResources callerResources = resourcesMap.get(callerId);
         if (callerResources == null) {
             callerResources = new CallerResources();
@@ -56,7 +64,15 @@ public class ResourcesRepository {
     public synchronized Object getResource( int resourceId ) {
 
         String callerId = ThreadsPerCaller.getCaller();
-        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        int testcaseId = -1;
+        /*
+         * There are cases when we want to execute action on the agent, before that agent is configured.
+         * Since the agent is not configured, there is no PassiveDbAppender available.
+         * In that case testcaseId will be -1
+         * */
+        if (PassiveDbAppender.getCurrentInstance() != null) {
+            testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        }
         CallerResources callerResources = resourcesMap.get(callerId);
         return callerResources.getTestcaseResource(testcaseId, resourceId);
 
@@ -65,7 +81,15 @@ public class ResourcesRepository {
     public synchronized Object deleteResource( int resourceId ) {
 
         String callerId = ThreadsPerCaller.getCaller();
-        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        int testcaseId = -1;
+        /*
+         * There are cases when we want to execute action on the agent, before that agent is configured.
+         * Since the agent is not configured, there is no PassiveDbAppender available.
+         * In that case testcaseId will be -1
+         * */
+        if (PassiveDbAppender.getCurrentInstance() != null) {
+            testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        }
         CallerResources callerResources = resourcesMap.get(callerId);
         return callerResources.deleteTestcaseResource(testcaseId, resourceId);
     }
@@ -73,7 +97,15 @@ public class ResourcesRepository {
     public synchronized Set<Integer> deleteResources() {
 
         String callerId = ThreadsPerCaller.getCaller();
-        int testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        int testcaseId = -1;
+        /*
+         * There are cases when we want to execute action on the agent, before that agent is configured.
+         * Since the agent is not configured, there is no PassiveDbAppender available.
+         * In that case testcaseId will be -1
+         * */
+        if (PassiveDbAppender.getCurrentInstance() != null) {
+            testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
+        }
         CallerResources callerResources = resourcesMap.get(callerId);
         Set<Integer> deletedResources = null;
         if (callerResources != null) {
