@@ -63,7 +63,9 @@ public class PassiveDbAppender extends AbstractDbAppender {
                            LoggingEvent event ) {
 
         if (ThreadsPerCaller.getCaller() == null) {
-            new AtsConsoleLogger(ThreadsPerCaller.class).trace("No caller for event '" + event + "'");
+            new AtsConsoleLogger(PassiveDbAppender.class).error("No caller for event '" + event
+                                                                + "'. Event source location is '"
+                                                                + event.getLocationInformation().fullInfo + "'");
             return;
         }
 
