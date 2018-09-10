@@ -61,7 +61,7 @@ public class ActionsRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -92,7 +92,7 @@ public class ActionsRestEntryPoint {
                     description = "The resource ID for the initialized action class",
                     example = "123",
                     name = "resourceId",
-                    type = "integer") }),
+                    type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing Action details",
@@ -118,7 +118,7 @@ public class ActionsRestEntryPoint {
                 LOG.debug("Initializing of action class for method '" + pojo.getMethodName()
                           + "' in caller with id '" + pojo.getCallerId() + "'");
             }
-            int resourceId = ResourcesManager.initializeResource(pojo);
+            long resourceId = ResourcesManager.initializeResource(pojo);
             String response = "{\"resourceId\":" + resourceId + "}";
             return Response.ok(response).build();
         } catch (Exception e) {
@@ -145,14 +145,14 @@ public class ActionsRestEntryPoint {
             url = "execute")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The action method name. Note that this is not the actual Java method name, but instead the value of the Action annotation's name attribute",
                                                   example = "FTP actions connect",
@@ -247,14 +247,14 @@ public class ActionsRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -264,7 +264,7 @@ public class ActionsRestEntryPoint {
                                                description = "The resource ID of the deinitialized action class",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer"),
+                                               type = "long"),
                                                                  @SwaggerMethodParameterDefinition(
                                                                          description = "Status message",
                                                                          example = "Action class with resource id '10' successfully deleted",
@@ -287,7 +287,7 @@ public class ActionsRestEntryPoint {
     })
     public Response deinitialize( @Context HttpServletRequest request,
                                   @QueryParam( "callerId") String callerId,
-                                  @QueryParam( "resourceId") int resourceId ) {
+                                  @QueryParam( "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {

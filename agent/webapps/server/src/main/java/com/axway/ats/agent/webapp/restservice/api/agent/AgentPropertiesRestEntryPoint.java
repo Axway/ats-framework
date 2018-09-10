@@ -76,7 +76,7 @@ public class AgentPropertiesRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -133,7 +133,7 @@ public class AgentPropertiesRestEntryPoint {
             if (StringUtils.isNullOrEmpty(operation)) {
                 throw new NoSuchElementException("operation is not provided with the request");
             }
-            int resourceId = -1;
+            long resourceId = -1;
             switch (operation) {
                 case GET_CLASSPATH_OPERATION:
                     resourceId = SystemManager.initialize(callerId);

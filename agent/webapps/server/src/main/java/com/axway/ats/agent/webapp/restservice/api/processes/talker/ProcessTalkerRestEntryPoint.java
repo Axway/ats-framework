@@ -65,7 +65,7 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -82,7 +82,7 @@ public class ProcessTalkerRestEntryPoint {
                                                description = "The resource ID of the initialized process talker",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing process talker details",
@@ -125,7 +125,7 @@ public class ProcessTalkerRestEntryPoint {
                 command = getJsonElement(jsonObject, "command").getAsString();
             }
 
-            int resourceId = ProcessesTalkersManager.initializeProcessTalker(callerId, command);
+            long resourceId = ProcessesTalkersManager.initializeProcessTalker(callerId, command);
             String response = "{\"resourceId\":" + resourceId + "}";
             return Response.ok(response).build();
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -196,7 +196,7 @@ public class ProcessTalkerRestEntryPoint {
             setDefaultOperationTimeout( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int timeout = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -207,7 +207,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -241,7 +241,7 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -279,7 +279,7 @@ public class ProcessTalkerRestEntryPoint {
             setCommand( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String command = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -290,7 +290,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -325,7 +325,7 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -363,7 +363,7 @@ public class ProcessTalkerRestEntryPoint {
                                       @QueryParam(
                                               value = "callerId") String callerId,
                                       @QueryParam(
-                                              value = "resourceId") int resourceId ) {
+                                              value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -401,7 +401,7 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -439,7 +439,7 @@ public class ProcessTalkerRestEntryPoint {
                                       @QueryParam(
                                               value = "callerId") String callerId,
                                       @QueryParam(
-                                              value = "resourceId") int resourceId ) {
+                                              value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -478,14 +478,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some-caller-id ( must be unique for each caller )",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID. This resource ID points to an existing process talker",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The pattern to expect in STDERR",
                                                   example = "Some string",
@@ -525,7 +525,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectStderr( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
         try {
@@ -537,7 +537,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -573,14 +573,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The REGEX pattern",
                                                   example = "[a-z].*",
@@ -620,7 +620,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectStderrByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
         try {
@@ -632,7 +632,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -669,14 +669,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of the patterns ( strings ) to be expected in STDERR",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -716,7 +716,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAllStderr( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -728,7 +728,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -761,14 +761,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of the REGEX patterns to be expected in STDERR",
                                                   example = "[\"[a-z].*\",\"[0-9].:\"]",
@@ -808,7 +808,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAllStderrByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] regexPatterns = null;
         int timeoutSeconds = -1;
         try {
@@ -820,7 +820,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -855,14 +855,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of patterns, one or more of which to be expected in STDERR",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -902,7 +902,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAnyStderr( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -914,7 +914,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -947,14 +947,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of REGEX patterns, one or more of which to be expected in STDERR",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -994,7 +994,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAnyStderrByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -1006,7 +1006,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1040,14 +1040,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -1077,7 +1077,7 @@ public class ProcessTalkerRestEntryPoint {
                                       @QueryParam(
                                               value = "callerId") String callerId,
                                       @QueryParam(
-                                              value = "resourceId") int resourceId ) {
+                                              value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1123,7 +1123,7 @@ public class ProcessTalkerRestEntryPoint {
                                                   description = "The resource ID. This resource ID points to an existing process talker",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The pattern to expect in STDOUT",
                                                   example = "Some string",
@@ -1163,7 +1163,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectStdout( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
         try {
@@ -1175,7 +1175,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1216,14 +1216,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The REGEX pattern",
                                                   example = "[a-z].*",
@@ -1263,7 +1263,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectStdoutByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String pattern = null;
         int timeoutSeconds = -1;
         try {
@@ -1275,7 +1275,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1317,14 +1317,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of the patterns ( strings ) to be expected in STDERR",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -1364,7 +1364,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAllStdout( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -1376,7 +1376,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1414,14 +1414,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of the REGEX patterns to be expected in STDOUT",
                                                   example = "[\"[a-z].*\",\"[0-9].:\"]",
@@ -1461,7 +1461,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAllStdoutByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] regexPatterns = null;
         int timeoutSeconds = -1;
         try {
@@ -1473,7 +1473,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1513,14 +1513,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of patterns, one or more of which to be expected in STDERR",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -1560,7 +1560,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAnyStdout( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -1572,7 +1572,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1611,14 +1611,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "<HOST_NAME>_<UUID_VALUE>_<THREAD_NAME>",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "string"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "Array of REGEX patterns, one or more of which to be expected in STDOUT",
                                                   example = "[\"some_string\",\"other_string\"]",
@@ -1659,7 +1659,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectAnyStdoutByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String[] patterns = null;
         int timeoutSeconds = -1;
         try {
@@ -1671,7 +1671,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1711,14 +1711,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The timeout ( in seconds ) to wait for the process talker to close",
                                                   example = "10",
@@ -1728,7 +1728,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response expectClose( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int timeoutSeconds = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -1739,7 +1739,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -1779,14 +1779,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -1795,7 +1795,7 @@ public class ProcessTalkerRestEntryPoint {
                                        description = "Successfully check whether process talker is closed",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
                                                description = "The caller ID",
-                                               example = "some caller ID",
+                                               example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                name = "callerId",
                                                type = "string") }),
                                @SwaggerMethodResponse(
@@ -1817,7 +1817,7 @@ public class ProcessTalkerRestEntryPoint {
                               @QueryParam(
                                       value = "callerId") String callerId,
                               @QueryParam(
-                                      value = "resourceId") int resourceId ) {
+                                      value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1856,14 +1856,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -1894,7 +1894,7 @@ public class ProcessTalkerRestEntryPoint {
                                   @QueryParam(
                                           value = "callerId") String callerId,
                                   @QueryParam(
-                                          value = "resourceId") int resourceId ) {
+                                          value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1933,14 +1933,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -1970,7 +1970,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response kill( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -1980,7 +1980,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -2014,14 +2014,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -2051,7 +2051,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response killWithChildren( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -2061,7 +2061,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -2095,14 +2095,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The text (string) to send to the process talker",
                                                   example = "Some text",
@@ -2137,7 +2137,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response send( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String text = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -2148,7 +2148,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -2183,14 +2183,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -2220,7 +2220,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response sendEnter( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -2230,7 +2230,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }
@@ -2264,14 +2264,14 @@ public class ProcessTalkerRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The pattern that will appear one or more times and after which an ENTER key must be send to the process talker",
                                                   example = "Press any key to continue",
@@ -2316,7 +2316,7 @@ public class ProcessTalkerRestEntryPoint {
     public Response sendEnterInLopp( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String intermediatePattern = null;
         String finalPattern = null;
         int maxLoopTimes = -1;
@@ -2329,7 +2329,7 @@ public class ProcessTalkerRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new NoSuchElementException("resourceId must be >= 0, but was " + resourceId);
             }

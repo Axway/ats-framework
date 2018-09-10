@@ -66,7 +66,7 @@ public class ProcessExecutorRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -88,7 +88,7 @@ public class ProcessExecutorRestEntryPoint {
                                                description = "The resource ID of the initialized process executor",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing process executor details",
@@ -134,7 +134,7 @@ public class ProcessExecutorRestEntryPoint {
                 commandArguments = GSON.fromJson(getJsonElement(jsonObject, "commandArguments"), String[].class);
             }
 
-            int resourceId = ProcessesExecutorsManager.initializeProcessExecutor(callerId, command, commandArguments);
+            long resourceId = ProcessesExecutorsManager.initializeProcessExecutor(callerId, command, commandArguments);
             String response = "{\"resourceId\":" + resourceId + "}";
 
             return Response.ok(response).build();
@@ -169,14 +169,14 @@ public class ProcessExecutorRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory from which the process will be started",
                                                   example = "/home/atsuser/",
@@ -235,7 +235,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response startProcess( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String workDirectory = null;
         String standardOutputFile = null;
         String errorOutputFile = null;
@@ -251,7 +251,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -291,14 +291,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "kill")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -327,7 +327,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response killProcess( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -337,7 +337,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -369,14 +369,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "kill/all")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -405,7 +405,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response killAll( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -415,7 +415,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -448,14 +448,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "kill/external")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "start command snippet",
                                                   example = "grep -nr test",
@@ -490,7 +490,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response killExternalProcess( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String startCommandSnippet = null;
         int numOfKilledProcesses = -1;
         try {
@@ -502,7 +502,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -539,14 +539,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "exitCode")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -573,7 +573,7 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getProcessExitCode( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
-                                        @QueryParam( "resourceId") int resourceId ) {
+                                        @QueryParam( "resourceId") long resourceId ) {
 
         int exitCode = -1;
         try {
@@ -611,14 +611,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "pid")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -646,7 +646,7 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getProcessId( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
-                                  @QueryParam( "resourceId") int resourceId ) {
+                                  @QueryParam( "resourceId") long resourceId ) {
 
         int exitCode = -1;
         try {
@@ -684,14 +684,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stdout")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
                                        code = 200,
@@ -718,7 +718,7 @@ public class ProcessExecutorRestEntryPoint {
                                                                          type = "string") })
     })
     public Response getStandardOutput( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
-                                       @QueryParam( "resourceId") int resourceId ) {
+                                       @QueryParam( "resourceId") long resourceId ) {
 
         String stdout = null;
         try {
@@ -756,14 +756,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stdout/current")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -792,7 +792,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response getCurrentStandardOutput( @Context HttpServletRequest request,
                                               @QueryParam( "callerId") String callerId,
-                                              @QueryParam( "resourceId") int resourceId ) {
+                                              @QueryParam( "resourceId") long resourceId ) {
 
         String stdout = null;
         try {
@@ -830,14 +830,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stdout/fullyread")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -866,7 +866,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response isStandardOutputFullyRead( @Context HttpServletRequest request,
                                                @QueryParam( "callerId") String callerId,
-                                               @QueryParam( "resourceId") int resourceId ) {
+                                               @QueryParam( "resourceId") long resourceId ) {
 
         boolean fullyRead = false;
         try {
@@ -905,14 +905,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stderr")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -941,7 +941,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response getStandardErrorOutput( @Context HttpServletRequest request,
                                             @QueryParam( "callerId") String callerId,
-                                            @QueryParam( "resourceId") int resourceId ) {
+                                            @QueryParam( "resourceId") long resourceId ) {
 
         String stdout = null;
         try {
@@ -979,14 +979,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stderr/current")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -1015,7 +1015,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response getCurrentStandardErrorOutput( @Context HttpServletRequest request,
                                                    @QueryParam( "callerId") String callerId,
-                                                   @QueryParam( "resourceId") int resourceId ) {
+                                                   @QueryParam( "resourceId") long resourceId ) {
 
         String stdout = null;
         try {
@@ -1053,14 +1053,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "stderr/fullyread")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer") })
+                                                  type = "long") })
 
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -1089,7 +1089,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response isStandardErrorOutputFullyRead( @Context HttpServletRequest request,
                                                     @QueryParam( "callerId") String callerId,
-                                                    @QueryParam( "resourceId") int resourceId ) {
+                                                    @QueryParam( "resourceId") long resourceId ) {
 
         boolean fullyRead = false;
         try {
@@ -1128,14 +1128,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "envvars")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The variable name. Such variable must already exists",
                                                   example = "my_var",
@@ -1168,7 +1168,7 @@ public class ProcessExecutorRestEntryPoint {
     })
     public Response getEnvironmentVariable( @Context HttpServletRequest request,
                                             @QueryParam( "callerId") String callerId,
-                                            @QueryParam( "resourceId") int resourceId,
+                                            @QueryParam( "resourceId") long resourceId,
                                             @QueryParam( "variableName") String variableName ) {
 
         String envVar = null;
@@ -1211,14 +1211,14 @@ public class ProcessExecutorRestEntryPoint {
             url = "envvars")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The variable name",
                                                   example = "my_var",
@@ -1257,7 +1257,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response setEnvironmentVariable( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String variableName = null;
         String variableValue = null;
         try {
@@ -1269,7 +1269,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1310,14 +1310,14 @@ public class ProcessExecutorRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "1",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The variable name. Such variable must already exists",
                                                   example = "my_var",
@@ -1356,7 +1356,7 @@ public class ProcessExecutorRestEntryPoint {
     public Response appendToEnvironmentVariable( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String variableName = null;
         String variableValue = null;
         try {
@@ -1368,7 +1368,7 @@ public class ProcessExecutorRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }

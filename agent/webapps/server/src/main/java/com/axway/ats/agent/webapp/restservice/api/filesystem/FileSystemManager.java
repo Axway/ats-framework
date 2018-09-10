@@ -34,10 +34,10 @@ public class FileSystemManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int
+    public synchronized static long
             initialize( String callerId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
-                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
-                                           IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
+                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         ActionPojo pojo = new ActionPojo(callerId, UNINITIALIZED_RESOURCE_ID, COMPONENT_NAME,
                                          "Internal File System Operations initialize",
@@ -45,7 +45,7 @@ public class FileSystemManager {
                                          null);
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -54,7 +54,7 @@ public class FileSystemManager {
         return resourceId;
     }
 
-    public synchronized static void appendToFile( String callerId, int resourceId, String filePath,
+    public synchronized static void appendToFile( String callerId, long resourceId, String filePath,
                                                   String contentToAdd ) throws NoSuchActionException,
                                                                         NoCompatibleMethodFoundException,
                                                                         NoSuchComponentException,
@@ -77,7 +77,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFilePermissions( String callerId, int resourceId,
+            getFilePermissions( String callerId, long resourceId,
                                 String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
@@ -94,7 +94,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileGroup( String callerId, int resourceId,
+            getFileGroup( String callerId, long resourceId,
                           String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
@@ -111,7 +111,7 @@ public class FileSystemManager {
     }
 
     public synchronized static long
-            getFileGID( String callerId, int resourceId,
+            getFileGID( String callerId, long resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException,
@@ -128,7 +128,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileOwner( String callerId, int resourceId,
+            getFileOwner( String callerId, long resourceId,
                           String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
@@ -145,7 +145,7 @@ public class FileSystemManager {
     }
 
     public synchronized static long
-            getFileUID( String callerId, int resourceId,
+            getFileUID( String callerId, long resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException,
@@ -161,7 +161,7 @@ public class FileSystemManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getFileModificationTime( String callerId, int resourceId,
+    public synchronized static long getFileModificationTime( String callerId, long resourceId,
                                                              String fileName ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
                                                                                NoSuchComponentException,
@@ -181,7 +181,7 @@ public class FileSystemManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getFileSize( String callerId, int resourceId,
+    public synchronized static long getFileSize( String callerId, long resourceId,
                                                  String fileName ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
@@ -199,7 +199,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String
-            getFileUniqueID( String callerId, int resourceId,
+            getFileUniqueID( String callerId, long resourceId,
                              String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
@@ -215,7 +215,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void setFileUID( String callerId, int resourceId, String fileName,
+    public synchronized static void setFileUID( String callerId, long resourceId, String fileName,
                                                 long uid ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -234,7 +234,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileGID( String callerId, int resourceId, String fileName,
+    public synchronized static void setFileGID( String callerId, long resourceId, String fileName,
                                                 long gid ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -253,7 +253,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFilePermissions( String callerId, int resourceId, String fileName,
+    public synchronized static void setFilePermissions( String callerId, long resourceId, String fileName,
                                                         String permissions ) throws NoSuchActionException,
                                                                              NoCompatibleMethodFoundException,
                                                                              NoSuchComponentException,
@@ -274,7 +274,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileModicationTime( String callerId, int resourceId, String fileName,
+    public synchronized static void setFileModicationTime( String callerId, long resourceId, String fileName,
                                                            long modificationTime ) throws NoSuchActionException,
                                                                                    NoCompatibleMethodFoundException,
                                                                                    NoSuchComponentException,
@@ -295,7 +295,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void setFileHiddenAttribute( String callerId, int resourceId, String fileName,
+    public synchronized static void setFileHiddenAttribute( String callerId, long resourceId, String fileName,
                                                             boolean hidden ) throws NoSuchActionException,
                                                                              NoCompatibleMethodFoundException,
                                                                              NoSuchComponentException,
@@ -317,7 +317,7 @@ public class FileSystemManager {
     }
 
     public synchronized static boolean
-            doesFileExists( String callerId, int resourceId,
+            doesFileExists( String callerId, long resourceId,
                             String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                               IllegalAccessException, IllegalArgumentException,
@@ -334,7 +334,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            createFile( String callerId, int resourceId, String fileName, String fileContent, long fileSize,
+            createFile( String callerId, long resourceId, String fileName, String fileContent, long fileSize,
                         long uid, long gid, String eol,
                         boolean isRandomContent,
                         boolean isBinary ) throws NoSuchActionException, NoCompatibleMethodFoundException,
@@ -369,7 +369,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            deleteFile( String callerId, int resourceId,
+            deleteFile( String callerId, long resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -385,7 +385,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void renameFile( String callerId, int resourceId, String oldFileName,
+    public synchronized static void renameFile( String callerId, long resourceId, String oldFileName,
                                                 String newFileName,
                                                 boolean overwrite ) throws NoSuchActionException,
                                                                     NoCompatibleMethodFoundException,
@@ -408,7 +408,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String[]
-            getLastLines( String callerId, int resourceId, String fileName, int numberOfLines,
+            getLastLines( String callerId, long resourceId, String fileName, int numberOfLines,
                           String charset ) throws NoSuchActionException,
                                            NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException,
@@ -427,7 +427,7 @@ public class FileSystemManager {
         return (String[]) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String readFile( String callerId, int resourceId, String fileName,
+    public synchronized static String readFile( String callerId, long resourceId, String fileName,
                                                 String fileEncoding ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -445,7 +445,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static FileTailInfo readFileFromPosition( String callerId, int resourceId, String fileName,
+    public synchronized static FileTailInfo readFileFromPosition( String callerId, long resourceId, String fileName,
                                                                   long fromBytePosition ) throws NoSuchActionException,
                                                                                           NoCompatibleMethodFoundException,
                                                                                           NoSuchComponentException,
@@ -465,7 +465,7 @@ public class FileSystemManager {
         return (FileTailInfo) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String computeMd5Sum( String callerId, int resourceId, String fileName,
+    public synchronized static String computeMd5Sum( String callerId, long resourceId, String fileName,
                                                      String md5SumMode ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
                                                                          NoSuchComponentException,
@@ -485,7 +485,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void replaceText( String callerId, int resourceId, String fileName,
+    public synchronized static void replaceText( String callerId, long resourceId, String fileName,
                                                  Map<String, String> searchTokens,
                                                  boolean isRegex ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
@@ -506,7 +506,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void replaceText( String callerId, int resourceId, String fileName, String searchString,
+    public synchronized static void replaceText( String callerId, long resourceId, String fileName, String searchString,
                                                  String newString,
                                                  boolean isRegex ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
@@ -527,7 +527,7 @@ public class FileSystemManager {
     }
 
     public synchronized static FileMatchInfo
-            findTextAfterGivenPositionInFile( String callerId, int resourceId, String fileName,
+            findTextAfterGivenPositionInFile( String callerId, long resourceId, String fileName,
                                               String[] searchTexts, boolean isRegex,
                                               long searchFromPosition,
                                               int currentLineNumber ) throws NoSuchActionException,
@@ -552,7 +552,7 @@ public class FileSystemManager {
         return (FileMatchInfo) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static String[] fileGrep( String callerId, int resourceId, String fileName,
+    public synchronized static String[] fileGrep( String callerId, long resourceId, String fileName,
                                                   String searchPattern,
                                                   boolean isSimpleMode ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
@@ -575,7 +575,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            lockFile( String callerId, int resourceId,
+            lockFile( String callerId, long resourceId,
                       String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -592,7 +592,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            unlockFile( String callerId, int resourceId,
+            unlockFile( String callerId, long resourceId,
                         String fileName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                           IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -608,7 +608,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void unzipFile( String callerId, int resourceId, String zipFilePath,
+    public synchronized static void unzipFile( String callerId, long resourceId, String zipFilePath,
                                                String outputDirPath ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -627,7 +627,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static void extractFile( String callerId, int resourceId, String archiveFilePath,
+    public synchronized static void extractFile( String callerId, long resourceId, String archiveFilePath,
                                                  String outputDirPath ) throws NoSuchActionException,
                                                                         NoCompatibleMethodFoundException,
                                                                         NoSuchComponentException,
@@ -648,7 +648,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            sendFileTo( String callerId, int resourceId, String fromFileName, String toFileName,
+            sendFileTo( String callerId, long resourceId, String fromFileName, String toFileName,
                         String machineIP, int port,
                         boolean failOnError ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
@@ -670,7 +670,7 @@ public class FileSystemManager {
 
     }
 
-    public synchronized static String constructDestinationFilePath( String callerId, int resourceId,
+    public synchronized static String constructDestinationFilePath( String callerId, long resourceId,
                                                                     String srcFileName,
                                                                     String dstFilePath ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
@@ -691,7 +691,7 @@ public class FileSystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void setCopyPortRange( String callerId, int resourceId, int copyFileStartPort,
+    public synchronized static void setCopyPortRange( String callerId, long resourceId, int copyFileStartPort,
                                                       int copyFileEndPort ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
                                                                             NoSuchComponentException,
@@ -713,7 +713,7 @@ public class FileSystemManager {
     }
 
     public synchronized static int
-            openTransferSocket( String callerId, int resourceId ) throws NoSuchActionException,
+            openTransferSocket( String callerId, long resourceId ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
                                                                    InstantiationException, IllegalAccessException,
@@ -730,7 +730,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            waitForTransferToComplete( String callerId, int resourceId,
+            waitForTransferToComplete( String callerId, long resourceId,
                                        int port ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
@@ -748,7 +748,7 @@ public class FileSystemManager {
     }
 
     public synchronized static String[]
-            findFiles( String callerId, int resourceId, String location, String searchString,
+            findFiles( String callerId, long resourceId, String location, String searchString,
                        boolean isRegex, boolean acceptDirectories,
                        boolean recursiveSearch ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                  NoSuchComponentException, ClassNotFoundException,
@@ -771,7 +771,7 @@ public class FileSystemManager {
     }
 
     public synchronized static boolean
-            doesDirectoryExists( String callerId, int resourceId,
+            doesDirectoryExists( String callerId, long resourceId,
                                  String dirName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException,
@@ -789,7 +789,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            createDirectory( String callerId, int resourceId, String directoryName,
+            createDirectory( String callerId, long resourceId, String directoryName,
                              long uid, long gid ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                   NoSuchComponentException, ClassNotFoundException,
                                                   InstantiationException, IllegalAccessException,
@@ -812,7 +812,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            deleteDirectory( String callerId, int resourceId,
+            deleteDirectory( String callerId, long resourceId,
                              String directoryName,
                              boolean deleteRecursively ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
@@ -832,7 +832,7 @@ public class FileSystemManager {
     }
 
     public synchronized static void
-            purgeDirectoryContent( String callerId, int resourceId,
+            purgeDirectoryContent( String callerId, long resourceId,
                                    String directoryName ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException,
                                                           NoSuchComponentException, ClassNotFoundException,
@@ -851,7 +851,7 @@ public class FileSystemManager {
 
     }
 
-    public static void sendDirectoryTo( String callerId, int resourceId, String fromDirName, String toDirName,
+    public static void sendDirectoryTo( String callerId, long resourceId, String fromDirName, String toDirName,
                                         String machineIP, int port, boolean isRecursive,
                                         boolean failOnError ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
@@ -877,7 +877,7 @@ public class FileSystemManager {
 
     }
 
-    public static void copyFileLocally( String callerId, int resourceId, String fromFileName, String toFileName,
+    public static void copyFileLocally( String callerId, long resourceId, String fromFileName, String toFileName,
                                         boolean failOnError ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException, ClassNotFoundException,
@@ -898,7 +898,7 @@ public class FileSystemManager {
 
     }
 
-    public static void copyDirectoryLocally( String callerId, int resourceId, String fromFileName, String toFileName,
+    public static void copyDirectoryLocally( String callerId, long resourceId, String fromFileName, String toFileName,
                                              boolean failOnError, boolean isRecursive ) throws NoSuchActionException,
                                                                                         NoCompatibleMethodFoundException,
                                                                                         NoSuchComponentException,

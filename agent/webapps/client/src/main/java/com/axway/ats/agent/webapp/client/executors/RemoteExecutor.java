@@ -73,7 +73,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     protected String   atsAgent;
     protected String   callerId;
-    protected int      resourceId = -1;
+    protected long     resourceId = -1;
     protected String   initializeRequestUrl;
     protected String   executeRequestUrl;
 
@@ -183,7 +183,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
              * */
             requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
             requestMethod = "POST";
-            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId, ExecutorUtils.createCallerId()), ActionPojo.class);
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                ExecutorUtils.createCallerId()),
+                                                 ActionPojo.class);
 
         } else {
             if (!StringUtils.isNullOrEmpty(actionRequest.getRequestUrl())) {
@@ -199,7 +201,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
                  */
                 requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
                 requestMethod = "POST";
-                requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId, ExecutorUtils.createCallerId()), ActionPojo.class);
+                requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                    ExecutorUtils.createCallerId()),
+                                                     ActionPojo.class);
             }
 
         }
@@ -242,7 +246,9 @@ public class RemoteExecutor extends AbstractClientExecutor {
             // this is an Action request from a custom/third-party action
             requestUrl = constructAbsoluteRequestUrl("actions");
             requestMethod = "PUT";
-            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId, ExecutorUtils.createCallerId()), ActionPojo.class);
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                ExecutorUtils.createCallerId()),
+                                                 ActionPojo.class);
             actionRequestType = ActionRequestType.INITIALIZE_CUSTOM_ACTION;
         } else {
             // this is an Action request from an ATS predefined action
@@ -265,7 +271,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
                                                  requestBody);
 
         // we assume that the request will contain resourceId field
-        resourceId = responseBody.get("resourceId").getAsInt();
+        resourceId = responseBody.get("resourceId").getAsLong();
 
         log.info("Successfully registered action class for action '" + actionRequest.getActionName() + "'");
 

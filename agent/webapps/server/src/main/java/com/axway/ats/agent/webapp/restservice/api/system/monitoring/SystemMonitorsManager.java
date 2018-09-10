@@ -23,13 +23,13 @@ import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 
 public class SystemMonitorsManager {
 
-    public synchronized static int initialize() {
+    public synchronized static long initialize() {
 
         return ResourcesManager.addResource(new RestSystemMonitor());
     }
 
-    public synchronized static int deinitialize(
-                                                 int resourceId ) {
+    public synchronized static long deinitialize(
+                                                 long resourceId ) {
 
         return ResourcesManager.deinitializeResource(resourceId);
 
@@ -37,7 +37,7 @@ public class SystemMonitorsManager {
 
     public synchronized static void initializeMonitoringContext(
 
-                                                                 int resourceId,
+                                                                 long resourceId,
                                                                  String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
@@ -47,7 +47,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void scheduleSystemMonitoring(
-                                                              int resourceId,
+                                                              long resourceId,
                                                               String[] systemReadingTypes,
                                                               String atsAgent ) {
 
@@ -58,7 +58,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void scheduleMonitoring(
-                                                        int resourceId,
+                                                        long resourceId,
                                                         String readingType,
                                                         Map<String, String> readingParameters,
                                                         String atsAgent ) {
@@ -71,14 +71,14 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void scheduleUserActivity( int resourceId, String atsAgent ) {
+    public synchronized static void scheduleUserActivity( long resourceId, String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
         monitor.scheduleUserActivity(atsAgent);
 
     }
 
-    public synchronized static void startMonitoring( int resourceId, int pollingInterval,
+    public synchronized static void startMonitoring( long resourceId, int pollingInterval,
                                                      long startTimestamp, String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
@@ -90,7 +90,7 @@ public class SystemMonitorsManager {
 
     }
 
-    public synchronized static void stopMonitoring( int resourceId, String atsAgent ) {
+    public synchronized static void stopMonitoring( long resourceId, String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
 
@@ -99,7 +99,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void scheduleChildProcessMonitoring(
-                                                                    int resourceId,
+                                                                    long resourceId,
                                                                     String parentProcess,
                                                                     String processPattern,
                                                                     String processAlias,
@@ -116,7 +116,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void scheduleChildProcessMonitoring(
-                                                                    int resourceId,
+                                                                    long resourceId,
                                                                     String parentProcess,
                                                                     String processPattern,
                                                                     String processAlias,
@@ -132,7 +132,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void scheduleProcessMonitoring(
-                                                               int resourceId,
+                                                               long resourceId,
                                                                String processPattern,
                                                                String processAlias,
                                                                String[] processReadingTypes,
@@ -144,7 +144,7 @@ public class SystemMonitorsManager {
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleProcessMonitoring( int resourceId, String processPattern,
+    public synchronized static void scheduleProcessMonitoring( long resourceId, String processPattern,
                                                                String processAlias, String processUsername,
                                                                String[] processReadingTypes,
                                                                String atsAgent ) {
@@ -155,7 +155,7 @@ public class SystemMonitorsManager {
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleJvmMonitoring( int resourceId, String jvmPort,
+    public synchronized static void scheduleJvmMonitoring( long resourceId, String jvmPort,
                                                            String[] jvmReadingTypes, String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
@@ -163,7 +163,7 @@ public class SystemMonitorsManager {
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public synchronized static void scheduleJvmMonitoring( int resourceId, String jvmPort,
+    public synchronized static void scheduleJvmMonitoring( long resourceId, String jvmPort,
                                                            String alias,
                                                            String[] jvmReadingTypes, String atsAgent ) {
 
@@ -172,7 +172,7 @@ public class SystemMonitorsManager {
         monitor.setScheduledReadingTypes(readings);
     }
 
-    public static void scheduleCustomJvmMonitoring( int resourceId, String jmxPort, String alias,
+    public static void scheduleCustomJvmMonitoring( long resourceId, String jmxPort, String alias,
                                                     String mbeanName, String unit, String[] mbeanAttributes,
                                                     String atsAgent ) {
 

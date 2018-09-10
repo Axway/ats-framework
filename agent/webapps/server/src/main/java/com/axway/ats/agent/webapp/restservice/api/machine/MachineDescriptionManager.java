@@ -28,7 +28,7 @@ public class MachineDescriptionManager {
     private static final int    UNINITIALIZED_RESOURCE_ID = -1;
     private static final String COMPONENT_NAME            = "auto-system-operations";
 
-    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
+    public synchronized static long initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -40,14 +40,14 @@ public class MachineDescriptionManager {
                                          null);
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         return resourceId;
     }
 
     public synchronized static String
-            getDescription( String callerId, int resourceId ) throws NoSuchActionException,
+            getDescription( String callerId, long resourceId ) throws NoSuchActionException,
                                                                NoCompatibleMethodFoundException,
                                                                NoSuchComponentException, ClassNotFoundException,
                                                                InstantiationException, IllegalAccessException,

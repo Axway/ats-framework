@@ -33,7 +33,7 @@ public class FileSystemSnapshotManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initFileSystemSnapshot( String callerId, String name,
+    public synchronized static long initFileSystemSnapshot( String callerId, String name,
                                                            SnapshotConfiguration configuration ) throws NoSuchActionException,
                                                                                                  NoCompatibleMethodFoundException,
                                                                                                  NoSuchComponentException,
@@ -49,7 +49,7 @@ public class FileSystemSnapshotManager {
                                          new String[]{ GSON.toJson(name), GSON.toJson(configuration) });
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -58,7 +58,7 @@ public class FileSystemSnapshotManager {
         return resourceId;
     }
 
-    public synchronized static void addDirectory( String callerId, int resourceId, String directoryAlias,
+    public synchronized static void addDirectory( String callerId, long resourceId, String directoryAlias,
                                                   String directoryPath ) throws NoSuchActionException,
                                                                          NoCompatibleMethodFoundException,
                                                                          NoSuchComponentException,
@@ -78,7 +78,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void takeSnapshot( String callerId, int resourceId ) throws NoSuchActionException,
+    public synchronized static void takeSnapshot( String callerId, long resourceId ) throws NoSuchActionException,
                                                                                      NoCompatibleMethodFoundException,
                                                                                      NoSuchComponentException,
                                                                                      ClassNotFoundException,
@@ -99,7 +99,7 @@ public class FileSystemSnapshotManager {
 
     public synchronized static LocalFileSystemSnapshot
             getFileSystemSnapshot( String callerId,
-                                   int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                   long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                     NoSuchComponentException, ClassNotFoundException,
                                                     InstantiationException, IllegalAccessException,
                                                     IllegalArgumentException, InvocationTargetException {
@@ -114,7 +114,7 @@ public class FileSystemSnapshotManager {
     }
 
     public synchronized static void
-            toFile( String callerId, int resourceId,
+            toFile( String callerId, long resourceId,
                     String backupFile ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -129,7 +129,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void loadFromFile( String callerId, int resourceId,
+    public synchronized static void loadFromFile( String callerId, long resourceId,
                                                   String sourceFile ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -147,7 +147,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void pushFileSystemSnapshot( String callerId, int resourceId,
+    public synchronized static void pushFileSystemSnapshot( String callerId, long resourceId,
                                                             LocalFileSystemSnapshot newSnapshot ) throws NoSuchActionException,
                                                                                                   NoCompatibleMethodFoundException,
                                                                                                   NoSuchComponentException,
@@ -167,7 +167,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void newFileSystemSnapshot( String callerId, int resourceId,
+    public synchronized static void newFileSystemSnapshot( String callerId, long resourceId,
                                                            LocalFileSystemSnapshot srcFileSystemSnapshot,
                                                            String newSnapshotName ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
@@ -190,7 +190,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void setName( String callerId, int resourceId,
+    public synchronized static void setName( String callerId, long resourceId,
                                              String name ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException,
                                                            NoSuchComponentException, ClassNotFoundException,
@@ -208,7 +208,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void checkFile( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void checkFile( String callerId, long resourceId, String rootDirectoryAlias,
                                                String relativeFilePath,
                                                int[] checkRules ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
@@ -229,7 +229,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipDirectory( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipDirectory( String callerId, long resourceId, String rootDirectoryAlias,
                                                    String relativeDirectoryPath ) throws NoSuchActionException,
                                                                                   NoCompatibleMethodFoundException,
                                                                                   NoSuchComponentException,
@@ -252,7 +252,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipDirectoryByRegex( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipDirectoryByRegex( String callerId, long resourceId, String rootDirectoryAlias,
                                                           String relativeDirectoryPath ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
                                                                                          NoSuchComponentException,
@@ -275,7 +275,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipFile( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipFile( String callerId, long resourceId, String rootDirectoryAlias,
                                               String relativeFilePath, int[] skipRules ) throws NoSuchActionException,
                                                                                          NoCompatibleMethodFoundException,
                                                                                          NoSuchComponentException,
@@ -300,7 +300,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipFileByRegex( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipFileByRegex( String callerId, long resourceId, String rootDirectoryAlias,
                                                      String relativeFilePath,
                                                      int[] skipRules ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
@@ -326,7 +326,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipTextLine( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipTextLine( String callerId, long resourceId, String rootDirectoryAlias,
                                                   String relativeFilePath, String line,
                                                   String matchType ) throws NoSuchActionException,
                                                                      NoCompatibleMethodFoundException,
@@ -349,7 +349,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipPropertyWithKey( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipPropertyWithKey( String callerId, long resourceId, String rootDirectoryAlias,
                                                          String relativeFilePath, String key,
                                                          String matchType ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
@@ -374,7 +374,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipPropertyWithValue( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipPropertyWithValue( String callerId, long resourceId, String rootDirectoryAlias,
                                                            String relativeFilePath, String value,
                                                            String matchType ) throws NoSuchActionException,
                                                                               NoCompatibleMethodFoundException,
@@ -399,7 +399,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipNodeByAttribute( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipNodeByAttribute( String callerId, long resourceId, String rootDirectoryAlias,
                                                          String relativeFilePath, String nodeXpath, String attributeKey,
                                                          String attributeValue,
                                                          String attributeValueMatchType ) throws NoSuchActionException,
@@ -428,7 +428,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipNodeByValue( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipNodeByValue( String callerId, long resourceId, String rootDirectoryAlias,
                                                      String relativeFilePath, String nodeXpath,
                                                      String value,
                                                      String matchType ) throws NoSuchActionException,
@@ -456,7 +456,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniSection( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipIniSection( String callerId, long resourceId, String rootDirectoryAlias,
                                                     String relativeFilePath, String section,
                                                     String matchType ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
@@ -479,7 +479,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniPropertyWithKey( String callerId, int resourceId, String rootDirectoryAlias,
+    public synchronized static void skipIniPropertyWithKey( String callerId, long resourceId, String rootDirectoryAlias,
                                                             String relativeFilePath, String section, String key,
                                                             String matchType ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
@@ -506,7 +506,7 @@ public class FileSystemSnapshotManager {
 
     }
 
-    public synchronized static void skipIniPropertyWithValue( String callerId, int resourceId,
+    public synchronized static void skipIniPropertyWithValue( String callerId, long resourceId,
                                                               String rootDirectoryAlias,
                                                               String relativeFilePath, String section, String value,
                                                               String matchType ) throws NoSuchActionException,
@@ -535,7 +535,7 @@ public class FileSystemSnapshotManager {
     }
 
     public static String getDescription( String callerId,
-                                         int resourceId ) throws NoSuchActionException,
+                                         long resourceId ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException, NoSuchComponentException,
                                                           ClassNotFoundException, InstantiationException,
                                                           IllegalAccessException, IllegalArgumentException,

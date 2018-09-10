@@ -31,7 +31,7 @@ public class ProcessesExecutorsManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public static synchronized int
+    public static synchronized long
             initializeProcessExecutor( String callerId, String command,
                                        String[] commandArguments ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
@@ -45,7 +45,7 @@ public class ProcessesExecutorsManager {
                                          new String[]{ GSON.toJson(command), GSON.toJson(commandArguments) });
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -56,7 +56,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized Object startProcess( String callerId,
-                                                    int resourceId,
+                                                    long resourceId,
                                                     String workDirectory,
                                                     String standardOutputFile,
                                                     String errorOutputFile,
@@ -93,7 +93,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized String getStandardOutput( String callerId,
-                                                         int resourceId ) throws NoSuchActionException,
+                                                         long resourceId ) throws NoSuchActionException,
                                                                           NoCompatibleMethodFoundException,
                                                                           NoSuchComponentException,
                                                                           ClassNotFoundException,
@@ -110,7 +110,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized String getCurrentStandardOutput( String callerId,
-                                                                int resourceId ) throws NoSuchActionException,
+                                                                long resourceId ) throws NoSuchActionException,
                                                                                  NoCompatibleMethodFoundException,
                                                                                  NoSuchComponentException,
                                                                                  ClassNotFoundException,
@@ -127,7 +127,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized boolean isStandardOutputFullyRead( String callerId,
-                                                                 int resourceId ) throws NoSuchActionException,
+                                                                 long resourceId ) throws NoSuchActionException,
                                                                                   NoCompatibleMethodFoundException,
                                                                                   NoSuchComponentException,
                                                                                   ClassNotFoundException,
@@ -144,7 +144,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized String getStandardErrorOutput( String callerId,
-                                                              int resourceId ) throws NoSuchActionException,
+                                                              long resourceId ) throws NoSuchActionException,
                                                                                NoCompatibleMethodFoundException,
                                                                                NoSuchComponentException,
                                                                                ClassNotFoundException,
@@ -161,7 +161,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized String getCurrentStandardErrorOutput( String callerId,
-                                                                     int resourceId ) throws NoSuchActionException,
+                                                                     long resourceId ) throws NoSuchActionException,
                                                                                       NoCompatibleMethodFoundException,
                                                                                       NoSuchComponentException,
                                                                                       ClassNotFoundException,
@@ -178,7 +178,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized boolean isStandardErrorOutputFullyRead( String callerId,
-                                                                      int resourceId ) throws NoSuchActionException,
+                                                                      long resourceId ) throws NoSuchActionException,
                                                                                        NoCompatibleMethodFoundException,
                                                                                        NoSuchComponentException,
                                                                                        ClassNotFoundException,
@@ -194,7 +194,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized int getProcessExitCode( String callerId, int resourceId ) throws NoSuchActionException,
+    public static synchronized int getProcessExitCode( String callerId, long resourceId ) throws NoSuchActionException,
                                                                                           NoCompatibleMethodFoundException,
                                                                                           NoSuchComponentException,
                                                                                           ClassNotFoundException,
@@ -209,7 +209,7 @@ public class ProcessesExecutorsManager {
         return (Integer) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized int getProcessId( String callerId, int resourceId ) throws NoSuchActionException,
+    public static synchronized int getProcessId( String callerId, long resourceId ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
                                                                                     NoSuchComponentException,
                                                                                     ClassNotFoundException,
@@ -224,7 +224,7 @@ public class ProcessesExecutorsManager {
         return (Integer) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized void killProcess( String callerId, int resourceId ) throws NoSuchActionException,
+    public static synchronized void killProcess( String callerId, long resourceId ) throws NoSuchActionException,
                                                                                     NoCompatibleMethodFoundException,
                                                                                     NoSuchComponentException,
                                                                                     ClassNotFoundException,
@@ -241,7 +241,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized void killProcessWithChildren( String callerId,
-                                                             int resourceId ) throws NoSuchActionException,
+                                                             long resourceId ) throws NoSuchActionException,
                                                                               NoCompatibleMethodFoundException,
                                                                               NoSuchComponentException,
                                                                               ClassNotFoundException,
@@ -258,7 +258,7 @@ public class ProcessesExecutorsManager {
     }
 
     public static synchronized int killExternalProcess( String callerId,
-                                                         int resourceId,
+                                                         long resourceId,
                                                          String startCommandSnippet ) throws NoSuchActionException,
                                                                                       NoCompatibleMethodFoundException,
                                                                                       NoSuchComponentException,
@@ -277,7 +277,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized String getEnvironmentVariable( String callerId, int resourceId, String variableName )
+    public static synchronized String getEnvironmentVariable( String callerId, long resourceId, String variableName )
                                                                                                                       throws NoSuchActionException,
                                                                                                                       NoCompatibleMethodFoundException,
                                                                                                                       NoSuchComponentException,
@@ -295,7 +295,7 @@ public class ProcessesExecutorsManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static synchronized void setEnvironmentVariable( String callerId, int resourceId, String variableName,
+    public static synchronized void setEnvironmentVariable( String callerId, long resourceId, String variableName,
                                                             String variableValue )
                                                                                    throws NoSuchActionException,
                                                                                    NoCompatibleMethodFoundException,
@@ -317,7 +317,7 @@ public class ProcessesExecutorsManager {
 
     }
 
-    public static synchronized void appendToEnvironmentVariable( String callerId, int resourceId, String variableName,
+    public static synchronized void appendToEnvironmentVariable( String callerId, long resourceId, String variableName,
                                                                  String variableValue )
                                                                                         throws NoSuchActionException,
                                                                                         NoCompatibleMethodFoundException,

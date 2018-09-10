@@ -1533,7 +1533,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         BufferedReader fileReader = null;
         try {
-            if (fileEncoding == null) { // use default system file encoding
+            if (fileEncoding == null || StringUtils.isNullOrEmpty(fileEncoding) || "null".equals(fileEncoding)) { // use default system file encoding
                 fileReader = new BufferedReader(new FileReader(file));
             } else {
                 fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),

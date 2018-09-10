@@ -80,7 +80,7 @@ public class QueuesRestEntryPoint {
             url = "schedule")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;RANDOM_TOKEN:3be2ae1c-6b72-40bb-bfbc-17d3d2e4182d;THREAD_ID",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(

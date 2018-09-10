@@ -62,7 +62,7 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string")
     })
@@ -75,7 +75,7 @@ public class SystemInputRestEntryPoint {
                                                description = "The resource ID of the newly initialized resource",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing system input resource details",
@@ -103,7 +103,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            int resourceId = SystemInputManager.initialize(callerId);
+            long resourceId = SystemInputManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
             String message = "Unable to initialize system input resource from caller with id '" + callerId + "'";
@@ -129,14 +129,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The location for the click on the X-axis",
                                                   example = "500",
@@ -176,7 +176,7 @@ public class SystemInputRestEntryPoint {
     public Response clickAt( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int x = -1;
         int y = -1;
         try {
@@ -188,7 +188,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -221,14 +221,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The text which will be typed. "
                                                                 + "This field is optional, but either this or keyCodes must be presented in the request",
@@ -271,7 +271,7 @@ public class SystemInputRestEntryPoint {
     public Response type( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String text = null;
         int[] keyCodes = null;
         try {
@@ -283,7 +283,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -344,14 +344,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "See java.awt.event.KeyEvent constants for available values.",
                                                   example = "38",
@@ -386,7 +386,7 @@ public class SystemInputRestEntryPoint {
     public Response keyPress( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int keyCode = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -397,7 +397,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -432,14 +432,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "See java.awt.event.KeyEvent constants for available values.",
                                                   example = "40",
@@ -474,7 +474,7 @@ public class SystemInputRestEntryPoint {
     public Response keyRelease( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int keyCode = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -485,7 +485,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -520,14 +520,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -557,7 +557,7 @@ public class SystemInputRestEntryPoint {
     public Response pressAltF4( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -567,7 +567,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -598,14 +598,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -635,7 +635,7 @@ public class SystemInputRestEntryPoint {
     public Response pressEsc( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -645,7 +645,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -676,14 +676,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -713,7 +713,7 @@ public class SystemInputRestEntryPoint {
     public Response pressSpace( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -723,7 +723,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -754,14 +754,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -791,7 +791,7 @@ public class SystemInputRestEntryPoint {
     public Response pressEnter( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -801,7 +801,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -832,14 +832,14 @@ public class SystemInputRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -869,7 +869,7 @@ public class SystemInputRestEntryPoint {
     public Response pressTab( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -879,7 +879,7 @@ public class SystemInputRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }

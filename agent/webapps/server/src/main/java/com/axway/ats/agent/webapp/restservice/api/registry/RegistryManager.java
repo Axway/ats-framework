@@ -31,7 +31,7 @@ public class RegistryManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
+    public synchronized static long initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -43,7 +43,7 @@ public class RegistryManager {
                                          null);
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -53,7 +53,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            createPath( String callerId, int resourceId, String rootKey,
+            createPath( String callerId, long resourceId, String rootKey,
                         String keyPath ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -68,7 +68,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            deleteKey( String callerId, int resourceId, String rootKey, String keyPath,
+            deleteKey( String callerId, long resourceId, String rootKey, String keyPath,
                        String keyName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -85,7 +85,7 @@ public class RegistryManager {
     }
 
     public synchronized static boolean
-            isKeyPresent( String callerId, int resourceId, String rootKey, String keyPath,
+            isKeyPresent( String callerId, long resourceId, String rootKey, String keyPath,
                           String keyName ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -101,7 +101,7 @@ public class RegistryManager {
 
     }
 
-    public synchronized static String getStringValue( String callerId, int resourceId, String rootKey, String keyPath,
+    public synchronized static String getStringValue( String callerId, long resourceId, String rootKey, String keyPath,
                                                       String keyName ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
                                                                        NoSuchComponentException, ClassNotFoundException,
@@ -119,7 +119,7 @@ public class RegistryManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static int getIntValue( String callerId, int resourceId, String rootKey, String keyPath,
+    public synchronized static int getIntValue( String callerId, long resourceId, String rootKey, String keyPath,
                                                 String keyName ) throws NoSuchActionException,
                                                                  NoCompatibleMethodFoundException,
                                                                  NoSuchComponentException, ClassNotFoundException,
@@ -137,7 +137,7 @@ public class RegistryManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static long getLongValue( String callerId, int resourceId, String rootKey, String keyPath,
+    public synchronized static long getLongValue( String callerId, long resourceId, String rootKey, String keyPath,
                                                   String keyName ) throws NoSuchActionException,
                                                                    NoCompatibleMethodFoundException,
                                                                    NoSuchComponentException, ClassNotFoundException,
@@ -155,7 +155,7 @@ public class RegistryManager {
         return (long) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static byte[] getBinaryValue( String callerId, int resourceId, String rootKey, String keyPath,
+    public synchronized static byte[] getBinaryValue( String callerId, long resourceId, String rootKey, String keyPath,
                                                       String keyName ) throws NoSuchActionException,
                                                                        NoCompatibleMethodFoundException,
                                                                        NoSuchComponentException, ClassNotFoundException,
@@ -174,7 +174,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setStringValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
+            setStringValue( String callerId, long resourceId, String rootKey, String keyPath, String keyName,
                             String keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
                                               InstantiationException, IllegalAccessException,
@@ -192,7 +192,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setIntValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
+            setIntValue( String callerId, long resourceId, String rootKey, String keyPath, String keyName,
                          int keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException,
                                         InstantiationException, IllegalAccessException,
@@ -210,7 +210,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setLongValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
+            setLongValue( String callerId, long resourceId, String rootKey, String keyPath, String keyName,
                           long keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                           NoSuchComponentException, ClassNotFoundException,
                                           InstantiationException, IllegalAccessException,
@@ -228,7 +228,7 @@ public class RegistryManager {
     }
 
     public synchronized static void
-            setBinaryValue( String callerId, int resourceId, String rootKey, String keyPath, String keyName,
+            setBinaryValue( String callerId, long resourceId, String rootKey, String keyPath, String keyName,
                             byte[] keyValue ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException,
                                               InstantiationException, IllegalAccessException,

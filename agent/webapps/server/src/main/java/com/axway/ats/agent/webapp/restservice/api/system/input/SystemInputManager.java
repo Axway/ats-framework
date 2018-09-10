@@ -31,7 +31,7 @@ public class SystemInputManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
+    public synchronized static long initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -43,7 +43,7 @@ public class SystemInputManager {
                                          null);
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -52,7 +52,7 @@ public class SystemInputManager {
         return resourceId;
     }
 
-    public synchronized static void clickAt( String callerId, int resourceId, int x,
+    public synchronized static void clickAt( String callerId, long resourceId, int x,
                                              int y ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
@@ -70,7 +70,7 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            type( String callerId, int resourceId,
+            type( String callerId, long resourceId,
                   int[] keyCodes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                    NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                    IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -86,7 +86,7 @@ public class SystemInputManager {
 
     }
 
-    public synchronized static void type( String callerId, int resourceId,
+    public synchronized static void type( String callerId, long resourceId,
                                           String text ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                         NoSuchComponentException, ClassNotFoundException,
                                                         InstantiationException, IllegalAccessException,
@@ -104,7 +104,7 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            type( String callerId, int resourceId, String text,
+            type( String callerId, long resourceId, String text,
                   int[] keyCodes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                    NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                    IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -121,7 +121,7 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            keyPress( String callerId, int resourceId,
+            keyPress( String callerId, long resourceId,
                       int keyCode ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                     NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                     IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -138,7 +138,7 @@ public class SystemInputManager {
     }
 
     public synchronized static void
-            keyRelease( String callerId, int resourceId,
+            keyRelease( String callerId, long resourceId,
                         int keyCode ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                       NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                       IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -156,7 +156,7 @@ public class SystemInputManager {
 
     public synchronized static void
             pressAltF4( String callerId,
-                        int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                        long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -173,7 +173,7 @@ public class SystemInputManager {
 
     public synchronized static void
             pressEsc( String callerId,
-                      int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                      long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                        NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -190,7 +190,7 @@ public class SystemInputManager {
 
     public synchronized static void
             pressEnter( String callerId,
-                        int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                        long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -207,7 +207,7 @@ public class SystemInputManager {
 
     public synchronized static void
             pressTab( String callerId,
-                      int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                      long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                        NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -224,7 +224,7 @@ public class SystemInputManager {
 
     public synchronized static void
             pressSpace( String callerId,
-                        int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                        long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 

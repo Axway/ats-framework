@@ -25,7 +25,7 @@ public class ActionPojo {
 
     private String   callerId;
 
-    private int      resourceId;
+    private long     resourceId;
 
     private String   componentName;
     /**
@@ -52,8 +52,8 @@ public class ActionPojo {
 
     public ActionPojo() {}
 
-    public ActionPojo( ActionRequest actionRequest, int resourceId, String callerId ) {
-        
+    public ActionPojo( ActionRequest actionRequest, long resourceId, String callerId ) {
+
         this.callerId = callerId;
         this.resourceId = resourceId;
         this.componentName = actionRequest.getComponentName();
@@ -78,7 +78,7 @@ public class ActionPojo {
      * @param argumentsTypes array of Java class names
      * @param argumentsValues
      * */
-    public ActionPojo( String callerId, int resourceId, String componentName, String methodName,
+    public ActionPojo( String callerId, long resourceId, String componentName, String methodName,
                        String[] argumentsTypes,
                        String[] argumentsValues ) {
 
@@ -100,12 +100,12 @@ public class ActionPojo {
         this.callerId = callerId;
     }
 
-    public int getResourceId() {
+    public long getResourceId() {
 
         return resourceId;
     }
 
-    public void setResourceId( int resourceId ) {
+    public void setResourceId( long resourceId ) {
 
         this.resourceId = resourceId;
     }

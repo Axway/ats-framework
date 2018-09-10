@@ -66,7 +66,7 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -106,7 +106,7 @@ public class FileSystemSnapshotRestEntryPoint {
                                                description = "The resource ID of the newly initialized resource",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing file system snapshot resource details",
@@ -145,7 +145,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("configuration is not provided with the request");
             }
             configuration = GSON.fromJson(snapshotConfigurationJSON, SnapshotConfiguration.class);
-            int resourceId = FileSystemSnapshotManager.initFileSystemSnapshot(callerId, name, configuration);
+            long resourceId = FileSystemSnapshotManager.initFileSystemSnapshot(callerId, name, configuration);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
             String message = "Unable to initialize file system snapshot resource from caller with id '" + callerId
@@ -172,14 +172,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory alias",
                                                   example = "root_dir",
@@ -219,7 +219,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response addDirectory( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String directoryAlias = null;
         String directoryPath = null;
         try {
@@ -231,7 +231,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -272,14 +272,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -309,7 +309,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response takeSnapshot( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -319,7 +319,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -351,14 +351,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -502,7 +502,7 @@ public class FileSystemSnapshotRestEntryPoint {
                                            @QueryParam(
                                                    value = "callerId") String callerId,
                                            @QueryParam(
-                                                   value = "resourceId") int resourceId ) {
+                                                   value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -540,14 +540,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file where the snapshot will be saved in",
                                                   example = "/home/atsuser/fss_1.xml",
@@ -582,7 +582,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response toFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String backupFile = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -593,7 +593,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -630,14 +630,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file from which the snapshot will be load",
                                                   example = "/home/atsuser/fss_1.xml",
@@ -672,7 +672,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response loadFromFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String sourceFile = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -683,7 +683,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -720,14 +720,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The new snapshot object that will replace the existing one",
                                                   example = "{\n" + 
@@ -875,7 +875,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response pushFileSystemSnapshot( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         LocalFileSystemSnapshot newSnapshot = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -886,7 +886,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -924,14 +924,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The new snapshot name",
                                                   example = "new_fss",
@@ -1084,7 +1084,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response newFileSystemSnapshot( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         LocalFileSystemSnapshot srcFileSystemSnapshot = null;
         String newSnapshotName = null;
         try {
@@ -1096,7 +1096,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1141,14 +1141,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The new snapshot name",
                                                   example = "some name",
@@ -1183,7 +1183,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response setName( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String name = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -1194,7 +1194,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1231,14 +1231,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file's parent directory alias",
                                                   example = "root_dir",
@@ -1290,7 +1290,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response checkFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         int[] checkRules = null;
@@ -1303,7 +1303,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1350,14 +1350,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory relative path",
                                                   example = "subdir2",
@@ -1397,7 +1397,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipDirectory( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeDirectoryPath = null;
         try {
@@ -1409,7 +1409,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1450,14 +1450,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory relative path",
                                                   example = "[a-z].*[0-9]",
@@ -1497,7 +1497,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipDirectoryByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeDirectoryPath = null;
         try {
@@ -1509,7 +1509,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1552,14 +1552,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file relative path",
                                                   example = "/home/atsuser/file.txt",
@@ -1608,7 +1608,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         int[] skipRules = null;
@@ -1621,7 +1621,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1667,14 +1667,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file relative path",
                                                   example = "[a-z].*",
@@ -1723,7 +1723,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipFileByRegex( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         int[] skipRules = null;
@@ -1736,7 +1736,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1784,14 +1784,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -1844,7 +1844,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipTextLine( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String line = null;
@@ -1858,7 +1858,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1911,14 +1911,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -1971,7 +1971,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipPropertyWithKey( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String key = null;
@@ -1985,7 +1985,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2039,14 +2039,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2099,7 +2099,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipPropertyWithValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String value = null;
@@ -2113,7 +2113,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2167,14 +2167,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2237,7 +2237,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipNodeByAttribute( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String nodeXpath = null;
@@ -2253,7 +2253,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2320,14 +2320,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2385,7 +2385,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipNodeByValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String nodeXpath = null;
@@ -2400,7 +2400,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2458,14 +2458,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2518,7 +2518,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipIniSection( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String section = null;
@@ -2532,7 +2532,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2585,14 +2585,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2650,7 +2650,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipIniPropertyWithKey( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String section = null;
@@ -2665,7 +2665,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2725,14 +2725,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The alias of the root directory",
                                                   example = "some root dir alias",
@@ -2790,7 +2790,7 @@ public class FileSystemSnapshotRestEntryPoint {
     public Response skipIniPropertyWithValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootDirectoryAlias = null;
         String relativeFilePath = null;
         String section = null;
@@ -2805,7 +2805,7 @@ public class FileSystemSnapshotRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2865,14 +2865,14 @@ public class FileSystemSnapshotRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -2903,7 +2903,7 @@ public class FileSystemSnapshotRestEntryPoint {
                                     @QueryParam(
                                             value = "callerId") String callerId,
                                     @QueryParam(
-                                            value = "resourceId") int resourceId ) {
+                                            value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {

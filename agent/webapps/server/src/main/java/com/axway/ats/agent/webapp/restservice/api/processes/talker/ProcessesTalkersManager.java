@@ -31,7 +31,7 @@ public class ProcessesTalkersManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public static synchronized int
+    public static synchronized long
             initializeProcessTalker( String callerId,
                                      String command ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
@@ -44,7 +44,7 @@ public class ProcessesTalkersManager {
                                          new String[]{ GSON.toJson(command) });
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -54,7 +54,7 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            setDefaultOperationTimeout( String callerId, int resourceId,
+            setDefaultOperationTimeout( String callerId, long resourceId,
                                         int timeout ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
@@ -71,7 +71,7 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            setCommand( String callerId, int resourceId,
+            setCommand( String callerId, long resourceId,
                         String command ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -88,7 +88,7 @@ public class ProcessesTalkersManager {
 
     public static synchronized String
             getPendingToMatchContent( String callerId,
-                                      int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                      long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
                                                        IllegalArgumentException, InvocationTargetException {
@@ -104,7 +104,7 @@ public class ProcessesTalkersManager {
 
     public static synchronized String
             getCurrentStdout( String callerId,
-                              int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                              long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
                                                InvocationTargetException {
@@ -120,7 +120,7 @@ public class ProcessesTalkersManager {
 
     public static synchronized String
             getCurrentStderr( String callerId,
-                              int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                              long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                                IllegalAccessException, IllegalArgumentException,
                                                InvocationTargetException {
@@ -135,7 +135,7 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expectErr( String callerId, int resourceId, String pattern,
+            expectErr( String callerId, long resourceId, String pattern,
                        int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                             NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                             IllegalAccessException, IllegalArgumentException,
@@ -149,7 +149,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrByRegex( String callerId, int resourceId, String pattern,
+    public static void expectErrByRegex( String callerId, long resourceId, String pattern,
                                          int timeoutSeconds ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException,
@@ -166,7 +166,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrAll( String callerId, int resourceId, String[] patterns,
+    public static void expectErrAll( String callerId, long resourceId, String[] patterns,
                                      int timeoutSeconds ) throws NoSuchActionException,
                                                           NoCompatibleMethodFoundException,
                                                           NoSuchComponentException, ClassNotFoundException,
@@ -181,7 +181,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectErrAllByRegex( String callerId, int resourceId, String[] patterns,
+    public static void expectErrAllByRegex( String callerId, long resourceId, String[] patterns,
                                             int timeoutSeconds ) throws NoSuchActionException,
                                                                  NoCompatibleMethodFoundException,
                                                                  NoSuchComponentException, ClassNotFoundException,
@@ -197,7 +197,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectErrAny( String callerId, int resourceId, String[] patterns,
+    public static int expectErrAny( String callerId, long resourceId, String[] patterns,
                                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
                                                          InstantiationException, IllegalAccessException,
@@ -211,7 +211,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectErrAnyByRegex( String callerId, int resourceId, String[] patterns,
+    public static int expectErrAnyByRegex( String callerId, long resourceId, String[] patterns,
                                            int timeoutSeconds ) throws NoSuchActionException,
                                                                 NoCompatibleMethodFoundException,
                                                                 NoSuchComponentException,
@@ -228,7 +228,7 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expect( String callerId, int resourceId, String pattern,
+            expect( String callerId, long resourceId, String pattern,
                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                          NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                          IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -242,7 +242,7 @@ public class ProcessesTalkersManager {
     }
 
     public static synchronized void
-            expect( String callerId, int resourceId,
+            expect( String callerId, long resourceId,
                     String pattern ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                      NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                      IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -255,7 +255,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectByRegex( String callerId, int resourceId, String pattern,
+    public static void expectByRegex( String callerId, long resourceId, String pattern,
                                       int timeoutSeconds ) throws NoSuchActionException,
                                                            NoCompatibleMethodFoundException, NoSuchComponentException,
                                                            ClassNotFoundException, InstantiationException,
@@ -270,7 +270,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectByRegex( String callerId, int resourceId,
+    public static void expectByRegex( String callerId, long resourceId,
                                       String pattern ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
@@ -284,7 +284,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAll( String callerId, int resourceId,
+    public static void expectAll( String callerId, long resourceId,
                                   String[] patterns ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
@@ -298,7 +298,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAll( String callerId, int resourceId, String[] patterns,
+    public static void expectAll( String callerId, long resourceId, String[] patterns,
                                   int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                        NoSuchComponentException, ClassNotFoundException,
                                                        InstantiationException, IllegalAccessException,
@@ -312,7 +312,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAllByRegex( String callerId, int resourceId,
+    public static void expectAllByRegex( String callerId, long resourceId,
                                          String[] patterns ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException, NoSuchComponentException,
                                                              ClassNotFoundException, InstantiationException,
@@ -328,7 +328,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void expectAllByRegex( String callerId, int resourceId, String[] patterns,
+    public static void expectAllByRegex( String callerId, long resourceId, String[] patterns,
                                          int timeoutSeconds ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException, ClassNotFoundException,
@@ -344,7 +344,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAny( String callerId, int resourceId, String[] patterns,
+    public static int expectAny( String callerId, long resourceId, String[] patterns,
                                  int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                       NoSuchComponentException, ClassNotFoundException,
                                                       InstantiationException, IllegalAccessException,
@@ -358,7 +358,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAny( String callerId, int resourceId,
+    public static int expectAny( String callerId, long resourceId,
                                  String[] patterns ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
@@ -372,7 +372,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static int expectAnyByRegex( String callerId, int resourceId,
+    public static int expectAnyByRegex( String callerId, long resourceId,
                                         String[] patterns ) throws NoSuchActionException,
                                                             NoCompatibleMethodFoundException, NoSuchComponentException,
                                                             ClassNotFoundException, InstantiationException,
@@ -387,7 +387,7 @@ public class ProcessesTalkersManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static int expectAnyByRegex( String callerId, int resourceId, String[] patterns,
+    public static int expectAnyByRegex( String callerId, long resourceId, String[] patterns,
                                         int timeoutSeconds ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException, NoSuchComponentException,
                                                              ClassNotFoundException, InstantiationException,
@@ -403,7 +403,7 @@ public class ProcessesTalkersManager {
     }
 
     public static void expectClose( String callerId,
-                                    int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                    long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
@@ -416,7 +416,7 @@ public class ProcessesTalkersManager {
         ResourcesManager.executeOverResource(pojo);
     }
 
-    public static void expectClose( String callerId, int resourceId,
+    public static void expectClose( String callerId, long resourceId,
                                     int timeoutSeconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                          NoSuchComponentException, ClassNotFoundException,
                                                          InstantiationException, IllegalAccessException,
@@ -432,7 +432,7 @@ public class ProcessesTalkersManager {
     }
 
     public static boolean isClosed( String callerId,
-                                    int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                    long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
@@ -446,7 +446,7 @@ public class ProcessesTalkersManager {
     }
 
     public static int getExitValue( String callerId,
-                                    int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                    long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                      NoSuchComponentException, ClassNotFoundException,
                                                      InstantiationException, IllegalAccessException,
                                                      IllegalArgumentException, InvocationTargetException {
@@ -459,7 +459,7 @@ public class ProcessesTalkersManager {
         return (int) ResourcesManager.executeOverResource(pojo);
     }
 
-    public static void kill( String callerId, int resourceId ) throws NoSuchActionException,
+    public static void kill( String callerId, long resourceId ) throws NoSuchActionException,
                                                                 NoCompatibleMethodFoundException,
                                                                 NoSuchComponentException, ClassNotFoundException,
                                                                 InstantiationException, IllegalAccessException,
@@ -474,7 +474,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void killWithChildren( String callerId, int resourceId ) throws NoSuchActionException,
+    public static void killWithChildren( String callerId, long resourceId ) throws NoSuchActionException,
                                                                             NoCompatibleMethodFoundException,
                                                                             NoSuchComponentException,
                                                                             ClassNotFoundException,
@@ -492,7 +492,7 @@ public class ProcessesTalkersManager {
 
     }
 
-    public static void send( String callerId, int resourceId,
+    public static void send( String callerId, long resourceId,
                              String text ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                            NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                            IllegalAccessException, IllegalArgumentException, InvocationTargetException {
@@ -508,7 +508,7 @@ public class ProcessesTalkersManager {
 
     public static void
             sendEnter( String callerId,
-                       int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                       long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
@@ -522,7 +522,7 @@ public class ProcessesTalkersManager {
     }
 
     public static void
-            sendEnterInLoop( String callerId, int resourceId, String intermediatePattern, String finalPattern,
+            sendEnterInLoop( String callerId, long resourceId, String intermediatePattern, String finalPattern,
                              int maxLoopTimes ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                 NoSuchComponentException, ClassNotFoundException,
                                                 InstantiationException,

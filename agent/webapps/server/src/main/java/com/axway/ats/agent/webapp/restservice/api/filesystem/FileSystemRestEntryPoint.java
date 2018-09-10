@@ -70,7 +70,7 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string")
     })
@@ -83,7 +83,7 @@ public class FileSystemRestEntryPoint {
                                                description = "The resource ID of the newly initialized resource",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing file system resource details",
@@ -111,7 +111,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            int resourceId = FileSystemManager.initialize(callerId);
+            long resourceId = FileSystemManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
             String message = "Unable to initialize file system resource from caller with id '" + callerId + "'";
@@ -137,14 +137,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file path",
                                                   example = "/home/atsuser/file.txt",
@@ -184,7 +184,7 @@ public class FileSystemRestEntryPoint {
     public Response appendToFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String filePath = null;
         String contentToAdd = null;
         try {
@@ -196,7 +196,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -235,14 +235,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -277,7 +277,7 @@ public class FileSystemRestEntryPoint {
     public Response getFilePermissions( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                         @QueryParam(
-                                                value = "resourceId") int resourceId,
+                                                value = "resourceId") long resourceId,
                                         @QueryParam(
                                                 value = "fileName") String fileName ) {
 
@@ -322,14 +322,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -364,7 +364,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileGroup( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                   @QueryParam(
-                                          value = "resourceId") int resourceId,
+                                          value = "resourceId") long resourceId,
                                   @QueryParam(
                                           value = "fileName") String fileName ) {
 
@@ -408,14 +408,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -450,7 +450,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileGID( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                 @QueryParam(
-                                        value = "resourceId") int resourceId,
+                                        value = "resourceId") long resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
@@ -494,14 +494,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -536,7 +536,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileOwner( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                   @QueryParam(
-                                          value = "resourceId") int resourceId,
+                                          value = "resourceId") long resourceId,
                                   @QueryParam(
                                           value = "fileName") String fileName ) {
 
@@ -580,14 +580,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -622,7 +622,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileUID( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                 @QueryParam(
-                                        value = "resourceId") int resourceId,
+                                        value = "resourceId") long resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
@@ -666,14 +666,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -708,7 +708,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileModificationTime( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                              @QueryParam(
-                                                     value = "resourceId") int resourceId,
+                                                     value = "resourceId") long resourceId,
                                              @QueryParam(
                                                      value = "fileName") String fileName ) {
 
@@ -752,14 +752,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -794,7 +794,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileSize( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                  @QueryParam(
-                                         value = "resourceId") int resourceId,
+                                         value = "resourceId") long resourceId,
                                  @QueryParam(
                                          value = "fileName") String fileName ) {
 
@@ -838,14 +838,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -880,7 +880,7 @@ public class FileSystemRestEntryPoint {
     public Response getFileUniqueID( @Context HttpServletRequest request, @QueryParam(
             value = "callerId") String callerId,
                                      @QueryParam(
-                                             value = "resourceId") int resourceId,
+                                             value = "resourceId") long resourceId,
                                      @QueryParam(
                                              value = "fileName") String fileName ) {
 
@@ -924,14 +924,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -971,7 +971,7 @@ public class FileSystemRestEntryPoint {
     public Response setFileUID( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         long uid = -1;
         try {
@@ -983,7 +983,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1022,14 +1022,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1069,7 +1069,7 @@ public class FileSystemRestEntryPoint {
     public Response setFileGID( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         long gid = -1;
         try {
@@ -1081,7 +1081,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1120,14 +1120,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1167,7 +1167,7 @@ public class FileSystemRestEntryPoint {
     public Response setFilePermissions( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         String permissions = null;
         try {
@@ -1179,7 +1179,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1220,14 +1220,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1267,7 +1267,7 @@ public class FileSystemRestEntryPoint {
     public Response setFileModificationTime( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         long modificationTime = -1;
         try {
@@ -1279,7 +1279,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1320,14 +1320,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1367,7 +1367,7 @@ public class FileSystemRestEntryPoint {
     public Response setFileHiddenAttribute( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         boolean hidden = false;
         try {
@@ -1379,7 +1379,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1417,14 +1417,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1460,7 +1460,7 @@ public class FileSystemRestEntryPoint {
                                     @QueryParam(
                                             value = "callerId") String callerId,
                                     @QueryParam(
-                                            value = "resourceId") int resourceId,
+                                            value = "resourceId") long resourceId,
                                     @QueryParam(
                                             value = "fileName") String fileName ) {
 
@@ -1504,14 +1504,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1581,7 +1581,7 @@ public class FileSystemRestEntryPoint {
     public Response createFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         String fileContent = null;
         long fileSize = -1;
@@ -1599,7 +1599,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1646,14 +1646,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1689,7 +1689,7 @@ public class FileSystemRestEntryPoint {
                                 @QueryParam(
                                         value = "callerId") String callerId,
                                 @QueryParam(
-                                        value = "resourceId") int resourceId,
+                                        value = "resourceId") long resourceId,
                                 @QueryParam(
                                         value = "fileName") String fileName ) {
 
@@ -1733,14 +1733,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The old file name",
                                                   example = "/home/atsuser/old_file.txt",
@@ -1785,7 +1785,7 @@ public class FileSystemRestEntryPoint {
     public Response renameFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String oldFileName = null;
         String newFileName = null;
         boolean overwrite = false;
@@ -1798,7 +1798,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1838,14 +1838,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1892,7 +1892,7 @@ public class FileSystemRestEntryPoint {
                                   @QueryParam(
                                           value = "callerId") String callerId,
                                   @QueryParam(
-                                          value = "resourceId") int resourceId,
+                                          value = "resourceId") long resourceId,
                                   @QueryParam(
                                           value = "fileName") String fileName,
                                   @QueryParam(
@@ -1945,14 +1945,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -1993,7 +1993,7 @@ public class FileSystemRestEntryPoint {
                               @QueryParam(
                                       value = "callerId") String callerId,
                               @QueryParam(
-                                      value = "resourceId") int resourceId,
+                                      value = "resourceId") long resourceId,
                               @QueryParam(
                                       value = "fileName") String fileName,
                               @QueryParam(
@@ -2041,14 +2041,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -2089,7 +2089,7 @@ public class FileSystemRestEntryPoint {
                                           @QueryParam(
                                                   value = "callerId") String callerId,
                                           @QueryParam(
-                                                  value = "resourceId") int resourceId,
+                                                  value = "resourceId") long resourceId,
                                           @QueryParam(
                                                   value = "fileName") String fileName,
                                           @QueryParam(
@@ -2139,14 +2139,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -2188,7 +2188,7 @@ public class FileSystemRestEntryPoint {
                                    @QueryParam(
                                            value = "callerId") String callerId,
                                    @QueryParam(
-                                           value = "resourceId") int resourceId,
+                                           value = "resourceId") long resourceId,
                                    @QueryParam(
                                            value = "fileName") String fileName,
                                    @QueryParam(
@@ -2235,14 +2235,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/old_file.txt",
@@ -2297,7 +2297,7 @@ public class FileSystemRestEntryPoint {
     public Response findTextInFileAfterGivenPosition( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         String searchString = null;
         String newString = null;
@@ -2312,7 +2312,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2381,14 +2381,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/old_file.txt",
@@ -2451,7 +2451,7 @@ public class FileSystemRestEntryPoint {
     public Response findTextAfterGivenPositionInFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         boolean isRegex = false;
         String[] searchTexts = null;
@@ -2466,7 +2466,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2519,14 +2519,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/file.txt",
@@ -2573,7 +2573,7 @@ public class FileSystemRestEntryPoint {
                               @QueryParam(
                                       value = "callerId") String callerId,
                               @QueryParam(
-                                      value = "resourceId") int resourceId,
+                                      value = "resourceId") long resourceId,
                               @QueryParam(
                                       value = "fileName") String fileName,
                               @QueryParam(
@@ -2622,14 +2622,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/old_file.txt",
@@ -2664,7 +2664,7 @@ public class FileSystemRestEntryPoint {
     public Response lockFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -2675,7 +2675,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2711,14 +2711,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "/home/atsuser/old_file.txt",
@@ -2753,7 +2753,7 @@ public class FileSystemRestEntryPoint {
     public Response unlockFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fileName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -2764,7 +2764,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2800,14 +2800,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The zip archive name",
                                                   example = "/home/atsuser/file.zip",
@@ -2847,7 +2847,7 @@ public class FileSystemRestEntryPoint {
     public Response unzipFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String outputDirPath = null;
         String zipFilePath = null;
         try {
@@ -2859,7 +2859,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2899,14 +2899,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The archive file name. It must be .zip, .tar or .tar.gz",
                                                   example = "/home/atsuser/file.tar.gz",
@@ -2946,7 +2946,7 @@ public class FileSystemRestEntryPoint {
     public Response extractFile( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String archiveFilePath = null;
         String outputDirPath = null;
         try {
@@ -2958,7 +2958,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -2998,14 +2998,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The source file name",
                                                   example = "/home/atsuser/srcFile.txt",
@@ -3060,7 +3060,7 @@ public class FileSystemRestEntryPoint {
     public Response sendFileTo( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fromFileName = null;
         String toFileName = null;
         String machineIP = null;
@@ -3075,7 +3075,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3166,7 +3166,7 @@ public class FileSystemRestEntryPoint {
     public Response copyFileLocally( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fromFileName = null;
         String toFileName = null;
         boolean failOnError = false;
@@ -3179,7 +3179,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3221,14 +3221,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file name",
                                                   example = "file.txt",
@@ -3268,7 +3268,7 @@ public class FileSystemRestEntryPoint {
     public Response constructFilePath( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String srcFileName = null;
         String dstFilePath = null;
         try {
@@ -3280,7 +3280,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3321,14 +3321,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The start port number.",
                                                   example = "23500",
@@ -3368,7 +3368,7 @@ public class FileSystemRestEntryPoint {
     public Response setCopyPortRange( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int copyFileStartPort = -1;
         int copyFileEndPort = -1;
         try {
@@ -3380,7 +3380,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3423,14 +3423,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -3461,7 +3461,7 @@ public class FileSystemRestEntryPoint {
                                         @QueryParam(
                                                 value = "callerId") String callerId,
                                         @QueryParam(
-                                                value = "resourceId") int resourceId ) {
+                                                value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -3499,14 +3499,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The port for the transfer",
                                                   example = "25300",
@@ -3541,7 +3541,7 @@ public class FileSystemRestEntryPoint {
     public Response waitForFileTransferCompletion( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         int port = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -3552,7 +3552,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3589,14 +3589,14 @@ public class FileSystemRestEntryPoint {
 
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The file search directory",
                                                   example = "/home/atsuser",
@@ -3649,7 +3649,7 @@ public class FileSystemRestEntryPoint {
     public Response findFiles( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String location = null;
         String searchString = null;
         boolean isRegex;
@@ -3664,7 +3664,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3708,14 +3708,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory name",
                                                   example = "/home/atsuser/",
@@ -3751,7 +3751,7 @@ public class FileSystemRestEntryPoint {
                                          @QueryParam(
                                                  value = "callerId") String callerId,
                                          @QueryParam(
-                                                 value = "resourceId") int resourceId,
+                                                 value = "resourceId") long resourceId,
                                          @QueryParam(
                                                  value = "dirName") String dirName ) {
 
@@ -3795,14 +3795,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory name",
                                                   example = "/home/atsuser/file.txt",
@@ -3847,7 +3847,7 @@ public class FileSystemRestEntryPoint {
     public Response createDirectory( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String directoryName = null;
         long uid = -1;
         long gid = -1;
@@ -3860,7 +3860,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -3897,14 +3897,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory name",
                                                   example = "/home/atsuser/file.txt",
@@ -3940,7 +3940,7 @@ public class FileSystemRestEntryPoint {
                                      @QueryParam(
                                              value = "callerId") String callerId,
                                      @QueryParam(
-                                             value = "resourceId") int resourceId,
+                                             value = "resourceId") long resourceId,
                                      @QueryParam(
                                              value = "directoryName") String directoryName,
                                      @QueryParam(
@@ -3986,14 +3986,14 @@ public class FileSystemRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The directory name",
                                                   example = "/home/atsuser",
@@ -4028,7 +4028,7 @@ public class FileSystemRestEntryPoint {
     public Response purgeDirectoryContent( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String directoryName = null;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
@@ -4039,7 +4039,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -4073,14 +4073,14 @@ public class FileSystemRestEntryPoint {
             url = "directory/send")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "some caller ID",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The source directory name",
                                                   example = "/home/atsuser/srcDir",
@@ -4139,7 +4139,7 @@ public class FileSystemRestEntryPoint {
     public Response sendDirectoryTo( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fromDirName = null;
         String toDirName = null;
         String machineIP = null;
@@ -4155,7 +4155,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -4253,7 +4253,7 @@ public class FileSystemRestEntryPoint {
     public Response copyDirectoryLocally( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String fromDirName = null;
         String toDirName = null;
         boolean failOnError = false;
@@ -4267,7 +4267,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -4280,6 +4280,7 @@ public class FileSystemRestEntryPoint {
                 throw new NoSuchElementException("toDirName is not provided with the request");
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
+            isRecursive = getJsonElement(jsonObject, "isRecursive").getAsBoolean();
             FileSystemManager.copyDirectoryLocally(callerId, resourceId, fromDirName, toDirName, failOnError, isRecursive);
             return Response.ok("{\"status_message\":\"successfully copy directory locally\"}").build();
         } catch (Exception e) {

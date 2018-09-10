@@ -62,7 +62,7 @@ public class EnvironmentsRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -174,7 +174,7 @@ public class EnvironmentsRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -202,7 +202,7 @@ public class EnvironmentsRestEntryPoint {
                                        description = "Successfully backed up environment",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
                                                description = "Status message",
-                                               example = "environment 'environmentName' successfully restored",
+                                               example = "environment 'environmentName' successfully backed up",
                                                name = "status_message",
                                                type = "string") }),
                                @SwaggerMethodResponse(

@@ -74,7 +74,7 @@ public class TestcasesRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
@@ -192,7 +192,7 @@ public class TestcasesRestEntryPoint {
             url = "")
     @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
             description = "The caller ID",
-            example = "HOST_ID:localhost:8089;RANDOM_TOKEN_IN:<SOME_UUID>;THREAD_ID:main",
+            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
             name = "callerId",
             type = "string") })
     @SwaggerMethodResponses( {

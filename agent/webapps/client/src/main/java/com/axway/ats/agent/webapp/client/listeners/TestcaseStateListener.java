@@ -172,7 +172,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                                                          + "\",\"testCaseState\":"
                                                          + helper.serializeJavaObject(testCaseState) + "}",
                                                   null, null);
-                            // add this agent to the list of already test configured (agents that received onTestStart event) list fo the caller
+                            // add this agent to the list of already test configured (agents that received onTestStart event) list for the caller
                             List<String> alreadyTestConfiguredAgents = testConfiguredAgents.get(callerId);
                             if (alreadyTestConfiguredAgents == null) {
                                 alreadyTestConfiguredAgents = new ArrayList<>();

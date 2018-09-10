@@ -32,7 +32,7 @@ public class SystemManager {
 
     private static final Gson   GSON                      = new Gson();
 
-    public synchronized static int initialize( String callerId ) throws NoSuchActionException,
+    public synchronized static long initialize( String callerId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -44,7 +44,7 @@ public class SystemManager {
                                          null);
 
         // create only the action class instance first
-        int resourceId = ResourcesManager.initializeResource(pojo);
+        long resourceId = ResourcesManager.initializeResource(pojo);
         pojo.setResourceId(resourceId);
 
         // then execute the action method
@@ -52,17 +52,17 @@ public class SystemManager {
 
         return resourceId;
     }
-    
-    public synchronized static int deinitialize( int resourceId ) {
-        
+
+    public synchronized static long deinitialize( long resourceId ) {
+
         return ResourcesManager.deinitializeResource(resourceId);
     }
 
     public synchronized static OperatingSystemType
             getOsType( String callerId,
-                       int resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
-                                        NoSuchComponentException, ClassNotFoundException, InstantiationException,
-                                        IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+                       long resourceId ) throws NoSuchActionException, NoCompatibleMethodFoundException,
+                                         NoSuchComponentException, ClassNotFoundException, InstantiationException,
+                                         IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
         ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
@@ -76,12 +76,12 @@ public class SystemManager {
 
     public synchronized static String
             getSystemProperty( String callerId,
-                               int resourceId, String propertyName ) throws NoSuchActionException,
-                                                                     NoCompatibleMethodFoundException,
-                                                                     NoSuchComponentException, ClassNotFoundException,
-                                                                     InstantiationException,
-                                                                     IllegalAccessException, IllegalArgumentException,
-                                                                     InvocationTargetException {
+                               long resourceId, String propertyName ) throws NoSuchActionException,
+                                                                      NoCompatibleMethodFoundException,
+                                                                      NoSuchComponentException, ClassNotFoundException,
+                                                                      InstantiationException,
+                                                                      IllegalAccessException, IllegalArgumentException,
+                                                                      InvocationTargetException {
 
         ActionPojo pojo = new ActionPojo(callerId,
                                          resourceId,
@@ -94,7 +94,7 @@ public class SystemManager {
     }
 
     public synchronized static String
-            getTime( String callerId, int resourceId,
+            getTime( String callerId, long resourceId,
                      boolean inMilliseconds ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                               NoSuchComponentException, ClassNotFoundException, InstantiationException,
                                               IllegalAccessException, IllegalArgumentException,
@@ -111,7 +111,7 @@ public class SystemManager {
     }
 
     public synchronized static String
-            getAtsVersion( String callerId, int resourceId ) throws NoSuchActionException,
+            getAtsVersion( String callerId, long resourceId ) throws NoSuchActionException,
                                                               NoCompatibleMethodFoundException,
                                                               NoSuchComponentException, ClassNotFoundException,
                                                               InstantiationException, IllegalAccessException,
@@ -128,7 +128,7 @@ public class SystemManager {
     }
 
     public synchronized static String
-            getHostName( String callerId, int resourceId ) throws NoSuchActionException,
+            getHostName( String callerId, long resourceId ) throws NoSuchActionException,
                                                             NoCompatibleMethodFoundException,
                                                             NoSuchComponentException, ClassNotFoundException,
                                                             InstantiationException, IllegalAccessException,
@@ -145,7 +145,7 @@ public class SystemManager {
     }
 
     public synchronized static String[]
-            getClasspath( String callerId, int resourceId ) throws NoSuchActionException,
+            getClasspath( String callerId, long resourceId ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException,
                                                              NoSuchComponentException, ClassNotFoundException,
                                                              InstantiationException, IllegalAccessException,
@@ -162,7 +162,7 @@ public class SystemManager {
     }
 
     public synchronized static String[]
-            getDuplicatedJars( String callerId, int resourceId ) throws NoSuchActionException,
+            getDuplicatedJars( String callerId, long resourceId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -179,7 +179,7 @@ public class SystemManager {
     }
 
     public synchronized static void
-            logClasspath( String callerId, int resourceId ) throws NoSuchActionException,
+            logClasspath( String callerId, long resourceId ) throws NoSuchActionException,
                                                              NoCompatibleMethodFoundException,
                                                              NoSuchComponentException, ClassNotFoundException,
                                                              InstantiationException, IllegalAccessException,
@@ -196,7 +196,7 @@ public class SystemManager {
     }
 
     public synchronized static void
-            logDuplicatedJars( String callerId, int resourceId ) throws NoSuchActionException,
+            logDuplicatedJars( String callerId, long resourceId ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,
                                                                   InstantiationException, IllegalAccessException,
@@ -212,7 +212,7 @@ public class SystemManager {
         ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static void setTime( String callerId, int resourceId, String timestamp,
+    public synchronized static void setTime( String callerId, long resourceId, String timestamp,
                                              boolean inMilliseconds ) throws NoSuchActionException,
                                                                       NoCompatibleMethodFoundException,
                                                                       NoSuchComponentException, ClassNotFoundException,
@@ -232,7 +232,7 @@ public class SystemManager {
     }
 
     public synchronized static String
-            createScreenshot( String callerId, int resourceId,
+            createScreenshot( String callerId, long resourceId,
                               String filePath ) throws NoSuchActionException, NoCompatibleMethodFoundException,
                                                 NoSuchComponentException, ClassNotFoundException,
                                                 InstantiationException, IllegalAccessException,
@@ -248,7 +248,7 @@ public class SystemManager {
         return (String) ResourcesManager.executeOverResource(pojo);
     }
 
-    public synchronized static boolean isListening( String callerId, int resourceId, String host, int port,
+    public synchronized static boolean isListening( String callerId, long resourceId, String host, int port,
                                                     int timeout ) throws NoSuchActionException,
                                                                   NoCompatibleMethodFoundException,
                                                                   NoSuchComponentException, ClassNotFoundException,

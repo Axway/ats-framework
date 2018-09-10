@@ -63,7 +63,7 @@ public class MachineDescriptionRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string")
     })
@@ -76,7 +76,7 @@ public class MachineDescriptionRestEntryPoint {
                                                description = "The resource ID of the newly initialized resource",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing machine description operations resource details",
@@ -104,11 +104,7 @@ public class MachineDescriptionRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            // Uncomment this before push to git
-            /*if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
-                throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
-            }*/
-            int resourceId = MachineDescriptionManager.initialize(callerId);
+            long resourceId = MachineDescriptionManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
             String message = "Unable to initialize machine description operations resource from caller with id '"
@@ -136,14 +132,14 @@ public class MachineDescriptionRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "some resource ID",
                                                   name = "resourceId",
-                                                  type = "integer")
+                                                  type = "long")
     })
     @SwaggerMethodResponses( {
                                @SwaggerMethodResponse(
@@ -172,7 +168,7 @@ public class MachineDescriptionRestEntryPoint {
     })
     public Response getDescription( @Context HttpServletRequest request,
                                     @QueryParam( "callerId") String callerId,
-                                    @QueryParam( "resourceId") int resourceId ) {
+                                    @QueryParam( "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {

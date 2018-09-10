@@ -31,15 +31,15 @@ import com.axway.ats.log.appenders.PassiveDbAppender;
 public class ResourcesRepository {
 
     private static Map<String, CallerResources> resourcesMap = Collections.synchronizedMap(new HashMap<String, CallerResources>());
-    private static int                          resourceId   = -1;
-    private static final ResourcesRepository   instance     = new ResourcesRepository();
+    private static long                         resourceId   = -1;
+    private static final ResourcesRepository    instance     = new ResourcesRepository();
 
     public synchronized static ResourcesRepository getInstance() {
 
         return instance;
     }
 
-    public synchronized int putResource( Object resource ) {
+    public synchronized long putResource( Object resource ) {
 
         String callerId = ThreadsPerCaller.getCaller();
         int testcaseId = -1;
@@ -61,7 +61,7 @@ public class ResourcesRepository {
         return resourceId;
     }
 
-    public synchronized Object getResource( int resourceId ) {
+    public synchronized Object getResource( long resourceId ) {
 
         String callerId = ThreadsPerCaller.getCaller();
         int testcaseId = -1;
@@ -78,7 +78,7 @@ public class ResourcesRepository {
 
     }
 
-    public synchronized Object deleteResource( int resourceId ) {
+    public synchronized Object deleteResource( long resourceId ) {
 
         String callerId = ThreadsPerCaller.getCaller();
         int testcaseId = -1;
@@ -94,7 +94,7 @@ public class ResourcesRepository {
         return callerResources.deleteTestcaseResource(testcaseId, resourceId);
     }
 
-    public synchronized Set<Integer> deleteResources() {
+    public synchronized Set<Long> deleteResources() {
 
         String callerId = ThreadsPerCaller.getCaller();
         int testcaseId = -1;
@@ -107,10 +107,10 @@ public class ResourcesRepository {
             testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
         }
         CallerResources callerResources = resourcesMap.get(callerId);
-        Set<Integer> deletedResources = null;
+        Set<Long> deletedResources = null;
         if (callerResources != null) {
             deletedResources = callerResources.deleteAllTestcaseResources(testcaseId);
-            if(callerResources.testcasesResources.isEmpty()) {
+            if (callerResources.testcasesResources.isEmpty()) {
                 /*
                  * There is no more testcase resources for this caller,
                  * so delete the entire caller resources information
@@ -118,9 +118,9 @@ public class ResourcesRepository {
                 resourcesMap.remove(callerId);
             }
         } else {
-            deletedResources = new HashSet<Integer>();
+            deletedResources = new HashSet<Long>();
         }
-        
+
         return deletedResources;
     }
 
@@ -129,11 +129,11 @@ public class ResourcesRepository {
      * */
     class CallerResources {
 
-        Map<Integer, Map<Integer, Object>> testcasesResources = new HashMap<>();
+        Map<Integer, Map<Long, Object>> testcasesResources = new HashMap<>();
 
-        public void addTestcaseResource( int testcaseId, int resourceId, Object resource ) {
+        public void addTestcaseResource( int testcaseId, long resourceId, Object resource ) {
 
-            Map<Integer, Object> testcasesRes = testcasesResources.get(testcaseId);
+            Map<Long, Object> testcasesRes = testcasesResources.get(testcaseId);
             if (testcasesRes == null) {
                 testcasesRes = new HashMap<>();
             }
@@ -144,12 +144,12 @@ public class ResourcesRepository {
         /**
          * Delete a certain testcase resource
          * */
-        public Object deleteTestcaseResource( int testcaseId, int resourceId ) {
+        public Object deleteTestcaseResource( int testcaseId, long resourceId ) {
 
             return testcasesResources.get(testcaseId).remove(resourceId);
         }
 
-        public Object getTestcaseResource( int testcaseId, int resourceId ) {
+        public Object getTestcaseResource( int testcaseId, long resourceId ) {
 
             return testcasesResources.get(testcaseId).get(resourceId);
         }
@@ -158,12 +158,13 @@ public class ResourcesRepository {
          * Delete all testcase resources for the provided testcase ID
          * @return 
          * */
-        public Set<Integer> deleteAllTestcaseResources( int testcaseId ) {
-            Map<Integer,Object> testcaseResources = testcasesResources.remove(testcaseId);
-            if(testcaseResources != null) {
+        public Set<Long> deleteAllTestcaseResources( int testcaseId ) {
+
+            Map<Long, Object> testcaseResources = testcasesResources.remove(testcaseId);
+            if (testcaseResources != null) {
                 return testcaseResources.keySet();
             } else {
-                return new HashSet<Integer>();
+                return new HashSet<Long>();
             }
         }
 

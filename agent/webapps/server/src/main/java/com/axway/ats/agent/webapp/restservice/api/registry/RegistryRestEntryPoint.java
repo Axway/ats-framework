@@ -66,7 +66,7 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string")
     })
@@ -79,7 +79,7 @@ public class RegistryRestEntryPoint {
                                                description = "The resource ID of the newly initialized resource",
                                                example = "123",
                                                name = "resourceId",
-                                               type = "integer") }),
+                                               type = "long") }),
                                @SwaggerMethodResponse(
                                        code = 500,
                                        definition = "Error while initializing registry operation resource details",
@@ -110,7 +110,7 @@ public class RegistryRestEntryPoint {
             if (!OperatingSystemType.getCurrentOsType().equals(OperatingSystemType.WINDOWS)) {
                 throw new UnsupportedOperationException("Registry operations are supported only on WINDOWS hosts");
             }
-            int resourceId = RegistryManager.initialize(callerId);
+            long resourceId = RegistryManager.initialize(callerId);
             return Response.ok("{\"resourceId\":" + resourceId + "}").build();
         } catch (Exception e) {
             String message = "Unable to initialize registry operation resource from caller with id '" + callerId
@@ -137,14 +137,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -184,7 +184,7 @@ public class RegistryRestEntryPoint {
     public Response createPath( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootKey = null;
         String keyPath = null;
         try {
@@ -196,7 +196,7 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -238,14 +238,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -289,7 +289,7 @@ public class RegistryRestEntryPoint {
     })
     public Response deleteKey( @Context HttpServletRequest request,
                                @QueryParam( "callerId") String callerId,
-                               @QueryParam( "resourceId") int resourceId,
+                               @QueryParam( "resourceId") long resourceId,
                                @QueryParam( "rootKey") String rootKey,
                                @QueryParam( "keyPath") String keyPath,
                                @QueryParam( "keyName") String keyName ) {
@@ -341,14 +341,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -392,7 +392,7 @@ public class RegistryRestEntryPoint {
     })
     public Response isKeyPresented( @Context HttpServletRequest request,
                                     @QueryParam( "callerId") String callerId,
-                                    @QueryParam( "resourceId") int resourceId,
+                                    @QueryParam( "resourceId") long resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
@@ -444,14 +444,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -495,7 +495,7 @@ public class RegistryRestEntryPoint {
     })
     public Response getBinaryValue( @Context HttpServletRequest request,
                                     @QueryParam( "callerId") String callerId,
-                                    @QueryParam( "resourceId") int resourceId,
+                                    @QueryParam( "resourceId") long resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
@@ -547,14 +547,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -598,7 +598,7 @@ public class RegistryRestEntryPoint {
     })
     public Response getIntValue( @Context HttpServletRequest request,
                                  @QueryParam( "callerId") String callerId,
-                                 @QueryParam( "resourceId") int resourceId,
+                                 @QueryParam( "resourceId") long resourceId,
                                  @QueryParam( "rootKey") String rootKey,
                                  @QueryParam( "keyPath") String keyPath,
                                  @QueryParam( "keyName") String keyName ) {
@@ -650,14 +650,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -701,7 +701,7 @@ public class RegistryRestEntryPoint {
     })
     public Response getLongValue( @Context HttpServletRequest request,
                                   @QueryParam( "callerId") String callerId,
-                                  @QueryParam( "resourceId") int resourceId,
+                                  @QueryParam( "resourceId") long resourceId,
                                   @QueryParam( "rootKey") String rootKey,
                                   @QueryParam( "keyPath") String keyPath,
                                   @QueryParam( "keyName") String keyName ) {
@@ -753,14 +753,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -804,7 +804,7 @@ public class RegistryRestEntryPoint {
     })
     public Response getStringValue( @Context HttpServletRequest request,
                                     @QueryParam( "callerId") String callerId,
-                                    @QueryParam( "resourceId") int resourceId,
+                                    @QueryParam( "resourceId") long resourceId,
                                     @QueryParam( "rootKey") String rootKey,
                                     @QueryParam( "keyPath") String keyPath,
                                     @QueryParam( "keyName") String keyName ) {
@@ -856,14 +856,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -913,7 +913,7 @@ public class RegistryRestEntryPoint {
     public Response setBinaryValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootKey = null;
         String keyPath = null;
         String keyName = null;
@@ -927,7 +927,7 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -978,14 +978,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -1035,7 +1035,7 @@ public class RegistryRestEntryPoint {
     public Response setIntValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootKey = null;
         String keyPath = null;
         String keyName = null;
@@ -1049,7 +1049,7 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1096,14 +1096,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -1153,7 +1153,7 @@ public class RegistryRestEntryPoint {
     public Response setLongValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootKey = null;
         String keyPath = null;
         String keyName = null;
@@ -1167,7 +1167,7 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }
@@ -1214,14 +1214,14 @@ public class RegistryRestEntryPoint {
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",
-                                                  example = "some caller ID",
+                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
                                                   name = "callerId",
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The resource ID",
                                                   example = "123",
                                                   name = "resourceId",
-                                                  type = "integer"),
+                                                  type = "long"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The root key. Any of the HKEY_* ones",
                                                   example = "HKEY_LOCAL_MACHINE",
@@ -1271,7 +1271,7 @@ public class RegistryRestEntryPoint {
     public Response setStringValue( @Context HttpServletRequest request ) {
 
         String callerId = null;
-        int resourceId = -1;
+        long resourceId = -1;
         String rootKey = null;
         String keyPath = null;
         String keyName = null;
@@ -1285,7 +1285,7 @@ public class RegistryRestEntryPoint {
                 throw new NoSuchElementException("callerId is not provided with the request");
             }
             ThreadsPerCaller.registerThread(callerId);
-            resourceId = getJsonElement(jsonObject, "resourceId").getAsInt();
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
                 throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
             }

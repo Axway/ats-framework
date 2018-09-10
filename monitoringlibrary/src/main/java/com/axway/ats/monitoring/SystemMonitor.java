@@ -257,11 +257,11 @@ public class SystemMonitor {
         /**
          * The resource ID that corresponds to a {@link RestSystemMonitor} instance created on some agent
          * */
-        int        resourceId = -1;
+        long       resourceId = -1;
         /**
          * The callerId/caller that identifies the current thread, host and project (working directory)
          * */
-        String     callerId  = null;
+        String     callerId   = null;
     }
 
     /**
@@ -941,8 +941,9 @@ public class SystemMonitor {
               .append(":")
               .append(info.resourceId)
               .append("}");
-            info.resourceId = (int) info.helper.executeRequest(monitoredHost, "system/monitoring", "PUT", sb.toString(),
-                                                               "resourceId", Integer.class);
+            info.resourceId = (long) info.helper.executeRequest(monitoredHost, "system/monitoring", "PUT",
+                                                                sb.toString(),
+                                                                "resourceId", Integer.class);
         } catch (Exception e) {
             throw new MonitoringException("Unable to initialize monitoring on agent '" + monitoredHost + "'", e);
         }

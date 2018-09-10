@@ -45,12 +45,13 @@ public class ResourcesManager {
      * 
      * @param pojo the Action information
      */
-    public synchronized static int initializeResource( ActionPojo pojo )
-                                                                         throws NoSuchActionException,
-                                                                         NoCompatibleMethodFoundException,
-                                                                         NoSuchComponentException,
-                                                                         ClassNotFoundException, InstantiationException,
-                                                                         IllegalAccessException {
+    public synchronized static long initializeResource( ActionPojo pojo )
+                                                                          throws NoSuchActionException,
+                                                                          NoCompatibleMethodFoundException,
+                                                                          NoSuchComponentException,
+                                                                          ClassNotFoundException,
+                                                                          InstantiationException,
+                                                                          IllegalAccessException {
 
         Method method = getActionMethod(pojo);
 
@@ -59,7 +60,7 @@ public class ResourcesManager {
 
         // put it in the resource map for that caller
         // also return resource ID for this action class instance
-        int resourceId = ResourcesRepository.getInstance().putResource(actionClassInstance);
+        long resourceId = ResourcesRepository.getInstance().putResource(actionClassInstance);
 
         if (LOG.isDebugEnabled()) {
             LOG.debug("Action class '" + method.getDeclaringClass().getName() + "' added to caller '"
@@ -82,9 +83,9 @@ public class ResourcesManager {
      * @param resource
      *            the resource that we want to add to this caller
      */
-    public synchronized static int addResource( Object resource ) {
+    public synchronized static long addResource( Object resource ) {
 
-        int resourceId = ResourcesRepository.getInstance().putResource(resource);
+        long resourceId = ResourcesRepository.getInstance().putResource(resource);
         if (LOG.isDebugEnabled()) {
             LOG.debug("New object from class '" + resource.getClass().getName() + "' added to caller '"
                       + ThreadsPerCaller.getCaller()
@@ -98,7 +99,7 @@ public class ResourcesManager {
     /**
      * Deinitialize resource to some InternalXYZOperation's class
      */
-    public synchronized static int deinitializeResource( int resourceId ) {
+    public synchronized static long deinitializeResource( long resourceId ) {
 
         Object actionClassInstance = ResourcesRepository.getInstance().deleteResource(resourceId);
         if (actionClassInstance == null) {
@@ -123,7 +124,7 @@ public class ResourcesManager {
             LOG.debug("Deleting all testcase resources from caller '" + ThreadsPerCaller.getCaller()
                       + "' and testcase '" + PassiveDbAppender.getCurrentInstance().getTestCaseId() + "' ...");
         }
-        Set<Integer> deletedResources = ResourcesRepository.getInstance().deleteResources();
+        Set<Long> deletedResources = ResourcesRepository.getInstance().deleteResources();
         if (deletedResources != null) {
             if (LOG.isDebugEnabled()) {
                 LOG.debug("Resources with IDs " + deletedResources.toString() + " were deleted");
@@ -178,7 +179,7 @@ public class ResourcesManager {
 
     }
 
-    public synchronized static Object getResource( int resourceId ) {
+    public synchronized static Object getResource( long resourceId ) {
 
         return ResourcesRepository.getInstance().getResource(resourceId);
 
