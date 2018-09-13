@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -31,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -53,9 +55,9 @@ import com.axway.ats.environment.database.model.DbTable;
 
 class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log            = Logger.getLogger(MssqlEnvironmentHandler.class);
+    private static final Logger LOG            = Logger.getLogger(MssqlEnvironmentHandler.class);
     private static final String HEX_PREFIX_STR = "0x";
-    
+
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
 
@@ -79,9 +81,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         try {
             columnsMetaData = this.dbProvider.select(selectColumnsInfo);
         } catch (DbException e) {
-			throw new DbException("Could not get columns for table " + table.getTableName()
-					+ ". Check if the table is existing and that the user has permissions. See more details in the trace.",
-					e);
+            throw new DbException("Could not get columns for table " + table.getTableName()
+                                  + ". Check if the table is existing and that the user has permissions. See more details in the trace.",
+                                  e);
         }
 
         table.setIdentityColumnPresent(false); // the Identity column can be skipped(excluded)
@@ -95,13 +97,13 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 ColumnDescription colDescription = new MssqlColumnDescription(columnName,
                                                                               (String) columnMetaData.get("DATA_TYPE"));
                 columnsToSelect.add(colDescription);
-                if ( columnMetaData.get("isIdentity") != null && (Integer) columnMetaData.get("isIdentity") == 1) {
+                if (columnMetaData.get("isIdentity") != null && (Integer) columnMetaData.get("isIdentity") == 1) {
                     table.setIdentityColumnPresent(true);
                 }
             } else {
                 //if this column has no default value, we cannot skip it in the backup
                 if (columnMetaData.get("COLUMN_DEFAULT") == null) {
-                    log.error("Cannot skip columns with no default values while creating backup");
+                    LOG.error("Cannot skip columns with no default values while creating backup");
                     throw new ColumnHasNoDefaultValueException(table.getTableName(), columnName);
                 }
             }
@@ -117,16 +119,16 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException, ParseException {
 
-        if( this.addLocks ) {
-            fileWriter.write( "SET TRANSACTION ISOLATION LEVEL SERIALIZABLE " + EOL_MARKER
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        if (this.addLocks) {
+            fileWriter.write("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE " + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
-        
-        if( this.dropEntireTable ) {
-            fileWriter.write( DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
-        } else if( !this.deleteStatementsInserted ) {
-            writeDeleteStatements( fileWriter );
+
+        if (this.dropEntireTable) {
+            fileWriter.write(DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        } else if (!this.deleteStatementsInserted) {
+            writeDeleteStatements(fileWriter);
         }
 
         if (table.getAutoIncrementResetValue() != null) {
@@ -208,12 +210,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
 
-        if( this.includeDeleteStatements ) {
-            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+        if (this.includeDeleteStatements) {
+            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
                 String deleteQuery = "DELETE FROM " + dbTable.getTableName();
-                fileWriter.write( deleteQuery + ";" + EOL_MARKER
-                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                fileWriter.write(deleteQuery + ";" + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
             }
             this.deleteStatementsInserted = true;
         }
@@ -269,7 +271,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
      */
     public void restore(
                          String backupFileName ) throws DatabaseEnvironmentCleanupException {
-        
+
         BufferedReader backupReader = null;
         Connection connection = null;
 
@@ -277,7 +279,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            LOG.debug("Starting restoring db backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -293,10 +295,10 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 sql.append(line);
 
                 if (line.startsWith(DROP_TABLE_MARKER)) {
-                  
-                    String tableName = line.substring( DROP_TABLE_MARKER.length() ).trim();
-                    dropAndRecreateTable( connection, tableName );
-                    
+
+                    String tableName = line.substring(DROP_TABLE_MARKER.length()).trim();
+                    dropAndRecreateTable(connection, tableName);
+
                 } else if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker
@@ -309,12 +311,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     } catch (SQLException sqle) {
                         //we have to roll back the transaction and re-throw the exception
                         connection.rollback();
-						throw new SQLException("Error invoking restore satement: " + sql.toString(), sqle);
+                        throw new SQLException("Error invoking restore satement: " + sql.toString(), sqle);
                     } finally {
                         try {
                             updateStatement.close();
                         } catch (SQLException sqle) {
-                            log.error("Unable to close prepared statement", sqle);
+                            LOG.error("Unable to close prepared statement", sqle);
                         }
                     }
                     sql = new StringBuilder();
@@ -338,7 +340,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 throw sqle;
             }
 
-            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
+            LOG.debug("Finished restoring db backup from file '" + backupFileName + "'");
 
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
@@ -355,51 +357,75 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     connection.close();
                 }
             } catch (SQLException sqle) {
-                log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
+                LOG.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
         }
     }
-    
+
     private void dropAndRecreateTable( Connection connection, String tableName ) {
 
         List<String> generateForeignKeysScripts = new ArrayList<String>();
-        
-        Map<String, List<String>> foreignKeys = getForeingKeys( tableName, connection );
-        
-        // generate script for restoring the exact table
-        String generateTableScript = generateTableScript( tableName, connection );
 
-        ClassLoader classLoader = getClass().getClassLoader();
-        String file = classLoader.getResource("generateForeignKeyScript.sql").getPath();
-        
+        Map<String, List<String>> foreignKeys = getForeingKeys(tableName, connection);
+
+        // generate script for restoring the exact table
+        String generateTableScript = generateTableScript(tableName, connection);
+
+        String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
+
         // create the generateForeignKeyScript procedure
-        createDatabaseProcedure( connection, file );
-        
-        for( Entry<String, List<String>> keyEntry : foreignKeys.entrySet() ) {
+        createDatabaseProcedure(connection, scriptContent);
+
+        for (Entry<String, List<String>> keyEntry : foreignKeys.entrySet()) {
             String parentTableName = keyEntry.getKey();
-            for( String key : keyEntry.getValue() ) {
+            for (String key : keyEntry.getValue()) {
                 // generate scripts for creating all foreign keys
-                generateForeignKeysScripts.add( generateForeignKeyScript( parentTableName, key,
-                                                                          connection ) );
+                generateForeignKeysScripts.add(generateForeignKeyScript(parentTableName, key,
+                                                                        connection));
             }
         }
-        
+
         // drop the newly created procedure
-        executeUpdate( "DROP PROCEDURE generateForeignKeyScript", connection );
-        
+        executeUpdate("DROP PROCEDURE generateForeignKeyScript", connection);
+
         // drop the foreign keys
-        dropForeignKeys( tableName, connection );
+        dropForeignKeys(tableName, connection);
         // drop the table
-        executeUpdate( "DROP TABLE " + tableName + ";", connection );
-        
+        executeUpdate("DROP TABLE " + tableName + ";", connection);
+
         // create new table
-        executeUpdate( generateTableScript, connection );
+        executeUpdate(generateTableScript, connection);
         // create all the missing foreign keys
-        for( String script : generateForeignKeysScripts ) {
-            executeUpdate( script, connection );
+        for (String script : generateForeignKeysScripts) {
+            executeUpdate(script, connection);
         }
     }
 
+    
+    /**
+     * Get file contents from classpath
+     * @param scriptFileName Relative path is relative to the package of current class.
+     * @return String of  
+     */
+    private String loadScriptFromClasspath(String scriptFileName) {
+        String scriptContents = null;
+        try (InputStream is = this.getClass().getResourceAsStream(scriptFileName)) {
+            if (is != null) {
+                scriptContents = IoUtils.streamToString(is);
+            }
+        } catch (Exception e) {
+            if (e.getSuppressed() != null) { // possible close resources
+                Throwable[] suppressedExc = e.getSuppressed();
+                for (int i = 0; i < suppressedExc.length; i++) {
+                    LOG.warn("Suppressed exception [" + i + "] details", suppressedExc[i]);
+                }
+            }
+            throw new DbException("Could not load SQL server script needed for DB environment restore from classpath. Check "
+                    + "location of " + scriptFileName + " file", e);
+        }
+        return scriptContents;
+    }
+    
     private Map<String, List<String>> getForeingKeys( String tableName,
                                                       Connection connection ) throws DbException {
 
@@ -407,114 +433,128 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
         ResultSet rs = null;
         try {
-            String simpleTableName = tableName.substring( tableName.indexOf( '.' ) + 1, tableName.length() );
-            stmnt = connection.prepareStatement( "EXEC sp_fkeys '" + simpleTableName + "'" );
+            String simpleTableName = tableName.substring(tableName.indexOf('.') + 1, tableName.length());
+            stmnt = connection.prepareStatement("EXEC sp_fkeys '" + simpleTableName + "'");
             rs = stmnt.executeQuery();
-            while( rs.next() ) {
-                String fKey = rs.getString( "FK_NAME" );
-                String parentTableName = rs.getString( "FKTABLE_OWNER" ) + "."
-                                         + rs.getString( "FKTABLE_NAME" );
-                if(tableName.equals( parentTableName )) {
+            while (rs.next()) {
+                String fKey = rs.getString("FK_NAME");
+                String parentTableName = rs.getString("FKTABLE_OWNER") + "."
+                                         + rs.getString("FKTABLE_NAME");
+                if (tableName.equals(parentTableName)) {
                     // this is the same table, the foreign key is created in the table creation script
                     continue;
                 }
-                if( tableForeignKey.containsKey( parentTableName ) ) {
-                    if( !tableForeignKey.get( parentTableName ).contains( fKey ) ) {
-                        tableForeignKey.get( parentTableName ).add( fKey );
+                if (tableForeignKey.containsKey(parentTableName)) {
+                    if (!tableForeignKey.get(parentTableName).contains(fKey)) {
+                        tableForeignKey.get(parentTableName).add(fKey);
                     }
                 } else {
                     List<String> fKeys = new ArrayList<String>();
-                    fKeys.add( fKey );
-                    tableForeignKey.put( parentTableName, fKeys );
+                    fKeys.add(fKey);
+                    tableForeignKey.put(parentTableName, fKeys);
                 }
             }
 
             return tableForeignKey;
-        } catch( SQLException e ) {
-			throw new DbException(
-					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } catch (SQLException e) {
+            throw new DbException(
+                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                  + e.getMessage(), e);
         } finally {
-            DbUtils.closeStatement( stmnt );
+            DbUtils.closeStatement(stmnt);
         }
     }
-    
+
     private void executeUpdate( String query, Connection connection ) throws DbException {
 
         PreparedStatement stmnt = null;
         try {
-            stmnt = connection.prepareStatement( query );
+            stmnt = connection.prepareStatement(query);
             stmnt.executeUpdate();
-        } catch( SQLException e ) {
-			throw new DbException(
-					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } catch (SQLException e) {
+            throw new DbException(
+                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                  + e.getMessage(), e);
         } finally {
-            DbUtils.closeStatement( stmnt );
+            DbUtils.closeStatement(stmnt);
         }
     }
-    
-	private void createDatabaseProcedure(Connection conn, String scriptPath) {
 
-		StringBuilder command = new StringBuilder();
-		Statement stmt = null;
+    private void createDatabaseProcedure( Connection conn, String scriptContent ) {
 
-		try (BufferedReader lineReader = new BufferedReader(new FileReader(scriptPath))) {
-			String line;
-			while ((line = lineReader.readLine()) != null) {
+        StringBuilder command = new StringBuilder();
+        Statement stmt = null;
+        
+        String currentLine; 
+        try (Scanner scanner = new Scanner(scriptContent)) {
+            while (scanner.hasNextLine()) {
+                currentLine = scanner.nextLine();
+                currentLine = currentLine.trim();
+                command.append(currentLine);
+                command.append(" ");
 
-				line = line.trim();
-				command.append(line);
-				command.append(" ");
+                if (currentLine.endsWith("GO")) {
+                    // commit the transaction
+                    try {
+                        stmt = conn.createStatement();
+                        stmt.execute(command.toString());
+                    } finally {
+                        DbUtils.closeStatement(stmt);
+                    }
+                    command.setLength(0);
+                }
+            }
+        } catch (Exception e) {
+            String message = "Error while creating database procedure by running command: " + command;
+            if (e instanceof SQLException) {
+                throw new DbException(DbUtils.getFullSqlException(message, (SQLException) e));
+            } else {
+                throw new DbException(message, e);
+            }
+        }
+        String commandStr = command.toString().trim(); 
+        if (commandStr.length() > 0) {
+            LOG.warn("Command '" + commandStr + "' will not be executed. If it is needed then add 'GO' statement at the end");
+        }
+    }
 
-				if (line.endsWith("GO")) {
-
-					// commit the transaction
-					stmt = conn.createStatement();
-					stmt.execute(command.toString());
-					command.setLength(0);
-				}
-			}
-
-		} catch (Exception e) {
-			throw new DbException("Error while creating database procedure by running command: " + command);
-		} finally {
-			DbUtils.closeStatement(stmt);
-		}
-	}
-    
-    private String generateForeignKeyScript( String tableName, String foreingKey, Connection connection ) throws DbException {
+    private String generateForeignKeyScript( String tableName, String foreingKey,
+                                             Connection connection ) throws DbException {
 
         CallableStatement callableStatement = null;
         ResultSet rs = null;
         try {
-            callableStatement = connection.prepareCall( "{ call generateForeignKeyScript(?,?) }" );
-            callableStatement.setString( 1, tableName );
-            callableStatement.setString( 2, StringUtils.isNullOrEmpty( foreingKey )
-                                                                                     ? null
-                                                                                     : foreingKey );
+            callableStatement = connection.prepareCall("{ call generateForeignKeyScript(?,?) }");
+            callableStatement.setString(1, tableName);
+            callableStatement.setString(2, StringUtils.isNullOrEmpty(foreingKey)
+                                                                                 ? null
+                                                                                 : foreingKey);
 
             rs = callableStatement.executeQuery();
             String createQuery = new String();
-            if( rs.next() ) {
-                createQuery = rs.getString( 1 );
+            if (rs.next()) {
+                createQuery = rs.getString(1);
             }
 
             return createQuery;
 
-        } catch( Exception e ) {
-            throw new DbException( "Error while generating script for the foreign keys of the table '"
-                                   + tableName + "'.", e );
+        } catch (Exception e) {
+            throw new DbException("Error while generating script for the foreign keys of the table '"
+                                  + tableName + "'.", e);
         } finally {
-            DbUtils.closeStatement( callableStatement );
+            DbUtils.closeStatement(callableStatement);
         }
     }
 
     private String generateTableScript( String tableName, Connection connection ) throws DbException {
+        // script used from https://www.c-sharpcorner.com/UploadFile/67b45a/how-to-generate-a-create-table-script-for-an-existing-table/
+        final String tableScriptFileName = "generateTableScript.sql";
+        //String file = classLoader.getResource(tableName).getPath();
         
-        ClassLoader classLoader = getClass().getClassLoader();
-        String file = classLoader.getResource("generateTableScript.sql").getPath();
+        String scriptContents = loadScriptFromClasspath(tableScriptFileName);
         
         // create the generateTableScript procedure
-        createDatabaseProcedure( connection, file );
+        createDatabaseProcedure( connection, scriptContents );
         
         CallableStatement callableStatement = null;
         ResultSet rs = null;
@@ -536,6 +576,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             DbUtils.closeStatement( callableStatement );
             
             // drop the newly created procedure
+            // TODO: drop procedure after last table drop invocation
             executeUpdate( "DROP PROCEDURE generateTableScript", connection );
             
         }
@@ -544,26 +585,26 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     private void dropForeignKeys( String tableName, Connection connection ) throws DbException {
 
         String query = "SELECT "
-                        + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
-                        + "'].[' + OBJECT_NAME(parent_object_id) + "
-                        + "'] DROP CONSTRAINT [' + name + ']' "
-                    + " FROM sys.foreign_keys "
-                    + " WHERE referenced_object_id = object_id('" + tableName + "')";
-        
+                       + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
+                       + "'].[' + OBJECT_NAME(parent_object_id) + "
+                       + "'] DROP CONSTRAINT [' + name + ']' "
+                       + " FROM sys.foreign_keys "
+                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+
         Statement callableStatement = null;
         ResultSet rs = null;
         try {
             callableStatement = connection.createStatement();
-            rs = callableStatement.executeQuery( query );
+            rs = callableStatement.executeQuery(query);
 
-            while( rs.next() ) {
-                executeUpdate( rs.getString( 1 ), connection );
+            while (rs.next()) {
+                executeUpdate(rs.getString(1), connection);
             }
 
-        } catch( Exception e ) {
-            throw new DbException( "Error while droping the foreign keys of table '" + tableName + "'.", e );
+        } catch (Exception e) {
+            throw new DbException("Error while droping the foreign keys of table '" + tableName + "'.", e);
         } finally {
-            DbUtils.closeStatement( callableStatement );
+            DbUtils.closeStatement(callableStatement);
         }
     }
 }

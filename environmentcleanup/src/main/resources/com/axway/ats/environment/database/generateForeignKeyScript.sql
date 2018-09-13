@@ -78,7 +78,8 @@ SELECT ISNULL((SELECT (
         FROM sys.foreign_keys fk WITH (NOWAIT)
         JOIN sys.objects ro WITH (NOWAIT) ON ro.[object_id] = fk.referenced_object_id
         WHERE fk.parent_object_id = @object_id and 
-			(CASE WHEN @foreignKey IS NULL THEN '1' ELSE fk.name END ) = ISNULL(@foreignKey, '1' )
+              (CASE WHEN @foreignKey IS NULL THEN '1' ELSE fk.name END ) = ISNULL(@foreignKey, '1' )
         FOR XML PATH(N''), TYPE).value('.', 'NVARCHAR(MAX)')), '')
-        
+
  GO
+ 
