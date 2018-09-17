@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[generateTableScript]
+CREATE PROCEDURE [generateTableScript]
 
 @tableName SYSNAME
 

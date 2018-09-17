@@ -1,4 +1,4 @@
-CREATE PROCEDURE [dbo].[generateForeignKeyScript]
+CREATE PROCEDURE [generateForeignKeyScript]
 
 @tableName SYSNAME,
 @foreignKey varchar(50) = null
