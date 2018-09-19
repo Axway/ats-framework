@@ -29,6 +29,7 @@ import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.ActionClient;
 import com.axway.ats.agent.webapp.client.RestHelper;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
@@ -42,29 +43,26 @@ import com.axway.ats.log.autodb.TestCaseState;
  */
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                    log = Logger.getLogger(TestcaseStateListener.class);
+    class AgentInfo {
 
-    // List of agents with configured logging.
-    // They know the database to work with.
-    // FIXME: as this list only grows, we must clean it up at some appropriate moment
-    private static List<String>              logConfiguredAgents;
+        String  address        = null;
+        boolean logConfigured  = false; // whether agent was configured to log in database
+        boolean testConfigured = false; // whether onTestStart event was sent to agent successfully
 
-    // List of test configured agents.
-    // They know the particular test to work with.
-    // {callerId = [AGENT_HOST_1,AGENT_HOST2...]}
-    private static Map<String, List<String>> testConfiguredAgents;
+    }
 
-    private static TestcaseStateListener     instance;
+    private static Logger                       log        = Logger.getLogger(TestcaseStateListener.class);
 
-    private final Object                     configurationMutex;
+    private static Map<String, List<AgentInfo>> agentInfos = Collections.synchronizedMap(new HashMap<String, List<AgentInfo>>());
+
+    private static TestcaseStateListener        instance;
+
+    private final Object                        configurationMutex;
 
     // force using getInstace()
     private TestcaseStateListener() {
 
         // hidden constructor body
-
-        logConfiguredAgents = new ArrayList<String>();
-        testConfiguredAgents = Collections.synchronizedMap(new HashMap<String, List<String>>());
 
         configurationMutex = new Object();
     }
@@ -88,42 +86,36 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         // FIXME: this must be split per testcase in case of parallel tests
         waitImportantThreadsToFinish();
 
-        List<String> endedCallerIds = new ArrayList<>();
-        String thisThreadId = Thread.currentThread().getId() + "";
+        // get current caller ID
+        String callerId = ExecutorUtils.createCallerId();
 
         // need synchronization when running parallel tests
         synchronized (configurationMutex) {
-            for (String agentCallerId : testConfiguredAgents.keySet()) {
 
-                // get the thread ID from the caller
-                String threadId = ExecutorUtils.extractThreadId(agentCallerId);
+            List<AgentInfo> agentInfosList = agentInfos.get(callerId);
+            if (agentInfosList != null) {
+                RestHelper helper = new RestHelper();
 
-                // the current thread is associated with this caller
-                // so we can proceed with sending onTestEnd event to the agents, configured by this caller
-                if (thisThreadId.equals(threadId)) {
-                    RestHelper helper = new RestHelper();
-                    // send onTestEvent to all agents what were configured by agentCallerId
-                    for (String atsAgent : testConfiguredAgents.get(agentCallerId)) {
+                for (int i = 0; i < agentInfosList.size(); i++) {
+                    AgentInfo ai = agentInfosList.get(i);
+
+                    if (ai.testConfigured) {
                         try {
-                            helper.executeRequest(atsAgent,
-                                                  "/testcases?callerId=" + URLEncoder.encode(agentCallerId, "UTF-8"),
+                            helper.executeRequest(ai.address,
+                                                  "/testcases?callerId=" + URLEncoder.encode(callerId, "UTF-8"),
                                                   "DELETE", null, null,
                                                   null);
+
+                            ai.testConfigured = false;
                         } catch (Exception e) {
-                            log.error("Can't send onTestEnd event to ATS agent '" + atsAgent
+                            log.error("Can't send onTestEnd event to ATS agent '" + ai.address
                                       + "'", e);
                         }
                     }
-                    // remember the ended caller IDs
-                    endedCallerIds.add(agentCallerId);
                 }
             }
-
-            // cleanup
-            for (String agentCallerId : endedCallerIds) {
-                testConfiguredAgents.remove(agentCallerId);
-            }
         }
+
     }
 
     /**
@@ -131,6 +123,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
      * an action queue.
      *
      * It is also expected to be send between onTestStart and onTestEnd events.
+     * <br> But if it is not, the testcase id that the agent will receive will be -1
      */
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
@@ -140,57 +133,72 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             return;
         }
 
-        for (String atsAgent : atsAgents) {
+        // get current caller ID
+        String callerId = ExecutorUtils.createCallerId();
 
-            String callerId = ExecutorUtils.createCallerId();
+        // need synchronization when running parallel tests
+        synchronized (configurationMutex) {
 
-            if (!testConfiguredAgents.keySet().contains(callerId)) {
-
-                // need synchronization when running parallel tests
-                synchronized (configurationMutex) {
-
-                    // Pass the logging configuration to the remote agent.
-                    // We do this just once for the whole run.
-                    if (!logConfiguredAgents.contains(atsAgent)) {
-
-                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
-                        new RemoteConfigurationManager().pushConfiguration(atsAgent,
-                                                                           remoteLoggingConfigurator);
-                        logConfiguredAgents.add(atsAgent);
-                    }
-
-                    // Pass the testcase configuration to the remote agent.
-                    // We do this each time a new test is started
-                    if (!testConfiguredAgents.keySet().contains(callerId)) {
-                        TestCaseState testCaseState = null;
-                        try {
-                            testCaseState = getCurrentTestCaseState();
-                            RestHelper helper = new RestHelper();
-                            helper.executeRequest(atsAgent, "/testcases",
-                                                  "PUT",
-                                                  "{\"callerId\":\"" + callerId
-                                                         + "\",\"testCaseState\":"
-                                                         + helper.serializeJavaObject(testCaseState) + "}",
-                                                  null, null);
-                            // add this agent to the list of already test configured (agents that received onTestStart event) list for the caller
-                            List<String> alreadyTestConfiguredAgents = testConfiguredAgents.get(callerId);
-                            if (alreadyTestConfiguredAgents == null) {
-                                alreadyTestConfiguredAgents = new ArrayList<>();
-                            }
-                            alreadyTestConfiguredAgents.add(atsAgent);
-                            testConfiguredAgents.put(callerId, alreadyTestConfiguredAgents);
-                        } catch (Exception e) {
-                            String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
-                                             + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
-                                             + atsAgent
-                                             + "'";
-                            log.error(message);
-                            throw new AgentException(message, e);
+            List<AgentInfo> agentInfosList = agentInfos.get(callerId);
+            if (agentInfosList == null) {
+                agentInfosList = new ArrayList<>();
+                agentInfos.put(callerId, agentInfosList);
+                // no agent are configured from the current caller ID
+                // create AgentInfo entry for each of the provided ATS Agents
+                for (String atsAgent : atsAgents) {
+                    AgentInfo ai = new AgentInfo();
+                    ai.address = atsAgent;
+                    agentInfosList.add(ai);
+                }
+            } else {
+                boolean isRegistered = false;
+                for (String atsAgent : atsAgents) {
+                    for (AgentInfo ai : agentInfosList) {
+                        if (ai.address.equals(atsAgent)) {
+                            isRegistered = true;
+                            break;
                         }
+                    }
+                    if (!isRegistered) {
+                        AgentInfo newAi = new AgentInfo();
+                        newAi.address = atsAgent;
+                        agentInfosList.add(newAi);
+                        break;
+                    }
+                }
+            }
+
+            for (AgentInfo ai : agentInfosList) {
+
+                RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
+                new RemoteConfigurationManager().pushConfiguration(ai.address,
+                                                                   remoteLoggingConfigurator);
+                ai.logConfigured = true;
+
+                if (!ai.testConfigured) {
+                    TestCaseState testCaseState = null;
+                    try {
+                        testCaseState = getCurrentTestCaseState();
+                        RestHelper helper = new RestHelper();
+                        helper.executeRequest(ai.address, "/testcases",
+                                              "PUT",
+                                              "{\"callerId\":\"" + callerId
+                                                     + "\",\"testCaseState\":"
+                                                     + helper.serializeJavaObject(testCaseState) + "}",
+                                              null, null);
+                        ai.testConfigured = true;
+                    } catch (Exception e) {
+                        String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
+                                         + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
+                                         + ai.address
+                                         + "'";
+                        log.error(message);
+                        throw new AgentException(message, e);
                     }
                 }
             }
         }
+
     }
 
     /**
