@@ -256,8 +256,8 @@ public class TestcasesRestEntryPoint {
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
-        return Response.ok("{\"status_message\":\"testcase with id '" + currentRunId
-                           + "' from run with id '" + currentTestcaseId + "' successfully ended\"}")
+        return Response.ok("{\"status_message\":\"testcase with id '" + currentTestcaseId
+                           + "' from run with id '" + currentRunId + "' successfully ended\"}")
                        .build();
     }
 
