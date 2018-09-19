@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
-
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 
@@ -47,6 +46,8 @@ public class ResourcesRepository {
          * There are cases when we want to execute action on the agent, before that agent is configured.
          * Since the agent is not configured, there is no PassiveDbAppender available.
          * In that case testcaseId will be -1
+         * TODO: create map for run and suite resources, but that means that the agent will need to know when a run and suite is started on the Test executor
+         * or at least know when a particular run or suite is ended on the Test executor so those resources can be deleted
          * */
         if (PassiveDbAppender.getCurrentInstance() != null) {
             testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
@@ -69,11 +70,16 @@ public class ResourcesRepository {
          * There are cases when we want to execute action on the agent, before that agent is configured.
          * Since the agent is not configured, there is no PassiveDbAppender available.
          * In that case testcaseId will be -1
+         * TODO: create map for run and suite resources, but that means that the agent will need to know when a run and suite is started on the Test executor
+         * or at least know when a particular run or suite is ended on the Test executor so those resources can be deleted
          * */
         if (PassiveDbAppender.getCurrentInstance() != null) {
             testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
         }
         CallerResources callerResources = resourcesMap.get(callerId);
+        if (callerResources == null) {
+            throw new RuntimeException("There are no resources, created from caller '" + callerId + "'");
+        }
         return callerResources.getTestcaseResource(testcaseId, resourceId);
 
     }
@@ -86,6 +92,8 @@ public class ResourcesRepository {
          * There are cases when we want to execute action on the agent, before that agent is configured.
          * Since the agent is not configured, there is no PassiveDbAppender available.
          * In that case testcaseId will be -1
+         * TODO: create map for run and suite resources, but that means that the agent will need to know when a run and suite is started on the Test executor
+         * or at least know when a particular run or suite is ended on the Test executor so those resources can be deleted
          * */
         if (PassiveDbAppender.getCurrentInstance() != null) {
             testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
@@ -102,6 +110,8 @@ public class ResourcesRepository {
          * There are cases when we want to execute action on the agent, before that agent is configured.
          * Since the agent is not configured, there is no PassiveDbAppender available.
          * In that case testcaseId will be -1
+         * TODO: create map for run and suite resources, but that means that the agent will need to know when a run and suite is started on the Test executor
+         * or at least know when a particular run or suite is ended on the Test executor so those resources can be deleted
          * */
         if (PassiveDbAppender.getCurrentInstance() != null) {
             testcaseId = PassiveDbAppender.getCurrentInstance().getTestCaseId();
@@ -151,7 +161,15 @@ public class ResourcesRepository {
 
         public Object getTestcaseResource( int testcaseId, long resourceId ) {
 
-            return testcasesResources.get(testcaseId).get(resourceId);
+            Map<Long, Object> testcaseResources = testcasesResources.get(testcaseId);
+
+            if (testcaseResources == null) {
+
+                throw new RuntimeException("There are no testcase resources, created from testcase with id '"
+                                           + testcaseId + "'");
+            }
+
+            return testcaseResources.get(resourceId);
         }
 
         /**
