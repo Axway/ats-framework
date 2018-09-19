@@ -37,6 +37,7 @@ import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.monitoring.queue.ActionExecutionStatistic;
 import com.axway.ats.agent.core.monitoring.queue.QueueExecutionStatistics;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
+import com.axway.ats.agent.core.threading.data.config.ParameterDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
 import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerClass;
@@ -48,6 +49,7 @@ import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.Swag
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.StringUtils;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -111,7 +113,7 @@ public class QueuesRestEntryPoint {
                                                   type = "string"),
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The load data config",
-                                                  example = "{\"parameterProviders\": []}",
+                                                  example = "{}", // TODO add example
                                                   name = "loaderDataConfig",
                                                   type = "object"),
                                           @SwaggerMethodParameterDefinition(
@@ -186,7 +188,7 @@ public class QueuesRestEntryPoint {
             if (StringUtils.isNullOrEmpty(loaderDataConfigJson)) {
                 throw new NoSuchElementException("loaderDataConfig is not provided with the request");
             }
-            loaderDataConfig = GSON.fromJson(loaderDataConfigJson, LoaderDataConfig.class);
+            loaderDataConfig = deserializeLoadDataConfig(loaderDataConfigJson);
 
             String useSynchronizedIterationsJson = getJsonElement(jsonObject,
                                                                   "useSynchronizedIterations").toString();
@@ -207,12 +209,12 @@ public class QueuesRestEntryPoint {
                 actionRequests.add(actionRequest);
             }
             MultiThreadedActionHandler.getInstance(callerId).scheduleActions(callerId,
-                                                                              queueName,
-                                                                              queueId,
-                                                                              actionRequests,
-                                                                              threadingPattern,
-                                                                              loaderDataConfig,
-                                                                              useSynchronizedIterations);
+                                                                             queueName,
+                                                                             queueId,
+                                                                             actionRequests,
+                                                                             threadingPattern,
+                                                                             loaderDataConfig,
+                                                                             useSynchronizedIterations);
 
             return Response.ok("{\"status_message\":\"queue '" + queueId + "' successfully scheduled\"}").build();
         } catch (Exception e) {
@@ -225,6 +227,24 @@ public class QueuesRestEntryPoint {
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
+    }
+
+    private LoaderDataConfig deserializeLoadDataConfig( String json ) throws ClassNotFoundException {
+
+        LoaderDataConfig ldc = new LoaderDataConfig();
+
+        JsonParser jp = new JsonParser();
+        String[] classesNames = new Gson().fromJson(jp.parse(json).getAsJsonObject().get("parameterProvidersClasses"),
+                                                    String[].class);
+        JsonArray ja = jp.parse(json).getAsJsonObject().get("parameterProviders").getAsJsonArray();
+        for (int i = 0; i < ja.size(); i++) {
+            Class<?> clss = Class.forName(classesNames[i]);
+            String objJson = ja.get(i).toString();
+            Object obj = new Gson().fromJson(objJson, clss);
+            ldc.addParameterConfig((ParameterDataConfig) obj);
+        }
+
+        return ldc;
     }
 
     @POST

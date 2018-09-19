@@ -27,6 +27,7 @@ import java.util.List;
 @SuppressWarnings( "serial")
 public final class LoaderDataConfig implements Serializable {
 
+    private List<String>              parameterProvidersClasses;
     private List<ParameterDataConfig> parameterProviders;
 
     /**
@@ -34,6 +35,7 @@ public final class LoaderDataConfig implements Serializable {
      */
     public LoaderDataConfig() {
 
+        parameterProvidersClasses = new ArrayList<String>();
         parameterProviders = new ArrayList<ParameterDataConfig>();
     }
 
@@ -55,6 +57,7 @@ public final class LoaderDataConfig implements Serializable {
      */
     public void addParameterConfig( ParameterDataConfig parameterData ) {
 
+        parameterProvidersClasses.add(parameterData.getClass().getName());
         parameterProviders.add(parameterData);
     }
 
