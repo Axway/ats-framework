@@ -159,8 +159,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * */
         if (isTestngMethod(method, METHOD_TYPE.BEFORE_SUITE)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             if (channel.currentSuiteName != null) {
@@ -178,8 +180,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          */
         if (isTestngMethod(method, METHOD_TYPE.BEFORE_CLASS)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             if (channel.currentSuiteName != null) {
@@ -204,8 +208,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          */
         if (isTestngMethod(method, METHOD_TYPE.BEFORE_METHOD)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             if (channel.currentSuiteName != null) {
@@ -280,8 +286,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * */
         if (isTestngMethod(method, METHOD_TYPE.AFTER_CLASS)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             logger.info("[TESTNG]: START @AfterClass '" + testResult.getTestClass().getRealClass() + "@"
@@ -294,8 +302,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * */
         if (isTestngMethod(method, METHOD_TYPE.AFTER_SUITE)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             if (channel.currentSuiteName != null) {
@@ -357,8 +367,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             logger.info("[TESTNG]: END @AfterMethod '" + testResult.getTestClass().getRealClass() + "@"
                         + method.getTestMethod().getMethodName() + "'");
 
-            if (channel.currentTestcaseName != null && channel.currentTestcaseResult != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
         }
@@ -369,8 +381,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * */
         if (isTestngMethod(method, METHOD_TYPE.AFTER_CLASS)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             logger.info("[TESTNG]: END @AfterClass '" + testResult.getTestClass().getRealClass() + "@"
@@ -388,8 +402,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * */
         if (isTestngMethod(method, METHOD_TYPE.AFTER_SUITE)) {
 
-            if (channel.currentTestcaseName != null) {
-                endTestcase(channel);
+            if (channel.currentTestcaseName != null) { // we have open testcase
+                if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
+                    endTestcase(channel);
+                }
             }
 
             if (channel.currentSuiteName != null) {
@@ -560,6 +576,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // send TestEnd event to all ATS agents
         TestcaseStateEventsDispacher.getInstance().onTestEnd();
 
+        if(channel.currentTestcaseResult == null) {
+            throw new RuntimeException("Could not close testcases '"+channel.currentTestcaseName+"'. Its has no testcase result");
+        }
+        
         switch (channel.currentTestcaseResult.getStatus()) {
             case TestResult.SUCCESS:
                 endPassedTestcase(channel);
