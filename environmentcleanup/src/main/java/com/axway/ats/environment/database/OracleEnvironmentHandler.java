@@ -123,7 +123,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         if( this.dropEntireTable ) {
             fileWriter.write( DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
-                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
         } else if( !this.deleteStatementsInserted ) {
             writeDeleteStatements( fileWriter );
         }
@@ -363,6 +363,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                     String simpleTableName = table.substring( table.indexOf( "." ) + 1 );
                     dropAndRecreateTable( connection, simpleTableName, owner );
                     
+                    sql = new StringBuilder();
+                    
                 } if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker and the trailing semicolon because, strangely, Oracle JDBC driver
@@ -453,7 +455,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         }
 
         // drop the table
-        executeUpdate( "DROP TABLE " + tableName + " CASCADE CONSTRAINTS", connection );
+        executeUpdate( "DROP TABLE " + tableName + " CASCADE CONSTRAINTS PURGE", connection );
 
         // create new table
         executeUpdate( generateTableScript, connection );
