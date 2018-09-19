@@ -34,6 +34,7 @@ import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
@@ -161,9 +162,14 @@ public class DbChannel {
 
     	this.atsConsoleLogger.info("Waiting for queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' to process all log events ...");
 
-        while (getNumberPendingLogEvents() > 0) {
+        while (getNumberPendingLogEvents() > 0 ) {
             try {
                 Thread.sleep(42); // do not change, result obtained after many research hours
+                if(!queue.isEmpty()) {
+                    if (queue.element().getEvent() instanceof LeaveTestCaseEvent) {
+                        break; // the LeaveTestcaseEvent need not to be processed in order to consider queue to be empty
+                    }
+                }
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
