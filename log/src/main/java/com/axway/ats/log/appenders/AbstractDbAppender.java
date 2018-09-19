@@ -169,7 +169,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public void close() {
 
-        getDbChannel(null).close();
+        if(!channels.isEmpty()) {
+            getDbChannel(null).close();
+        }
     }
 
     /*
