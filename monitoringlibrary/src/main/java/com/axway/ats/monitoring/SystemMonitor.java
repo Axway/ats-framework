@@ -943,7 +943,7 @@ public class SystemMonitor {
               .append("}");
             info.resourceId = (long) info.helper.executeRequest(monitoredHost, "system/monitoring", "PUT",
                                                                 sb.toString(),
-                                                                "resourceId", Integer.class);
+                                                                "resourceId", Long.class);
         } catch (Exception e) {
             throw new MonitoringException("Unable to initialize monitoring on agent '" + monitoredHost + "'", e);
         }
