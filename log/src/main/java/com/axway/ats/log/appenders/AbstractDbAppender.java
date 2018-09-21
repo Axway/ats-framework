@@ -42,12 +42,12 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
     /**
      * indicated whether run/suites/testcases are running in parallel
      */
-    public static boolean             parallel         = false;
+    public static boolean             parallel              = false;
 
     // the channels for each test case
-    private Map<String, DbChannel>    channels         = new HashMap<String, DbChannel>();
+    private Map<String, DbChannel>    channels              = new HashMap<String, DbChannel>();
 
-    protected AtsConsoleLogger        atsConsoleLogger = new AtsConsoleLogger(getClass());
+    protected AtsConsoleLogger        atsConsoleLogger      = new AtsConsoleLogger(getClass());
 
     /** Holds information about the parent of each thread
      * <br>
@@ -55,7 +55,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      * <br>
      * it is populated by the @After method in {@link LogAspect} AspectJ Java class
      */
-    public static Map<String, String> childParentThreadsMap       = new HashMap<>();
+    public static Map<String, String> childParentThreadsMap = new HashMap<>();
 
     /**
      * The configuration for this appender
@@ -114,8 +114,15 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
             } else { // new thread, spawned in thread (non-TestNG thread)
                 if ( (event instanceof InsertMessageEvent) || ( (event instanceof AbstractLoggingEvent) == false)) {
                     // the event is only of class InsertMessageEvent
-                    if (childParentThreadsMap.containsKey(channelKey)) { 
-                        return channels.get(childParentThreadsMap.get(channelKey)); // what if parent thread still does not have channel?
+                    if (childParentThreadsMap.containsKey(channelKey)) {
+                        String threadId = childParentThreadsMap.get(channelKey);
+                        do {
+                            channel = channels.get(childParentThreadsMap.get(threadId));
+                            if (channel != null) {
+                                break;
+                            }
+                            threadId = childParentThreadsMap.get(threadId);
+                        } while (threadId != null);
                     }
                 }
             }
@@ -169,7 +176,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public void close() {
 
-        if(!channels.isEmpty()) {
+        if (!channels.isEmpty()) {
             getDbChannel(null).close();
         }
     }
