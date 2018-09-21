@@ -65,7 +65,7 @@ public class ActionsRestEntryPoint {
             name = "callerId",
             type = "string"),
                                           @SwaggerMethodParameterDefinition(
-                                                  description = "The action method name. Note that this is not the actual Java method name, but instead the value of the @Action annotation name attribute",
+                                                  description = "The action method name. Note that this is not the actual Java method name, but instead the @Action annotation's name attribute",
                                                   example = "FTP actions connect",
                                                   name = "methodName",
                                                   type = "string"),
@@ -99,7 +99,7 @@ public class ActionsRestEntryPoint {
                                        description = "Error while initializing Action",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
                                                description = "the actual java exception",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               example = "\"See the non transient class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
                                                name = "error",
                                                type = "object"),
                                                                  @SwaggerMethodParameterDefinition(
@@ -189,7 +189,7 @@ public class ActionsRestEntryPoint {
                                        description = "Error while executing action method",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
                                                description = "THe actuon Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               example = "\"See the non transient class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
                                                name = "error",
                                                type = "object"),
                                                                  @SwaggerMethodParameterDefinition(
@@ -276,7 +276,7 @@ public class ActionsRestEntryPoint {
                                        description = "Error while deinitializing action class",
                                        parametersDefinitions = { @SwaggerMethodParameterDefinition(
                                                description = "The actuon Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
+                                               example = "\"See the non transient class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
                                                name = "error",
                                                type = "object"),
                                                                  @SwaggerMethodParameterDefinition(

@@ -27,7 +27,7 @@ public class LogAspect {
     public void afterThreadConstructorExecuted( Thread thread ) {
         Thread parentThread = Thread.currentThread();
         System.out.println("Thread created '"+thread+"'. Its parent is '"+parentThread+"'");
-        AbstractDbAppender.threadsMap.put(thread.getId()+"", parentThread.getId()+"");
+        AbstractDbAppender.childParentThreadsMap.put(thread.getId()+"", parentThread.getId()+"");
     }
 
 }

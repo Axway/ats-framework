@@ -55,7 +55,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      * <br>
      * it is populated by the @After method in {@link LogAspect} AspectJ Java class
      */
-    public static Map<String, String> threadsMap       = new HashMap<>();
+    public static Map<String, String> childParentThreadsMap       = new HashMap<>();
 
     /**
      * The configuration for this appender
@@ -111,11 +111,11 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
                     // get the first channel from the map
                     return this.channels.get(this.channels.keySet().iterator().next());
                 }
-            } else {
+            } else { // new thread, spawned in thread (non-TestNG thread)
                 if ( (event instanceof InsertMessageEvent) || ( (event instanceof AbstractLoggingEvent) == false)) {
                     // the event is only of class InsertMessageEvent
-                    if (threadsMap.containsKey(channelKey)) {
-                        return channels.get(threadsMap.get(channelKey));
+                    if (childParentThreadsMap.containsKey(channelKey)) { 
+                        return channels.get(childParentThreadsMap.get(channelKey)); // what if parent thread still does not have channel?
                     }
                 }
             }

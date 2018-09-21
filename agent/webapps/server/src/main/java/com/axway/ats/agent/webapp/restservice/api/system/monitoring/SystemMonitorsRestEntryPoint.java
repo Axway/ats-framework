@@ -60,7 +60,7 @@ public class SystemMonitorsRestEntryPoint {
     @SwaggerMethod(
             httpOperation = "put",
             parametersDefinition = "Initialize system monitor resource details",
-            summary = "Initialize system monitor resource system",
+            summary = "Initialize system monitor resource",
             url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
@@ -125,8 +125,8 @@ public class SystemMonitorsRestEntryPoint {
     @SwaggerMethod(
             httpOperation = "delete",
             parametersDefinition = "",
-            summary = "Deinitialize custom action class",
-            url = "")
+            summary = "Deinitialize system monitor resource",
+            url = "/")
     @SwaggerMethodParameterDefinitions( {
                                           @SwaggerMethodParameterDefinition(
                                                   description = "The caller ID",

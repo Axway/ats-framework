@@ -57,7 +57,7 @@ public class SwaggerDocumentationGenerator {
 
     public void generate() {
 
-        try (PrintWriter pw = new PrintWriter(new File(this.outputDirectory + File.separator + OUTPUT_FILE_NAME))) {
+        try (PrintWriter pw = new PrintWriter(new File(this.outputDirectory + OUTPUT_FILE_NAME))) {
             // load the properties file
             Properties documentationProperties = new Properties();
             documentationProperties.load(this.getClass()
@@ -208,6 +208,7 @@ public class SwaggerDocumentationGenerator {
 
     public static void main( String[] args ) {
 
+        // TODO auto-generate this array
         String[] classNames = new String[]{ "com.axway.ats.agent.webapp.restservice.api.actions.ActionsRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.agent.AgentPropertiesRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.agent.AgentConfigurationsRestEntryPoint",
@@ -225,14 +226,40 @@ public class SwaggerDocumentationGenerator {
                                             "com.axway.ats.agent.webapp.restservice.api.system.monitoring.SystemMonitorsRestEntryPoint"
         };
 
-        String swaggerDocLocation = System.getProperty("user.dir") + File.separator + "target";
+        String swaggerDocLocation = constructLocation();
         new SwaggerDocumentationGenerator(classNames, swaggerDocLocation).generate();
-        if (swaggerDocLocation.endsWith(File.separator)) {
-            System.out.println("Swagger documentation saved as " + swaggerDocLocation + OUTPUT_FILE_NAME);
+
+        swaggerDocLocation += OUTPUT_FILE_NAME;
+        System.out.println("Swagger documentation saved as " + swaggerDocLocation);
+
+    }
+
+    private static String constructLocation() {
+
+        String swaggerDocLocation = System.getProperty("user.dir");
+
+        final String REL_AGENT_WEBAPP_SERVER_LOCATION = "agent" + File.separator + "webapps" + File.separator
+                                                        + "server";
+        final String REL_TOMCAT_CONTAINER_WEBAPP_LOCATION = "agent" + File.separator + "webapps" + File.separator
+                                                            + "tomcatcontainer" + File.separator + "src"
+                                                            + File.separator + "main" + File.separator + "webapp"
+                                                            + File.separator + "swagger";
+
+        if (swaggerDocLocation.endsWith(REL_AGENT_WEBAPP_SERVER_LOCATION)) {
+            swaggerDocLocation = swaggerDocLocation.replace(REL_AGENT_WEBAPP_SERVER_LOCATION, "");
         } else {
-            System.out.println("Swagger documentation saved as " + swaggerDocLocation + File.separator
-                               + OUTPUT_FILE_NAME);
+            if (swaggerDocLocation.endsWith(REL_AGENT_WEBAPP_SERVER_LOCATION + File.separator)) {
+                swaggerDocLocation = swaggerDocLocation.replace(REL_AGENT_WEBAPP_SERVER_LOCATION, "");
+            }
         }
+
+        if (!swaggerDocLocation.endsWith(File.separator)) {
+            swaggerDocLocation += File.separator;
+        }
+
+        swaggerDocLocation += REL_TOMCAT_CONTAINER_WEBAPP_LOCATION + File.separator;
+
+        return swaggerDocLocation;
     }
 
 }

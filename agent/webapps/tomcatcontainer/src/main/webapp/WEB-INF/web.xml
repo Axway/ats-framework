@@ -22,6 +22,10 @@
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+    <mime-mapping>
+        <extension>json</extension>
+   		<mime-type>application/json</mime-type>
+    </mime-mapping>
     
     <servlet>
         <servlet-name>ATS Agent REST API Service</servlet-name>

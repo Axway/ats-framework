@@ -125,6 +125,19 @@ agent_start() {
         -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
         $JAVA_OPTS $DEBUG_OPTIONS \
         -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+        
+        # replace the agent port in the swagger.json
+        COUNTER=0
+        while [ $COUNTER -le 10 ]
+        do
+			if [ -d "ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger" ];
+			then
+				sed -i 's/localhost:8089/localhost:'$PORT'/g' ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger/swagger.json
+				break
+			fi
+			COUNTER=$(( $COUNTER + 1 ))
+			sleep 1
+        done
 
         JVM_PID=$!
         if $DEBUG
