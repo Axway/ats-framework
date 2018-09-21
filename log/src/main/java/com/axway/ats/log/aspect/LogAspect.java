@@ -18,6 +18,7 @@ package com.axway.ats.log.aspect;
 import org.aspectj.lang.annotation.AfterReturning;
 import org.aspectj.lang.annotation.Aspect;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.appenders.AbstractDbAppender;
 
 @Aspect
@@ -26,7 +27,7 @@ public class LogAspect {
     @AfterReturning( value = "call(Thread.new(..))", returning = "thread")
     public void afterThreadConstructorExecuted( Thread thread ) {
         Thread parentThread = Thread.currentThread();
-        System.out.println("Thread created '"+thread+"'. Its parent is '"+parentThread+"'");
+        new AtsConsoleLogger(getClass()).trace("Thread created '"+thread+"'. Its parent is '"+parentThread+"'");
         AbstractDbAppender.childParentThreadsMap.put(thread.getId()+"", parentThread.getId()+"");
     }
 
