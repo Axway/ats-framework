@@ -210,20 +210,22 @@ public class SwaggerDocumentationGenerator {
 
         // TODO auto-generate this array
         String[] classNames = new String[]{ "com.axway.ats.agent.webapp.restservice.api.actions.ActionsRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.agent.AgentPropertiesRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.agent.AgentConfigurationsRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.processes.executor.ProcessExecutorRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.processes.talker.ProcessTalkerRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.queues.QueuesRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.testcases.TestcasesRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.agent.AgentPropertiesRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.environments.EnvironmentsRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.filesystem.FileSystemRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.filesystem.snapshot.FileSystemSnapshotRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.machine.MachineDescriptionRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.processes.executor.ProcessExecutorRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.processes.talker.ProcessTalkerRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.queues.QueuesRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.registry.RegistryRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.system.SystemRestEntryPoint",
                                             "com.axway.ats.agent.webapp.restservice.api.system.input.SystemInputRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.registry.RegistryRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.machine.MachineDescriptionRestEntryPoint",
-                                            "com.axway.ats.agent.webapp.restservice.api.system.monitoring.SystemMonitorsRestEntryPoint"
+                                            "com.axway.ats.agent.webapp.restservice.api.system.monitoring.SystemMonitorsRestEntryPoint",
+                                            "com.axway.ats.agent.webapp.restservice.api.testcases.TestcasesRestEntryPoint"
+                                            
+
         };
 
         String swaggerDocLocation = constructLocation();
