@@ -36,6 +36,8 @@ import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
+ * @deprecated Use {@link AtsTestngListener} class instead.
+ * <br><br>
  * Suite listener to capture test events from TestNG<br>
  * <br>
  *
@@ -49,6 +51,7 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  * "test" events are provided by TestListenerAdapter.
  */
 @PublicAtsApi
+@Deprecated
 public class AtsTestngSuiteListener implements ISuiteListener {
 
     /*
