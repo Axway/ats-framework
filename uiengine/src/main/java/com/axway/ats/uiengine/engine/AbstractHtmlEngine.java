@@ -265,7 +265,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
             for (int i = availableWindowsArray.length - 1; i >= 0; i--) {
                 String winId = availableWindowsArray[i];
                 String windowTitle = webDriver.switchTo().window(winId).getTitle();
-                if (checkForNotCurrentWindow && !winId.equals(initialWindowId)) {
+                if (checkForNotCurrentWindow && winId.equals(initialWindowId)) {
                     // skip - initial window found
                 } else {
                     if ( windowTitle == null && (searchTitle == null || searchTitle.isEmpty()) ) { 
