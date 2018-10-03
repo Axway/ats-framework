@@ -15,7 +15,6 @@
  */
 package com.axway.ats.agent.core;
 
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
@@ -25,7 +24,6 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.action.ActionMethod;
 import com.axway.ats.agent.core.action.ActionMethodContainer;
-import com.axway.ats.agent.core.action.CallerRelatedAction;
 import com.axway.ats.agent.core.action.TemplateActionMethod;
 import com.axway.ats.agent.core.exceptions.ActionAlreadyDefinedException;
 import com.axway.ats.agent.core.exceptions.ActionExecutionException;
@@ -168,19 +166,7 @@ public class ComponentActionMap {
         try {
             Object actionClassInstance = actionClassInstances.get(actionClassName);
             if (actionClassInstance == null) {
-                Class<?> actionSuperClass = actionClass.getSuperclass();
-                if (actionSuperClass != null
-                    && actionSuperClass.getSimpleName()
-                                       .equals(CallerRelatedAction.class.getSimpleName())) {
-                    // this is a CallerRelatedAction, we will pass the caller to it
-
-                    actionClassInstance = actionClass.getDeclaredConstructor(String.class)
-                                                     .newInstance(caller);
-                } else {
-                    // this is a regular Action class
-                    actionClassInstance = actionClass.newInstance();
-                }
-
+                actionClassInstance = actionClass.newInstance();
                 actionClassInstances.put(actionClassName, actionClassInstance);
             }
 
@@ -189,12 +175,6 @@ public class ComponentActionMap {
             throw new ActionExecutionException("Could not access action class " + actionClassName, iae);
         } catch (InstantiationException ie) {
             throw new ActionExecutionException("Could not instantiate action class " + actionClassName, ie);
-        } catch (InvocationTargetException ite) {
-            throw new ActionExecutionException("Could not instantiate action class " + actionClassName,
-                                               ite);
-        } catch (NoSuchMethodException nsme) {
-            throw new ActionExecutionException("Could not instantiate action class " + actionClassName,
-                                               nsme);
         }
     }
 

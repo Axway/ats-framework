@@ -76,7 +76,7 @@ public class AtsSystemProperties {
     public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
     public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
     public static final String  SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
-    public static final String  SYSTEM_USER_HOME_DIR                                              = System.getProperty("user.dir");
+    public static final String  SYSTEM_USER_DIR                                                   = System.getProperty("user.dir");
     public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
     public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
     public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");

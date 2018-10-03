@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 public class Test_RemoteLoggingConfigurator {
@@ -34,8 +35,18 @@ public class Test_RemoteLoggingConfigurator {
     @After
     public void tearDown() {
 
-        Logger.getLogger( loggerName ).removeAllAppenders();
-        Logger.getRootLogger().removeAllAppenders();
+        try {
+            Logger.getLogger(loggerName).removeAllAppenders();
+            Logger.getRootLogger().removeAllAppenders();
+        } catch (Exception e) {
+            // when a PassiveDbAppender is attached and we try to remove it
+            // a channel is created, since no one still exists
+            // this leads to the creating of DbEventRequestProcessor that tries to connect to a non-existing database server
+            // that connection try fails, so we check the stack trace for it
+            assertTrue(containsMessage(e,
+                                       "Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'."));
+        }
+
     }
 
     @AfterClass
@@ -49,28 +60,28 @@ public class Test_RemoteLoggingConfigurator {
 
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
-        assertFalse( remoteLoggingConfig.needsApplying() );
+        assertFalse(remoteLoggingConfig.needsApplying());
     }
 
     @Test
     public void testNeedsApplyWithAppenderExpectTrue() {
 
         ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost( "test" );
-        appender.setDatabase( "test" );
-        appender.setUser( "test" );
-        appender.setPassword( "test" );
+        appender.setHost("test");
+        appender.setDatabase("test");
+        appender.setUser("test");
+        appender.setPassword("test");
 
         Logger log = Logger.getRootLogger();
-        log.addAppender( appender );
+        log.addAppender(appender);
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender( appender );
+        log.removeAppender(appender);
 
-        assertTrue( remoteLoggingConfig.needsApplying() );
+        assertTrue(remoteLoggingConfig.needsApplying());
     }
 
     /**
@@ -81,141 +92,107 @@ public class Test_RemoteLoggingConfigurator {
     public void testApplyPositiveRootLogger() {
 
         ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost( "test" );
-        appender.setDatabase( "test" );
-        appender.setUser( "test" );
-        appender.setPassword( "test" );
+        appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
+        appender.setDatabase("test");
+        appender.setUser("test");
+        appender.setPassword("test");
 
         Logger log = Logger.getRootLogger();
-        log.addAppender( appender );
+        log.addAppender(appender);
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender( appender );
+        log.removeAppender(appender);
 
         // check if needs to be applied - this sets the internal flags
         // so the next "apply" method will work as expected
-        assertTrue( remoteLoggingConfig.needsApplying() );
+        assertTrue(remoteLoggingConfig.needsApplying());
 
-        
-        boolean hasDbCheckError = false;
-        
-        try {
-            //apply the appender
-            //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
-            remoteLoggingConfig.apply();
-        } catch (Exception e) {
-            if (!e.getCause()
-                 .getMessage()
-                  .contains( "Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'." )) {
-                // an exception was caught, but its cause is not the expected one
-                // re-throw the exception
-                throw e;
-            }
-            else {
-                // expected exception was caught
-                hasDbCheckError = true;
-            }
-        }
-        
-        assertTrue( hasDbCheckError );
+        //apply the appender
+        //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
+        remoteLoggingConfig.apply();
     }
 
     @Test
     public void testRevertPositiveRootLogger() {
 
         ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost( "test" );
-        appender.setDatabase( "test" );
-        appender.setUser( "test" );
-        appender.setPassword( "test" );
+        appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
+        appender.setDatabase("test");
+        appender.setUser("test");
+        appender.setPassword("test");
 
         Logger log = Logger.getRootLogger();
-        log.addAppender( appender );
+        log.addAppender(appender);
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender( appender );
+        log.removeAppender(appender);
 
         //apply the appender
         remoteLoggingConfig.apply();
         remoteLoggingConfig.revert();
 
-        assertFalse( log.getAllAppenders().hasMoreElements() );
+        assertFalse(log.getAllAppenders().hasMoreElements());
     }
 
     @Test
     public void testApplyPositive() {
 
         ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost( "test" );
-        appender.setDatabase( "test" );
-        appender.setUser( "test" );
-        appender.setPassword( "test" );
+        appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
+        appender.setDatabase("test");
+        appender.setUser("test");
+        appender.setPassword("test");
 
-        Logger log = Logger.getLogger( loggerName );
-        log.addAppender( appender );
+        Logger log = Logger.getLogger(loggerName);
+        log.addAppender(appender);
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender( appender );
+        log.removeAppender(appender);
 
         // check if needs to be applied - this sets the internal flags
         // so the next "apply" method will work as expected
-        assertTrue( remoteLoggingConfig.needsApplying() );
+        assertTrue(remoteLoggingConfig.needsApplying());
 
-        boolean hasDbCheckError = false;
-        
-        try {
-            //apply the appender
-            //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
-            remoteLoggingConfig.apply();
-        } catch (Exception e) {
-            if (!e.getCause()
-                 .getMessage()
-                  .contains( "Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'." )) {
-                // an exception was caught, but its cause is not the expected one
-                // re-throw the exception
-                throw e;
-            }
-            else {
-                // expected exception was caught
-                hasDbCheckError = true;
-            }
-        }
-        
-        assertTrue( hasDbCheckError );
+        //apply the appender
+        //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
+        remoteLoggingConfig.apply();
     }
 
     @Test
     public void testRevertPositive() {
 
         ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost( "test" );
-        appender.setDatabase( "test" );
-        appender.setUser( "test" );
-        appender.setPassword( "test" );
+        appender.setHost("test");
+        appender.setDatabase("test");
+        appender.setUser("test");
+        appender.setPassword("test");
 
-        Logger log = Logger.getLogger( loggerName );
-        log.addAppender( appender );
+        Logger log = Logger.getLogger(loggerName);
+        log.addAppender(appender);
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender( appender );
+        log.removeAppender(appender);
 
         //apply the appender
         remoteLoggingConfig.apply();
         remoteLoggingConfig.revert();
 
-        assertFalse( log.getAllAppenders().hasMoreElements() );
+        assertFalse(log.getAllAppenders().hasMoreElements());
     }
 
     @Test
@@ -225,46 +202,65 @@ public class Test_RemoteLoggingConfigurator {
         // Then we will check if there is change in the level of known loggers
 
         // add a new logger, but no level is specified, we will disregard it
-        Logger.getLogger( "fake.logger" );
+        Logger.getLogger("fake.logger");
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
-        assertFalse( remoteLoggingConfig.needsApplying() );
+        assertFalse(remoteLoggingConfig.needsApplying());
 
         // add logger and set its level
-        Logger.getLogger( "fake.logger" ).setLevel( Level.INFO );
+        Logger.getLogger("fake.logger").setLevel(Level.INFO);
         // read the log4j configuration and remember that custom logger
         remoteLoggingConfig = new RemoteLoggingConfigurator();
         // set same level on same logger, not change is made
-        Logger.getLogger( "fake.logger" ).setLevel( Level.INFO );
-        assertFalse( remoteLoggingConfig.needsApplying() );
+        Logger.getLogger("fake.logger").setLevel(Level.INFO);
+        assertFalse(remoteLoggingConfig.needsApplying());
 
         // change logger level, this is a significant change
-        Logger.getLogger( "fake.logger" ).setLevel( Level.DEBUG );
-        assertTrue( remoteLoggingConfig.needsApplying() );
+        Logger.getLogger("fake.logger").setLevel(Level.DEBUG);
+        assertTrue(remoteLoggingConfig.needsApplying());
     }
 
     @Test
     public void tesApplyUserLoggerLevels() {
 
         // set the level
-        Logger.getLogger( "fake.logger" ).setLevel( Level.INFO );
+        Logger.getLogger("fake.logger").setLevel(Level.INFO);
 
         // read the configuration and remember the level
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator();
 
         // change the level in log4j
-        Logger.getLogger( "fake.logger" ).setLevel( Level.DEBUG );
-        assertTrue( Logger.getLogger( "fake.logger" ).getLevel().equals( Level.DEBUG ) );
-        assertTrue( remoteLoggingConfig.needsApplying() );
+        Logger.getLogger("fake.logger").setLevel(Level.DEBUG);
+        assertTrue(Logger.getLogger("fake.logger").getLevel().equals(Level.DEBUG));
+        assertTrue(remoteLoggingConfig.needsApplying());
 
         // apply the remembered level
         remoteLoggingConfig.apply();
-        assertTrue( Logger.getLogger( "fake.logger" ).getLevel().equals( Level.INFO ) );
+        assertTrue(Logger.getLogger("fake.logger").getLevel().equals(Level.INFO));
     }
 
     @Test
     public void testTheGenericAgentConfiguratorAlwaysNeedsApplying() {
 
         GenericAgentConfigurator genericConfigurator = new GenericAgentConfigurator();
-        assertTrue( genericConfigurator.needsApplying() );
+        assertTrue(genericConfigurator.needsApplying());
+    }
+
+    /**
+     * Check whether the exception message is contained in some of the stack trace elements
+     * @param ex the initial exception (head of the stack trace)
+     * @param msg the exception message
+     * */
+    private boolean containsMessage( Exception ex, String msg ) {
+
+        Throwable t = ex;
+        while (t != null) {
+            String message = t.getMessage();
+            if (message.contains(msg)) {
+                return true;
+            }
+            t = t.getCause();
+        }
+
+        return false;
     }
 }

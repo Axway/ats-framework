@@ -330,7 +330,12 @@ public class SystemOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalSystemOperations();
         } else {
-            return new RemoteSystemOperations(atsAgent);
+            
+            try {
+                return new RemoteSystemOperations(atsAgent);
+            } catch (Exception e) {
+                throw new SystemOperationException("Unable to create remote process executor impl object", e);
+            }
         }
     }
 

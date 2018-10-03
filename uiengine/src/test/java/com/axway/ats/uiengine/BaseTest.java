@@ -21,6 +21,6 @@ public class BaseTest {
 
     public static String getResourcesFolder() {
 
-        return AtsSystemProperties.SYSTEM_USER_HOME_DIR + "/src/test/resources/com/axway/ats/uiengine/";
+        return AtsSystemProperties.SYSTEM_USER_DIR + "/src/test/resources/com/axway/ats/uiengine/";
     }
 }

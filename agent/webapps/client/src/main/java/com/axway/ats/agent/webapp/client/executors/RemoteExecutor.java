@@ -15,26 +15,38 @@
  */
 package com.axway.ats.agent.webapp.client.executors;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpDelete;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.methods.HttpRequestBase;
+import org.apache.http.client.protocol.HttpClientContext;
+import org.apache.http.entity.ContentType;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.webapp.client.ActionWrapper;
-import com.axway.ats.agent.webapp.client.AgentException_Exception;
-import com.axway.ats.agent.webapp.client.AgentService;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.agent.webapp.client.ArgumentWrapper;
-import com.axway.ats.agent.webapp.client.InternalComponentException;
-import com.axway.ats.agent.webapp.client.InternalComponentException_Exception;
+import com.axway.ats.agent.webapp.restservice.api.actions.ActionPojo;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.StringUtils;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 /**
  * This executor will execute an action or a set of actions on
@@ -42,7 +54,42 @@ import com.axway.ats.core.utils.HostUtils;
  */
 public class RemoteExecutor extends AbstractClientExecutor {
 
-    protected String atsAgent;
+    private enum ActionRequestType {
+        /**
+         * Some predefined ATS actions execute static Java methods.
+         * In order to differentiate them from the non-static once,
+         * we use this value for them and not INIITALIZE_ATS_ACTION
+         * */
+        DEFAULT_INITIALIZATION,
+        /**
+         * The request is about to initialize ATS predefined action class
+         * */
+        INIITALIZE_ATS_ACTION,
+        /**
+         * The request is about to initialize custom action class
+         * */
+        INITIALIZE_CUSTOM_ACTION
+    }
+
+    protected String   atsAgent;
+    protected String   callerId;
+    protected long     resourceId = -1;
+    protected String   initializeRequestUrl;
+    protected String   executeRequestUrl;
+
+    private HttpClient httpClient = new HttpClient();
+
+    /**
+     * @param atsAgent the remote agent address
+     * @param initializeRequestUrl URL that will be used when prior to an action execution, 
+     * an action class initialization must take place. 
+     * This URL points to the proper REST method that needs to initialize the action class
+     * @throws AgentException
+     */
+    public RemoteExecutor( String atsAgent, String initializeRequestUrl ) throws AgentException {
+
+        this(atsAgent, initializeRequestUrl, true);
+    }
 
     /**
      * @param atsAgent the remote agent address
@@ -62,8 +109,32 @@ public class RemoteExecutor extends AbstractClientExecutor {
      */
     public RemoteExecutor( String atsAgent, boolean configureAgent ) throws AgentException {
 
+        this(atsAgent, null, configureAgent);
+    }
+
+    /**
+     * @param atsAgent the remote agent address
+     * @param initializeRequestUrl the URL that will be used to tell the ATS Agent to initialize actions that will be executed via this class
+     * @param configureAgent whether we want to send the log configuration to the agent.</br>
+     * Pass <i>false</i> when there is chance that the agent is not available - for example 
+     * if it was just restarted.
+     * @throws AgentException
+     */
+    public RemoteExecutor( String atsAgent, String initializeRequestUrl,
+                           boolean configureAgent ) throws AgentException {
+
         // we assume the ATS Agent address here comes with IP and PORT
         this.atsAgent = atsAgent;
+        this.callerId = ExecutorUtils.createCallerId();
+        if (StringUtils.isNullOrEmpty(initializeRequestUrl)) {
+            // we assume that we have a custom action
+            this.initializeRequestUrl = "/actions/";
+            this.executeRequestUrl = "/actions/execute";
+        } else {
+            // this URL is received all the way from the client Action class from which this RemoteExecutor is created
+            this.initializeRequestUrl = initializeRequestUrl;
+            this.executeRequestUrl = null; // each action will provide proper execution URL
+        }
 
         if (configureAgent) {
             //configure the remote executor(an ATS agent)
@@ -88,196 +159,315 @@ public class RemoteExecutor extends AbstractClientExecutor {
     @Override
     public Object executeAction( ActionRequest actionRequest ) throws AgentException {
 
-        String actionName = actionRequest.getActionName();
-        String componentName = actionRequest.getComponentName();
-        Object[] arguments = actionRequest.getArguments();
-
+        String requestUrl = null;
+        String requestMethod = null;
+        String requestBody = null;
+        JsonObject responseBody = null;
         Object result = null;
-
-        List<ArgumentWrapper> wrappedArguments = new ArrayList<ArgumentWrapper>();
-
-        try {
-            //wrap the arguments - each argument is serialized as
-            //a byte stream
-            for (Object argument : arguments) {
-                ArgumentWrapper argWrapper = new ArgumentWrapper();
-
-                ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-                objectOutStream.writeObject(argument);
-
-                argWrapper.setArgumentValue(byteOutStream.toByteArray());
-                wrappedArguments.add(argWrapper);
+        ActionRequestType actionRequestType = null;
+        if (resourceId < 0) {
+            actionRequestType = initializeAction(actionRequest);
+            if (actionRequestType == ActionRequestType.INIITALIZE_ATS_ACTION) {
+                /* Since each ATS predefined action class is initialized before any of its actions is called,
+                 * we can just safely return here
+                 */
+                return result; // will always return null
             }
-        } catch (IOException ioe) {
-            throw new AgentException("Could not serialize input arguments", ioe);
         }
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        if (actionRequestType == ActionRequestType.INITIALIZE_CUSTOM_ACTION) {
+            /*
+             * Since this is a request from a custom action
+             * we must not only register the action class,
+             * but execute the action as well
+             * */
+            requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
+            requestMethod = "POST";
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                ExecutorUtils.createCallerId()),
+                                                 ActionPojo.class);
 
-        try {
-            //FIXME: swap with ActionWrapper
-            byte[] resultAsBytes = agentServicePort.executeAction(componentName, actionName,
-                                                                  wrappedArguments);
+        } else {
+            if (!StringUtils.isNullOrEmpty(actionRequest.getRequestUrl())) {
+                /* if the action is ATS predefined one and its action class is already registered on the ATS agent,
+                 * we end up here and just execute the action request
+                 */
 
-            //the result is returned as serialized stream
-            //so we need to deserialize it
-            ByteArrayInputStream byteInStream = new ByteArrayInputStream(resultAsBytes);
-            ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
+                requestUrl = constructAbsoluteRequestUrl(actionRequest.getRequestUrl());
+                requestMethod = actionRequest.getRequestMethod();
+                requestBody = actionRequest.getRequestBody();
+            } else {
+                /* this is custom action that which class was already initialized
+                 */
+                requestUrl = constructAbsoluteRequestUrl(this.executeRequestUrl);
+                requestMethod = "POST";
+                requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                    ExecutorUtils.createCallerId()),
+                                                     ActionPojo.class);
+            }
 
-            result = objectInStream.readObject();
-
-        } catch (IOException ioe) {
-            throw new AgentException("Could not deserialize returned result from agent at " + atsAgent,
-                                     ioe);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException("Error while executing action on agent at " + atsAgent
-                                     + ". Exception message: " + ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-
-            //we need to get internal component exception info from the soap fault
-            InternalComponentException faultInfo = ice.getFaultInfo();
-
-            //then construct and throw a real InternalComponentException (not the JAXB mapping type above)
-            throw new com.axway.ats.agent.core.exceptions.InternalComponentException(faultInfo.getComponentName(),
-                                                                                     faultInfo.getActionName(),
-                                                                                     faultInfo.getExceptionMessage()
-                                                                                                                + "\n["
-                                                                                                                + HostUtils.getLocalHostIP()
-                                                                                                                + " stacktrace]",
-                                                                                     atsAgent);
-
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
         }
+
+        log.info("Start executing action '" + actionRequest.getActionName() + "' with arguments "
+                 + StringUtils.methodInputArgumentsToString(actionRequest.getArguments()));
+
+        responseBody = httpClient.executeRequest(requestUrl,
+                                                 requestMethod,
+                                                 requestBody);
+
+        if (actionRequest.getReturnType() != null) {
+            // the action returns some result, so cast it to the appropriate class and return it
+            result = httpClient.gson.fromJson(responseBody.get("action_result"), actionRequest.getReturnType());
+        }
+
+        log.info("Successfully executed action '" + actionRequest.getActionName() + "'");
 
         return result;
+
+    }
+
+    /**
+     * Initializes a action class via action request
+     * @param actionRequest the action request that contains information about the action
+     * @return the action request type {@link RemoteExecutor.ActionRequestType}
+     * @throws AgentException 
+     * */
+    private ActionRequestType initializeAction( ActionRequest actionRequest ) throws AgentException {
+
+        log.info("Start registration of action class for action '" + actionRequest.getActionName() + "' with arguments "
+                 + StringUtils.methodInputArgumentsToString(actionRequest.getArguments()));
+
+        String requestUrl = null;
+        String requestMethod = null;
+        String requestBody = null;
+        JsonObject responseBody = null;
+        ActionRequestType actionRequestType = null;
+        if (StringUtils.isNullOrEmpty(actionRequest.getRequestUrl())) {
+            // this is an Action request from a custom/third-party action
+            requestUrl = constructAbsoluteRequestUrl("actions");
+            requestMethod = "PUT";
+            requestBody = httpClient.gson.toJson(new ActionPojo(actionRequest, resourceId,
+                                                                ExecutorUtils.createCallerId()),
+                                                 ActionPojo.class);
+            actionRequestType = ActionRequestType.INITIALIZE_CUSTOM_ACTION;
+        } else {
+            // this is an Action request from an ATS predefined action
+            if (this.initializeRequestUrl.equals(actionRequest.getRequestUrl())
+                && actionRequest.getRequestMethod().equalsIgnoreCase("PUT")) {
+                requestUrl = constructAbsoluteRequestUrl(actionRequest.getRequestUrl());
+                requestMethod = actionRequest.getRequestMethod();
+                requestBody = actionRequest.getRequestBody();
+                actionRequestType = ActionRequestType.INIITALIZE_ATS_ACTION;
+            } else {
+                requestUrl = constructAbsoluteRequestUrl(this.initializeRequestUrl);
+                requestMethod = "PUT";
+                requestBody = "{\"defaultInitialization\":true}";
+                actionRequestType = ActionRequestType.DEFAULT_INITIALIZATION;
+            }
+        }
+
+        responseBody = httpClient.executeRequest(requestUrl,
+                                                 requestMethod,
+                                                 requestBody);
+
+        // we assume that the request will contain resourceId field
+        resourceId = responseBody.get("resourceId").getAsLong();
+
+        log.info("Successfully registered action class for action '" + actionRequest.getActionName() + "'");
+
+        return actionRequestType;
+
+    }
+
+    private String constructAbsoluteRequestUrl( String requestUrl ) {
+
+        String absoluteRequestUrl = HostUtils.getAtsAgentIpAndPort(this.atsAgent);
+
+        if (!absoluteRequestUrl.startsWith("http://")) {
+            absoluteRequestUrl = "http://" + absoluteRequestUrl;
+        }
+
+        if (!absoluteRequestUrl.endsWith("/")) {
+            absoluteRequestUrl += "/";
+        }
+
+        // BASE path to the Agent REST API service
+        // Maybe it is good to extract the hard-coded String to a constant variable somewhere in the agent's classes (AgentRestApiDefinitions?)
+        absoluteRequestUrl += "agentapp/api/v1";
+
+        if (!requestUrl.startsWith("/")) {
+            absoluteRequestUrl += "/";
+        }
+
+        return absoluteRequestUrl + requestUrl;
     }
 
     @Override
     public boolean isComponentLoaded( ActionRequest actionRequest ) throws AgentException {
 
-        try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        String requestBody = "{\"callerId\":\"" + callerId
+                             + "\",\"operation\":\"isComponentLoaded\",\"value\":\"" + actionRequest.getComponentName()
+                             + "\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        boolean loaded = httpClient.gson.fromJson(responseBody.get("loaded"), boolean.class);
 
-            //FIXME: swap with ActionWrapper
-            return agentServicePort.isComponentLoaded(actionRequest.getComponentName());
-        } catch (Exception e) {
-            return false;
-        }
+        return loaded;
     }
 
     @Override
     public String getAgentHome() throws AgentException {
 
-        try {
-            return AgentServicePool.getInstance().getClient(atsAgent).getAgentHome();
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getAgentHome\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String agentHome = httpClient.gson.fromJson(responseBody.get("agent_home"), String.class);
+
+        return agentHome;
     }
 
     public List<String> getClassPath() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient(atsAgent).getClassPath();
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getClassPath\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String[] classPath = httpClient.gson.fromJson(responseBody.get("classpath"), String[].class);
+
+        return Arrays.asList(classPath);
     }
 
     public void logClassPath() throws AgentException {
 
-        AgentServicePool.getInstance().getClient(atsAgent).logClassPath();
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"logClassPath\"}";
+        httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                  requestBody);
     }
 
     public List<String> getDuplicatedJars() throws AgentException {
 
-        return AgentServicePool.getInstance().getClient(atsAgent).getDuplicatedJars();
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getDuplicatedJars\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        String[] duplicatedJars = httpClient.gson.fromJson(responseBody.get("duplicated_jars"), String[].class);
+
+        return Arrays.asList(duplicatedJars);
     }
 
     public void logDuplicatedJars() throws AgentException {
 
-        AgentServicePool.getInstance().getClient(atsAgent).logDuplicatedJars();
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"logDuplicatedJars\"}";
+        httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                  requestBody);
     }
 
     @Override
     public int getNumberPendingLogEvents() throws AgentException {
 
-        try {
-            return AgentServicePool.getInstance().getClient(atsAgent).getNumberPendingLogEvents();
-        } catch (Exception e) {
-            return -1;
-        }
+        String requestBody = "{\"callerId\":\"" + callerId + "\",\"operation\":\"getNumberPendingLogEvents\"}";
+        JsonObject responseBody = httpClient.executeRequest(constructAbsoluteRequestUrl("agent/properties"), "POST",
+                                                            requestBody);
+        int pendingLogEvents = httpClient.gson.fromJson(responseBody.get("number_of_pending_log_events"), int.class);
+
+        return pendingLogEvents;
     }
 
     @Override
     public void restore( String componentName, String environmentName,
                          String folderPath ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("componentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(componentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("folderPath")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(folderPath)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/restore"), "POST", sb.toString());
 
-        try {
-            agentServicePort.restoreEnvironment(componentName, environmentName, folderPath);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
     }
 
     @Override
     public void restoreAll( String environmentName ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
-
-        try {
-            //passing null will clean all components
-            agentServicePort.restoreEnvironment(null, environmentName, null);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/restore"), "POST", sb.toString());
     }
 
     @Override
     public void backup( String componentName, String environmentName,
                         String folderPath ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
-
-        try {
-            agentServicePort.backupEnvironment(componentName, environmentName, folderPath);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("componentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(componentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append(",")
+          .append("\"")
+          .append("folderPath")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(folderPath)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/backup"), "POST", sb.toString());
     }
 
     @Override
     public void backupAll( String environmentName ) throws AgentException {
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
-
-        try {
-            //passing null will backup all components
-            agentServicePort.backupEnvironment(null, environmentName, null);
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
+        StringBuilder sb = new StringBuilder();
+        sb.append("{")
+          .append("\"")
+          .append("environmentName")
+          .append("\"")
+          .append(":")
+          .append("\"")
+          .append(environmentName)
+          .append("\"")
+          .append("}");
+        httpClient.executeRequest(constructAbsoluteRequestUrl("environments/backup"), "POST", sb.toString());
     }
 
     @Override
@@ -288,64 +478,155 @@ public class RemoteExecutor extends AbstractClientExecutor {
          * as this remote client is used for running a single action, so
          * no performance queues are available.
          *
-         * TODO: maybe we can safely throw some error here to say that
-         * it is not expected to call this method.
-         * Or we can implement an empty body here or in the abstract parent.
          */
 
-        //get the client
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        throw new UnsupportedOperationException("");
 
-        try {
-            log.info("Waiting until all queues on host '" + atsAgent + "' finish execution");
-
-            agentServicePort.waitUntilAllQueuesFinish();
-        } catch (AgentException_Exception ae) {
-            throw new AgentException(ae.getMessage());
-        } catch (InternalComponentException_Exception ice) {
-            throw new AgentException(ice.getMessage() + ", check server log for stack trace");
-        } catch (Exception e) {
-            throw new AgentException(e.getMessage(), e);
-        }
     }
 
-    /**
-     * Wrap the action request into an ActionWrapper so it is easily
-     * passed to the web service
-     *
-     * @param actionRequest the action request to wrap
-     * @return the action wrapper
-     * @throws AgentException on error
-     */
-    protected final ActionWrapper wrapActionRequest( ActionRequest actionRequest ) throws AgentException {
+    /** This class is used to send actions information to the Agent's REST API service **/
+    class HttpClient {
 
-        Object[] arguments = actionRequest.getArguments();
+        private Gson gson = new Gson();
 
-        List<ArgumentWrapper> wrappedArguments = new ArrayList<ArgumentWrapper>();
+        /**
+         * Execute REST request.
+         * @param url the relative URL of the REST method. The agent IP:Port will be added for the final request URL
+         * @param httpMethodName the HTTP method name for performing the REST operation ("POST", "DELETE", etc)
+         * @param requestBody the request body ( in JSON )
+         * @return {@link JsonObject}
+         * @throws AgentException 
+         * @throws RuntimeException
+         * */
+        public JsonObject executeRequest( String url, String httpMethodName,
+                                          String requestBody ) throws AgentException {
 
-        try {
-            //wrap the arguments - each argument is serialized as
-            //a byte stream
-            for (Object argument : arguments) {
-                ArgumentWrapper argWrapper = new ArgumentWrapper();
+            CloseableHttpClient client = HttpClientBuilder.create().build();
+            HttpRequestBase httpRequest = null;
+            StringEntity requestBodyEntity = null;
+            CloseableHttpResponse httpResponse = null;
+            try {
 
-                ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-                ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-                objectOutStream.writeObject(argument);
+                // add callerId to the request body
+                JsonObject requestBodyObject = new JsonParser().parse(requestBody).getAsJsonObject();
+                if (!requestBodyObject.has("callerId")) {
+                    requestBodyObject.addProperty("callerId", callerId);
+                }
+                if (resourceId > -1 && !requestBodyObject.has("resourceId")) {
+                    // add resourceId to the request body
+                    requestBodyObject.addProperty("resourceId", resourceId);
+                    requestBody = requestBodyObject.toString();
+                }
+                requestBody = requestBodyObject.toString();
 
-                argWrapper.setArgumentValue(byteOutStream.toByteArray());
-                wrappedArguments.add(argWrapper);
+                switch (httpMethodName) {
+                    case HttpPost.METHOD_NAME:
+                        httpRequest = new HttpPost(url);
+                        requestBodyEntity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
+                        ((HttpPost) httpRequest).setEntity(requestBodyEntity);
+                        httpRequest.setHeader("Content-type", "application/json");
+                        break;
+                    case HttpPut.METHOD_NAME:
+                        httpRequest = new HttpPut(url);
+                        requestBodyEntity = new StringEntity(requestBody, ContentType.APPLICATION_JSON);
+                        ((HttpPut) httpRequest).setEntity(requestBodyEntity);
+                        httpRequest.setHeader("Content-type", "application/json");
+                        break;
+                    case HttpDelete.METHOD_NAME:
+                        url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
+                        httpRequest = new HttpDelete(url);
+                        break;
+                    case HttpGet.METHOD_NAME:
+                        url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
+                        httpRequest = new HttpGet(url);
+                        break;
+                    case HttpHead.METHOD_NAME:
+                        url = transformRequestBodyToQueryParams(requestBodyObject, url);
+                        requestBody = "{}";
+                        httpRequest = new HttpHead(url);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("HTTP method '" + httpMethodName + "' is not supported");
+                }
+                httpRequest.setHeader("Accept", "application/json");
+                HttpClientContext context = HttpClientContext.create();
+                String responseString = null;
+                try {
+                    if (log.isDebugEnabled()) {
+                        log.debug("Executing '" + httpMethodName + "' request to '" + url + "' with body '"
+                                  + requestBody
+                                  + "'");
+                    }
+                    httpResponse = client.execute(httpRequest, context);
+                    responseString = EntityUtils.toString(httpResponse.getEntity(), "UTF-8");
+                } catch (Exception e) {
+                    throw new AgentException("Unable to execute '" + httpMethodName + "' to '" + url + "'", e);
+                }
+                if (log.isDebugEnabled()) {
+                    log.debug("Received HTTP response with body '" + responseString + "'");
+                }
+                if (!httpResponse.getFirstHeader("Content-type").getValue().equalsIgnoreCase("application/json")) {
+                    throw new RuntimeException("Response's Content-type is not 'application/json', but '"
+                                               + httpResponse.getFirstHeader("Content-type").getValue()
+                                               + "'. Status line is '" + httpResponse.getStatusLine().toString());
+                }
+                JsonObject jsonObject = new JsonParser().parse(responseString).getAsJsonObject();
+                /* 
+                 * we assume that if error key is found, an Exception occurred on the agent,
+                 * so our actions must not return bodies, containing that key
+                 * */
+                if (jsonObject.has("error")) {
+                    Class<?> exceptionClass = null;
+                    try {
+                        exceptionClass = Class.forName(jsonObject.get("exceptionClass").getAsString());
+                    } catch (Exception e) {
+                        // the exception class is not available on the executor, so deserialize it like Exception.class
+                        log.error("Could not load Exception class '" + jsonObject.get("exceptionClass").getAsString()
+                                  + "'. Agent exception will be thrown as a '" + Exception.class.getName() + "'");
+                        exceptionClass = Exception.class;
+                    }
+
+                    Exception e = (Exception) exceptionClass.cast(gson.fromJson(jsonObject.get("error"),
+                                                                                exceptionClass));
+                    throw new AgentException("Error while executing operation on agent", e);
+                }
+                return jsonObject;
+            } finally {
+                try {
+                    if (httpResponse != null) {
+                        httpResponse.close();
+                    }
+                    if (client != null) {
+                        client.close();
+                    }
+                } catch (IOException e) {
+                    log.error("Unable to close HTTP client after action call to ATS agent ('" + url + "')", e);
+                }
             }
-        } catch (IOException ioe) {
-            throw new AgentException("Could not serialize input arguments", ioe);
         }
 
-        //construct the action wrapper
-        ActionWrapper actionWrapper = new ActionWrapper();
-        actionWrapper.setComponentName(actionRequest.getComponentName());
-        actionWrapper.setActionName(actionRequest.getActionName());
-        actionWrapper.getArgs().addAll(wrappedArguments);
+        private String transformRequestBodyToQueryParams( JsonObject json, String baseUrl ) {
 
-        return actionWrapper;
+            StringBuilder sb = new StringBuilder(baseUrl + "?");
+            Iterator<?> it = json.keySet().iterator();
+            while (it.hasNext()) {
+                String key = (String) it.next();
+                JsonElement value = json.get(key);
+                try {
+                    sb.append(key)
+                      .append("=")
+                      .append(URLEncoder.encode(value.toString().replace("\"", ""), "UTF-8"))
+                      .append("&");
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException("Unable to encode query parameter '" + key + "'", e);
+                }
+            }
+
+            // remove trailing &
+            sb.setLength(sb.toString().length() - 1);
+            return sb.toString();
+        }
     }
 }

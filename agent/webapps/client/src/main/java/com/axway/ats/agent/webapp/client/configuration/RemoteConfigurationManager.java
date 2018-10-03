@@ -15,21 +15,17 @@
  */
 package com.axway.ats.agent.webapp.client.configuration;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
+import com.axway.ats.agent.webapp.client.RestHelper;
 import com.axway.ats.core.AtsVersion;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
-import com.axway.ats.agent.webapp.client.AgentException_Exception;
-import com.axway.ats.agent.webapp.client.AgentService;
 
 /**
  * This class is used to send configuration settings to ATS Agent
@@ -49,47 +45,45 @@ public class RemoteConfigurationManager {
                                    String atsAgent,
                                    Configurator configurator ) throws AgentException {
 
-        AgentConfigurationLandscape.getInstance( atsAgent ).cacheConfigurator( configurator );
-        
-        // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentConfigurationLandscape.getInstance(atsAgent).cacheConfigurator(configurator);
 
-        List<Configurator> configurators = new ArrayList<Configurator>();
-        configurators.add(configurator);
+        Map<String, Configurator> configurators = new HashMap<>();
+        configurators.put(configurator.getClass().getName(), configurator);
 
-        String checkServerLogsStr = ". Check server logs for more details.";
-        try {
+        RestHelper restHelper = new RestHelper();
 
-            // serialize the configurators
-            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-            ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
-            objectOutStream.writeObject(configurators);
+        // create callerId
+        String callerId = ExecutorUtils.createCallerId();
 
-            // get Agent Version
-            String agentVersion = agentServicePort.pushConfiguration(byteOutStream.toByteArray());
-            String atsVersion = AtsVersion.getAtsVersion();
-            if (!atsVersion.equals(agentVersion)) {
-                log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
-                         + " with ATS agent version " + agentVersion + " located at '"
-                         + HostUtils.getAtsAgentIpAndPort(atsAgent)
-                         + "'. This might cause incompatibility problems!");
-            }
+        // create request body
+        StringBuilder requestBody = new StringBuilder();
+        requestBody.append("{")
+                   .append("\"callerId\":\"")
+                   .append(callerId)
+                   .append("\"")
+                   .append(",")
+                   .append("\"")
+                   .append("configurators")
+                   .append("\"")
+                   .append(":")
+                   .append(restHelper.serializeJavaObject(configurators))
+                   .append("}");
 
-            log.info("Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
-                     + atsAgent + "'");
-        } catch (IOException ioe) {
-            // log hint for further serialization issue investigation
-            String msg = "Could not serialize configurators" + checkServerLogsStr;
-            log.error(msg, ioe);
-            throw new AgentException(msg, ioe);
-        } catch (AgentException_Exception ae) {
-            String msg = ae.getMessage() + checkServerLogsStr;
-            log.error(msg, ae);
-            throw new AgentException(msg, ae.getCause());
-        } catch (Exception e) {
-            String msg = e.getMessage() + checkServerLogsStr;
-            log.error(msg, e);
-            throw new AgentException(msg, e);
+        // put the configurator to the agent and get the agent's ATS version
+        String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/configurations", "PUT",
+                                                                 requestBody.toString(),
+                                                                 "ats_version", String.class);
+        // get the ats version of the test executor
+        String atsVersion = AtsVersion.getAtsVersion();
+
+        if (!atsVersion.equals(agentVersion)) {
+            log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
+                     + " with ATS agent version " + agentVersion + " located at '"
+                     + HostUtils.getAtsAgentIpAndPort(atsAgent)
+                     + "'. This might cause incompatibility problems!");
         }
+
+        log.info("Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
+                 + atsAgent + "'");
     }
 }

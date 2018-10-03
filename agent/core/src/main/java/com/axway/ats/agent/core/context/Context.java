@@ -18,6 +18,11 @@ package com.axway.ats.agent.core.context;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A basic context.
+ * 
+ * It supports manipulating a shared map of attributes. 
+ */
 abstract class Context {
 
     private Map<String, Object> attribs = new ConcurrentHashMap<String, Object>();
@@ -25,19 +30,19 @@ abstract class Context {
     public Object getAttribute(
                                 String name ) {
 
-        return attribs.get(name);
+        return attribs.get( name );
     }
 
     public void removeAttribute(
                                  String name ) {
 
-        attribs.remove(name);
+        attribs.remove( name );
     }
 
     public void setAttribute(
                               String name,
                               Object object ) {
 
-        attribs.put(name, object);
+        attribs.put( name, object );
     }
 }

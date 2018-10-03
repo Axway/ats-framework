@@ -34,13 +34,15 @@ class MethodTemplateProcessor extends TemplateProcessor {
                                     boolean registerAction,
                                     String[] paramTypes,
                                     String transferUnit,
-                                    boolean isDeprecated ) throws IOException {
+                                    boolean isDeprecated,
+                                    String requestUrl,
+                                    String requestMethod ) throws IOException {
 
         super(ClassTemplateProcessor.class.getResourceAsStream(DEFAULT_METHOD_TEMPLATE),
               DEFAULT_METHOD_TEMPLATE);
 
         configureTemplate(actionImplementation, actionName, paramNames, registerAction, paramTypes, transferUnit,
-                          isDeprecated);
+                          isDeprecated, requestUrl, requestMethod, paramNames);
     }
 
     private void configureTemplate(
@@ -50,7 +52,10 @@ class MethodTemplateProcessor extends TemplateProcessor {
                                     boolean registerAction,
                                     String[] paramTypes,
                                     String transferUnit,
-                                    boolean isDeprecated ) {
+                                    boolean isDeprecated,
+                                    String requestUrl,
+                                    String requestMethod,
+                                    String[] argumentsNames ) {
 
         try {
             placeHolderValues.put("$METHOD_NAME$",
@@ -110,6 +115,11 @@ class MethodTemplateProcessor extends TemplateProcessor {
             }
             placeHolderValues.put("$PARAMETERS$", paramDefinitionStr);
             placeHolderValues.put("$ARGUMENTS$", argumentArrayStr);
+            if (!StringUtils.isNullOrEmpty(argumentArrayStr)) {
+                placeHolderValues.put("$ARGUMENTS_NAMES$", "\"" + argumentArrayStr + "\".split(\",\")");
+            } else {
+                placeHolderValues.put("$ARGUMENTS_NAMES$", "new String[]{ }");
+            }
 
             if (StringUtils.isNullOrEmpty(transferUnit)) {
                 placeHolderValues.put("$META_KEYS$", "");
@@ -119,11 +129,30 @@ class MethodTemplateProcessor extends TemplateProcessor {
                 placeHolderValues.put("$META_VALUES$", ", " + arrayToString(new String[]{ transferUnit }));
             }
 
+            if (StringUtils.isNullOrEmpty(requestUrl)) {
+                placeHolderValues.put("$REQUEST_URL$", ", \"\"");
+            } else {
+                placeHolderValues.put("$REQUEST_URL$", ", \"" + requestUrl + "\", ");
+            }
+
+            if (StringUtils.isNullOrEmpty(requestMethod)) {
+                placeHolderValues.put("$REQUEST_METHOD$", ", \"\", ");
+            } else {
+                placeHolderValues.put("$REQUEST_METHOD$", "\"" + requestMethod + "\", ");
+            }
+
+            if (!returnTypeName.equalsIgnoreCase("void")) {
+                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", " + returnTypeName + ".class");
+            } else {
+                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", null");
+            }
+
             if (isDeprecated) {
                 placeHolderValues.put("$DEPRECATED$", "    @Deprecated");
             } else {
                 placeHolderValues.put("$DEPRECATED$", "");
             }
+
         } catch (Exception e) {
             throw new BuildException("Error building Agent action stub for action method "
                                      + actionImplementation.toString(), e);

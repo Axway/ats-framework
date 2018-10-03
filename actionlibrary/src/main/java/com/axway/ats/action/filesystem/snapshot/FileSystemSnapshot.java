@@ -412,7 +412,7 @@ public class FileSystemSnapshot {
     @PublicAtsApi
     public String toString() {
 
-        return this.fsSnapshotImpl.toString();
+        return this.fsSnapshotImpl.getDescription();
     }
 
     private IFileSystemSnapshot getOperationsImplementationFor( String atsAgent, String name,
@@ -423,7 +423,12 @@ public class FileSystemSnapshot {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemSnapshot(name, configuration);
         } else {
-            return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            try {
+                return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system snapshot impl object", e);
+            }
+            
         }
     }
 

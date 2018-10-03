@@ -8,41 +8,27 @@
     <description>agentapp</description>
     <listener>
         <listener-class>
-            com.sun.xml.ws.transport.http.servlet.WSServletContextListener
+            com.axway.ats.agent.webapp.restservice.api.listeners.AgentContextListener
         </listener-class>
     </listener>
     <listener>
         <listener-class>
-            com.axway.ats.agent.webapp.agentservice.AgentWsContextListener
+            com.axway.ats.agent.webapp.restservice.api.listeners.AgentRequestListener
         </listener-class>
     </listener>
-     <listener>
-        <listener-class>
-            com.axway.ats.agent.webapp.agentservice.AgentWsRequestListener
-        </listener-class>
-    </listener>
-    <servlet>
-        <servlet-name>agentservice_servlet</servlet-name>
-        
-        
-        <servlet-class>
-            com.sun.xml.ws.transport.http.servlet.WSServlet
-        </servlet-class>
-        <load-on-startup>1</load-on-startup>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>agentservice_servlet</servlet-name>
-        <url-pattern>/agentservice</url-pattern>
-    </servlet-mapping>
     <session-config>
         <session-timeout>60</session-timeout>
     </session-config>
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
     </welcome-file-list>
+    <mime-mapping>
+        <extension>json</extension>
+   		<mime-type>application/json</mime-type>
+    </mime-mapping>
     
     <servlet>
-        <servlet-name>ATS Agent REST Service</servlet-name>
+        <servlet-name>ATS Agent REST API Service</servlet-name>
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.api.json.POJOMappingFeature</param-name>
@@ -50,13 +36,13 @@
         </init-param>
         <init-param>
             <param-name>jersey.config.server.provider.packages</param-name>
-            <param-value>com.axway.ats.agent.webapp.restservice</param-value>
+            <param-value>com.axway.ats.agent.webapp.restservice.api</param-value>
         </init-param>
-        <load-on-startup>2</load-on-startup>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>ATS Agent REST Service</servlet-name>
-        <url-pattern>/restservice/*</url-pattern>
+        <servlet-name>ATS Agent REST API Service</servlet-name>
+        <url-pattern>/api/v1/*</url-pattern>
     </servlet-mapping>
     
 </web-app>

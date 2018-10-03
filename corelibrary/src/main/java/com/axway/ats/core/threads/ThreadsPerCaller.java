@@ -20,11 +20,19 @@ import java.util.Map;
 
 /**
  * This class keeps track of all the threads, that each caller has triggered.
- * It is used in AgentWsImpl, LocalExecutor and LocalLoadExecutor classes.
+ * It is used in each XYZRestEntryPoint class, LocalExecutor and LocalLoadExecutor classes.
  */
 public class ThreadsPerCaller {
 
-    private static Map<String, String> threads = new HashMap<String, String>();
+    private static Map<String, String>            threads = new HashMap<String, String>();
+
+    /**
+     * Keeps track of all the callers related to each still running thread on the agent
+     * <br>Note that this map is never cleared. 
+     * <br>This can cause some long running tests to log messages in another test that was created by the same Jetty request processing thread as the one that started the long running test.
+     * 
+     * */
+    private static InheritableThreadLocal<String> callers = new InheritableThreadLocal<>();
 
     /**
      * Register this thread for the given caller.
@@ -36,6 +44,14 @@ public class ThreadsPerCaller {
     synchronized public static void registerThread(
                                                     String caller ) {
 
+        String currentThreadName = Thread.currentThread().getName();
+
+        if (!currentThreadName.endsWith(caller)) {
+            Thread.currentThread().setName(currentThreadName + "___" + caller);
+        }
+
+        callers.set(caller);
+
         threads.put(Thread.currentThread().getName(), caller);
     }
 
@@ -46,7 +62,16 @@ public class ThreadsPerCaller {
      */
     synchronized public static void unregisterThread() {
 
+        String caller = getCaller();
+
         threads.remove(Thread.currentThread().getName());
+
+        String currentThreadName = Thread.currentThread().getName();
+
+        if (currentThreadName.endsWith(caller)) {
+            Thread.currentThread().setName(currentThreadName.replace(caller, "").replace("___", ""));
+        }
+
     }
 
     /**
@@ -56,6 +81,20 @@ public class ThreadsPerCaller {
      */
     synchronized public static String getCaller() {
 
-        return threads.get(Thread.currentThread().getName());
+        String caller = threads.get(Thread.currentThread().getName());;
+        if (caller != null) {
+            return caller;
+        } else {
+            /**
+             * If a thread starts or continues to log even after the request that created it is already processed
+             * we have no registered caller.
+             * We then will have to check if this thread or any of its parent thread have a caller in their ThreadLocal map.
+             * Once a thread has such a caller, we will use it as a current caller.
+             * */
+            caller = callers.get();
+        }
+        
+        return caller;
     }
+
 }

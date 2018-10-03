@@ -26,7 +26,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.appenders.AbstractDbAppender;
 import com.axway.ats.log.appenders.ActiveDbAppender;
@@ -39,14 +38,15 @@ import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
  */
 @SuppressWarnings( "serial")
 public class RemoteLoggingConfigurator implements Configurator {
+	
+	private static final long serialVersionUID = 1L;
 
-    private static final long serialVersionUID = 1L;
-    
+
     private DbAppenderConfiguration      appenderConfiguration;
     private String                       appenderLogger;
 
     private static final int             DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
-    
+
     // list of other logger levels defined by the user in their log4j configuration file
     private Map<String, Integer>         otherLoggerLevels          = new HashMap<String, Integer>();
 
@@ -54,16 +54,20 @@ public class RemoteLoggingConfigurator implements Configurator {
     private boolean                      needsToConfigureDbAppender;
     private boolean                      needsToConfigureUserLoggers;
     
-    /**
-     * We will try to find if a DB appender has been configured on the local system
-     */
-    public RemoteLoggingConfigurator() {
-        this( null );
-    }
     
     /**
      * We will try to find if a DB appender has been configured on the local system
      * 
+     * @param atsAgent the Agent to configure
+     */
+    public RemoteLoggingConfigurator( ) {
+    	this( null );
+	}
+
+    /**
+     * We will try to find if a DB appender has been configured on the local system
+     * 
+     * @param atsAgent the Agent to configure
      * @param customLogLevel log level specified in the test
      */
     @SuppressWarnings( "unchecked")
@@ -93,7 +97,6 @@ public class RemoteLoggingConfigurator implements Configurator {
                     appenderConfiguration = ((AbstractDbAppender) appender).getAppenderConfig();
                     appenderLogger = log.getName();
 
-                    
                     int atsDbLogLevel = DEFAULT_LOG_LEVEL;
                     if (customLogLevel!=null) {
                         // user specified in the test the log level for this agent
@@ -105,8 +108,8 @@ public class RemoteLoggingConfigurator implements Configurator {
                     }
 
                     //set the effective logging level for threshold if new one is set
-                    if (appenderConfiguration.getLoggingThreshold() == null
-                        || appenderConfiguration.getLoggingThreshold().toInt() != atsDbLogLevel) {
+                    if (appenderConfiguration.getLoggingThreshold() == -1
+                        || appenderConfiguration.getLoggingThreshold() != atsDbLogLevel) {
 
                         /*
                          * Log4j is deprecating the Priority class used by setLoggingThreshold,
@@ -117,7 +120,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                          */
                         final Level currentLevelBackup = log.getLevel();
                         log.setLevel(Level.toLevel(atsDbLogLevel));
-                        appenderConfiguration.setLoggingThreshold(log.getEffectiveLevel());
+                        appenderConfiguration.setLoggingThreshold(log.getEffectiveLevel().toInt());
                         log.setLevel(currentLevelBackup);
                     }
 
@@ -172,12 +175,10 @@ public class RemoteLoggingConfigurator implements Configurator {
                 log = Logger.getLogger(appenderLogger);
             }
 
-            log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
-            
-            final String caller = ThreadsPerCaller.getCaller();
+            log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold()));
 
             //create the new appender
-            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
+            PassiveDbAppender attachedAppender = new PassiveDbAppender();
             attachedAppender.setAppenderConfig(appenderConfiguration);
             //use a default pattern, as we log in the db
             attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
@@ -208,11 +209,9 @@ public class RemoteLoggingConfigurator implements Configurator {
          * This code is run on remote agent's side
          */
 
-        final String caller = ThreadsPerCaller.getCaller();
-
         needsToConfigureDbAppender = false;
         if (appenderConfiguration != null) {
-            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender == null || !dbAppender.getAppenderConfig().equals(appenderConfiguration)) {
                 // we did not have a DB appender
                 // or the DB appender configuration is changed
@@ -292,7 +291,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                 log = Logger.getLogger(appenderLogger);
             }
 
-            Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+            Appender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender != null) {
                 //close the appender
                 dbAppender.close();
@@ -305,6 +304,7 @@ public class RemoteLoggingConfigurator implements Configurator {
         // in case we must reconfigure the custom loggers, here we should remove them from log4j, 
         // but log4j does not provide a way to do it - so we do nothing here 
     }
+
 
     @Override
     public String getDescription() {

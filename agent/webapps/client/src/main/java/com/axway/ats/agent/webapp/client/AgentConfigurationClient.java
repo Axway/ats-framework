@@ -75,7 +75,7 @@ public final class AgentConfigurationClient extends ActionClient {
      *            current JVM without routing through the web service
      */
     @PublicAtsApi
-    public AgentConfigurationClient( String atsAgent ) {
+    public AgentConfigurationClient( String atsAgent ) throws AgentException {
 
         // this client works on the level of Agent distribution, 
         // not on the level of Agent components
@@ -250,20 +250,6 @@ public final class AgentConfigurationClient extends ActionClient {
         }
     }
 
-    /**
-     * The usage of this method concerns the very rare case when same user on same host is running 
-     * simultaneous executions of more than one test runs and these tests are sending requests to one and same ATS Agent!
-     * If this is not your case, you do not have to worry about the meaning of this method.
-     * An example of such rare case is if some CI machine is running some scheduled test using same CI user on same CI host
-     * and you want to run other test, using the same agent for executing them, without interrupting any previous test on the agent.
-     * 
-     * @throws AgentException
-     */
-    @PublicAtsApi
-    public void setUseNewCallerIdOnEachRun() throws AgentException {
-
-        AgentServicePool.useNewUniqueId();
-    }
 
     /**
      * Set using of HTTPS communication protocol

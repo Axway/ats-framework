@@ -1475,8 +1475,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Unzip archive to local or remote machine. Use extract() method
-     * If the machine is UNIX-like it will preserve the permissions
+     * <p>Unzip archive to local or remote machine.</p>
+     * <p>If the machine is UNIX-like it will preserve the permissions</p>
+     * <p>This method is deprecated. Use extract().</p>
      *
      * @param zipFilePath the ZIP file path
      * @param outputDirPath output directory which is used as base directory for extracted files
@@ -1580,7 +1581,12 @@ public class FileSystemOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemOperations();
         } else {
-            return new RemoteFileSystemOperations(atsAgent);
+            try {
+                return new RemoteFileSystemOperations(atsAgent);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system operations impl object", e);
+            }
+            
         }
     }
 }

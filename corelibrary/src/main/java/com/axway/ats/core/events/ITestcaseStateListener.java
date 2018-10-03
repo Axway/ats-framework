@@ -39,15 +39,4 @@ public interface ITestcaseStateListener {
     public abstract void onConfigureAtsAgents(
                                                List<String> atsAgents ) throws Exception;
 
-    /**
-     * Called to release some resources on the agent side.
-     * This is called when the client side counterparts are garbage collected.
-     *
-     * @param atsAgent the remote agent
-     * @param internalProcessId ID of the object instance on the agent side
-     */
-    public abstract void cleanupInternalObjectResources(
-                                                         String atsAgent,
-                                                         String internalObjectResourceId );
-
 }

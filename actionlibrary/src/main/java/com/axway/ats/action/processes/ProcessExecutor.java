@@ -398,9 +398,14 @@ public class ProcessExecutor {
                                                              String... commandArgs ) {
 
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
-            return new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, command, commandArgs);
+            return new LocalProcessExecutor(command, commandArgs);
         } else {
-            return new RemoteProcessExecutor(atsAgent, command, commandArgs);
+            try {
+                return new RemoteProcessExecutor(atsAgent, command, commandArgs);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote process executor impl object", e);
+            }
+            
         }
     }
 

@@ -83,9 +83,10 @@ public class ConfigurationParser {
     private String                     componentName;
 
     /**
-     * Hold a set of action class names
+     * Hold a map of the action class names and optional initial request URL 
+     * the URL is for internal use only, 3rd-party actions do not need to specify it
      */
-    private Set<String>                actionClassNames;
+    private Map<String, String>        actionsClassesInformation;
     private String                     initializationHandler;
     private String                     finalizationHandler;
     private String                     cleanupHandler;
@@ -168,7 +169,7 @@ public class ConfigurationParser {
      */
     private void initializeComponentMetaData() {
 
-        actionClassNames = new HashSet<String>();
+        actionsClassesInformation = new HashMap<String, String>();
         environments = new ArrayList<ComponentEnvironment>();
         initializationHandler = null;
         finalizationHandler = null;
@@ -205,7 +206,15 @@ public class ConfigurationParser {
                         String nameAttribute = componentSubElement.getAttributes()
                                                                   .getNamedItem("name")
                                                                   .getNodeValue();
-                        actionClassNames.add(nameAttribute);
+
+                        // extract initialRequestUrl
+                        Node initializeRequestUrlNode = componentSubElement.getAttributes()
+                                                                             .getNamedItem("initializeRequestUrl");
+                        String initializeRequestUrlAttribute = "";
+                        if (initializeRequestUrlNode != null) {
+                            initializeRequestUrlAttribute = initializeRequestUrlNode.getNodeValue();
+                        }
+                        actionsClassesInformation.put(nameAttribute, initializeRequestUrlAttribute);
                     } else if (componentSubElement.getNodeName().equals(INITIALIZATION_HANDLER)) {
                         initializationHandler = componentSubElement.getAttributes()
                                                                    .getNamedItem("name")
@@ -584,9 +593,14 @@ public class ConfigurationParser {
                                                           customProperties);
     }
 
+    public Map<String, String> getActionsClassesInformation() {
+
+        return actionsClassesInformation;
+    }
+    
     public Set<String> getActionClassNames() {
 
-        return actionClassNames;
+        return actionsClassesInformation.keySet();
     }
 
     public String getInitializationHandler() {

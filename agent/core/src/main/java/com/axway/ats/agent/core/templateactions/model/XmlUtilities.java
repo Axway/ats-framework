@@ -402,7 +402,7 @@ public class XmlUtilities {
 
     /**
     *
-    * @param HttpClient httpClient
+    * @param RestHelper httpClient
     * @param actionsXml full name (with path) of the actions file. Used for generating relative paths for body contents
     * @param actionNum action number among all ones in the file
     * @param saveResponseBodyBytes whether to save the response body bytes even the resource file content

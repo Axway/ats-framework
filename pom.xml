@@ -4,7 +4,7 @@
 
     <groupId>com.axway.ats.framework</groupId>
     <artifactId>ats-framework</artifactId>
-    <version>4.0.6-SNAPSHOT</version>
+    <version>4.1.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>ATS-Framework</name>
     <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
@@ -91,12 +91,16 @@
         <org.glassfish.jersey.jersey-server.version>2.25.1</org.glassfish.jersey.jersey-server.version>
         <!-- this dependency is required after jersey 2.26 -->
         <!-- <org.glassfish.jersey.inject.version>2.26</org.glassfish.jersey.inject.version> -->
-        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
+        <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
         <com.jcraft.jsch.version>0.1.54</com.jcraft.jsch.version>
 
         <net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
         <commons-compress.version>1.10</commons-compress.version>
+
+		<gson.version>2.8.2</gson.version>
+
         <ats-expectj.version>2.0.8</ats-expectj.version>
+
     </properties>
 
     <build>
@@ -343,7 +347,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <!-- TEST dependencies -->
             <dependency>
                 <groupId>junit</groupId>
@@ -385,7 +389,11 @@
                 <artifactId>javassist</artifactId>
                 <version>${org.javassist.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>com.google.code.gson</groupId>
+                <artifactId>gson</artifactId>
+                <version>${gson.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
