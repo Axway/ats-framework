@@ -167,8 +167,10 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 //remove the last comma
                 insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
                 insertStatement.append(insertEnd);
+                fileWriter.write(insertStatement.toString()); // limit memory allocation for big tables. Write after each row
+                insertStatement.setLength(0);
             }
-            fileWriter.write(insertStatement.toString());
+            fileWriter.flush();
         }
     }
 
