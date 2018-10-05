@@ -22,11 +22,14 @@ import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
+ * @deprecated Use {@link AtsTestngListener} class instead.
+ * <br><br>
  * <b>NOTE:</b> This listener can not work with an official TestNG distribution!
  * 
  * Optional ATS listener invoked from TestNG.
  * Used to allow capturing log events from within @BeforeClass and @AfterClass methods.
  */
+@Deprecated
 public class AtsTestngClassListener {
 
     /*
