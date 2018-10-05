@@ -28,6 +28,12 @@ public interface ITestcaseStateListener {
      * When a test is ending
      */
     public abstract void onTestEnd();
+    
+    /**
+     * Used when testcases are run in parallel.
+     * 
+     * */
+    public abstract void onTestEnd(List<String> callerIDs);
 
     /**
      * Prior to interacting with ATS Agent, we must make sure it is properly configured
