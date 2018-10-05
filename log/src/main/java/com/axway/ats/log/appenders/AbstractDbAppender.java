@@ -105,7 +105,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         DbChannel channel = this.channels.get(channelKey);
         if (channel == null) {
             // check if TestNG does NOT run in parallel
-            if (!parallel) {
+            if (!parallel && !(this instanceof PassiveDbAppender)) { // if this is not a PassiveDbAppender and we are not in parallel mode
                 // see if there is at least one db channel created
                 if (!this.channels.isEmpty()) {
                     // get the first channel from the map
@@ -117,9 +117,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
                     if (childParentThreadsMap.containsKey(channelKey)) {
                         String threadId = childParentThreadsMap.get(channelKey);
                         do {
-                            channel = channels.get(childParentThreadsMap.get(threadId));
+                            channel = channels.get(threadId/*childParentThreadsMap.get(threadId)*/);
                             if (channel != null) {
-                                break;
+                                return channel;
                             }
                             threadId = childParentThreadsMap.get(threadId);
                         } while (threadId != null);

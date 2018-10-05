@@ -28,6 +28,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,7 @@ import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -101,6 +103,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         ITestResult  currentTestcaseResult  = null;
         ITestContext currentTestcaseContext = null;
 
+        // the caller that created this channel
+        String       callerId               = null;
+
     }
 
     private Channel getChannel() {
@@ -116,6 +121,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 }
             }
             channel = new Channel();
+            channel.callerId = ExecutorUtils.createCallerId();
             channels.put(threadId, channel);
         }
 
@@ -123,9 +129,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     }
 
     /**
-     * The types of TestNG methods that ATS is interested in.
+     * The types of TestNG methods that this listener is interested in.
      * <br>
-     * Other types as @BeforeTest are still supported, but are of no interest to ATS framework
+     * Other types as @BeforeTest are still supported, but are of no interest to this listener/class
      * */
     private enum METHOD_TYPE {
         BEFORE_SUITE, BEFORE_CLASS, BEFORE_METHOD, TEST, AFTER_METHOD, AFTER_CLASS, AFTER_SUITE
@@ -135,7 +141,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = true;
 
-        channels = new HashMap<>();
+        channels = Collections.synchronizedMap(new HashMap<String, Channel>());//new HashMap<>();
     }
 
     @Override
@@ -152,6 +158,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
 
         Channel channel = getChannel();
+
+        if (!channel.callerId.equals(ExecutorUtils.createCallerId())) {
+            throw new RuntimeException("WOW!");
+        }
 
         /*
          * Close any previous testcase, started from the current channel
@@ -192,7 +202,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
             channel.currentSuiteName = testResult.getTestClass()
                                                  .getRealClass()
-                                                 .getSimpleName();
+                                                 .getName();
             startSuite(channel, testResult);
 
             logger.info("[TESTNG]: START @BeforeClass '" + testResult.getTestClass().getRealClass() + "@"
@@ -217,7 +227,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             if (channel.currentSuiteName != null) {
                 if (!channel.currentSuiteName.equals(testResult.getTestClass()
                                                                .getRealClass()
-                                                               .getSimpleName())) {
+                                                               .getName())) {
                     endSuite(channel);
                 }
             }
@@ -244,7 +254,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * Start testcase if such does not exist, or update testcase if such was started from a @BeforeMethod
          * */
         if (isTestngMethod(method, METHOD_TYPE.TEST)) {
-            
+
             if (channel.currentTestcaseName != null) { // we have open testcase
                 if (channel.currentTestcaseResult != null) { // the opened testcase has end result.
                     endTestcase(channel);
@@ -254,7 +264,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             if (channel.currentSuiteName != null) {
                 if (!channel.currentSuiteName.equals(testResult.getTestClass()
                                                                .getRealClass()
-                                                               .getSimpleName())) {
+                                                               .getName())) {
                     endSuite(channel);
                 }
             }
@@ -465,6 +475,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         /*
          * Close all testcases and suites for the current run
+         * FIXME: 
+         * - Any message will be logged as a run message, so a message like 'INFO  14:12:03:893 main axway.ats: [TestNG]: TEST PASSED'
+         *   will be logged as a RUN message instead of a TESTCASE one
          * */
         for (Channel channel : channels.values()) {
             // end testcase
@@ -502,15 +515,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // clear the previously saved java file content, since a new suite is about to start
         javaFileContent = null;
 
-        channel.currentSuiteName = suiteSimpleName;
+        channel.currentSuiteName = testClass.getName();
 
         logger.startSuite(packageName, suiteSimpleName);
     }
 
     private void endSuite( Channel channel ) {
 
+        String suiteName = channel.currentSuiteName;
         channel.currentSuiteName = null;
-        logger.endSuite();
+        logger.endSuite("End suite '" + suiteName + "'");
     }
 
     private void startTestcase( Channel channel, ITestResult testResult, ITestContext context,
@@ -574,21 +588,31 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private void endTestcase( Channel channel ) {
 
         // send TestEnd event to all ATS agents
-        TestcaseStateEventsDispacher.getInstance().onTestEnd();
+        TestcaseStateEventsDispacher.getInstance().onTestEnd(Arrays.asList(new String[]{ channel.callerId }));
 
-        if(channel.currentTestcaseResult == null) {
-            throw new RuntimeException("Could not close testcases '"+channel.currentTestcaseName+"'. Its has no testcase result");
+        if (channel.currentTestcaseResult == null) {
+            throw new RuntimeException("Could not close testcases '" + channel.currentTestcaseName
+                                       + "'. Its has no testcase result");
         }
-        
+
+        Class<?> testClass = channel.currentTestcaseResult.getTestClass().getRealClass();
+        String suiteFullName = testClass.getName();
+        String testName = getTestName(channel.currentTestcaseResult);
+        String testInputArguments = getTestInputArguments(channel.currentTestcaseResult);
+        String message = "End test case '" + suiteFullName + "@" + testName + testInputArguments + "'";
+
+        // save the current testcase name
+        channel.currentTestcaseName = channel.currentTestcaseResult.getMethod().toString();
+
         switch (channel.currentTestcaseResult.getStatus()) {
             case TestResult.SUCCESS:
-                endPassedTestcase(channel);
+                endPassedTestcase(channel, message);
                 break;
             case TestResult.SKIP:
-                endSkippedTestcase(channel);
+                endSkippedTestcase(channel, message);
                 break;
             case TestResult.FAILURE:
-                endFailedTestcase(channel);
+                endFailedTestcase(channel, message);
                 break;
             default:
                 logger.error("Could not close testcase '" + channel.currentSuiteName + "@" + channel.currentTestcaseName
@@ -598,7 +622,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     }
 
-    private void endPassedTestcase( Channel channel ) {
+    private void endPassedTestcase( Channel channel, String endTestcaseEventMessage ) {
 
         boolean shouldTestFail = TestcaseStateEventsDispacher.getInstance().hasAnyQueueFailed();
         if (shouldTestFail) {
@@ -606,7 +630,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             logger.warn(message);
             channel.currentTestcaseResult.setStatus(ITestResult.FAILURE);
             //channel.currentTestcaseResult.setThrowable(new RuntimeException(message)); -> must be tested in order to not break previous behavior
-            endFailedTestcase(channel);
+            endFailedTestcase(channel, endTestcaseEventMessage);
             return;
         }
         logger.info(MSG__TEST_PASSED);
@@ -617,14 +641,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             channel.currentTestcaseResult = null;
             channel.currentTestcaseContext = null;
             // end test case
-            logger.endTestcase(TestCaseResult.PASSED);
+            logger.endTestcase(TestCaseResult.PASSED, endTestcaseEventMessage, channel.callerId);
         } catch (Exception e) {
             logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endPassedTestcase", e);
         }
 
     }
 
-    private void endSkippedTestcase( Channel channel ) {
+    private void endSkippedTestcase( Channel channel, String endTestcaseEventMessage ) {
 
         if (configurationError(channel.currentTestcaseContext)) {
             // test is skipped due to configuration error
@@ -642,11 +666,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         channel.currentTestcaseResult = null;
         channel.currentTestcaseContext = null;
         // end test case
-        logger.endTestcase(TestCaseResult.SKIPPED);
+
+        logger.endTestcase(TestCaseResult.SKIPPED, endTestcaseEventMessage, channel.callerId);
 
     }
 
-    private void endFailedTestcase( Channel channel ) {
+    private void endFailedTestcase( Channel channel, String endTestcaseEventMessage ) {
 
         try {
 
@@ -667,7 +692,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             channel.currentTestcaseResult = null;
             channel.currentTestcaseContext = null;
             // end test case
-            logger.endTestcase(TestCaseResult.FAILED);
+            logger.endTestcase(TestCaseResult.FAILED, endTestcaseEventMessage, channel.callerId);
         } catch (Exception e) {
             logger.fatal("UNEXPECTED EXCEPTION IN AtsTestngListener@endFailedTestcase", e);
         }
@@ -862,43 +887,43 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                         sourceFolderLocation = projectSourcesFolder;
                     } else {
 
-                        if( !testDescAvailable ) {
-                            URL testClassPath = testClass.getClassLoader().getResource( "." ); // this could be null when failsafe maven plugin is used
-                            if( testClassPath == null ) {
+                        if (!testDescAvailable) {
+                            URL testClassPath = testClass.getClassLoader().getResource("."); // this could be null when failsafe maven plugin is used
+                            if (testClassPath == null) {
                                 testDescAvailable = true;
-                                logger.info( "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. " );
+                                logger.info("Test descriptions could not be assigned to the tests, because the test sources folder could not be found. ");
 
                                 return;
                             }
-                            URI uri = new URI( testClassPath.getPath() );
-                        URI parentUri = uri;
-                        String pathToMainFolder = "src/main/java";
-                        String pathToTestFolder = "src/test/java";
+                            URI uri = new URI(testClassPath.getPath());
+                            URI parentUri = uri;
+                            String pathToMainFolder = "src/main/java";
+                            String pathToTestFolder = "src/test/java";
 
-                        for (int i = 3; i > 0; i--) {//we try maximum 3 level up in the directory
+                            for (int i = 3; i > 0; i--) {//we try maximum 3 level up in the directory
 
-                            parentUri = parentUri.resolve("..");
-                            if (new File(parentUri + "src/").exists()) {
-                                break;
+                                parentUri = parentUri.resolve("..");
+                                if (new File(parentUri + "src/").exists()) {
+                                    break;
+                                }
                             }
-                        }
 
-                        String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
-                        File javaFile = new File(filePath);
-
-                        if (javaFile.exists()) {
-                            sourceFolderLocation = parentUri + pathToTestFolder;
-                            projectSourcesFolder = pathToTestFolder;
-                        } else {
-                            filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
-                            javaFile = new File(filePath);
+                            String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
+                            File javaFile = new File(filePath);
 
                             if (javaFile.exists()) {
-                                sourceFolderLocation = parentUri + pathToMainFolder;
-                                projectSourcesFolder = sourceFolderLocation;
+                                sourceFolderLocation = parentUri + pathToTestFolder;
+                                projectSourcesFolder = pathToTestFolder;
+                            } else {
+                                filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
+                                javaFile = new File(filePath);
+
+                                if (javaFile.exists()) {
+                                    sourceFolderLocation = parentUri + pathToMainFolder;
+                                    projectSourcesFolder = sourceFolderLocation;
+                                }
                             }
-                        }
-                        logger.debug("Source location is set to : " + projectSourcesFolder);
+                            logger.debug("Source location is set to : " + projectSourcesFolder);
                         }
                     }
                 }

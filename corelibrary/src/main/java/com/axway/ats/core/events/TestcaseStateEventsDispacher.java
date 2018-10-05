@@ -84,6 +84,13 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
             testcaseStateListener.onTestEnd();
         }
     }
+    
+    @Override
+    public void onTestEnd( List<String> callerIDs ) {
+        if (testcaseStateListener != null) {
+            testcaseStateListener.onTestEnd(callerIDs);
+        }
+    }
 
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
@@ -111,4 +118,5 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
 
         return atLeastOneQueueFailed;
     }
+
 }

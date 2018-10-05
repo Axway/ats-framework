@@ -26,9 +26,12 @@ public class LogAspect {
 
     @AfterReturning( value = "call(Thread.new(..))", returning = "thread")
     public void afterThreadConstructorExecuted( Thread thread ) {
+
         Thread parentThread = Thread.currentThread();
-        new AtsConsoleLogger(getClass()).info("Thread created '"+thread+"'. Its parent is '"+parentThread+"'");
-        AbstractDbAppender.childParentThreadsMap.put(thread.getId()+"", parentThread.getId()+"");
+        new AtsConsoleLogger(getClass()).info("Thread created [Name: " + thread.getName() + ", ID: " + thread.getId()
+                                              + "]. Its parent is [Name: " + parentThread.getName() + ", ID: "
+                                              + parentThread.getId() + "]");
+        AbstractDbAppender.childParentThreadsMap.put(thread.getId() + "", parentThread.getId() + "");
     }
 
 }

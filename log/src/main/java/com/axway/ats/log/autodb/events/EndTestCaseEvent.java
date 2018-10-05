@@ -26,14 +26,25 @@ import com.axway.ats.log.model.TestCaseResult;
 public class EndTestCaseEvent extends AbstractLoggingEvent {
 
     private final TestCaseResult testCaseResult;
+    
+    public static final String DEFAULT_MESSAGE = "End test case";
 
     public EndTestCaseEvent( String loggerFQCN,
                              Logger logger,
                              TestCaseResult testCaseResult ) {
 
-        super(loggerFQCN, logger, "End test case", LoggingEventType.END_TEST_CASE);
+        this(loggerFQCN, logger, DEFAULT_MESSAGE, testCaseResult);
+    }
+
+    public EndTestCaseEvent( String loggerFQCN,
+                             Logger logger,
+                             String message,
+                             TestCaseResult testCaseResult ) {
+
+        super(loggerFQCN, logger, message, LoggingEventType.END_TEST_CASE);
 
         this.testCaseResult = testCaseResult;
+
     }
 
     public TestCaseResult getTestCaseResult() {

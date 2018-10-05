@@ -77,7 +77,7 @@ public class AtsDbLogger {
     /**
      * Flag that is used to log WARN for not attached ATS DB logger only once
      */
-    private static boolean isWarningMessageLogged = false;
+    private static boolean      isWarningMessageLogged   = false;
     protected Logger            logger;
 
     private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
@@ -88,8 +88,9 @@ public class AtsDbLogger {
             if (!ActiveDbAppender.isAttached) {
                 if (!isWarningMessageLogged) {
                     this.logger.warn(
-                            "ATS Database appender is not attached in root logger element in log4j.xml file. "
-                            + "No test data will be sent to ATS Log database and some methods from '"+AtsDbLogger.class.getName()+"' class will not work as expected");
+                                     "ATS Database appender is not attached in root logger element in log4j.xml file. "
+                                     + "No test data will be sent to ATS Log database and some methods from '"
+                                     + AtsDbLogger.class.getName() + "' class will not work as expected");
                     isWarningMessageLogged = true;
                 }
             }
@@ -508,19 +509,32 @@ public class AtsDbLogger {
      */
     public void endSuite() {
 
-        sendEvent(new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+        endSuite(EndSuiteEvent.DEFAULT_MESSAGE);
+    }
+
+    public void endSuite( String message ) {
+
+        sendEvent(new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, message));
+
     }
 
     /**
      * End the current suite
+     * @param threadId the thread that started this suite if the event will be fired from a different thread
      */
     public void endSuite( int threadId ) {
 
+        endSuite(EndSuiteEvent.DEFAULT_MESSAGE, threadId);
+    }
+
+    public void endSuite( String message, int threadId ) {
+
         // We need to attach this event to the provided thread
-        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
+        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, message);
         event.setProperty(ExecutorUtils.ATS_THREAD_ID, threadId + "");
 
         sendEvent(event);
+
     }
 
     /**
@@ -601,15 +615,43 @@ public class AtsDbLogger {
 
     }
 
+    public void endTestcase( TestCaseResult testCaseResult ) {
+
+        endTestcase(testCaseResult, EndTestCaseEvent.DEFAULT_MESSAGE);
+    }
+
     /**
      * End the current test case
      *
      * @param testCaseResult the result of the test case execution
+     * @param message the SYSTEM level message to log when this event is logged
      */
     public void endTestcase(
-                             TestCaseResult testCaseResult ) {
+                             TestCaseResult testCaseResult,
+                             String message ) {
 
-        sendEvent(new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testCaseResult));
+        sendEvent(new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger,
+                                       message,
+                                       testCaseResult));
+    }
+
+    /**
+     * End the current test case
+     *
+     * @param testCaseResult the result of the test case execution
+     * @param message the SYSTEM level message to log when this event is logged
+     * @param callerId the callerID for the thread that created this testcase
+     */
+    public void endTestcase(
+                             TestCaseResult testCaseResult,
+                             String message,
+                             String callerId ) {
+
+        EndTestCaseEvent event = new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger,
+                                                      message,
+                                                      testCaseResult);
+        event.setProperty(ExecutorUtils.ATS_THREAD_ID, ExecutorUtils.extractThreadId(callerId));
+        sendEvent(event);
     }
 
     /**

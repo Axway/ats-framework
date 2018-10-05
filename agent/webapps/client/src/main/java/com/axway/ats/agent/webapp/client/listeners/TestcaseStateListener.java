@@ -29,7 +29,6 @@ import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.ActionClient;
 import com.axway.ats.agent.webapp.client.RestHelper;
-import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
@@ -83,11 +82,26 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onTestEnd() {
 
-        // FIXME: this must be split per testcase in case of parallel tests
-        waitImportantThreadsToFinish();
-
         // get current caller ID
         String callerId = ExecutorUtils.createCallerId();
+
+        sentOnTestEndEvent(callerId);
+
+    }
+
+    @Override
+    public void onTestEnd( List<String> callerIDs ) {
+
+        for (String callerId : callerIDs) {
+            sentOnTestEndEvent(callerId);
+        }
+
+    }
+
+    private void sentOnTestEndEvent( String callerId ) {
+
+        // FIXME: this must be split per testcase in case of parallel tests
+        waitImportantThreadsToFinish();
 
         // need synchronization when running parallel tests
         synchronized (configurationMutex) {
