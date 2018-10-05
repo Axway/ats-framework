@@ -2,10 +2,10 @@ language: java
 jdk:
     oraclejdk8
 before_install:
-    - wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.2/ojdbc7-12.1.0.2.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
-    - wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.2/ojdbc7-12.1.0.2.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
-    - mvn install:install-file -Dfile=ojdbc7-12.1.0.2.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=pom -DpomFile=ojdbc7-12.1.0.2.pom
-    - mvn install:install-file -Dfile=ojdbc7-12.1.0.2.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.2.pom
+    #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.2/ojdbc7-12.1.0.2.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
+    #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.2/ojdbc7-12.1.0.2.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
+    #- mvn install:install-file -Dfile=ojdbc7-12.1.0.2.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=pom -DpomFile=ojdbc7-12.1.0.2.pom
+    #- mvn install:install-file -Dfile=ojdbc7-12.1.0.2.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.2 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.2.pom
      - rm ~/.m2/settings.xml
      - cp settings.xml ~/.m2
 # for fast Travis builds w/o tests:  script: mvn clean install deploy -DskipTests=true
@@ -22,7 +22,7 @@ notifications:
 env:
    global:
       # sonatype username
-      - secure: "GL6d+vhKrewzM7i3krljBoV7ZgPBr1EGqda/bFTr6VIrafHfat6MzgVJsCNCXFCt+RzkhFKgVyQjBiOSWkZWpjg8mLEG5a2nFYZCcMChW+ahbFTZa8gUlhrRJ7wT+MtTeFhaynd8vwVS7IQweB3YOAANrSJ5qlOtqk1iOXFZEKtCplkH0JuojEYGe3Jcl38R9K1VcT2oAZgpA0+KxW9w1rCpiMho78dvFiDnnaG7ppMTw80LTeSrv6Bz30jtsfoU87GE2d9s0Yti5eORLtxKSGBBHxJAOpsrOfdwhbf0fpyN/bjhtMMImWf/85jK+nrF+UZcX4Y+a8Bk2Zo2FpY58az92f9//uGhyxu4YSS39o+ECTdpQpBf2XMEdMtSgJtJo+P5ffknnYi1NQyQITrjt0W9qJuavmiLEt/Om52Vsky16vU3CG+gcwFbNOpE+uworifrhI3o4HFqmczkLMzX+EbzdBUnO46MQhijScsoqXUr2ajPqrJhdD4rNfnnYWwjUsyru0XJqzffjkM+nUY9cVxmfjqJdVjozHWDFyapIrFHrEYT/eCI5/cIEURl/K83Y/sLnp9q2ghQZ45twi2cRurvMtESFudomj8OnqwCfB0def07E0EiVUmVxPfLRRA+Ob0F7CtShtjAcIh+un6MvZH4HcSRKPBgvTRHlFr5U3M="
+      - secure: "VKNzJAuMBU8BPjCNKO6GW+zHt+8254j4doNA84FAMrt2QOut6m+JrJSjzS5rmP9SuidkycB0u/+hOKNRlACMG8mQ0v72+3fuYsW7Z83XtcWHuKUkUPczR/pJh3EnX9CCTfKCg75fdTDS1FmWsQtJj6UgoocXfaDfqlyJ2PdoFMIFx11qK52fHGUvLm5ZB1tbdeoep5k8046vzTBOC0k+lxxLLGvgH9YIjKJzYy4RPLUHlXO1Kbg7zubdl9nUi1DDathmyoPyNnnfVmV9HcRq2w2K75uwORp7JLGOHg9pRuXzsYnU9kMDCO7CXWuvIfaKm6Hk3wA06YicAHuY1MNXFRLMNZr4VrCn/T+cha9ZwRIHH5g+EVg/42VfYIfDgg1e5bM1BNTKALAMcvmdkSSGeBXfSHMXvCvouHsSp21CUxEWZdL7XWP3GDSlvZeOuKRvrgCKf8wpDGUzSKE7zbTrqAiE/a5r97ofr/d8mhzJS3zgvv9f6mOYT228alc2rwtTiG1Xins3P/3ny50fCPviOODZ3tJGm2Z+aIj6oRP3FFC3vfIA/KdwhVvkFwccL3oaE6qoW0vMWm9DiEuxeUlsEOjB6uBlRPzRkfVH9LxcTITCmL3ClbXMGTA3PEM5TkjRtFbOCoTF6EPLcGcsKr1QIt94O1uiak6G/nVqOSGVCx8="
       # sonatype password
       - secure: "QyqhQZxpKiekxbBw88zlUQ3AgcGHyXMpGewgiyp7WrR0M6ofkodEK0FK4GnaoFz5YTbKfRJ7QQSYw96NCfcOfym6vxHdPda4AG3GqxKwDvGo514Gfn2GMSezhFNWqTFuKCVceBQ4VEDtPYVtDtY7IK0H2EkOp0jvaDVzuKBeMFOHgFbAEY91xDl3wwV/k/MFbze1ZZNxI3kC59fTqXe6rHydSsSs7vfQjGwbsaFuP/b7N/ngrwubGSCmVs+ON/6T64qv67EC9rJzAWZE9XN0DYGkcH2gKPD2ePidjcGNFICKk6Crwe6SynXkf1jCk/aYeglu+yJRqlCMXsv8trx6R+Z5VcHSV0+4Pcm2LAeMXtvH0E/hykEkYlyx9u+As84ynWufF1zRC/sTf4zcc496sG6FZTebtRJhdsRAWrJXt53vKZUxzC6yGivniNGVVW0y8MJiSYwAIl3Rp6X2TUUXtHZ2KK1LL1KfWPE3qmdIz8xHSVX5dmHDfk4m0FcBY/zZODBXUFLqxlhFn8A2XqH5fRtmGfKzLbC5HV9fUfO/CWCk9n+2lY2nPSEe1qj9EXTS4/qMM76XZxqVRHAipV4kz9t0gUweT9pi/+UesLj5SK22J5+iH9YKADLjloJbyrKvxYot5aeCagkz8hGGjIU/lkg7dWr4m2++LK2HPdaLBMg="
       # maven oracle username
