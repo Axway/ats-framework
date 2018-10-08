@@ -79,7 +79,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            log.info("Started restore of database backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -142,7 +142,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 throw sqle;
             }
 
-            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
+            log.info("Completed restore of database backup from file '" + backupFileName + "'");
 
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException("Could not restore backup from file "

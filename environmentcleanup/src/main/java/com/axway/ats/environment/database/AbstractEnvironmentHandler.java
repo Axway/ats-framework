@@ -94,11 +94,11 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         BufferedWriter fileWriter = null;
         try {
             fileWriter = new BufferedWriter(new FileWriter(new File(backupFileName)));
-            log.debug("Dumping database backup to file '" + backupFileName + "'");
+            log.info("Started creation of database backup in file '" + backupFileName + "'");
 
             writeBackupToFile(fileWriter);
 
-            log.debug("Finished writing db backup to file '" + backupFileName + "'");
+            log.info("Completed creation of database backup in file '" + backupFileName + "'");
 
         } catch (Exception pe) {
             markBackupFileAsDamaged(fileWriter, backupFileName);

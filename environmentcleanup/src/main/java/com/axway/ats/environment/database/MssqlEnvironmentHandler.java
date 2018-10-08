@@ -281,7 +281,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            LOG.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            LOG.info("Started restore of database backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -307,19 +307,15 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
 
-                    //catch the exception and rollback, otherwise we are locked
+                    // catch the exception and rollback, otherwise we are locked
                     try {
                         updateStatement.execute();
                     } catch (SQLException sqle) {
                         //we have to roll back the transaction and re-throw the exception
                         connection.rollback();
-                        throw new SQLException("Error invoking restore satement: " + sql.toString(), sqle);
+                        throw new SQLException("Error executing restore satement: " + sql.toString(), sqle);
                     } finally {
-                        try {
-                            updateStatement.close();
-                        } catch (SQLException sqle) {
-                            LOG.error("Unable to close prepared statement", sqle);
-                        }
+                        DbUtils.closeStatement(updateStatement);
                     }
                     sql = new StringBuilder();
                 } else {
@@ -342,8 +338,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 throw sqle;
             }
 
-            LOG.debug("Finished restoring db backup from file '" + backupFileName + "'");
-
+            LOG.info("Completed restore of database backup from file '" + backupFileName + "'");
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
         } catch (SQLException sqle) {
@@ -474,8 +469,8 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             stmnt = connection.prepareStatement(query);
             stmnt.executeUpdate();
         } catch (SQLException e) {
-            throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+            throw new DbException("Error executing statement: '" + query + "'\n"
+                                  + "  SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
                                   + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
