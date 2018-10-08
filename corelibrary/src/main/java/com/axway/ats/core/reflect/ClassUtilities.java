@@ -259,7 +259,7 @@ final class ClassUtilities {
         if (superclass != null && classIsAccessible(superclass)) {
             try {
                 overriddenMethod = superclass.getMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException _) {}
+            } catch (NoSuchMethodException nsme) {}
 
             if (overriddenMethod != null)
                 return overriddenMethod;
@@ -277,7 +277,7 @@ final class ClassUtilities {
             if (classIsAccessible(interfaces[i])) {
                 try {
                     overriddenMethod = interfaces[i].getMethod(methodName, parameterTypes);
-                } catch (NoSuchMethodException _) {}
+                } catch (NoSuchMethodException nsme) {}
 
                 if (overriddenMethod != null)
                     return overriddenMethod;
