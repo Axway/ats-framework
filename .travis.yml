@@ -9,7 +9,7 @@ before_install:
      - rm ~/.m2/settings.xml
      - cp settings.xml ~/.m2
 # for fast Travis builds w/o tests:  script: mvn clean install deploy -DskipTests=true
-script: mvn clean install deploy -DskipTests=true
+script: mvn clean install deploy -DskipTests=true -U
 cache:
   directories:
     - $HOME/.m2
