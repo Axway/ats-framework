@@ -342,8 +342,8 @@
                     Resolved from maven.oracle.com password protected repository -->
                 <exclusions>
                     <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-                        <groupId>com.oracle.jdbc</groupId>
-                        <artifactId>xmlparserv2</artifactId>
+                        <groupId>*</groupId>
+                        <artifactId>*</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
