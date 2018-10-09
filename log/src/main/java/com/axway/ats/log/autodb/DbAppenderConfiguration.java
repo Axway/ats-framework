@@ -204,6 +204,18 @@ public class DbAppenderConfiguration implements Serializable {
             throw new InvalidAppenderConfigurationException("password");
         }
     }
+    
+    /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+
+        return this.host + "__" + this.port + "__" + this.user + "__" + this.password + "__"
+                  + this.maxNumberLogEvents + "__" + this.mode + "__" + this.enableCheckpoints + "__"
+                  + this.loggingThreshold;
+
+    }
 
     /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)

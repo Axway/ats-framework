@@ -22,6 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
@@ -555,13 +556,12 @@ public class AutoLogger {
                 return ((ActiveDbAppender) appender).getCurrentTestCaseState(event).getTestCaseState();
             } else if (appender instanceof PassiveDbAppender) {
                 // Comes here on Agent side. There will be 1 Passive appender per caller
-
-                // Pass the event to any existing appender.
-                // The correct one will return result, wrong appenders will return null.
-                GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
-                if (resultEvent != null) {
-                    // we found the right Passive appender
-                    return resultEvent.getTestCaseState();
+                if (ThreadsPerCaller.getCaller().equals( ((PassiveDbAppender) appender).getCallerId())) {
+                    // Pass the event to right existing appender.
+                    GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
+                    if (resultEvent != null) {
+                        return resultEvent.getTestCaseState();
+                    }
                 }
             }
         }

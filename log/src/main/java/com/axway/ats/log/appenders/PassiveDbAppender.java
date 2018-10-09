@@ -31,22 +31,28 @@ import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 
 /**
- * This appender is capable of arranging the database storage and storing messages into it.
- * This appender works on the ATS Agent's side.
+ * This appender is capable of arranging the database storage and storing messages into it. This appender works on the
+ * ATS Agent's side.
  * 
- * It is expected to:
- *  - JOIN to an existing test case(the Test Executor passes the testcase id)
- *  - INSERT into the testcase messages, statistics etc.
- *  - LEAVE testcase when it is over
+ * It is expected to: - JOIN to an existing test case(the Test Executor passes the testcase id) - INSERT into the
+ * testcase messages, statistics etc. - LEAVE testcase when it is over
  */
 public class PassiveDbAppender extends AbstractDbAppender {
 
+    
+    /**
+     * The caller that created thet appender
+     * */
+    private String callerId;
+    
     /**
      * Constructor
      */
     public PassiveDbAppender() {
 
         super();
+        
+        callerId = ThreadsPerCaller.getCaller();
     }
 
     @Override
@@ -94,8 +100,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
     }
 
     /**
-     * This method doesn't create a new instance,
-     * but returns the already created one or null if there is no such.
+     * This method doesn't create a new instance, but returns the already created one or null if there is no such.
      *
      * @return the current DB appender instance
      */
@@ -108,7 +113,9 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
             if (appender instanceof PassiveDbAppender) {
                 PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
-                return passiveAppender;
+                if(ThreadsPerCaller.getCaller().equals(passiveAppender.callerId)) {
+                    return passiveAppender;
+                }
             }
         }
 
@@ -128,12 +135,19 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         return getDbChannel(null).eventProcessor;
     }
+    
+    /**
+     * Returns the callerId that created this appender
+     * */
+    public String getCallerId() {
+        
+        return this.callerId;
+        
+    }
 
     @Override
     protected String getDbChannelKey( LoggingEvent event ) {
 
-        // Works on Agent side
-        // Have a channel per caller(Host name + Random key + Thread name)
-        return ThreadsPerCaller.getCaller();
+        return ThreadsPerCaller.getCaller(); // or just return this.callerId
     }
 }

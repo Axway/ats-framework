@@ -24,25 +24,28 @@ import org.apache.log4j.Logger;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
-import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.DbAccessFactory;
+import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 /**
  * Keeps info about all readings that are already populated to the DB.
  *
- * Once the reading is populated, we can then send just "reading id" and "reading value" to the
- * database
+ * Once the reading is populated, we can then send just "reading id" and "reading value" to the database
  */
 public class DatabaseReadingsRepository {
 
-    private static SQLServerDbWriteAccess dbAccess          = null;
+    private static SQLServerDbWriteAccess            dbAccess                                  = null;
 
     //this map keeps track of the ReadingBean(s) that already have a dbId assigned
-    private static Map<String, Integer>   knownReadingBeans = new HashMap<>();
+    // use Collections.synchronizedMap(new HashMap<>()) instead of new HashMap<>() ?
+    private static Map<String, Map<String, Integer>> knownReadingBeansPerDatabaseConfiguration = new HashMap<>();
 
-    public DatabaseReadingsRepository() {}
+    public DatabaseReadingsRepository() {
+
+    }
 
     /**
      * Populate these reading to the DB, so they have their own DB IDs
@@ -56,15 +59,35 @@ public class DatabaseReadingsRepository {
                                           String monitoredHost,
                                           List<ReadingBean> readings ) throws DatabaseAccessException {
 
+        Map<String, Integer> knownReadingBeans = null;
+
         Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
 
         if (dbAccess == null) {
             dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender();
         }
 
+        String dbAppConfString = null;
+        PassiveDbAppender dbApp = PassiveDbAppender.getCurrentInstance();
+        if (dbApp != null) {
+            DbAppenderConfiguration dbAppConf = dbApp.getAppenderConfig();
+            if (dbAppConf != null) {
+                dbAppConfString = dbAppConf.toString();
+                knownReadingBeans = knownReadingBeansPerDatabaseConfiguration.get(dbAppConfString);
+                if (knownReadingBeans == null) {
+                    knownReadingBeans = new HashMap<String, Integer>();
+                    knownReadingBeansPerDatabaseConfiguration.put(dbAppConfString, knownReadingBeans);
+                }
+            } else {
+                return; // for some reason the current appender has no db configuration. so we just return
+            }
+        } else {
+            return; // for some reason there is no PassiveDbAppender for this caller. so we just return
+        }
+
         for (ReadingBean reading : readings) {
             // check if the current reading already was flagged as known
-            int dbId = getDbIdForReading(reading);
+            int dbId = getDbIdForReading(knownReadingBeans, reading);
             reading.setDbId(dbId);
             if (reading.getDbId() == -1) {
                 StringBuilder newReadingParameters = new StringBuilder();
@@ -120,7 +143,7 @@ public class DatabaseReadingsRepository {
         }
     }
 
-    private int getDbIdForReading(
+    private int getDbIdForReading( Map<String, Integer> knownReadingBeans,
                                    ReadingBean reading ) {
 
         String mapKey = reading.getDescription();
