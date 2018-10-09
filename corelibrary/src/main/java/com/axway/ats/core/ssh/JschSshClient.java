@@ -33,28 +33,29 @@ import com.jcraft.jsch.Session;
 
 public class JschSshClient {
 
-    private static final int CONNECTION_TIMEOUT = 20000;
+    private static final int    CONNECTION_TIMEOUT = 20000;
 
-    private String           user;
-    private String           host;
-    private int              port               = -1;
+    private String              user;
+    private String              host;
+    private int                 port               = -1;
 
-    private String           command;
+    private String              command;
 
-    private StreamReader     stdoutThread;
-    private StreamReader     stderrThread;
+    private StreamReader        stdoutThread;
+    private StreamReader        stderrThread;
 
-    private Session          session;
-    private ChannelExec      execChannel;
+    private Session             session;
+    private ChannelExec         execChannel;
 
     // some optional configuration properties
     private Map<String, String> configurationProperties;
 
     public JschSshClient() {
+
         this.configurationProperties = new HashMap<>();
 
         // by default - skip checking of known hosts and verifying RSA keys
-        this.configurationProperties.put( "StrictHostKeyChecking", "no" );
+        this.configurationProperties.put("StrictHostKeyChecking", "no");
     }
 
     /**
@@ -63,26 +64,19 @@ public class JschSshClient {
      * @param password the user password
      * @param host the target host
      */
-    public void connect(
-                         String user,
-                         String password,
-                         String host ) {
+    public void connect( String user, String password, String host ) {
 
         connect(user, password, host, -1);
     }
 
     /**
      *
-    * @param user the user name
-    * @param password the user password
-    * @param host the target host
-    * @param port the specific port to use
+     * @param user the user name
+     * @param password the user password
+     * @param host the target host
+     * @param port the specific port to use
      */
-    public void connect(
-                         String user,
-                         String password,
-                         String host,
-                         int port ) {
+    public void connect( String user, String password, String host, int port ) {
 
         connect(user, password, host, port, null, null);
     }
@@ -96,12 +90,7 @@ public class JschSshClient {
      * @param privateKey private key location. For example: ~/.ssh/id_rsa
      * @param privateKeyPassword private key passphrase (or null if it hasn't)
      */
-    public void connect(
-                         String user,
-                         String password,
-                         String host,
-                         int port,
-                         String privateKey,
+    public void connect( String user, String password, String host, int port, String privateKey,
                          String privateKeyPassword ) {
 
         try {
@@ -121,6 +110,14 @@ public class JschSshClient {
             this.port = port;
 
             JSch jsch = new JSch();
+            jsch.setConfigRepository(new JschConfigRepository(this.host, this.user, this.port,
+                                                              this.configurationProperties));
+            // apply global configuration properties
+            for (Entry<String, String> entry : configurationProperties.entrySet()) {
+                if (entry.getKey().startsWith("global.")) {
+                    JSch.setConfig(entry.getKey().split("\\.")[1], entry.getValue());
+                }
+            }
             if (privateKey != null) {
                 jsch.addIdentity(privateKey, privateKeyPassword);
             }
@@ -131,19 +128,25 @@ public class JschSshClient {
             }
             session.setPassword(password);
 
-            // apply any configuration properties
-            for( Entry<String, String> entry : configurationProperties.entrySet() ) {
-                session.setConfig( entry.getKey(), entry.getValue() );
+            // apply session configuration properties
+            for (Entry<String, String> entry : configurationProperties.entrySet()) {
+                if (entry.getKey().startsWith("session.")) {
+                    session.setConfig(entry.getKey().split("\\.")[1], entry.getValue());
+                } else if (!entry.getKey().startsWith("global.")) { // by default if global or session prefix is
+                                                                    // missing, we assume it is a session property
+                    session.setConfig(entry.getKey(), entry.getValue());
+                }
             }
 
             session.connect(CONNECTION_TIMEOUT);
         } catch (Exception e) {
 
-            throw new JschSshClientException(e.getMessage() + "; Connection parameters are: user '" + user
-                                             + "' at " + host + " on port " + port, e);
+            throw new JschSshClientException(
+                                             e.getMessage() + "; Connection parameters are: user '" + user + "' at "
+                                             + host + " on port " + port,
+                                             e);
         }
     }
-    
 
     /**
      * Disconnect the SSH session connection
@@ -166,29 +169,11 @@ public class JschSshClient {
     }
 
     /**
-     * Create a new instance of this client with same settings,
-     * but without internal session data.
-     * 
-     * It is expected to do a connect as a next step.
-     * 
-     * @return
-     */
-    public JschSshClient newFreshInstance() {
-
-        JschSshClient instance = new JschSshClient();
-        for( Entry<String, String> entry : this.configurationProperties.entrySet() ) {
-            instance.setConfigurationProperty( entry.getKey(), entry.getValue() );
-        }
-
-        return instance;
-    }
-    
-    /**
      * Pass configuration property for the internally used SSH client library
      */
     public void setConfigurationProperty( String key, String value ) {
 
-        configurationProperties.put( key, value );
+        configurationProperties.put(key, value);
     }
 
     /**
@@ -196,9 +181,7 @@ public class JschSshClient {
      * @param command SSH command to execute
      * @return the exit code
      */
-    public int execute(
-                        String command,
-                        boolean waitForCompletion ) {
+    public int execute( String command, boolean waitForCompletion ) {
 
         try {
             this.command = command;
@@ -207,7 +190,8 @@ public class JschSshClient {
 
             execChannel.setCommand(command);
             execChannel.setInputStream(null);
-            execChannel.setPty(true); // Allocate a Pseudo-Terminal. Thus it supports login sessions. (eg. /bin/bash -l)
+            execChannel.setPty(true); // Allocate a Pseudo-Terminal. Thus it supports login sessions. (eg. /bin/bash
+                                      // -l)
 
             execChannel.connect(); // there is a bug in the other method channel.connect( TIMEOUT );
 
@@ -345,9 +329,7 @@ public class JschSshClient {
         private InputStream      is;
         private Channel          channel;
 
-        StreamReader( InputStream is,
-                      Channel channel,
-                      String type ) {
+        StreamReader( InputStream is, Channel channel, String type ) {
 
             log = Logger.getLogger(StreamReader.class.getSimpleName() + " <" + type + ">");
 
@@ -371,12 +353,11 @@ public class JschSshClient {
 
                             int i = this.is.read(tmp, 0, READ_BUFFER_SIZE);
                             if (this.streamContent.length() > MAX_STRING_SIZE) {
-                                dataToLeave = this.streamContent.substring(this.streamContent.length()
+                                dataToLeave = this.streamContent
+                                                                .substring(this.streamContent.length()
                                                                            - MAX_STRING_SIZE);
                                 this.streamContent.setLength(MAX_STRING_SIZE);
-                                this.streamContent.replace(0,
-                                                           SKIPPED_CHARACTERS_LENGTH,
-                                                           SKIPPED_CHARACTERS);
+                                this.streamContent.replace(0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS);
                                 this.streamContent.replace(SKIPPED_CHARACTERS_LENGTH,
                                                            dataToLeave.length() + SKIPPED_CHARACTERS_LENGTH,
                                                            dataToLeave);
@@ -425,7 +406,8 @@ public class JschSshClient {
                     throw new RuntimeException("The " + this.type + " was not read successfully", e);
                 }
                 if (!this.readFinished) {
-                    throw new RuntimeException("The " + this.type + " was not read in " + READ_TIMEOUT / 1000
+                    throw new RuntimeException(
+                                               "The " + this.type + " was not read in " + READ_TIMEOUT / 1000
                                                + " seconds");
                 }
                 return this.streamContent.toString();

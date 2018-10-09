@@ -184,7 +184,7 @@ public class OracleDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT d_ind.index_name || '|-|' || ind_col.column_name as index_and_column_name,")
+        sql.append("SELECT 'COLUMN_NAME=' || ind_col.column_name || ', ' || 'INDEX_NAME=' || d_ind.index_name as column_and_index_name,")
            .append(" d_ind.index_name AS index_name,")
            .append(" ind_col.column_name,")
            .append(" d_ind.index_type,")
@@ -202,31 +202,34 @@ public class OracleDbProvider extends AbstractDbProvider {
         for (DbRecordValuesList valueList : select(sql.toString())) {
             StringBuilder info = new StringBuilder();
             boolean firstTime = true;
-            String indexName = null;
+            String indexUid = null;
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
                 
-                if ("index_and_column_name".equalsIgnoreCase(name)) {
-                    indexName = value;
+                if ("column_and_index_name".equalsIgnoreCase(name)) {
+                    indexUid = value;
                 } else {
+                	if (name.equalsIgnoreCase("INDEX_NAME") || name.equalsIgnoreCase("COLUMN_NAME")) {
+                		continue;
+                	}
                     if (firstTime) {
                         firstTime = false;
                         info.append(name + "=" + value);
                     } else {
-                        info.append(", " + name + "=" + value);
+                    	info.append(", " + name + "=" + value);
                     }
                 }
             }
 
-            if (indexName == null) {
-                indexName = "NULL_NAME_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+            if (indexUid == null) {
+                indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
                 log.warn("index_and_column_name column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
-                         + "\nWe will use the following as an index name: " + indexName);
+                         + "\nWe will use the following as an index uid: " + indexUid);
             }
 
-            indexes.put(indexName, info.toString());
+            indexes.put(indexUid, info.toString());
         }
 
         return indexes;

@@ -361,7 +361,7 @@ public class DatabaseEqualityState {
             tablesPerSnapshot.put(table, indexesPerTable);
         }
 
-        indexesPerTable.add(DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME + "=" + indexName + ", " + index);
+        indexesPerTable.add(indexName + ", " + index);
     }
 
     /**
@@ -454,8 +454,6 @@ public class DatabaseEqualityState {
 
             // cycle all entities
             for (String entityAsString : allEntitiesAsStrings) {
-                // remove the starting and ending marker
-                entityAsString = entityAsString.substring( 2, entityAsString.length() - 2 );
                 String[] entityAttributesAsString = entityAsString.split(delimeter);
 
                 // cycle all attributes of one entity

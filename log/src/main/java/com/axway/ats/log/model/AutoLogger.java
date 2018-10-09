@@ -22,6 +22,7 @@ import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -52,8 +53,10 @@ import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
 
 /**
  * The class which wraps the log4j Logger and adds all custom functionality
+ * <br> Use {@link AtsDbLogger} instead
  *
  */
+@Deprecated
 public class AutoLogger {
 
     public final static String AUTO_LOGGER_CLASS_NAME = AutoLogger.class.getName();

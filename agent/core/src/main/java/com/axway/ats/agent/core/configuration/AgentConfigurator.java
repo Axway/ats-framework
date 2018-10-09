@@ -41,12 +41,6 @@ public class AgentConfigurator implements Configurator {
     public static final String         MONITOR_INITIAL_DELAY_BEFORE_POLL = AtsSystemProperties.AGENT__MONITOR_INITIAL_POLL_DELAY;
     public static final String         COMPONENTS_FOLDER                 = AtsSystemProperties.AGENT__COMPONENTS_FOLDER;
 
-    /**
-     * Holds connection protocols for each host
-     * The map keys are hosts and the values are the protocols
-     */
-    private static Map<String, String> protocolsPerHost                  = new HashMap<String, String>();
-
     // properties passed remotely from the test executor
     private Properties                 agentRemoteProperties             = new Properties();
 
@@ -102,26 +96,6 @@ public class AgentConfigurator implements Configurator {
         // set the poll interval
         setMonitorPollInterval(configSettings);
 
-    }
-
-    /**
-     *
-     * @param host the Agent host (including port)
-     * @return the connection protocol for this host
-     */
-    public static String getConnectionProtocol( String host ) {
-
-        return protocolsPerHost.get(host);
-    }
-
-    /**
-     *
-     * @param host the Agent host (including port)
-     * @param protocol the communication protocol for this host
-     */
-    public static void setConnectionProtocol( String host, String protocol ) {
-
-        protocolsPerHost.put(host, protocol);
     }
 
     private void setAgentComponentsFolder( ConfigurationSettings configSettings ) {

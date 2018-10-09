@@ -84,6 +84,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                                             false);
         }
     }
+    
+    @Override
+    public void setMaxNumberOfCachedEvents(int maxNumberOfCachedEvents) {
+        dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
+    }
 
     /**
      * Insert a new run in the database
@@ -867,7 +872,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                      boolean closeConnection ) throws DatabaseAccessException {
 
         String dbVersionString = getDatabaseVersion();
-        int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
+        int dbVersion = Integer.parseInt(dbVersionString.replace(".", "")); // TODO: fix version conversion like in 2 digit number cases
 
         if (dbVersion < 350) {
 
@@ -1727,10 +1732,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private static final int       MAX_EVENTS                     = 2000;
+        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000; // max events to be cached in batch mode
         private static final long      MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
 
         private long                   cacheBirthTime;
+        private int                    maxNumberOfCachedEvents = MAX_CACHE_EVENTS_DEFAULT_VALUE;
 
         protected Connection           connection;
 
@@ -1773,6 +1779,17 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         public Connection getConnection() {
 
             return this.connection;
+        }
+        
+        
+        /**
+         * Specify max number of events to be collected for batch mode.
+         * Note that if invoked this should be done early enough before any DB insert operation
+         * Default value is {@link #MAX_CACHE_EVENTS_DEFAULT_VALUEX}
+         * @param maxNumberOfCachedEvents
+         */
+        public void setMaxNumberOfCachedEvents(int maxNumberOfCachedEvents) {
+            this.maxNumberOfCachedEvents = maxNumberOfCachedEvents;
         }
 
         public boolean addInsertRunMessageEventToBatch(
@@ -1895,7 +1912,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             int numberEvents = numberCachedRunMessages + numberCachedSuiteMessages
                                + numberCachedTestcaseMessages + numberCachedCheckpoints;
             if (numberEvents > 0) {
-                if (numberEvents >= MAX_EVENTS) {
+                if (numberEvents >= maxNumberOfCachedEvents) {
                     isTimeToFlush = true;
                 } else if (System.currentTimeMillis() - cacheBirthTime >= MAX_CACHE_AGE) {
                     isTimeToFlush = true;

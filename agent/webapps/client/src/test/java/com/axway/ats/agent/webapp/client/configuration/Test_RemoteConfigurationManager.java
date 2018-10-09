@@ -64,7 +64,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
         replayAll();
 
         new RemoteConfigurationManager().pushConfiguration("10.0.0.2",
-                                                           new RemoteLoggingConfigurator("127.0.0.1"));
+                                                           new RemoteLoggingConfigurator());
 
         // verify results
         verifyAll();
@@ -85,7 +85,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
         replayAll();
 
         new RemoteConfigurationManager().pushConfiguration("10.0.0.3",
-                                                           new RemoteLoggingConfigurator("127.0.0.1"));
+                                                           new RemoteLoggingConfigurator());
 
         // verify results
         verifyAll();
@@ -102,7 +102,7 @@ public class Test_RemoteConfigurationManager extends BaseTestWebapps {
         replayAll();
 
         new RemoteConfigurationManager().pushConfiguration("10.0.0.3",
-                                                           new RemoteLoggingConfigurator("127.0.0.1"));
+                                                           new RemoteLoggingConfigurator());
 
         // verify results
         verifyAll();

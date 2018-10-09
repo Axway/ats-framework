@@ -63,10 +63,19 @@ import com.axway.ats.log.model.LoadQueueResult;
 import com.axway.ats.log.model.SystemLogLevel;
 import com.axway.ats.log.model.TestCaseResult;
 
+/**
+ * Utility class for working with the ATS logging system
+ * 
+ * */
 @PublicAtsApi
 public class AtsDbLogger {
 
     private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
+    
+    /**
+     * Flag that is used to log WARN for not attached ATS DB logger only once
+     */
+    private static boolean isWarningMessageLogged = false;
 
     protected Logger            logger;
 
@@ -76,10 +85,14 @@ public class AtsDbLogger {
         // check if the ActiveDbAppender is specified in log4j.xml
         if (!skipAppenderCheck) {
             if (!ActiveDbAppender.isAttached) {
-                throw new IllegalStateException("ATS Database appender not specified in log4j.xml file.");
+                if (!isWarningMessageLogged) {
+                    this.logger.warn(
+                            "ATS Database appender is not attached in root logger element in log4j.xml file. "
+                            + "No test data will be sent to ATS Log database and some methods from '"+AtsDbLogger.class.getName()+"' class will not work as expected");
+                    isWarningMessageLogged = true;
+                }
             }
         }
-
     }
 
     @PublicAtsApi

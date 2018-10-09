@@ -1162,11 +1162,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             }
 
         } catch (SQLException e) {
-            /*  
+        	/*  
              * Could not obtain run info from database.
-             * No exception will be logged, because the event processor is busy handling the UpdateRunEvent
+             * The exception will be logged to the console only, because the event processor is busy handling the UpdateRunEvent
              * and will not be able to handle the log message event as well
             */
+            new AtsConsoleLogger(getClass()).error("Unable to update run with ID '" + eventProcessorState.getRunId() + "'", e);
         }
 
     }
@@ -1183,8 +1184,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
 
-            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId="
-                                            + eventProcessorState.getRunId());
+            stmt = tmpConn.prepareStatement( "SELECT * FROM tRuns WHERE runId=" + eventProcessorState.getRunId() );
+            if (dbConnection instanceof DbConnPostgreSQL) {
+                stmt = tmpConn.prepareStatement( "SELECT * FROM \"tRuns\" WHERE runId=" + eventProcessorState.getRunId() );
+            }
             ResultSet rs = stmt.executeQuery();
             rs.next();
             run.runId = rs.getString("runId");

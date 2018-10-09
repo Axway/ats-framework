@@ -82,9 +82,8 @@ public class InternalComponentException extends AgentException {
         // if chained agents are used this line could already be appended, so we check it
         String locationErrorMsg = "\n[" + HostUtils.getLocalHostIP() + " stacktrace]";
         String formattedExceptionMsg = exc.getMessage();
-        
-        if(StringUtils.isNullOrEmpty(formattedExceptionMsg)) {
-            formattedExceptionMsg = "Caught an Exception without message details";
+        if( StringUtils.isNullOrEmpty( formattedExceptionMsg ) ) {
+            formattedExceptionMsg = "<No message details on this exception>";
         }
         
         if (!formattedExceptionMsg.trim().endsWith(locationErrorMsg)) {
@@ -94,7 +93,10 @@ public class InternalComponentException extends AgentException {
         }
 
         // append the exception type and the formated exception message 
-        causes.append("\t").append(exc.getClass().getName()+": ").append(formattedExceptionMsg);
+        causes.append( "\t" )
+              .append( exc.getClass().getName() )
+              .append( ": " )
+              .append( formattedExceptionMsg );
 
         do {
             for (StackTraceElement sck : exc.getStackTrace()) {

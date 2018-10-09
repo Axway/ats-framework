@@ -89,6 +89,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public void activateOptions(){
         super.activateOptions();
         
+        /* this flag is changed here, since this is the first place where the Apache log4j package interacts with this class
+         */
         isAttached = true;
     }
 
@@ -142,8 +144,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
                     // clear test case id
                     testCaseState.clearTestcaseId();
-                    // now pass the event to the queue
-                    break;
+                    // this event has already been through the queue
+                    return;
                 }
                 case GET_CURRENT_TEST_CASE_STATE: {
                     // get current test case id which will be passed to ATS agent

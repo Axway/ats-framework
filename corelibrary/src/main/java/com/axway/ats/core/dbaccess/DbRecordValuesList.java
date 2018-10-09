@@ -95,7 +95,6 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
     public String toString() {
 
         StringBuilder sBuilder = new StringBuilder();
-        sBuilder.append("_");
 
         Iterator<DbRecordValue> elementsIter = iterator();
         while (elementsIter.hasNext()) {
@@ -115,12 +114,13 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
             } else {
                 recordValueString = "NULL";
             }
-            sBuilder.append("|");
             sBuilder.append(recordValue.getDbColumn().getColumnName());
             sBuilder.append("=");
             sBuilder.append(recordValueString);
+            sBuilder.append("|");
         }
-        sBuilder.append("|").append("_");
+        
+        sBuilder.setLength(sBuilder.length() - 1);
 
         return sBuilder.toString();
     }

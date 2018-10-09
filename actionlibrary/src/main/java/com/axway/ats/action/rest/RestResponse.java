@@ -408,7 +408,8 @@ public class RestResponse {
          * So we restrict the max size.
          * Note that length of -1 could be indication of a very large chunked body.
         */
-        if( response.getLength() > 0 && response.getLength() < MAX_RESPONSE_SIZE ) {
+        if( "chunked".equals( response.getHeaderString( "Transfer-Encoding" ) )
+            || ( response.getLength() > 0 && response.getLength() < MAX_RESPONSE_SIZE ) ) {
             response.bufferEntity();
         }
     }

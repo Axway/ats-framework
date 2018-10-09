@@ -35,6 +35,8 @@ import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbReturnModes;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.BackupHandler;
@@ -64,6 +66,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
     protected boolean              dropEntireTable;
+
 
     /**
      * Constructor
@@ -99,18 +102,11 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             writeBackupToFile(fileWriter);
 
             log.info("Completed creation of database backup in file '" + backupFileName + "'");
-
         } catch (Exception pe) {
             markBackupFileAsDamaged(fileWriter, backupFileName);
             throw new DatabaseEnvironmentCleanupException(ERROR_CREATING_BACKUP + backupFileName, pe);
         } finally {
-            try {
-                if (fileWriter != null) {
-                    fileWriter.close();
-                }
-            } catch (IOException ioe) {
-                log.error(ERROR_CREATING_BACKUP + backupFileName, ioe);
-            }
+        	IoUtils.closeStream(fileWriter, ERROR_CREATING_BACKUP + backupFileName);
         }
     }
 
@@ -136,7 +132,8 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                     if (bkFile.renameTo(new File(dmgFileName))) {
                         log.debug("Faulty backup file is renamed to: " + dmgFileName);
                     } else {
-                        log.debug("Faulty backup file can`t be marked as 'damaged'. The rename operation Failed");
+                    	log.warn("Faulty backup file '" + backupFileName
+                                + "' can not be marked as damaged. The rename operation failed");
                     }
                 }
             }
@@ -157,7 +154,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected void writeBackupToFile( Writer fileWriter ) throws IOException,
                                                           DatabaseEnvironmentCleanupException,
                                                           DbException, ParseException {
-
+    	
         if (disableForeignKeys) {
             fileWriter.write(disableForeignKeyChecksStart());
         }
@@ -186,10 +183,13 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             selectQuery.append("SELECT ");
             selectQuery.append(getColumnsString(columnsToSelect));
             selectQuery.append(" FROM ");
-            selectQuery.append(dbTable.getTableSchema() + "." + dbTable.getTableName());
+            if (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())) {
+                selectQuery.append(dbTable.getTableSchema() + ".") ;
+            }
+            selectQuery.append(dbTable.getTableName());
 
             DbQuery query = new DbQuery(selectQuery.toString());
-
+            // assuming not very large tables
             DbRecordValuesList[] records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
 
             writeTableToFile(columnsToSelect, dbTable, records, fileWriter);
@@ -199,6 +199,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             fileWriter.write(disableForeignKeyChecksEnd());
         }
     }
+    
 
     /**
      * Abstract method for

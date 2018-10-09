@@ -23,6 +23,7 @@ import java.io.StringReader;
 import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.URI;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
@@ -83,6 +84,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     /* keeps track of the test result for the last ended testcase */
     private int                      lastTestcaseResult                    = -1;
+    
+    private static boolean           testDescAvailable                     = false;
 
     public AtsTestngListener() {
 
@@ -561,40 +564,49 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                     Map<String, String> envMap = System.getenv();
                     sourceFolderLocation = envMap.get(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
                 }
-                if (sourceFolderLocation == null) {
-                    if (projectSourcesFolder != null) {
+                if( sourceFolderLocation == null ) {
+                    if( projectSourcesFolder != null ) {
                         sourceFolderLocation = projectSourcesFolder;
                     } else {
 
-                        URI uri = new URI(testClass.getClassLoader().getResource(".").getPath());
-                        URI parentUri = uri;
-                        String pathToMainFolder = "src/main/java";
-                        String pathToTestFolder = "src/test/java";
+                        if( !testDescAvailable ) {
+                            URL testClassPath = testClass.getClassLoader().getResource( "." ); // this could be null when failsafe maven plugin is used
+                            if( testClassPath == null ) {
+                                testDescAvailable = true;
+                                logger.info( "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. " );
 
-                        for (int i = 3; i > 0; i--) {//we try maximum 3 level up in the directory
-
-                            parentUri = parentUri.resolve("..");
-                            if (new File(parentUri + "src/").exists()) {
-                                break;
+                                return;
                             }
-                        }
+                            URI uri = new URI( testClassPath.getPath() );
+                            URI parentUri = uri;
+                            String pathToMainFolder = "src/main/java";
+                            String pathToTestFolder = "src/test/java";
 
-                        String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
-                        File javaFile = new File(filePath);
+                            for( int i = 3; i > 0; i-- ) {//we try maximum 3 level up in the directory
 
-                        if (javaFile.exists()) {
-                            sourceFolderLocation = parentUri + pathToTestFolder;
-                            projectSourcesFolder = pathToTestFolder;
-                        } else {
-                            filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
-                            javaFile = new File(filePath);
-
-                            if (javaFile.exists()) {
-                                sourceFolderLocation = parentUri + pathToMainFolder;
-                                projectSourcesFolder = sourceFolderLocation;
+                                parentUri = parentUri.resolve( ".." );
+                                if( new File( parentUri + "src/" ).exists() ) {
+                                    break;
+                                }
                             }
+
+                            String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
+                            File javaFile = new File( filePath );
+
+                            if( javaFile.exists() ) {
+                                sourceFolderLocation = parentUri + pathToTestFolder;
+                                projectSourcesFolder = pathToTestFolder;
+                            } else {
+                                filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
+                                javaFile = new File( filePath );
+
+                                if( javaFile.exists() ) {
+                                    sourceFolderLocation = parentUri + pathToMainFolder;
+                                    projectSourcesFolder = sourceFolderLocation;
+                                }
+                            }
+                            logger.debug( "Source location is set to : " + projectSourcesFolder );
                         }
-                        logger.debug("Source location is set to : " + projectSourcesFolder);
                     }
                 }
             }

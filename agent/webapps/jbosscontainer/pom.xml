@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.axway.ats.framework.agent.webapp</groupId>
         <artifactId>ats-agent-webapp</artifactId>
-        <version>4.0.6-droptbl-SNAPSHOT</version>
+        <version>4.0.6-SNAPSHOT</version>
     </parent>
 
     <artifactId>ats-agent-webapp-jbosscontainer</artifactId>
@@ -209,6 +209,11 @@
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>${org.glassfish.jersey.jersey-server.version}</version>
 		</dependency>
-        
+		<!-- this dependency is required after jersey 2.26 -->
+		<!-- <dependency>
+			<groupId>org.glassfish.jersey.inject</groupId>
+			<artifactId>jersey-hk2</artifactId>
+			<version>${org.glassfish.jersey.inject.version}</version>
+		</dependency> -->
     </dependencies>
 </project>

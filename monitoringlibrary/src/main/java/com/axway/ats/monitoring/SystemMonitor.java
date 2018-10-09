@@ -25,7 +25,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
-import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.monitoring.MonitoringException;
@@ -704,10 +704,10 @@ public class SystemMonitor {
         this.monitoredHosts.add(monitoredHost);
 
         /* see if log level was already set for this monitored host */
-        LogLevel lvlFromRlc = RemoteLoggingConfigurator.getAtsLogLevelForAgent(monitoredHost);
-        int logLevel = (lvlFromRlc == null)
-                                            ? Logger.getRootLogger().getEffectiveLevel().toInt()
-                                            : lvlFromRlc.toInt();
+        LogLevel userLogLevel = AgentConfigurationLandscape.getInstance( monitoredHost ).getDbLogLevel();
+        int logLevel = ( userLogLevel == null )
+                                                ? Logger.getRootLogger().getEffectiveLevel().toInt()
+                                                : userLogLevel.toInt();
 
         /*
          * create RestHelper instance, ready to connect with the specified
@@ -719,6 +719,7 @@ public class SystemMonitor {
                     RestHelper.INITIALIZE_DB_CONNECTION_RELATIVE_URI,
                     new Object[]{ null,
                                   appenderConfiguration.getHost(),
+                                  appenderConfiguration.getPort(),
                                   appenderConfiguration.getDatabase(),
                                   appenderConfiguration.getUser(),
                                   appenderConfiguration.getPassword(),

@@ -20,6 +20,9 @@ local.properties
 # JDT-specific (Eclipse Java Development Tools)
 .classpath
 
+# IntelliJ IDEA exclusions
+.idea/
+
 # External tool builders
 .externalToolBuilders/
 

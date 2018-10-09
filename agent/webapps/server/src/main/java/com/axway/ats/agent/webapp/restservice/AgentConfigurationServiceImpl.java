@@ -21,6 +21,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -91,6 +92,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             // create DbAppenderConfiguration
             DbAppenderConfiguration newAppenderConfiguration = new DbAppenderConfiguration();
             newAppenderConfiguration.setHost(dbConnectionPojo.getDbHost());
+            newAppenderConfiguration.setPort(dbConnectionPojo.getDbPort());
             newAppenderConfiguration.setDatabase(dbConnectionPojo.getDbName());
             newAppenderConfiguration.setUser(dbConnectionPojo.getDbUser());
             newAppenderConfiguration.setPassword(dbConnectionPojo.getDbPass());
@@ -253,6 +255,17 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         }
 
         return Response.ok("{\"status\": \"testcase left.\"}").build();
+    }
+    
+    /**
+     * @return the ATS framework version
+     */
+    @GET
+    @Path("getAtsVersion")
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response getAtsVersion() {
+
+        return Response.ok( AtsVersion.getAtsVersion() ).build();
     }
 
     private void cleanupExpiredSessions(

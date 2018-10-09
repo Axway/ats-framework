@@ -26,7 +26,6 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
-import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.appenders.AbstractDbAppender;
@@ -41,27 +40,34 @@ import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 @SuppressWarnings( "serial")
 public class RemoteLoggingConfigurator implements Configurator {
 
-    private String                       atsAgent;
-
+    private static final long serialVersionUID = 1L;
+    
     private DbAppenderConfiguration      appenderConfiguration;
     private String                       appenderLogger;
 
-    // logger levels used for our DB appender per agent
-    private static int                   DEFAULT_LOG_LEVEL          = Level.DEBUG_INT;
-    private static Map<String, LogLevel> atsDbLoggerLevelsFromTests = new HashMap<String, LogLevel>();
-
+    private static final int             DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
+    
     // list of other logger levels defined by the user in their log4j configuration file
     private Map<String, Integer>         otherLoggerLevels          = new HashMap<String, Integer>();
 
     // flags telling us what exactly to configure
     private boolean                      needsToConfigureDbAppender;
     private boolean                      needsToConfigureUserLoggers;
-
+    
     /**
-     * Constructor - when created try to find if a DB appender has been configured on the local system
+     * We will try to find if a DB appender has been configured on the local system
+     */
+    public RemoteLoggingConfigurator() {
+        this( null );
+    }
+    
+    /**
+     * We will try to find if a DB appender has been configured on the local system
+     * 
+     * @param customLogLevel log level specified in the test
      */
     @SuppressWarnings( "unchecked")
-    public RemoteLoggingConfigurator( String atsAgent ) {
+    public RemoteLoggingConfigurator( LogLevel customLogLevel ) {
 
         /*
          * This code is run on:
@@ -70,8 +76,6 @@ public class RemoteLoggingConfigurator implements Configurator {
          * 
          * we use this code to remember the logging configuration which we will pass to some agent
          */
-
-        this.atsAgent = atsAgent;
 
         // look for the DB appender
         Category log = Logger.getLogger("com.axway.ats");
@@ -89,10 +93,11 @@ public class RemoteLoggingConfigurator implements Configurator {
                     appenderConfiguration = ((AbstractDbAppender) appender).getAppenderConfig();
                     appenderLogger = log.getName();
 
+                    
                     int atsDbLogLevel = DEFAULT_LOG_LEVEL;
-                    if (atsDbLoggerLevelsFromTests.containsKey(this.atsAgent)) {
+                    if (customLogLevel!=null) {
                         // user specified in the test the log level for this agent
-                        atsDbLogLevel = atsDbLoggerLevelsFromTests.get(this.atsAgent).toInt();
+                        atsDbLogLevel = customLogLevel.toInt();
                     } else if (log.getLevel() != null) {
                         // user specified the log level in log4j configuration file
                         atsDbLogLevel = log.getLevel().toInt();
@@ -299,23 +304,6 @@ public class RemoteLoggingConfigurator implements Configurator {
 
         // in case we must reconfigure the custom loggers, here we should remove them from log4j, 
         // but log4j does not provide a way to do it - so we do nothing here 
-    }
-
-    public static void setAtsDbLogLevelPerAgent(
-                                                 String atsAgent,
-                                                 LogLevel logLevel ) throws AgentException {
-
-        /*
-         * This code is run on Test Executor side
-         */
-
-        atsDbLoggerLevelsFromTests.put(atsAgent, logLevel);
-    }
-
-    public static LogLevel getAtsLogLevelForAgent( String atsAgent ) {
-
-        return atsDbLoggerLevelsFromTests.get(atsAgent);
-
     }
 
     @Override

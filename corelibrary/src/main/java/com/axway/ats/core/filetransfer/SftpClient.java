@@ -75,7 +75,7 @@ public class SftpClient extends AbstractFileTransferClient {
     private SftpFileTransferProgressMonitor     debugProgressMonitor                = null;
     private SynchronizationSftpTransferListener synchronizationSftpTransferListener = null;
 
-    private static final Logger                 log                                 = Logger.getLogger(SftpClient.class);
+    private static final Logger                 log                                 = Logger.getLogger( SftpClient.class );
 
     private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
 
@@ -120,17 +120,17 @@ public class SftpClient extends AbstractFileTransferClient {
         this.username = userName;
         this.password = password;
 
-        log.info("Connecting to " + this.hostname + " on port " + this.port + " using username "
-                 + this.username + " and password " + this.password);
+        log.info( "Connecting to " + this.hostname + " on port " + this.port + " using username "
+                  + this.username + " and password " + this.password );
 
-        if (!StringUtils.isNullOrEmpty(this.keyStoreFile)) {
-            log.info("Keystore location set to '" + this.keyStoreFile + "'");
+        if( !StringUtils.isNullOrEmpty( this.keyStoreFile ) ) {
+            log.info( "Keystore location set to '" + this.keyStoreFile + "'" );
         }
 
-        if (this.channel != null) {
+        if( this.channel != null ) {
             this.channel.disconnect();
         }
-        if (this.session != null) {
+        if( this.session != null ) {
             this.session.disconnect();
         }
 
@@ -143,7 +143,7 @@ public class SftpClient extends AbstractFileTransferClient {
     public void connect( String hostname, String keystoreFile, String keystorePassword,
                          String publicKeyAlias ) throws FileTransferException {
 
-        throw new FileTransferException("Not implemented");
+        throw new FileTransferException( "Not implemented" );
 
     }
 
@@ -157,8 +157,8 @@ public class SftpClient extends AbstractFileTransferClient {
          * and if another thread disables it, logging will be stopped for all threads,
          * until at least one thread enables it again
          */
-        if (isDebugMode()) {
-            JSch.setLogger(new SftpListener());
+        if( isDebugMode() ) {
+            JSch.setLogger( new SftpListener() );
             debugProgressMonitor = new SftpFileTransferProgressMonitor();
         } else {
             debugProgressMonitor = null;
@@ -168,42 +168,42 @@ public class SftpClient extends AbstractFileTransferClient {
 
             addHostKeyRepository();
 
-            if (username != null) {
-                this.session = jsch.getSession(this.username, this.hostname, this.port);
+            if( username != null ) {
+                this.session = jsch.getSession( this.username, this.hostname, this.port );
             }
 
-            this.session.setPassword(this.password);
+            this.session.setPassword( this.password );
 
-            if (!StringUtils.isNullOrEmpty(this.keyStoreFile)) {
+            if( !StringUtils.isNullOrEmpty( this.keyStoreFile ) ) {
                 byte[] privateKeyContent = getPrivateKeyContent();
-                this.jsch.addIdentity("client_prvkey", privateKeyContent, null, null);
+                this.jsch.addIdentity( "client_prvkey", privateKeyContent, null, null );
             }
 
             //The internally used client version 'SSH-2.0-JSCH-0.1.54' needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
-            this.session.setClientVersion("SSH-2.0-OpenSSH_2.5.3");
+            this.session.setClientVersion( "SSH-2.0-OpenSSH_2.5.3" );
 
             /** if no trust server certificate or trust store are provided, do not check if hostname is in known hosts **/
-            if (StringUtils.isNullOrEmpty(this.trustedServerSSLCerfiticateFile)
-                && StringUtils.isNullOrEmpty(this.trustStoreFile)) {
+            if( StringUtils.isNullOrEmpty( this.trustedServerSSLCerfiticateFile )
+                && StringUtils.isNullOrEmpty( this.trustStoreFile ) ) {
                 // skip checking of known hosts and verifying RSA keys
-                this.session.setConfig("StrictHostKeyChecking", "no");
+                this.session.setConfig( "StrictHostKeyChecking", "no" );
             }
 
             // make keyboard-interactive last authentication method
-            this.session.setConfig("PreferredAuthentications", "publickey,password,keyboard-interactive");
-            this.session.setTimeout(this.timeout);
-            if (this.ciphers != null && this.ciphers.size() > 0) {
+            this.session.setConfig( "PreferredAuthentications", "publickey,password,keyboard-interactive" );
+            this.session.setTimeout( this.timeout );
+            if( this.ciphers != null && this.ciphers.size() > 0 ) {
                 StringBuilder ciphers = new StringBuilder();
-                for (SshCipher cipher : this.ciphers) {
-                    ciphers.append(cipher.getSshAlgorithmName() + ",");
+                for( SshCipher cipher : this.ciphers ) {
+                    ciphers.append( cipher.getSshAlgorithmName() + "," );
                 }
-                this.session.setConfig("cipher.c2s", ciphers.toString());
-                this.session.setConfig("cipher.s2c", ciphers.toString());
-                this.session.setConfig("CheckCiphers", ciphers.toString());
+                this.session.setConfig( "cipher.c2s", ciphers.toString() );
+                this.session.setConfig( "cipher.s2c", ciphers.toString() );
+                this.session.setConfig( "CheckCiphers", ciphers.toString() );
             }
-            if (this.listener != null) {
-                this.listener.setResponses(new ArrayList<String>());
-                JSch.setLogger((com.jcraft.jsch.Logger) this.listener);
+            if( this.listener != null ) {
+                this.listener.setResponses( new ArrayList<String>() );
+                JSch.setLogger( ( com.jcraft.jsch.Logger ) this.listener );
             }
 
             /* 
@@ -215,65 +215,65 @@ public class SftpClient extends AbstractFileTransferClient {
             */
 
             this.session.connect();
-            this.channel = (ChannelSftp) this.session.openChannel("sftp");
+            this.channel = ( ChannelSftp ) this.session.openChannel( "sftp" );
             this.channel.connect();
-        } catch (Exception e) {
-            throw new FileTransferException("Unable to connect!", e);
+        } catch( Exception e ) {
+            throw new FileTransferException( "Unable to connect!", e );
         }
     }
 
     private void addHostKeyRepository() throws Exception {
 
-        if (!StringUtils.isNullOrEmpty(this.trustStoreFile)) {
+        if( !StringUtils.isNullOrEmpty( this.trustStoreFile ) ) {
             HostKeyRepository hostKeyRepository = new DefaultHostKeyRepository();
-            KeyStore trustStore = SslUtils.loadKeystore(trustStoreFile, trustStorePassword);
+            KeyStore trustStore = SslUtils.loadKeystore( trustStoreFile, trustStorePassword );
             // iterate over all entries
             Enumeration<String> aliases = trustStore.aliases();
-            while (aliases.hasMoreElements()) {
+            while( aliases.hasMoreElements() ) {
                 String alias = aliases.nextElement();
-                if (trustStore.isCertificateEntry(alias)) {
+                if( trustStore.isCertificateEntry( alias ) ) {
                     /** the alias points to a certificate **/
-                    Certificate certificate = trustStore.getCertificate(alias);
-                    if (certificate != null) {
-                        addPublicKeyToHostKeyRepostitory(certificate.getPublicKey(), hostKeyRepository);
+                    Certificate certificate = trustStore.getCertificate( alias );
+                    if( certificate != null ) {
+                        addPublicKeyToHostKeyRepostitory( certificate.getPublicKey(), hostKeyRepository );
                     }
                 } else {
                     /** the alias does not point to a certificate, 
                      * but this may mean that it points to a private-public key pair or a certificate chain 
                      */
-                    Certificate certificate = trustStore.getCertificate(alias);
-                    if (certificate != null) {
+                    Certificate certificate = trustStore.getCertificate( alias );
+                    if( certificate != null ) {
                         /**
                          * the certificate was extracted from a private-public key entry
                          * */
-                        addPublicKeyToHostKeyRepostitory(certificate.getPublicKey(), hostKeyRepository);
+                        addPublicKeyToHostKeyRepostitory( certificate.getPublicKey(), hostKeyRepository );
                     } else {
                         /**
                          * the alias points to a certificate chain
                          * */
-                        Certificate[] chain = trustStore.getCertificateChain(alias);
-                        for (Certificate cert : chain) {
-                            addPublicKeyToHostKeyRepostitory(cert.getPublicKey(), hostKeyRepository);
+                        Certificate[] chain = trustStore.getCertificateChain( alias );
+                        for( Certificate cert : chain ) {
+                            addPublicKeyToHostKeyRepostitory( cert.getPublicKey(), hostKeyRepository );
                         }
                     }
                 }
             }
-            this.jsch.setHostKeyRepository(hostKeyRepository);
+            this.jsch.setHostKeyRepository( hostKeyRepository );
         } else {
-            if (StringUtils.isNullOrEmpty(this.trustedServerSSLCerfiticateFile)) {
+            if( StringUtils.isNullOrEmpty( this.trustedServerSSLCerfiticateFile ) ) {
                 return;
             } else {
                 try {
                     HostKeyRepository hostKeyRepository = new DefaultHostKeyRepository();
-                    KeyStore trustStore = KeyStore.getInstance("JKS");
-                    trustStore.load(null);
-                    trustStore.setCertificateEntry("cert",
-                                                   SslUtils.convertFileToX509Certificate(new File(this.trustedServerSSLCerfiticateFile)));
-                    addPublicKeyToHostKeyRepostitory(trustStore.getCertificate("cert").getPublicKey(),
-                                                     hostKeyRepository);
-                    this.jsch.setHostKeyRepository(hostKeyRepository);
-                } catch (Exception e) {
-                    throw new Exception("Unable to add public key from certificate '"
+                    KeyStore trustStore = KeyStore.getInstance( "JKS" );
+                    trustStore.load( null );
+                    trustStore.setCertificateEntry( "cert",
+                                                    SslUtils.convertFileToX509Certificate( new File( this.trustedServerSSLCerfiticateFile ) ) );
+                    addPublicKeyToHostKeyRepostitory( trustStore.getCertificate( "cert" ).getPublicKey(),
+                                                      hostKeyRepository );
+                    this.jsch.setHostKeyRepository( hostKeyRepository );
+                } catch( Exception e ) {
+                    throw new Exception( "Unable to add public key from certificate '"
                                         + this.trustedServerSSLCerfiticateFile
                                         + "' to known host keys", e);
                 }
@@ -285,57 +285,57 @@ public class SftpClient extends AbstractFileTransferClient {
     private void addPublicKeyToHostKeyRepostitory( PublicKey key,
                                                    HostKeyRepository hostKeyRepository ) throws Exception {
 
-        if (!key.getAlgorithm().contains("RSA")) {
-            throw new Exception("Only RSA keys are supported!.");
+        if( !key.getAlgorithm().contains( "RSA" ) ) {
+            throw new Exception( "Only RSA keys are supported!." );
         }
-        
-        byte[] opensshKeyContent = convertToOpenSSHKeyFormat((RSAPublicKey) key);
 
-        HostKey hostkey = new HostKey(hostname, HostKey.SSHRSA, opensshKeyContent);
-        hostKeyRepository.add(hostkey, null);
+        byte[] opensshKeyContent = convertToOpenSSHKeyFormat( ( RSAPublicKey ) key );
+
+        HostKey hostkey = new HostKey( hostname, HostKey.SSHRSA, opensshKeyContent );
+        hostKeyRepository.add( hostkey, null );
 
     }
 
     private byte[] convertToOpenSSHKeyFormat( RSAPublicKey key ) throws Exception {
 
         ByteArrayOutputStream buf = new ByteArrayOutputStream();
-        byte[] name = "ssh-rsa".getBytes("US-ASCII");
-        write(name, buf);
-        write(key.getPublicExponent().toByteArray(), buf);
-        write(key.getModulus().toByteArray(), buf);
+        byte[] name = "ssh-rsa".getBytes( "US-ASCII" );
+        write( name, buf );
+        write( key.getPublicExponent().toByteArray(), buf );
+        write( key.getModulus().toByteArray(), buf );
         return buf.toByteArray();
     }
 
     // encode the str byte array to Base64 one, also encode its length
     private void write( byte[] str, OutputStream os ) throws IOException {
 
-        for (int shift = 24; shift >= 0; shift -= 8) {
-            os.write( (str.length >>> shift) & 0xFF);
+        for( int shift = 24; shift >= 0; shift -= 8 ) {
+            os.write( ( str.length >>> shift ) & 0xFF );
         }
-        os.write(str);
+        os.write( str );
 
     }
 
     private byte[] getPrivateKeyContent() throws Exception {
 
         try {
-            KeyStore keyStore = SslUtils.loadKeystore(keyStoreFile, keyStorePassword);
-            PrivateKey privateKey = (PrivateKey) keyStore.getKey(keyAlias, null);
+            KeyStore keyStore = SslUtils.loadKeystore( keyStoreFile, keyStorePassword );
+            PrivateKey privateKey = ( PrivateKey ) keyStore.getKey( keyAlias, null );
 
-            if (privateKey == null) {
+            if( privateKey == null ) {
                 throw new Exception("The alias '" + keyAlias + "' does not point to an existing key-related entry");
             }
 
             StringWriter stringWriter = new StringWriter();
-            PEMWriter pemWriter = new PEMWriter(stringWriter);
-            pemWriter.writeObject(privateKey);
+            PEMWriter pemWriter = new PEMWriter( stringWriter );
+            pemWriter.writeObject( privateKey );
             pemWriter.close();
 
             byte[] privateKeyPEM = stringWriter.toString().getBytes();
 
             return privateKeyPEM;
-        } catch (Exception e) {
-            throw new Exception("Could not get private key content", e);
+        } catch( Exception e ) {
+            throw new Exception( "Could not get private key content", e );
         }
 
     }
@@ -343,10 +343,10 @@ public class SftpClient extends AbstractFileTransferClient {
     @Override
     public void disconnect() throws FileTransferException {
 
-        if (this.channel != null && this.channel.isConnected()) {
+        if( this.channel != null && this.channel.isConnected() ) {
             this.channel.disconnect();
         }
-        if (this.session != null && this.session.isConnected()) {
+        if( this.session != null && this.session.isConnected() ) {
             this.session.disconnect();
         }
 
@@ -355,54 +355,56 @@ public class SftpClient extends AbstractFileTransferClient {
     @Override
     public String executeCommand( String command ) throws FileTransferException {
 
-        throw new FileTransferException("Not implemented");
+        throw new FileTransferException( "Not implemented" );
     }
 
     @Override
     protected void performUploadFile( String localFile, String remoteDir,
                                       String remoteFile ) throws FileTransferException {
 
+        checkConnected( "file upload" );
+        
         FileInputStream fis = null;
 
         try {
             String remoteFileAbsPath = null;
-            remoteDir = remoteDir.replace("\\", "/");
-            remoteFile = remoteFile.replace("\\", "/");
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
-            if (remoteDir.endsWith("/") && remoteFile.endsWith("/")) {
-                remoteFileAbsPath = remoteDir.substring(0, remoteDir.length() - 2) + remoteFile;
-            } else if (!remoteDir.endsWith("/") && !remoteFile.endsWith("/")) {
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
                 remoteFileAbsPath = remoteDir + "/" + remoteFile;
             } else {
                 remoteFileAbsPath = remoteDir + remoteFile;
             }
             // upload the file
-            File file = new File(localFile);
-            fis = new FileInputStream(file);
-            if (synchronizationSftpTransferListener != null) {
-                this.channel.put(fis, remoteFileAbsPath, synchronizationSftpTransferListener);
-            } else if (isDebugMode() && debugProgressMonitor != null) {
-                debugProgressMonitor.setTransferMetadata(localFile, remoteFileAbsPath, file.length());
-                this.channel.put(fis, remoteFileAbsPath, debugProgressMonitor);
+            File file = new File( localFile );
+            fis = new FileInputStream( file );
+            if( synchronizationSftpTransferListener != null ) {
+                this.channel.put( fis, remoteFileAbsPath, synchronizationSftpTransferListener );
+            } else if( isDebugMode() && debugProgressMonitor != null ) {
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+                this.channel.put( fis, remoteFileAbsPath, debugProgressMonitor );
             } else {
-                this.channel.put(fis, remoteFileAbsPath);
+                this.channel.put( fis, remoteFileAbsPath );
             }
-        } catch (SftpException e) {
-            log.error("Unable to upload file!", e);
-            throw new FileTransferException(e);
-        } catch (FileNotFoundException e) {
-            log.error("Unable to find the file that needs to be uploaded!", e);
-            throw new FileTransferException(e);
+        } catch( SftpException e ) {
+            log.error( "Unable to upload file!", e );
+            throw new FileTransferException( e );
+        } catch( FileNotFoundException e ) {
+            log.error( "Unable to find the file that needs to be uploaded!", e );
+            throw new FileTransferException( e );
         } finally {
             // close the file input stream
-            IoUtils.closeStream(fis, "Unable to close the file stream after successful upload!");
+            IoUtils.closeStream( fis, "Unable to close the file stream after successful upload!" );
         }
 
-        if (remoteDir != null && !remoteDir.endsWith("/")) {
+        if( remoteDir != null && !remoteDir.endsWith( "/" ) ) {
             remoteDir += "/";
         }
-        log.info("Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
-                 + this.hostname);
+        log.info( "Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
+                  + this.hostname );
 
     }
 
@@ -410,51 +412,53 @@ public class SftpClient extends AbstractFileTransferClient {
     protected void performDownloadFile( String localFile, String remoteDir,
                                         String remoteFile ) throws FileTransferException {
 
+        checkConnected( "file download" );
+        
         FileOutputStream fos = null;
         try {
             String remoteFileAbsPath = null;
-            remoteDir = remoteDir.replace("\\", "/");
-            remoteFile = remoteFile.replace("\\", "/");
+            remoteDir = remoteDir.replace( "\\", "/" );
+            remoteFile = remoteFile.replace( "\\", "/" );
 
-            if (remoteDir.endsWith("/") && remoteFile.endsWith("/")) {
-                remoteFileAbsPath = remoteDir.substring(0, remoteDir.length() - 2) + remoteFile;
-            } else if (!remoteDir.endsWith("/") && !remoteFile.endsWith("/")) {
+            if( remoteDir.endsWith( "/" ) && remoteFile.endsWith( "/" ) ) {
+                remoteFileAbsPath = remoteDir.substring( 0, remoteDir.length() - 2 ) + remoteFile;
+            } else if( !remoteDir.endsWith( "/" ) && !remoteFile.endsWith( "/" ) ) {
                 remoteFileAbsPath = remoteDir + "/" + remoteFile;
             } else {
                 remoteFileAbsPath = remoteDir + remoteFile;
             }
             // download the file
-            File file = new File(localFile);
-            fos = new FileOutputStream(localFile);
-            if (isDebugMode() && debugProgressMonitor != null) {
-                debugProgressMonitor.setTransferMetadata(localFile, remoteFileAbsPath, file.length());
-                this.channel.get(remoteFileAbsPath, fos, debugProgressMonitor);
+            File file = new File( localFile );
+            fos = new FileOutputStream( localFile );
+            if( isDebugMode() && debugProgressMonitor != null ) {
+                debugProgressMonitor.setTransferMetadata( localFile, remoteFileAbsPath, file.length() );
+                this.channel.get( remoteFileAbsPath, fos, debugProgressMonitor );
             } else {
-                this.channel.get(remoteFileAbsPath, fos);
+                this.channel.get( remoteFileAbsPath, fos );
             }
-        } catch (SftpException e) {
-            log.error("Unable to download " + localFile, e);
-            throw new FileTransferException(e);
-        } catch (FileNotFoundException e) {
-            log.error("Unable to create " + localFile, e);
-            throw new FileTransferException(e);
+        } catch( SftpException e ) {
+            log.error( "Unable to download " + localFile, e );
+            throw new FileTransferException( e );
+        } catch( FileNotFoundException e ) {
+            log.error( "Unable to create " + localFile, e );
+            throw new FileTransferException( e );
         } finally {
             // close the file output stream
-            IoUtils.closeStream(fos, "Unable to close the file stream after successful download!");
+            IoUtils.closeStream( fos, "Unable to close the file stream after successful download!" );
         }
-        if (remoteDir != null && !remoteDir.endsWith("/")) {
+        if( remoteDir != null && !remoteDir.endsWith( "/" ) ) {
             remoteDir += "/";
         }
-        log.info("Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "', host "
-                 + this.hostname);
+        log.info( "Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "', host "
+                  + this.hostname );
 
     }
 
     @Override
     protected TransferListener addListener( int progressEventNumber ) {
 
-        SynchronizationSftpTransferListener listener = new SynchronizationSftpTransferListener(this,
-                                                                                               progressEventNumber);
+        SynchronizationSftpTransferListener listener = new SynchronizationSftpTransferListener( this,
+                                                                                                progressEventNumber );
         this.synchronizationSftpTransferListener = listener;
 
         return listener;
@@ -494,13 +498,13 @@ public class SftpClient extends AbstractFileTransferClient {
     @Override
     public void addCustomProperty( String key, Object value ) throws IllegalArgumentException {
 
-        if (key.equals(SFTP_CIPHERS)) {
-            customProperties.put(key, value);
-        } else if (key.equals(SFTP_USERNAME)) {
+        if( key.equals( SFTP_CIPHERS ) ) {
+            customProperties.put( key, value );
+        } else if( key.equals( SFTP_USERNAME ) ) {
             username = value.toString();
         } else {
-            throw new IllegalArgumentException("Unknown property with key '" + key + "' is passed. "
-                                               + USE_ONE_OF_THE_SFTP_CONSTANTS);
+            throw new IllegalArgumentException( "Unknown property with key '" + key + "' is passed. "
+                                                + USE_ONE_OF_THE_SFTP_CONSTANTS );
         }
     }
 
@@ -509,34 +513,34 @@ public class SftpClient extends AbstractFileTransferClient {
 
         Set<Entry<String, Object>> customPropertiesSet = customProperties.entrySet();
         Object value;
-        for (Entry<String, Object> customPropertyEntry : customPropertiesSet) {
+        for( Entry<String, Object> customPropertyEntry : customPropertiesSet ) {
             value = customPropertyEntry.getValue();
-            if (customPropertyEntry.getKey().equals(SFTP_CIPHERS)) {
+            if( customPropertyEntry.getKey().equals( SFTP_CIPHERS ) ) {
 
-                if (value instanceof SshCipher) {
-                    addCipher((SshCipher) value);
-                } else if (value instanceof SshCipher[]) {
-                    for (SshCipher cipher : (SshCipher[]) value) {
-                        addCipher(cipher);
+                if( value instanceof SshCipher ) {
+                    addCipher( ( SshCipher ) value );
+                } else if( value instanceof SshCipher[] ) {
+                    for( SshCipher cipher : ( SshCipher[] ) value ) {
+                        addCipher( cipher );
                     }
                 } else {
-                    throw new IllegalArgumentException("Unsupported '" + SFTP_CIPHERS + "' value type");
+                    throw new IllegalArgumentException( "Unsupported '" + SFTP_CIPHERS + "' value type" );
                 }
             } else {
                 throw new IllegalArgumentException("Unknown property with key '" + customPropertyEntry.getKey()
                                                    + "' is passed. "
-                                                   + USE_ONE_OF_THE_SFTP_CONSTANTS);
+                                                    + USE_ONE_OF_THE_SFTP_CONSTANTS );
             }
         }
     }
 
     private void addCipher( SshCipher cipher ) {
 
-        if (this.ciphers == null) {
+        if( this.ciphers == null ) {
             this.ciphers = new ArrayList<SshCipher>();
         }
-        log.debug("Adding cipher " + cipher + " to the SFTP connection configuration");
-        this.ciphers.add(cipher);
+        log.debug( "Adding cipher " + cipher + " to the SFTP connection configuration" );
+        this.ciphers.add( cipher );
     }
 
     /**
@@ -568,10 +572,10 @@ public class SftpClient extends AbstractFileTransferClient {
         this.trustStorePassword = truststorePassword;
 
         // invalidate any previously set trust server certificate
-        if (!StringUtils.isNullOrEmpty(this.trustedServerSSLCerfiticateFile)) {
-            log.warn("Previously set trust server certificate '" + this.trustedServerSSLCerfiticateFile
-                     + "' will be overridden and only certificates from truststore '" + truststoreFile
-                     + "' will be used for validation");
+        if( !StringUtils.isNullOrEmpty( this.trustedServerSSLCerfiticateFile ) ) {
+            log.warn( "Previously set trust server certificate '" + this.trustedServerSSLCerfiticateFile
+                      + "' will be overridden and only certificates from truststore '" + truststoreFile
+                      + "' will be used for validation" );
             this.trustedServerSSLCerfiticateFile = null;
         }
 
@@ -589,23 +593,32 @@ public class SftpClient extends AbstractFileTransferClient {
         this.trustedServerSSLCerfiticateFile = certificateFile;
 
         // invalidate any previously set trust store
-        if (!StringUtils.isNullOrEmpty(this.trustStoreFile)) {
-            log.warn("Previously set trust store '" + this.trustStoreFile
-                     + "' will be overridden and only the certificate '" + trustedServerSSLCerfiticateFile
-                     + "' will be used for validation");
+        if( !StringUtils.isNullOrEmpty( this.trustStoreFile ) ) {
+            log.warn( "Previously set trust store '" + this.trustStoreFile
+                      + "' will be overridden and only the certificate '" + trustedServerSSLCerfiticateFile
+                      + "' will be used for validation" );
             this.trustStoreFile = null;
             this.trustStorePassword = null;
         }
     }
-    
+
     /**
      * This method exposes the underlying SFTP connection.
      * Since the implementation can be change at any time, users must not use this method directly.
      * */
     public ChannelSftp getInternalFtpsClient() {
-        
+
         return this.channel;
-        
+
+    }
+
+    private void checkConnected( String operation ) {
+
+        // the current implementation works always with 'channel' and 'session'
+        // to it is enough to check one of them
+        if( this.channel == null || !this.channel.isConnected() ) {
+            throw new FileTransferException( "Cannot do " + operation + " when not connected" );
+        }
     }
 
     /**
@@ -618,18 +631,18 @@ public class SftpClient extends AbstractFileTransferClient {
         @Override
         public void remove( String host, String type, byte[] key ) {
 
-            host = host.replace("[", "").replace("]", "").split(":")[0];
+            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
 
-            Set<byte[]> keys = knownHostsMap.get(host);
-            keys.remove(key);
+            Set<byte[]> keys = knownHostsMap.get( host );
+            keys.remove( key );
         }
 
         @Override
         public void remove( String host, String type ) {
 
-            host = host.replace("[", "").replace("]", "").split(":")[0];
+            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
 
-            knownHostsMap.remove(host);
+            knownHostsMap.remove( host );
 
         }
 
@@ -642,18 +655,18 @@ public class SftpClient extends AbstractFileTransferClient {
         @Override
         public HostKey[] getHostKey( String host, String type ) {
 
-            host = host.replace("[", "").replace("]", "").split(":")[0];
+            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0];
 
-            Set<byte[]> keys = knownHostsMap.get(host);
+            Set<byte[]> keys = knownHostsMap.get( host );
 
             HostKey[] hostKeys = new HostKey[keys.size()];
             Iterator<byte[]> it = keys.iterator();
             int i = 0;
-            while (it.hasNext()) {
+            while( it.hasNext() ) {
                 try {
-                    hostKeys[i++] = new HostKey(host, HostKey.SSHRSA, it.next());
-                } catch (JSchException e) {
-                    throw new RuntimeException("Unable to get hostkey for host '" + host + "'");
+                    hostKeys[i++] = new HostKey( host, HostKey.SSHRSA, it.next() );
+                } catch( JSchException e ) {
+                    throw new RuntimeException( "Unable to get hostkey for host '" + host + "'" );
                 }
             }
             return hostKeys;
@@ -665,16 +678,16 @@ public class SftpClient extends AbstractFileTransferClient {
             List<HostKey[]> hostKeysList = new ArrayList<>();
             Iterator<String> it = knownHostsMap.keySet().iterator();
             int size = 0;
-            while (it.hasNext()) {
-                HostKey[] hostKeysEntry = getHostKey(it.next(), "public key");
-                hostKeysList.add(hostKeysEntry);
+            while( it.hasNext() ) {
+                HostKey[] hostKeysEntry = getHostKey( it.next(), "public key" );
+                hostKeysList.add( hostKeysEntry );
                 size += hostKeysEntry.length;
             }
 
             HostKey[] hostKeys = new HostKey[size];
             int i = 0;
-            for (HostKey[] keys : hostKeysList) {
-                for (HostKey key : keys) {
+            for( HostKey[] keys : hostKeysList ) {
+                for( HostKey key : keys ) {
                     hostKeys[i++] = key;
                 }
             }
@@ -685,21 +698,21 @@ public class SftpClient extends AbstractFileTransferClient {
         @Override
         public int check( String host, byte[] key ) {
 
-            host = host.replace("[", "").replace("]", "").split(":")[0]; // get only the IP address of the server
+            host = host.replace( "[", "" ).replace( "]", "" ).split( ":" )[0]; // get only the IP address of the server
 
-            if (knownHostsMap.get(host) == null) {
-                log.error("The presented trust store certificates could not match any of the server provided ones");
+            if( knownHostsMap.get( host ) == null ) {
+                log.error( "The presented trust store certificates could not match any of the server provided ones" );
                 return HostKeyRepository.NOT_INCLUDED;
             }
-            Set<byte[]> keys = knownHostsMap.get(host);
-            for (byte[] key1 : keys) {
-                key1 = Base64.decodeBase64(key1); // we must decode the key from the client trust store first
-                if (Arrays.equals(key, key1)) {
-                    log.info("Server certificate trusted.");
+            Set<byte[]> keys = knownHostsMap.get( host );
+            for( byte[] key1 : keys ) {
+                key1 = Base64.decodeBase64( key1 ); // we must decode the key from the client trust store first
+                if( Arrays.equals( key, key1 ) ) {
+                    log.info( "Server certificate trusted." );
                     return HostKeyRepository.OK;
                 }
             }
-            log.error("The presented trust store certificates could not match any of the server provided ones");
+            log.error( "The presented trust store certificates could not match any of the server provided ones" );
             return HostKeyRepository.NOT_INCLUDED;
 
         }
@@ -707,12 +720,12 @@ public class SftpClient extends AbstractFileTransferClient {
         @Override
         public void add( HostKey hostkey, UserInfo ui ) {
 
-            Set<byte[]> keys = knownHostsMap.get(hostkey.getHost());
-            if (keys == null) {
+            Set<byte[]> keys = knownHostsMap.get( hostkey.getHost() );
+            if( keys == null ) {
                 keys = new HashSet<>();
             }
-            keys.add(hostkey.getKey().getBytes());
-            knownHostsMap.put(hostkey.getHost(), keys);
+            keys.add( hostkey.getKey().getBytes() );
+            knownHostsMap.put( hostkey.getHost(), keys );
 
         }
 

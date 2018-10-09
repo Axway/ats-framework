@@ -360,7 +360,7 @@ public class TableDescription {
 
             for (String indexName : indexes.keySet()) {
                 Element indexNode = dom.createElement(DatabaseSnapshotUtils.NODE_INDEX);
-                indexNode.setAttribute(DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME, indexName);
+                indexNode.setAttribute(DatabaseSnapshotUtils.ATTR_NODE_INDEX_UID, indexName);
                 indexNode.setTextContent(indexes.get(indexName));
                 indexesNode.appendChild(indexNode);
             }
@@ -409,7 +409,7 @@ public class TableDescription {
                                                                                   DatabaseSnapshotUtils.NODE_INDEX);
             Map<String, String> indexes = new HashMap<>();
             for (Element indexNode : indexNodes) {
-                indexes.put(indexNode.getAttribute(DatabaseSnapshotUtils.ATTR_NODE_INDEX_NAME),
+                indexes.put(indexNode.getAttribute(DatabaseSnapshotUtils.ATTR_NODE_INDEX_UID),
                             indexNode.getTextContent());
             }
             instance.setIndexes(indexes);

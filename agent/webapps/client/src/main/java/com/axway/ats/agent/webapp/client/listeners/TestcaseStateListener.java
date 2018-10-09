@@ -119,7 +119,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                     if (!configuredAgents.contains(atsAgent)) {
 
                         // Pass the logging configuration to the remote agent
-                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(atsAgent);
+                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
                         new RemoteConfigurationManager().pushConfiguration(atsAgent,
                                                                            remoteLoggingConfigurator);
 

@@ -31,10 +31,10 @@ import javax.xml.ws.handler.MessageContext;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.agent.core.configuration.AgentConfigurator;
 import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.agentservice.AgentWsDefinitions;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.utils.IoUtils;
@@ -99,8 +99,7 @@ public class AgentServicePool {
     private AgentService createServicePort( String host ) throws AgentException {
 
         try {
-
-            String protocol = AgentConfigurator.getConnectionProtocol(host);
+            String protocol = AgentConfigurationLandscape.getInstance( host ).getConnectionProtocol();
             if (protocol == null) {
                 protocol = "http";
             } else {

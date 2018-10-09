@@ -17,7 +17,10 @@ package com.axway.ats.core.ssh;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AbstractAtsLogger;
@@ -32,11 +35,12 @@ import com.jcraft.jsch.Session;
 public class JschSftpClient {
 
     // this variable enables the logging
-    private static boolean           isVerbose          = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.CORE__JSCH_VERBOSE_MODE,
+    private static boolean           isVerbose          = AtsSystemProperties
+                                                                             .getPropertyAsBoolean(AtsSystemProperties.CORE__JSCH_VERBOSE_MODE,
                                                                                                    false);
     /*
-     * If called from ATS plugin, it will log into plugin console,
-     * otherwise will log into log4j
+     * If called from ATS plugin, it will log into plugin console, otherwise will
+     * log into log4j
      */
     private static AbstractAtsLogger log                = AbstractAtsLogger.getDefaultInstance(JschSftpClient.class);
 
@@ -49,8 +53,15 @@ public class JschSftpClient {
     private Session                  session;
     private ChannelSftp              channel;
 
+    // some optional configuration properties
+    private Map<String, String>      configurationProperties;
+
     public JschSftpClient() {
 
+        this.configurationProperties = new HashMap<>();
+
+        // by default - skip checking of known hosts and verifying RSA keys
+        this.configurationProperties.put("StrictHostKeyChecking", "no");
     }
 
     /**
@@ -107,7 +118,7 @@ public class JschSftpClient {
 
                 if (this.host.equals(host) && this.user.equals(user) && this.port == port) {
 
-                    return; //already connected
+                    return; // already connected
                 } else {
                     disconnect();
                 }
@@ -118,6 +129,13 @@ public class JschSftpClient {
             this.port = port;
 
             JSch jsch = new JSch();
+            jsch.setConfigRepository(new JschConfigRepository(this.host, this.user, this.port,
+                                                              this.configurationProperties));
+            for (Entry<String, String> entry : configurationProperties.entrySet()) {
+                if (entry.getKey().startsWith("global.")) {
+                    JSch.setConfig(entry.getKey().split("\\.")[1], entry.getValue());
+                }
+            }
             if (privateKey != null) {
                 jsch.addIdentity(privateKey, privateKeyPassword);
             }
@@ -128,8 +146,15 @@ public class JschSftpClient {
             }
             this.session.setPassword(password);
 
-            // skip checking of known hosts and verifying RSA keys
-            this.session.setConfig("StrictHostKeyChecking", "no");
+            // apply any configuration properties
+            for (Entry<String, String> entry : configurationProperties.entrySet()) {
+                if (entry.getKey().startsWith("session.")) {
+                    session.setConfig(entry.getKey().split("\\.")[1], entry.getValue());
+                } else if (!entry.getKey().startsWith("global.")) { // by default if global or session prefix is
+                                                                    // missing, we assume it is a session property
+                    session.setConfig(entry.getKey(), entry.getValue());
+                }
+            }
 
             this.session.connect(CONNECTION_TIMEOUT);
 
@@ -153,6 +178,14 @@ public class JschSftpClient {
         if (session != null) {
             session.disconnect();
         }
+    }
+
+    /**
+     * Pass configuration property for the internally used SSH client library
+     */
+    public void setConfigurationProperty( String key, String value ) {
+
+        configurationProperties.put(key, value);
     }
 
     /**
@@ -198,8 +231,8 @@ public class JschSftpClient {
     /**
      *
      * @param directoryPath directory path
-     * @return {@link List} of {@link FileEntry} objects corresponding with the target directory
-     *  file and folder entries.
+     * @return {@link List} of {@link FileEntry} objects corresponding with the target directory file and folder
+     *         entries.
      */
     public List<FileEntry> ls( String directoryPath ) {
 
@@ -271,7 +304,8 @@ public class JschSftpClient {
         File srcDir = new File(sourceDir);
         if (!srcDir.isDirectory()) {
 
-            throw new JschSftpClientException("The local directory '" + sourceDir
+            throw new JschSftpClientException(
+                                              "The local directory '" + sourceDir
                                               + "' is not a Directory or doesn't exist");
         }
 
@@ -400,10 +434,10 @@ public class JschSftpClient {
 
         } catch (Exception e) {
 
-            throw new JschSftpClientException("Error while deleting directory '" + directoryPath + "'"
-                                              + (isRecursive
-                                                             ? " recursively"
-                                                             : ""),
+            throw new JschSftpClientException(
+                                              "Error while deleting directory '" + directoryPath + "'" + (isRecursive
+                                                                                                                      ? " recursively"
+                                                                                                                      : ""),
                                               e);
         }
     }
@@ -440,8 +474,8 @@ public class JschSftpClient {
     /**
      *
      * @param directoryPath the directory path
-     * @param preservedPaths a list with preserved files or folders.
-     *      If the path ends with '/' it is preserved directory, not a file
+     * @param preservedPaths a list with preserved files or folders. If the path ends with '/' it is preserved
+     *            directory, not a file
      */
     public void purgeRemoteDirectoryContents( String directoryPath, List<String> preservedPaths ) {
 
@@ -457,12 +491,14 @@ public class JschSftpClient {
 
                     if (fileEntry.isDirectory()) {
 
-                        if (preservedPaths == null
-                            || (preservedPaths != null
-                                && !preservedPaths.contains(IoUtils.normalizeUnixDir(fileEntry.getPath())))) { // skip preserved directories
+                        if (preservedPaths == null || (preservedPaths != null
+                                                       && !preservedPaths.contains(IoUtils.normalizeUnixDir(fileEntry.getPath())))) { // skip
+                                                                                                                                                                                            // preserved
+                                                                                                                                                                                            // directories
 
                             purgeRemoteDirectoryContents(fileEntry.getPath(), preservedPaths);
-                            // the directory may not be empty now, if there are some preserved files/folders in it
+                            // the directory may not be empty now, if there are some preserved files/folders
+                            // in it
                             if (preservedPaths == null
                                 || (preservedPaths != null && isDirectoryEmpty(fileEntry.getPath()))) {
 
@@ -470,8 +506,9 @@ public class JschSftpClient {
                             }
                         }
                     } else if (preservedPaths == null
-                               || (preservedPaths != null
-                                   && !preservedPaths.contains(fileEntry.getPath()))) { // skip preserved files
+                               || (preservedPaths != null && !preservedPaths.contains(fileEntry.getPath()))) { // skip
+                                                                                                                                                 // preserved
+                                                                                                                                                 // files
 
                         removeRemoteFile(fileEntry.getPath());
                     }
@@ -480,8 +517,7 @@ public class JschSftpClient {
 
         } catch (Exception e) {
 
-            throw new JschSftpClientException("Error while purging directory contnets '" + directoryPath
-                                              + "'", e);
+            throw new JschSftpClientException("Error while purging directory contnets '" + directoryPath + "'", e);
         }
     }
 
@@ -507,8 +543,8 @@ public class JschSftpClient {
 
     /**
      *
-     * LsEntry selector, which collects only the internal files and folders
-     * without the current directory entry ('.') and its parent ('..')
+     * LsEntry selector, which collects only the internal files and folders without the current directory entry ('.')
+     * and its parent ('..')
      */
     class LsEntrySelector implements ChannelSftp.LsEntrySelector {
 

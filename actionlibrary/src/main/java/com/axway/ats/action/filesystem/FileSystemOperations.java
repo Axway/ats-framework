@@ -166,8 +166,8 @@ public class FileSystemOperations {
     /**
      * Creates a file. The content is set by the user.
      *
-     * @param filePath the file to work with
-     * @param fileContent the text that will be parsed in the file
+     * @param filePath filesystem location to be used
+     * @param fileContent the text content to be written. Default JVM's charset will be used to convert chars to bytes 
      */
     @PublicAtsApi
     public void createFile( @Validate( name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath,
@@ -181,7 +181,7 @@ public class FileSystemOperations {
         operations.createFile(filePath, fileContent);
 
         // log the result of the operation
-        log.info("Successfully created file by the name of " + filePath + " with content " + fileContent);
+        log.info("Successfully created file by the name of " + filePath + " with size of " + fileContent.length() + " characters");
     }
 
     /**

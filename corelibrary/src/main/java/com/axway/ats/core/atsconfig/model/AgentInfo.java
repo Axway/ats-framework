@@ -58,13 +58,13 @@ public class AgentInfo extends AbstractApplicationInfo {
         class Linux {
             static final String START   = "/bin/bash -lc 'cd " + AGENT_FOLDER_PARAM + " && (./agent.sh start"
                                           + AGENT_PORT_PARAM + AGENT_JAVAEXE_PARAM + AGENT_MEMORY_PARAM
-                                          + " > nohup.out 2>&1 &) && sleep 5 && cat nohup.out && rm nohup.out'";
+                                          + " > nohup.out 2>&1) && sleep 5 && cat nohup.out && rm nohup.out'";
             static final String STOP    = "/bin/bash -lc 'cd " + AGENT_FOLDER_PARAM + " && ./agent.sh stop"
                                           + AGENT_PORT_PARAM + "'";
             static final String RESTART = "/bin/bash -lc 'cd " + AGENT_FOLDER_PARAM
                                           + " && (./agent.sh restart" + AGENT_PORT_PARAM + AGENT_JAVAEXE_PARAM
                                           + AGENT_MEMORY_PARAM
-                                          + " > nohup.out 2>&1 &) && sleep 5 && cat nohup.out && rm nohup.out'";
+                                          + " > nohup.out 2>&1) && sleep 5 && cat nohup.out && rm nohup.out'";
             static final String STATUS  = "/bin/bash -lc 'cd " + AGENT_FOLDER_PARAM + " && ./agent.sh status"
                                           + AGENT_PORT_PARAM + "'";
 

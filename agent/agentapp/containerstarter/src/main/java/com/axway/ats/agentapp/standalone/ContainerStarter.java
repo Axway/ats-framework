@@ -105,6 +105,8 @@ public class ContainerStarter {
         WebAppContext webApp = new WebAppContext();
         webApp.setContextPath("/agentapp");
         webApp.setWar(jettyHome + "/webapp/agentapp.war");
+        webApp.setAttribute("org.eclipse.jetty.webapp.basetempdir",
+                            getJettyWorkDir(jettyHome));
 
         server.setHandler(webApp);
         server.setStopAtShutdown(true);
@@ -182,6 +184,25 @@ public class ContainerStarter {
         }
 
         return jettyHome;
+    }
+
+    /**
+     * @param jettyHome 
+     * @return the folder where our web application will be deployed
+     */
+    private static String getJettyWorkDir( String jettyHome ) {
+
+        // the folder where the web application will be deployed
+        final String jettyWorkDir = jettyHome + "/work";
+
+        /* Make the folder if does not exist.
+         * If cannot make this folder for some reason, no error will be reported. 
+         * Then Jetty will see this folder does not exist and will use the folder
+         * pointed by the java.io.tmpdir system property
+         */
+        new File(jettyWorkDir).mkdir();
+
+        return jettyWorkDir;
     }
 
     private static void setExtraClasspath( WebAppContext webApp, String jettyHome ) {
@@ -380,11 +401,11 @@ public class ContainerStarter {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            log.debug( "---> Start Iterating All Network Interfaces!" );
+            log.debug("---> Start Iterating All Network Interfaces!");
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
                 if (!netInterface.isLoopback()) {
-                    log.debug( "---> Start Iterating Interface '" + netInterface.getName() + "'!" );
+                    log.debug("---> Start Iterating Interface '" + netInterface.getName() + "'!");
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
@@ -409,7 +430,7 @@ public class ContainerStarter {
                     }
                 }
             }
-            log.debug( "---> Finish Iterating All Network Interfaces!" );
+            log.debug("---> Finish Iterating All Network Interfaces!");
         } catch (SocketException se) {
             log.error("Error obtaining the local host address", se);
         }

@@ -74,6 +74,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.input.ReversedLinesFileReader;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
@@ -2568,7 +2569,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         } catch (Exception e) {
             String errorMsg = null;
             if (entry != null) {
-                errorMsg = "Unable to untar " + entry.getName() + " from " + tarFilePath
+                errorMsg = "Unable to untar " + StringEscapeUtils.escapeJava( entry.getName()) + " from " + tarFilePath
                            + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
             } else {
                 errorMsg = "Could not read data from " + tarFilePath;

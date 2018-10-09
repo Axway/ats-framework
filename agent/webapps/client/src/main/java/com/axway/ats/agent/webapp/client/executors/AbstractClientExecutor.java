@@ -16,7 +16,9 @@
 package com.axway.ats.agent.webapp.client.executors;
 
 import java.util.Calendar;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -137,10 +139,18 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
                 dbAccess = new DbAccessFactory().getNewDbWriteAccessObject();
             }
 
-            for (ActionRequest actionRequest : actionRequests) {
-                if (actionRequest.getRegisterActionExecution()) {
-                    dbAccess.populateCheckpointSummary(loadQueueId, actionRequest.getActionName(),
-                                                       actionRequest.getTransferUnit(), true);
+            // If user add same action more than once in same queue,
+            // we must not populate it more than once
+            Set<String> actionNames = new HashSet<>();
+            
+            for( ActionRequest actionRequest : actionRequests ) {
+                if( actionRequest.getRegisterActionExecution() ) {
+                    String actionName = actionRequest.getActionName();
+                    if( !actionNames.contains( actionName ) ) {
+                        actionNames.add( actionName );
+                        dbAccess.populateCheckpointSummary( loadQueueId, actionName,
+                                                            actionRequest.getTransferUnit(), true );
+                    }
                 }
             }
 
