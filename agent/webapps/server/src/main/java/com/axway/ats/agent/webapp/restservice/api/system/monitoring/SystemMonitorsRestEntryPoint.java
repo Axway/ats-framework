@@ -885,7 +885,7 @@ public class SystemMonitorsRestEntryPoint {
             String response = "{\"status_message\":\"monitoring successfully started\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
-            String message = "Unable to start monitoring for system monitor with resource id'" + resourceId
+            String message = "Unable to start monitoring for system monitor with resource id '" + resourceId
                              + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
@@ -955,7 +955,7 @@ public class SystemMonitorsRestEntryPoint {
             String response = "{\"status_message\":\"monitoring successfully stopped\"}";
             return Response.ok(response).build();
         } catch (Exception e) {
-            String message = "Unable to stop monitoring for system monitor with resource id'" + resourceId
+            String message = "Unable to stop monitoring for system monitor with resource id '" + resourceId
                              + "' in caller with id '" + callerId + "'";
             LOG.error(message, e);
             return Response.serverError()
