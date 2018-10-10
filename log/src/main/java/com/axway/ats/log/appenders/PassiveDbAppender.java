@@ -39,19 +39,18 @@ import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
  */
 public class PassiveDbAppender extends AbstractDbAppender {
 
-    
     /**
      * The caller that created thet appender
-     * */
+     */
     private String callerId;
-    
+
     /**
      * Constructor
      */
     public PassiveDbAppender() {
 
         super();
-        
+
         callerId = ThreadsPerCaller.getCaller();
     }
 
@@ -73,6 +72,15 @@ public class PassiveDbAppender extends AbstractDbAppender {
                                                                 + "'. Event source location is '"
                                                                 + event.getLocationInformation().fullInfo + "'");
             return;
+        }
+
+        // since we can have more than one PassiveDbAppender, we must check whether that event must be processed by the current PassiveDbAppender
+
+        if (!ThreadsPerCaller.getCaller().equals(this.callerId)) {
+            /*new AtsConsoleLogger(PassiveDbAppender.class).warn("Mismatch between PassiveDbAppender and current callerID '"
+                                                               + this.callerId + "' and '"
+                                                               + ThreadsPerCaller.getCaller() + "'");*/
+            return; // do not process the event any further
         }
 
         // Remember the caller prior passing this event to the logging queue.
@@ -113,7 +121,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
             if (appender instanceof PassiveDbAppender) {
                 PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
-                if(ThreadsPerCaller.getCaller().equals(passiveAppender.callerId)) {
+                if (ThreadsPerCaller.getCaller().equals(passiveAppender.callerId)) {
                     return passiveAppender;
                 }
             }
@@ -135,14 +143,14 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         return getDbChannel(null).eventProcessor;
     }
-    
+
     /**
      * Returns the callerId that created this appender
-     * */
+     */
     public String getCallerId() {
-        
+
         return this.callerId;
-        
+
     }
 
     @Override
