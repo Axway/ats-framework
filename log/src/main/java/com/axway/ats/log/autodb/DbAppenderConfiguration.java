@@ -61,15 +61,15 @@ public class DbAppenderConfiguration implements Serializable {
 
         return database;
     }
-    
+
     public String getPort() {
-    	
-    	return port;
+
+        return port;
     }
-    
-    public void setPort( String port) {
-    	
-    	this.port = port;
+
+    public void setPort( String port ) {
+
+        this.port = port;
     }
 
     public void setDatabase(
@@ -107,10 +107,10 @@ public class DbAppenderConfiguration implements Serializable {
     }
 
     /**
-     * Read the "events" parameter value from log4j.xml.
-     * This value will be used for capacity of our logging queue.
+     * Read the "events" parameter value from log4j.xml. This value will be used for capacity of our logging queue.
      * 
      * Note: the new value cannot be bellow the default capacity.
+     * 
      * @return logging queue capacity
      */
     public int getMaxNumberLogEvents() {
@@ -176,8 +176,9 @@ public class DbAppenderConfiguration implements Serializable {
     }
 
     /**
-     * Verify that the configuration is valid - the method will throw runtime exception if
-     * the configuration is not valid
+     * Verify that the configuration is valid - the method will throw runtime exception if the configuration is not
+     * valid
+     * 
      * @throws InvalidAppenderConfigurationException if the configuration is not valid
      */
     public void validate() throws InvalidAppenderConfigurationException {
@@ -185,11 +186,12 @@ public class DbAppenderConfiguration implements Serializable {
         if (host == null) {
             throw new InvalidAppenderConfigurationException("host");
         }
-        
-        if ( port == null ) {
-        	new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. "
-        			+ "We will set it to the default one for MSSQL databases (" + DbConnSQLServer.DEFAULT_PORT + ")");
-    		this.port = DbConnSQLServer.DEFAULT_PORT + "";
+
+        if (port == null) {
+            new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. "
+                                                  + "We will set it to the default one for MSSQL databases ("
+                                                  + DbConnSQLServer.DEFAULT_PORT + ")");
+            this.port = DbConnSQLServer.DEFAULT_PORT + "";
         }
 
         if (database == null) {
@@ -204,16 +206,16 @@ public class DbAppenderConfiguration implements Serializable {
             throw new InvalidAppenderConfigurationException("password");
         }
     }
-    
+
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
      */
     @Override
     public String toString() {
 
-        return this.host + "__" + this.port + "__" + this.user + "__" + this.password + "__"
-                  + this.maxNumberLogEvents + "__" + this.mode + "__" + this.enableCheckpoints + "__"
-                  + this.loggingThreshold;
+        return this.host + "__" + this.port + "__" + this.database + "__" + this.user + "__" + this.password + "__"
+               + this.maxNumberLogEvents + "__" + this.mode + "__" + this.enableCheckpoints + "__"
+               + this.loggingThreshold;
 
     }
 
@@ -236,9 +238,9 @@ public class DbAppenderConfiguration implements Serializable {
         if (database != null && !database.equals(otherConfig.database)) {
             return false;
         }
-        
+
         if (port != null && !port.equals(otherConfig.port)) {
-        	return false;
+            return false;
         }
 
         if (user != null && !user.equals(otherConfig.user)) {
