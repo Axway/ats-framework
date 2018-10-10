@@ -15,6 +15,7 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,11 +38,10 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class DatabaseReadingsRepository {
 
-    private static SQLServerDbWriteAccess            dbAccess                                  = null;
-
-    //this map keeps track of the ReadingBean(s) that already have a dbId assigned
-    // use Collections.synchronizedMap(new HashMap<>()) instead of new HashMap<>() ?
-    private static Map<String, Map<String, Integer>> knownReadingBeansPerDatabaseConfiguration = new HashMap<>();
+    // this map keeps track of the ReadingBean(s) that already have a dbId assigned
+    private static Map<String, Map<String, Integer>>   knownReadingBeansPerDatabaseConfiguration = Collections.synchronizedMap(new HashMap<String, Map<String, Integer>>());
+    // this map keeps track of the SQLServerDbWriteAccess(s) for each PassiveDbAppender
+    private static Map<String, SQLServerDbWriteAccess> dbWriteAccessPerDatabaseConfiguration     = Collections.synchronizedMap(new HashMap<String, SQLServerDbWriteAccess>());
 
     public DatabaseReadingsRepository() {
 
@@ -63,26 +63,29 @@ public class DatabaseReadingsRepository {
 
         Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
 
-        if (dbAccess == null) {
-            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender();
-        }
-
         String dbAppConfString = null;
         PassiveDbAppender dbApp = PassiveDbAppender.getCurrentInstance();
         if (dbApp != null) {
             DbAppenderConfiguration dbAppConf = dbApp.getAppenderConfig();
             if (dbAppConf != null) {
                 dbAppConfString = dbAppConf.toString();
-                knownReadingBeans = knownReadingBeansPerDatabaseConfiguration.get(dbAppConfString);
-                if (knownReadingBeans == null) {
-                    knownReadingBeans = new HashMap<String, Integer>();
-                    knownReadingBeansPerDatabaseConfiguration.put(dbAppConfString, knownReadingBeans);
-                }
             } else {
                 return; // for some reason the current appender has no db configuration. so we just return
             }
         } else {
             return; // for some reason there is no PassiveDbAppender for this caller. so we just return
+        }
+
+        knownReadingBeans = knownReadingBeansPerDatabaseConfiguration.get(dbAppConfString);
+        if (knownReadingBeans == null) {
+            knownReadingBeans = new HashMap<String, Integer>();
+            knownReadingBeansPerDatabaseConfiguration.put(dbAppConfString, knownReadingBeans);
+        }
+
+        SQLServerDbWriteAccess dbAccess = dbWriteAccessPerDatabaseConfiguration.get(dbAppConfString);
+        if (dbAccess == null) {
+            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender();
+            dbWriteAccessPerDatabaseConfiguration.put(dbAppConfString, dbAccess);
         }
 
         for (ReadingBean reading : readings) {
