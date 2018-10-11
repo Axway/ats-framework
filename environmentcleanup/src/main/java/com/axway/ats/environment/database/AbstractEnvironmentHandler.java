@@ -36,6 +36,7 @@ import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbReturnModes;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.BackupHandler;
@@ -53,6 +54,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     private static final String    ERROR_CREATING_BACKUP      = "Could not create backup in file ";
     protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
+    protected static final String  DROP_TABLE_MARKER          = " -- ATS DROP TABLE ";
     protected static final String  EOL_MARKER                 = " -- ATS EOL;";
 
     protected boolean              addLocks;
@@ -63,6 +65,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected DbProvider           dbProvider;
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
+    protected boolean              dropEntireTable;
 
 
     /**
@@ -94,12 +97,11 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         BufferedWriter fileWriter = null;
         try {
             fileWriter = new BufferedWriter(new FileWriter(new File(backupFileName)));
-            log.debug("Started creation of database backup in file '" + backupFileName + "'");
+            log.info("Started creation of database backup in file '" + backupFileName + "'");
 
             writeBackupToFile(fileWriter);
 
-            log.debug("Completed creation of database backup in file '" + backupFileName + "'");
-
+            log.info("Completed creation of database backup in file '" + backupFileName + "'");
         } catch (Exception pe) {
             markBackupFileAsDamaged(fileWriter, backupFileName);
             throw new DatabaseEnvironmentCleanupException(ERROR_CREATING_BACKUP + backupFileName, pe);
@@ -181,6 +183,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             selectQuery.append("SELECT ");
             selectQuery.append(getColumnsString(columnsToSelect));
             selectQuery.append(" FROM ");
+            if (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())) {
+                selectQuery.append(dbTable.getTableSchema() + ".") ;
+            }
             selectQuery.append(dbTable.getTableName());
 
             DbQuery query = new DbQuery(selectQuery.toString());
@@ -302,6 +307,19 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void setLockTables( boolean lockTables ) {
 
         this.addLocks = lockTables;
+
+    }
+    
+    /**
+     * Choose whether to recreate the tables during restore - default
+     * value should be false
+     * 
+     * @param dropEntireTable    enable or disable
+     * @see com.axway.ats.environment.database.model.BackupHandler#setDropTables(boolean)
+     */
+    public void setDropTables( boolean dropEntireTable ) {
+
+        this.dropEntireTable = dropEntireTable;
 
     }
 

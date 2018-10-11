@@ -238,13 +238,12 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
      * Disconnect after backup process
      */
     @Override
-    public void createBackup(
-                              String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         try {
-            super.createBackup(backupFileName);
+            super.createBackup( backupFileName );
         } finally {
-            ((CassandraDbProvider) dbProvider).disconnect();
+            ( ( CassandraDbProvider ) dbProvider ).disconnect();
         }
     }
 
@@ -335,7 +334,7 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
         BufferedReader backupReader = null;
 
         try {
-            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            log.info("Started restore of database backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -361,7 +360,7 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
                 line = backupReader.readLine();
             }
 
-            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
+            log.info("Completed restore of database backup from file '" + backupFileName + "'");
 
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);

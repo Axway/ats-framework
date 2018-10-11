@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE component SYSTEM "htf_descriptor.xsd">
+<component name="myproduct_actions_htf_component">
+ 
+    <actionClass name="com.axway.myproduct.actions.SimpleAction"/>
+    <actionClass name="com.axway.myproduct.actions.FileTransferAction"/>
+ 
+    <cleanupHandler name="com.axway.myproduct.actions.SimpleCleanupHandler"/>
+ 
+    <!--Environment description-->
+    <environment backupFolder="/tmp/htf_component_environment_backup" windowsBackupFolder="C:/htf_component_environment_backup" >
+ 
+        <!-- important DB tables -->
+        <database host="10.10.10.10" port="33060" name="myproduct_db" user="root" password="123" type="mysql">
+            <table name="Banks"/>
+            <table name="Users" autoIncrementResetValue="0"/>
+            <table name="Partners"/>
+            <table name="PartnerCerts" lock="false" drop="true"/>
+            <table name="BusinessUnit" columnsToExclude="data"/>
+        </database>
+
+    </environment>
+ 
+</component>

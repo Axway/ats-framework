@@ -119,7 +119,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         expect(mockDbProvider.select(isA(String.class))).andReturn(columnsMetaData);
         expect(mockDbProvider.select(isA(DbQuery.class), eq(DbReturnModes.ESCAPED_STRING))).andReturn(recordValues);
 
-        //expect the file writer calls
+      //expect the file writer calls
 
         //foreign keys check start
         mockFileWriter.write("SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR);
@@ -152,6 +152,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler(mockDbConnection, mockDbProvider);
         envHandler.addTable(table1);
         envHandler.addTable(table2);
+        //envHandler.writeBackupToFile(new PrintWriter(new File("backup.txt")));
         envHandler.writeBackupToFile(mockFileWriter);
 
         verifyAll();
@@ -235,7 +236,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         DbTable table1 = new DbTable("table1");
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler(mockDbConnection, mockDbProvider);
         envHandler.addTable(table1);
@@ -389,7 +390,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         DbTable table1 = new DbTable("table1");
         List<String> columnsToSkip = new ArrayList<String>();
         columnsToSkip.add("name2");
-        DbTable table2 = new DbTable("table2", columnsToSkip);
+        DbTable table2 = new DbTable("table2", "dbo", columnsToSkip);
 
         MysqlEnvironmentHandler envHandler = new MysqlEnvironmentHandler(mockDbConnection, mockDbProvider);
         envHandler.addTable(table1);

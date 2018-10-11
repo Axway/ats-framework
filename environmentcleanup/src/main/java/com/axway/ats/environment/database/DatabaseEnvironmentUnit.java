@@ -48,6 +48,8 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     private List<DbTable>             dbTables;
 
     private boolean                   addSeparateLocks;
+    private boolean                   dropTables;
+
     private boolean                   disableForeignKeys;
     private boolean                   includeDeleteStatements;
 
@@ -56,22 +58,6 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     //the environment unit description
     private String                    description;
-
-    /**
-     * Constructor
-     *
-     * @param backupFileName the name of the backup file
-     * @param dbConnection database connection
-     * @param dbTables list of database tables to backup
-     */
-    @Deprecated
-    @PublicAtsApi
-    public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
-                                    List<DbTable> dbTables ) {
-
-        this(backupDirPath, backupFileName, dbConnection, dbTables,
-             EnvironmentHandlerFactory.getInstance());
-    }
 
     /**
      * Constructor
@@ -99,8 +85,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
                                                          testBox.getDbPort(),
                                                          customProperties)
                                     .getDbConnection(),
-             dbTables,
-             EnvironmentHandlerFactory.getInstance());
+             dbTables);
     }
 
     /**
@@ -111,18 +96,19 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
      * @param dbTables list of database tables to backup
      * @param environmentHandlerFactory the factory for creating backup and restore handlers
      */
-    DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
-                             List<DbTable> dbTables, EnvironmentHandlerFactory environmentHandlerFactory ) {
+    public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
+                             List<DbTable> dbTables ) {
 
         this.dbTables = dbTables;
 
         this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupFileName = backupFileName;
         this.addSeparateLocks = true;
+        this.dropTables = false;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
 
-        this.environmentHandlerFactory = environmentHandlerFactory;
+        this.environmentHandlerFactory = EnvironmentHandlerFactory.getInstance();
 
         setDbConnection(dbConnection);
     }
@@ -149,16 +135,17 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
             //create db backup handler instance
             dbBackup = environmentHandlerFactory.createDbBackupHandler(dbConnection);
+            dbBackup.setLockTables(addSeparateLocks);
+            dbBackup.setDropTables(dropTables);
             dbBackup.setForeignKeyCheck(disableForeignKeys);
             dbBackup.setIncludeDeleteStatements(includeDeleteStatements);
-            dbBackup.setLockTables(addSeparateLocks);
             for (DbTable dbTable : dbTables) {
                 dbBackup.addTable(dbTable);
             }
 
             String backupFile = getBackupFile();
             createDirIfNotExist(backupFile);
-            dbBackup.createBackup(backupFile);
+            dbBackup.createBackup(backupFile );
 
             log.info("Successfully created backup of environment unit " + getDescription());
         } finally {

@@ -370,7 +370,7 @@ public class ConfigurationParser {
                                                   .split(",");
                 }
 
-                DbTable dbTable = null;
+                DbTable dbTable = new DbTable(tableName, new String(), Arrays.asList(columnsToExclude));
                 // parse db table 'lock' attribute
                 if (dbChildNode.getAttributes().getNamedItem("lock") != null) {
 
@@ -384,15 +384,24 @@ public class ConfigurationParser {
                                                   .getNodeValue()
                                                   .trim();
                     if ("false".equalsIgnoreCase(nodeValue) || "true".equalsIgnoreCase(nodeValue)) {
-                        dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude),
-                                              Boolean.parseBoolean(nodeValue));
+                        dbTable.setLockTable(Boolean.parseBoolean(nodeValue));
                     } else {
                         log.warn("Invalid db table 'lock' attribute value '" + nodeValue
                                  + "'. Valid values are 'true' and 'false'. The default value 'true' will be used.");
                     }
-                }
-                if (dbTable == null) {
-                    dbTable = new DbTable(tableName, Arrays.asList(columnsToExclude));
+                } 
+            	if (dbChildNode.getAttributes().getNamedItem("drop") != null) {
+
+                    String nodeValue = dbChildNode.getAttributes()
+                                                  .getNamedItem("drop")
+                                                  .getNodeValue()
+                                                  .trim();
+                    if ("false".equalsIgnoreCase(nodeValue) || "true".equalsIgnoreCase(nodeValue)) {
+                        dbTable.setDropTable(Boolean.parseBoolean(nodeValue));
+                    } else {
+                        log.warn("Invalid db table 'drop' attribute value '" + nodeValue
+                                 + "'. Valid values are 'true' and 'false'. The default value 'false' will be used.");
+                    }
                 }
 
                 // parse db table 'autoIncrementResetValue' attribute

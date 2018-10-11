@@ -22,11 +22,14 @@ import java.io.IOException;
 import java.io.Writer;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -36,6 +39,7 @@ import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.OracleColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
@@ -74,10 +78,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         try {
             columnsMetaData = this.dbProvider.select(selectColumnsInfo);
         } catch (DbException e) {
-            log.error("Could not get columns for table "
-                      + table.getTableName()
-                      + ". You may check if the table exists, if the you are using the right user and it has the right permissions. See more details in the trace.");
-            throw e;
+			throw new DbException("Could not get columns for table " + table.getTableName()
+					+ ". You may check if the table exists, if the you are using the right user and it has the right permissions. See more details in the trace.",
+					e);
         }
 
         if (columnsMetaData.length == 0) {
@@ -118,8 +121,11 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // TODO : exclusive table locks START
 
-        if (!this.deleteStatementsInserted) {
-            writeDeleteStatements(fileWriter);
+        if( this.dropEntireTable ) {
+            fileWriter.write( DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
+                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+        } else if( !this.deleteStatementsInserted ) {
+            writeDeleteStatements( fileWriter );
         }
 
         /*
@@ -241,6 +247,14 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
 
+        if( this.addLocks ) {
+            for( Entry<String, DbTable> entry : dbTables.entrySet() ) {
+                DbTable dbTable = entry.getValue();
+                fileWriter.write( "LOCK TABLE " + dbTable.getTableName() + " IN EXCLUSIVE MODE NOWAIT;"
+                                  + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR );
+            }
+        }
+        
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
@@ -328,7 +342,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            log.info("Started restore of database backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -342,8 +356,16 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             while (line != null) {
 
                 sql.append(line);
-
-                if (line.endsWith(EOL_MARKER)) {
+                if( line.startsWith( DROP_TABLE_MARKER ) ) {
+                  
+                    String table = line.substring( DROP_TABLE_MARKER.length() ).trim();
+                    String owner = table.substring( 0, table.indexOf( "." ) );
+                    String simpleTableName = table.substring( table.indexOf( "." ) + 1 );
+                    dropAndRecreateTable( connection, simpleTableName, owner );
+                    
+                    sql = new StringBuilder();
+                    
+                } if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker and the trailing semicolon because, strangely, Oracle JDBC driver
                     // does not require it, as opposing to any other, excluding blocks ([DECLARE]BEGIN-END;)
@@ -359,10 +381,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                     try {
                         updateStatement.execute();
                     } catch (SQLException sqle) {
-                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re throw the exception
                         connection.rollback();
-                        throw sqle;
+                        throw new SQLException ("Error invoking restore satement: " + sql.toString(), sqle);
                     } finally {
                         try {
                             updateStatement.close();
@@ -391,7 +412,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                 throw sqle;
             }
 
-            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
+            log.info("Completed restore of database backup from file '" + backupFileName + "'");            
 
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
@@ -411,6 +432,146 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             } catch (SQLException sqle) {
                 log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
+        }
+    }
+    
+    public void dropAndRecreateTable( Connection connection, String tableName, String owner ) {
+
+        List<String> generateForeignKeysScripts = new ArrayList<String>();
+        Map<String, List<String>> foreignKeys = getForeingKeys( owner, tableName, connection );
+
+        // generate script for restoring the exact table
+        String generateTableScript = generateTableScript( owner, tableName, connection );
+
+        for( Entry<String, List<String>> entryKey : foreignKeys.entrySet() ) {
+            String parentTableName = entryKey.getKey();
+            for( String key : entryKey.getValue() ) {
+                // generate scripts for creating all foreign keys
+                generateForeignKeysScripts.add( generateForeignKeyScript( owner, key, connection ) );
+                // disable the foreign keys
+                executeUpdate( "ALTER TABLE " + owner + "." + parentTableName + " DISABLE CONSTRAINT " + key,
+                               connection );
+            }
+        }
+
+        // drop the table
+        executeUpdate( "DROP TABLE " + tableName + " CASCADE CONSTRAINTS PURGE", connection );
+
+        // create new table
+        executeUpdate( generateTableScript, connection );
+
+        // create all the missing foreign keys
+        for( String script : generateForeignKeysScripts ) {
+            executeUpdate( script, connection );
+        }
+
+        // enable the foreign keys
+        for( Entry<String, List<String>> entryKey : foreignKeys.entrySet() ) {
+            String parentTableName = entryKey.getKey();
+            for( String key : entryKey.getValue() ) {
+                executeUpdate( "ALTER TABLE " + owner + "." + parentTableName + " ENABLE CONSTRAINT " + key,
+                               connection );
+            }
+        }
+    }
+    
+    private Map<String, List<String>> getForeingKeys( String owner, String tableName, Connection connection ) {
+
+        String query = "select table_name, constraint_name "
+                        + " from all_constraints "
+                        + " where r_owner = '" + owner + "' "
+                        + " and constraint_type = 'R' "
+                        + " and r_constraint_name in "
+                        + " ( select constraint_name from all_constraints "
+                        + " where constraint_type in ('P', 'U') "
+                        + " and table_name = '" + tableName + "'"
+                        + " and owner = '" + owner + "' )";
+        
+        PreparedStatement stmnt = null;
+        Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
+        ResultSet rs = null;
+        try {
+            stmnt = connection.prepareStatement( query );
+            rs = stmnt.executeQuery();
+            while( rs.next() ) {
+                String parentTableName = rs.getString( "TABLE_NAME" );
+                String fKeyName = rs.getString( "CONSTRAINT_NAME" );
+
+                if( tableForeignKey.containsKey( parentTableName ) ) {
+                    tableForeignKey.get( parentTableName ).add( fKeyName );
+                } else {
+                    List<String> fKeys = new ArrayList<String>();
+                    fKeys.add( fKeyName );
+                }
+            }
+
+            return tableForeignKey;
+        } catch( SQLException e ) {
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
+    }
+    
+    private String generateTableScript( String owner, String tableName, Connection connection ) {
+
+        String query = "select dbms_metadata.get_ddl('TABLE','" + tableName + "','" + owner + "') from dual";
+
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        String createTableScript = new String();
+        try {
+            stmnt = connection.prepareStatement( query );
+            rs = stmnt.executeQuery();
+            if( rs.next() ) {
+                createTableScript = rs.getString( 1 );
+            }
+
+            return createTableScript;
+        } catch( SQLException e ) {
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
+    }
+    
+    private String generateForeignKeyScript( String owner, String foreignKey, Connection connection ) {
+        
+        String query = "select DBMS_METADATA.GET_DDL('REF_CONSTRAINT','" + foreignKey + "','" + owner
+                       + "') from dual";
+
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        String createTableScript = new String();
+        try {
+            stmnt = connection.prepareStatement( query );
+            rs = stmnt.executeQuery();
+            if( rs.next() ) {
+                createTableScript = rs.getString( 1 );
+            }
+
+            return createTableScript;
+        } catch( SQLException e ) {
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement( stmnt );
+        }
+    }
+    
+    private void executeUpdate( String query, Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        try {
+            stmnt = connection.prepareStatement( query );
+            stmnt.executeUpdate();
+        } catch( SQLException e ) {
+			throw new DbException(
+					"SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " " + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement( stmnt );
         }
     }
 }

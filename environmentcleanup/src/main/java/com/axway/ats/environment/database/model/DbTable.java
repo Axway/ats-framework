@@ -25,8 +25,10 @@ import java.util.List;
 public class DbTable {
 
     private String       tableName;
+    private String       schema;
     private List<String> columnsToExclude;
     private boolean      lockTable             = true;
+    private boolean      dropTable             = false;
     private boolean      identityColumnPresent = false;
 
     private String       autoIncrementResetValue;
@@ -38,47 +40,71 @@ public class DbTable {
      */
     public DbTable( String tableName ) {
 
-        this(tableName, new ArrayList<String>());
+        this(tableName, new String(), new ArrayList<String>());
+    }
+    
+    /**
+     * Constructor - no columns will be excluded from the backup
+     *
+     * @param tableName name of the table
+     * @param schema schema of the table
+     */
+    public DbTable( String tableName, String schema ) {
+
+        this(tableName, schema, new ArrayList<String>());
     }
 
     /**
      * Constructor
      *
      * @param tableName name of the table
+     * @param schema schema of the table
      * @param columnsToExclude list of columns to exclude from the backup
      */
     public DbTable( String tableName,
+                    String schema,
                     List<String> columnsToExclude ) {
 
-        this(tableName, columnsToExclude, true);
+        this(tableName, schema, columnsToExclude, true, false);
     }
 
     /**
      * Constructor - no columns will be excluded from the backup
      *
      * @param tableName name of the table
+     * @param schema name of the schema
      * @param lockTable parameter if the table must be locked during restore
+     * @param dropTable parameter if the table must be recreated during restore
      */
     public DbTable( String tableName,
-                    boolean lockTable ) {
+                    String schema,
+                    boolean lockTable,
+                    boolean dropTable) {
 
-        this(tableName, new ArrayList<String>(), lockTable);
+        this(tableName, schema, new ArrayList<String>(), lockTable, dropTable);
     }
 
     /**
      * Constructor
      *
      * @param tableName name of the table
+     * @param schema schema of the table
      * @param columnsToExclude list of columns to exclude from the backup
      * @param lockTable parameter if the table must be locked during restore
+     * @param dropTable parameter if the table must be recreated during restore
      */
     public DbTable( String tableName,
+                    String schema,
                     List<String> columnsToExclude,
-                    boolean lockTable ) {
-
-        this.tableName = tableName;
-        this.columnsToExclude = columnsToExclude;
-        this.lockTable = lockTable;
+                    boolean lockTable,
+                    boolean dropTable) {
+    	
+    	
+    	this.tableName = tableName;
+    	this.schema = schema;
+    	this.columnsToExclude = columnsToExclude;
+    	this.lockTable = lockTable;
+    	this.dropTable = dropTable;
     }
 
     /**
@@ -89,6 +115,16 @@ public class DbTable {
     public String getTableName() {
 
         return tableName;
+    }
+    
+    /**
+     * Get the table schema
+     *
+     * @return the table schema
+     */
+    public String getTableSchema() {
+
+        return schema;
     }
 
     /**
@@ -115,10 +151,29 @@ public class DbTable {
      * @param lockTable is true if the table will be locked during the restore process
      */
     public void setLockTable(
-                              boolean lockTable ) {
-
-        this.lockTable = lockTable;
+    		boolean lockTable ) {
+    	
+    	this.lockTable = lockTable;
     }
+    
+    /**
+    *
+    * @return if the table will be recreated or not during the restore process
+    */
+   public boolean isDropTable() {
+
+       return dropTable;
+   }
+   
+   /**
+   *
+   * @param dropTable is true if the table will be recreated during the restore process
+   */
+  public void setDropTable(
+                            boolean dropTable ) {
+
+      this.dropTable = dropTable;
+  }
 
     public String getAutoIncrementResetValue() {
 
@@ -144,7 +199,7 @@ public class DbTable {
 
     public DbTable getNewCopy() {
 
-        DbTable newDbTable = new DbTable(this.tableName, this.lockTable);
+        DbTable newDbTable = new DbTable(this.tableName, this.schema, this.lockTable, this.dropTable);
 
         List<String> newColumnsToExclude = new ArrayList<String>();
         for (String columnToExclude : this.columnsToExclude) {
