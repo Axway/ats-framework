@@ -8,8 +8,8 @@ before_install:
     #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.1.pom
      - rm ~/.m2/settings.xml
      - cp settings.xml ~/.m2
-# for fast Travis builds w/o tests:  script: mvn clean install deploy -DskipTests=true
-script: mvn clean install deploy -P fast
+# for fast Travis builds w/o tests:  script: mvn clean install deploy -DskipTests=true or -P fast
+script: mvn clean install deploy
 cache:
   directories:
     - $HOME/.m2
