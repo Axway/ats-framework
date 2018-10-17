@@ -110,11 +110,6 @@
 			<artifactId>mail</artifactId>
 			<version>${javax.mail.version}</version>
 		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpmime</artifactId>
-			<version>${apache.httpcomponents.version}</version>
-		</dependency>
 		<!-- TEST dependencies -->
 		<dependency>
 			<groupId>junit</groupId>
@@ -139,6 +134,11 @@
 		<dependency>
 			<groupId>org.apache.httpcomponents</groupId>
 			<artifactId>httpclient</artifactId>
+		<version>${apache.httpcomponents.version}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.apache.httpcomponents</groupId>
+		<artifactId>httpmime</artifactId>
 			<version>${apache.httpcomponents.version}</version>
 		</dependency>
 	</dependencies>

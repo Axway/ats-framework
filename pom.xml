@@ -91,7 +91,7 @@
         <org.glassfish.jersey.jersey-server.version>2.25.1</org.glassfish.jersey.jersey-server.version>
         <!-- this dependency is required after jersey 2.26 -->
         <!-- <org.glassfish.jersey.inject.version>2.26</org.glassfish.jersey.inject.version> -->
-        <javax.ws.rs-api.version>2.1</javax.ws.rs-api.version>
+        <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
         <com.jcraft.jsch.version>0.1.54</com.jcraft.jsch.version>
 
         <net.java.dev.jna.version>3.4.0</net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
