@@ -97,7 +97,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
      * @param environmentHandlerFactory the factory for creating backup and restore handlers
      */
     public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
-                             List<DbTable> dbTables ) {
+                                    List<DbTable> dbTables ) {
 
         this.dbTables = dbTables;
 
@@ -145,7 +145,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
             String backupFile = getBackupFile();
             createDirIfNotExist(backupFile);
-            dbBackup.createBackup(backupFile );
+            dbBackup.createBackup(backupFile);
 
             log.info("Successfully created backup of environment unit " + getDescription());
         } finally {
@@ -189,6 +189,15 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
             return tempBackupDir + backupFileName;
         }
         return backupDirPath + backupFileName;
+    }
+
+    /**
+     * Toggle whether to drop and recreate tables on restore. Default is <strong>false</strong>.
+     * @param dropTables
+     * */
+    public void setDropTables( boolean dropTables ) {
+
+        this.dropTables = dropTables;
     }
 
     public EnvironmentUnit getNewCopy() {
