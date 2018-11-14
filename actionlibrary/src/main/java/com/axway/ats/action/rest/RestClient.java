@@ -1066,6 +1066,28 @@ public class RestClient {
             clientIdKeys.add(propertyEntry.getKey() + "=" + propertyEntry.getValue());
         }
 
+        if (suppresHttpComplianceValidation == true) { // not default value
+            if (properties.containsKey(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION)) { // user provided value found
+                boolean userProvidedValue = (boolean) properties.get(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION);
+                if (userProvidedValue != suppresHttpComplianceValidation) {
+                    // ignore our value
+                    log.info("You are executing PUT with null body and SUPPRESS_HTTP_COMPLIANCE_VALIDATION is set to false. Expect operation to fail.");
+                } else {
+                    // set our value
+                    log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                    clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                    suppresHttpComplianceValidation);
+                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+                }
+            } else { // user provided value not found
+                // set our value
+                log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                suppresHttpComplianceValidation);
+                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+            }
+        }
+
         // basic authorization
         if (username != null) {
             clientIdKeys.add("user=" + username);
@@ -1075,12 +1097,6 @@ public class RestClient {
 
         // now create the client
         client = getClient(clientIdKeys, clientBuilder);
-        // add ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION property to disable certain HTTP compliance checks
-        client.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, suppresHttpComplianceValidation);
-        if (suppresHttpComplianceValidation) { // log a warning about the Jersey warning
-            log.warn("You are trying to execute request '" + descriptionToken
-                     + "' with empty body. A warning message is expected by the underlying client implementation.");
-        }
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
             client.register(requestFilter);
