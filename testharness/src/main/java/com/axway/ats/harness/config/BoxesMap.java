@@ -46,14 +46,15 @@ class BoxesMap<T extends Box> extends HashMap<String, T> {
             String key = boxesProperty.getKey();
             String value = boxesProperty.getValue();
 
-            String[] tokens = key.split("\\.");
+            String[] tokens = key.split(prefix.replace(".", "\\."))[1].split("\\.");
 
-            if (tokens.length != prefix.split("\\.").length + 2) {
-                throw new ConfigurationException("Improper format of key '" + key + "'");
+            String boxName = tokens[0];
+            StringBuilder sbBoxPropKey = new StringBuilder();
+            for (int i = 1; i < tokens.length; i++) { // we start from index 1, since index = 0 is the box's name
+                sbBoxPropKey.append(tokens[i] + ".");
             }
-
-            String boxName = tokens[tokens.length - 2];
-            String boxPropertyKey = tokens[tokens.length - 1];
+            sbBoxPropKey.setLength(sbBoxPropKey.length() - 1); // remove trailing dot
+            String boxPropertyKey = sbBoxPropKey.toString();
 
             T box = get(boxName);
             if (box == null) {
@@ -85,8 +86,7 @@ class BoxesMap<T extends Box> extends HashMap<String, T> {
      * @param box the box instance
      * @param key the property key
      * @param value the property value
-     * @return boolean if setter was found and successfully invoked, false if not suitable
-     * setter was found
+     * @return boolean if setter was found and successfully invoked, false if not suitable setter was found
      */
     private boolean setPropertyUsingSetter(
                                             String boxName,
