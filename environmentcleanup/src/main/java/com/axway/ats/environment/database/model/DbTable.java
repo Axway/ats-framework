@@ -126,6 +126,16 @@ public class DbTable {
 
         return schema;
     }
+    
+    /**
+     * Set table schema
+     * 
+     * @param tableSchema the table schema
+     * */
+    public void setTableSchema(String tableSchema) {
+        
+        this.schema = tableSchema;
+    }
 
     /**
      * Get the columns to exclude from the backup

@@ -67,7 +67,6 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected boolean              deleteStatementsInserted;
     protected boolean              dropEntireTable;
 
-
     /**
      * Constructor
      */
@@ -106,7 +105,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             markBackupFileAsDamaged(fileWriter, backupFileName);
             throw new DatabaseEnvironmentCleanupException(ERROR_CREATING_BACKUP + backupFileName, pe);
         } finally {
-        	IoUtils.closeStream(fileWriter, ERROR_CREATING_BACKUP + backupFileName);
+            IoUtils.closeStream(fileWriter, ERROR_CREATING_BACKUP + backupFileName);
         }
     }
 
@@ -132,8 +131,8 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                     if (bkFile.renameTo(new File(dmgFileName))) {
                         log.debug("Faulty backup file is renamed to: " + dmgFileName);
                     } else {
-                    	log.warn("Faulty backup file '" + backupFileName
-                                + "' can not be marked as damaged. The rename operation failed");
+                        log.warn("Faulty backup file '" + backupFileName
+                                 + "' can not be marked as damaged. The rename operation failed");
                     }
                 }
             }
@@ -154,7 +153,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     protected void writeBackupToFile( Writer fileWriter ) throws IOException,
                                                           DatabaseEnvironmentCleanupException,
                                                           DbException, ParseException {
-    	
+
         if (disableForeignKeys) {
             fileWriter.write(disableForeignKeyChecksStart());
         }
@@ -162,10 +161,17 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         for (Entry<String, DbTable> entry : dbTables.entrySet()) {
             DbTable dbTable = entry.getValue();
 
+            // use both table schema (if presented) and table name for the final table name
+            String fullTableName = null;
+            if (dbTable != null) {
+                fullTableName = (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())
+                                                                                      ? dbTable.getTableSchema() + "."
+                                                                                      : "")
+                                + dbTable.getTableName();
+            }
+
             if (log.isDebugEnabled()) {
-                log.debug("Preparing data for backup of table " + (dbTable != null
-                                                                                   ? dbTable.getTableName()
-                                                                                   : null));
+                log.debug("Preparing data for backup of table " + fullTableName);
             }
             List<ColumnDescription> columnsToSelect = null;
             columnsToSelect = getColumnsToSelect(dbTable, dbConnection.getUser());
@@ -173,20 +179,18 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                 // NOTE: if needed change behavior to continue if the table has no columns.
                 // Currently it is assumed that if the table is described for backup then
                 // it contains some meaningful data and so it has columns
+
+                // NOTE: it is a good idea to print null instead of empty string for table name when table is null,
+                // so it is more obvious for the user that something is wrong
                 throw new DatabaseEnvironmentCleanupException("No columns to backup for table "
-                                                              + (dbTable != null
-                                                                                 ? dbTable.getTableName()
-                                                                                 : ""));
+                                                              + fullTableName);
             }
 
             StringBuilder selectQuery = new StringBuilder();
             selectQuery.append("SELECT ");
             selectQuery.append(getColumnsString(columnsToSelect));
             selectQuery.append(" FROM ");
-            if (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())) {
-                selectQuery.append(dbTable.getTableSchema() + ".") ;
-            }
-            selectQuery.append(dbTable.getTableName());
+            selectQuery.append(fullTableName);
 
             DbQuery query = new DbQuery(selectQuery.toString());
             // assuming not very large tables
@@ -199,7 +203,6 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             fileWriter.write(disableForeignKeyChecksEnd());
         }
     }
-    
 
     /**
      * Abstract method for
@@ -260,11 +263,21 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      */
     public void addTable( DbTable dbTable ) {
 
-        if (dbTables.containsKey(dbTable.getTableName())) {
-            log.warn("DB table with name '" + dbTable.getTableName()
-                     + "' has already been added for backup.");
+        if (dbTable != null) {
+            String fullTableName = (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())
+                                                                                         ? dbTable.getTableSchema()
+                                                                                           + "."
+                                                                                         : "")
+                                   + dbTable.getTableName();
+
+            if (dbTables.containsKey(fullTableName)) {
+                log.warn("DB table with name '" + fullTableName
+                         + "' has already been added for backup.");
+            } else {
+                dbTables.put(fullTableName, dbTable);
+            }
         } else {
-            dbTables.put(dbTable.getTableName(), dbTable);
+            log.warn("Could not add DB table that is null");
         }
 
     }
@@ -309,7 +322,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = lockTables;
 
     }
-    
+
     /**
      * Choose whether to recreate the tables during restore - default
      * value should be false
