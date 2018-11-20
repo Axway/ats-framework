@@ -18,6 +18,8 @@ package com.axway.ats.environment.database.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.axway.ats.core.utils.StringUtils;
+
 /**
  * Class representing a single database table - it holds the name
  * of the table and the columns which to exclude from the backup
@@ -42,12 +44,12 @@ public class DbTable {
 
         this(tableName, new String(), new ArrayList<String>());
     }
-    
+
     /**
      * Constructor - no columns will be excluded from the backup
      *
      * @param tableName name of the table
-     * @param schema schema of the table
+     * @param schema schema of the table. Note that this is only applicable for <strong>MSSQL</strong> tables
      */
     public DbTable( String tableName, String schema ) {
 
@@ -79,7 +81,7 @@ public class DbTable {
     public DbTable( String tableName,
                     String schema,
                     boolean lockTable,
-                    boolean dropTable) {
+                    boolean dropTable ) {
 
         this(tableName, schema, new ArrayList<String>(), lockTable, dropTable);
     }
@@ -97,14 +99,13 @@ public class DbTable {
                     String schema,
                     List<String> columnsToExclude,
                     boolean lockTable,
-                    boolean dropTable) {
-    	
-    	
-    	this.tableName = tableName;
-    	this.schema = schema;
-    	this.columnsToExclude = columnsToExclude;
-    	this.lockTable = lockTable;
-    	this.dropTable = dropTable;
+                    boolean dropTable ) {
+
+        this.tableName = tableName;
+        this.schema = schema;
+        this.columnsToExclude = columnsToExclude;
+        this.lockTable = lockTable;
+        this.dropTable = dropTable;
     }
 
     /**
@@ -116,7 +117,7 @@ public class DbTable {
 
         return tableName;
     }
-    
+
     /**
      * Get the table schema
      *
@@ -126,15 +127,27 @@ public class DbTable {
 
         return schema;
     }
-    
+
     /**
-     * Set table schema
-     * 
+     * <p>Set table schema</p>
+     * <p>Note: This is only applicable for <strong>MSSQL</strong> tables 
      * @param tableSchema the table schema
      * */
-    public void setTableSchema(String tableSchema) {
-        
+    public void setTableSchema( String tableSchema ) {
+
         this.schema = tableSchema;
+    }
+
+    /**
+     * <p>Get the full (schema_name.table_name) table name</p>
+     * <p>Note that this is only applicable for <strong>MSSQL</strong> tables</p>
+     * */
+    public String getFullTableName() {
+
+        return (!StringUtils.isNullOrEmpty(schema)
+                                                   ? schema + "."
+                                                   : "")
+               + tableName;
     }
 
     /**
@@ -161,29 +174,29 @@ public class DbTable {
      * @param lockTable is true if the table will be locked during the restore process
      */
     public void setLockTable(
-    		boolean lockTable ) {
-    	
-    	this.lockTable = lockTable;
+                              boolean lockTable ) {
+
+        this.lockTable = lockTable;
     }
-    
+
     /**
     *
     * @return if the table will be recreated or not during the restore process
     */
-   public boolean isDropTable() {
+    public boolean isDropTable() {
 
-       return dropTable;
-   }
-   
-   /**
-   *
-   * @param dropTable is true if the table will be recreated during the restore process
-   */
-  public void setDropTable(
-                            boolean dropTable ) {
+        return dropTable;
+    }
 
-      this.dropTable = dropTable;
-  }
+    /**
+    *
+    * @param dropTable is true if the table will be recreated during the restore process
+    */
+    public void setDropTable(
+                              boolean dropTable ) {
+
+        this.dropTable = dropTable;
+    }
 
     public String getAutoIncrementResetValue() {
 

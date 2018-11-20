@@ -36,7 +36,6 @@ import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbReturnModes;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.BackupHandler;
@@ -164,10 +163,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
             // use both table schema (if presented) and table name for the final table name
             String fullTableName = null;
             if (dbTable != null) {
-                fullTableName = (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())
-                                                                                      ? dbTable.getTableSchema() + "."
-                                                                                      : "")
-                                + dbTable.getTableName();
+                fullTableName = dbTable.getFullTableName();
             }
 
             if (log.isDebugEnabled()) {
@@ -264,11 +260,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void addTable( DbTable dbTable ) {
 
         if (dbTable != null) {
-            String fullTableName = (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())
-                                                                                         ? dbTable.getTableSchema()
-                                                                                           + "."
-                                                                                         : "")
-                                   + dbTable.getTableName();
+            String fullTableName = dbTable.getFullTableName();
 
             if (dbTables.containsKey(fullTableName)) {
                 log.warn("DB table with name '" + fullTableName

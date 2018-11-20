@@ -57,8 +57,12 @@ import com.axway.ats.harness.config.CommonConfigurator;
 
 class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger LOG            = Logger.getLogger(MssqlEnvironmentHandler.class);
-    private static final String HEX_PREFIX_STR = "0x";
+    // used to provide a default schema for mssql operations
+    // in no such property is found, ATS uses 'dbo' as a default schema
+    public static final String  MSSQL_DEFAULT_SCHEMA = "mssql.default.schema";
+
+    private static final Logger LOG                  = Logger.getLogger(MssqlEnvironmentHandler.class);
+    private static final String HEX_PREFIX_STR       = "0x";
 
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
@@ -72,10 +76,8 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                           String userName ) throws DbException,
                                                                             ColumnHasNoDefaultValueException {
 
-        String fullTableName = (!StringUtils.isNullOrEmpty(table.getTableSchema())
-                                                                                   ? table.getTableSchema() + "."
-                                                                                   : "")
-                               + table.getTableName();
+        String fullTableName = table.getFullTableName();
+        
         String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE, "
                                    + "columnproperty(object_id('"
                                    + fullTableName
@@ -131,10 +133,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         String fullTableName = null;
         if (table != null) {
-            fullTableName = (!StringUtils.isNullOrEmpty(table.getTableSchema())
-                                                                                ? table.getTableSchema() + "."
-                                                                                : "")
-                            + table.getTableName();
+            fullTableName = table.getFullTableName();
         }
         if (this.addLocks) {
             fileWriter.write("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE " + EOL_MARKER
@@ -234,11 +233,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 DbTable dbTable = entry.getValue();
                 String fullTableName = null;
                 if (dbTable != null) {
-                    fullTableName = (!StringUtils.isNullOrEmpty(dbTable.getTableSchema())
-                                                                                          ? dbTable.getTableSchema()
-                                                                                            + "."
-                                                                                          : "")
-                                    + dbTable.getTableName();
+                    fullTableName = dbTable.getFullTableName();
                 }
                 String deleteQuery = "DELETE FROM " + fullTableName;
                 fileWriter.write(deleteQuery + ";" + EOL_MARKER
@@ -299,10 +294,11 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         String defaultSchema = null;
         try {
             // get the default schema provided by the user
-            defaultSchema = CommonConfigurator.getInstance().getProperty("mssql.default.schema");
+            defaultSchema = CommonConfigurator.getInstance().getProperty(MSSQL_DEFAULT_SCHEMA);
             if (StringUtils.isNullOrEmpty(defaultSchema)) {
                 // user had provided an empty string. Consider this an configuration error and use default mssql schema value (dbo) instead
-                LOG.warn("Provided mssql.default.schema property has empty value. We will use 'dbo' as a default one instead");
+                LOG.warn("Provided '" + MSSQL_DEFAULT_SCHEMA
+                         + "' property has empty value. We will use 'dbo' as a default one instead");
                 defaultSchema = "dbo";
             }
         } catch (NoSuchPropertyException nspe) {
