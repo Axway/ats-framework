@@ -50,6 +50,7 @@ import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.AdditionalAction;
 import com.axway.ats.environment.EnvironmentUnit;
 import com.axway.ats.environment.database.DatabaseEnvironmentUnit;
@@ -361,6 +362,14 @@ public class ConfigurationParser {
 
             if (dbChildNode.getNodeName().equals(TABLE)) {
                 String tableName = dbChildNode.getAttributes().getNamedItem("name").getNodeValue();
+                String schemaName = new String();
+                String[] tableNames = tableName.split("\\.");
+                if(!StringUtils.isNullOrEmpty(tableName) && tableNames.length > 1) {
+                    // Note that if the table name contains dot (.), even if the table name is escaped properly, according to the database server,
+                    // we will consider the presence of dot as a sign that the table names is of the format <schema_name>.<table_name>
+                    schemaName = tableNames[0];
+                    tableName = tableNames[1];
+                }
 
                 String[] columnsToExclude = {};
                 if (dbChildNode.getAttributes().getNamedItem("columnsToExclude") != null) {
@@ -370,7 +379,7 @@ public class ConfigurationParser {
                                                   .split(",");
                 }
 
-                DbTable dbTable = new DbTable(tableName, new String(), Arrays.asList(columnsToExclude));
+                DbTable dbTable = new DbTable(tableName, schemaName, Arrays.asList(columnsToExclude));
                 // parse db table 'lock' attribute
                 if (dbChildNode.getAttributes().getNamedItem("lock") != null) {
 

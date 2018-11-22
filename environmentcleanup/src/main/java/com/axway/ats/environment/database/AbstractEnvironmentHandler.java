@@ -327,6 +327,19 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.dropEntireTable = dropEntireTable;
 
     }
+    
+    /**
+     * <p>Whether to drop table can be specified by either {@link #setDropTables(boolean)} or {@link DbTable#setDropTable(boolean)}</p>
+     * This method here wraps the logic that determines what must be done for a particular table
+     * */
+    protected boolean shouldDropTable( DbTable table ) {
+
+        if (table.isDropTable() == null) {
+            return dropEntireTable;
+        } else {
+            return table.isDropTable();
+        }
+    }
 
     protected abstract void writeDeleteStatements( Writer fileWriter ) throws IOException;
 

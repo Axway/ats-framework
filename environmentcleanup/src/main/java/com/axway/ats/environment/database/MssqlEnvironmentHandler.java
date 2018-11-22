@@ -32,17 +32,18 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Scanner;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.config.exceptions.NoSuchPropertyException;
 import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbReturnModes;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MssqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
@@ -53,21 +54,19 @@ import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
-import com.axway.ats.harness.config.CommonConfigurator;
 
 class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    // used to provide a default schema for mssql operations
-    // in no such property is found, ATS uses 'dbo' as a default schema
-    public static final String  MSSQL_DEFAULT_SCHEMA = "mssql.default.schema";
-
-    private static final Logger LOG                  = Logger.getLogger(MssqlEnvironmentHandler.class);
-    private static final String HEX_PREFIX_STR       = "0x";
+    private static final Logger LOG            = Logger.getLogger(MssqlEnvironmentHandler.class);
+    private static final String HEX_PREFIX_STR = "0x";
+    private String              defaultSchema  = null;
 
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
 
         super(dbConnection, dbProvider);
+
+        defaultSchema = getDefaultSchema();
     }
 
     @Override
@@ -77,7 +76,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                                             ColumnHasNoDefaultValueException {
 
         String fullTableName = table.getFullTableName();
-        
+
         String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE, "
                                    + "columnproperty(object_id('"
                                    + fullTableName
@@ -140,7 +139,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
 
-        if (this.dropEntireTable) {
+        if (shouldDropTable(table)) {
             fileWriter.write(DROP_TABLE_MARKER + fullTableName
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         } else if (!this.deleteStatementsInserted) {
@@ -231,6 +230,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
+                if (shouldDropTable(dbTable)) {
+                    continue;
+                }
                 String fullTableName = null;
                 if (dbTable != null) {
                     fullTableName = dbTable.getFullTableName();
@@ -289,33 +291,17 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     @Override
-    public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
+    public void addTable( DbTable table ) {
 
-        String defaultSchema = null;
-        try {
-            // get the default schema provided by the user
-            defaultSchema = CommonConfigurator.getInstance().getProperty(MSSQL_DEFAULT_SCHEMA);
-            if (StringUtils.isNullOrEmpty(defaultSchema)) {
-                // user had provided an empty string. Consider this an configuration error and use default mssql schema value (dbo) instead
-                LOG.warn("Provided '" + MSSQL_DEFAULT_SCHEMA
-                         + "' property has empty value. We will use 'dbo' as a default one instead");
-                defaultSchema = "dbo";
-            }
-        } catch (NoSuchPropertyException nspe) {
-            // no user provided default schema found. Fall back to dbo
-            defaultSchema = "dbo";
-        }
-
-        // apply that schema to each table that has no schema specified
-        for (DbTable dbTable : dbTables.values()) {
-            if (dbTable != null) { // prevent NPE
-                if (StringUtils.isNullOrEmpty(dbTable.getTableSchema())) { // check if the table DOES NOT have schema already specified
-                    dbTable.setTableSchema(defaultSchema);
+        if (!StringUtils.isNullOrEmpty(defaultSchema)) {
+            // apply that schema to each table that has no schema specified
+            if (table != null) { // prevent NPE
+                if (StringUtils.isNullOrEmpty(table.getTableSchema())) { // check if the table DOES NOT have schema already specified
+                    table.setTableSchema(defaultSchema);
                 }
             }
         }
-
-        super.createBackup(backupFileName);
+        super.addTable(table);
     }
 
     /**
@@ -408,6 +394,33 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 LOG.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
         }
+    }
+
+    /**
+     * <p>Get the default schema for the current user and database.</p>
+     * */
+    private String getDefaultSchema() {
+
+        // get user's default schema
+        String query = "SELECT default_schema_name FROM sys.database_principals WHERE type = 'S' and name = '"
+                       + dbProvider.getDbConnection().getUser() + "'";
+        DbRecordValuesList[] defaultSchemaVal = dbProvider.select(new DbQuery(query),
+                                                                  DbReturnModes.ESCAPED_STRING);
+        if (defaultSchemaVal.length > 0) {
+            DbRecordValuesList firstVal = defaultSchemaVal[0];
+            if (firstVal != null) {
+                String defaultSchema = (String) firstVal.get("default_schema_name");
+                if (!StringUtils.isNullOrEmpty(defaultSchema)) {
+                    LOG.info("Set default schema to '" + defaultSchema
+                             + "'. Tables that do not have schema specified will be assigned to that schema."
+                             + " Tables that do have provided schema will not be affected by that.");
+                    return defaultSchema;
+                }
+            }
+        }
+
+        return null;
+
     }
 
     private void dropAndRecreateTable( Connection connection, String tableName ) {

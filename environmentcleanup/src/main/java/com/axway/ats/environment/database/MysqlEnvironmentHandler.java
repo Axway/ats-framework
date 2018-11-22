@@ -212,10 +212,12 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException {
-
-        if (this.dropEntireTable) {
+        
+        boolean writeDeleteStatementForCurrTable = true;
+        if (shouldDropTable(table)) {
             fileWriter.write(DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            writeDeleteStatementForCurrTable = false;
         } /*else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
           }*/
@@ -227,7 +229,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
-        if (this.includeDeleteStatements) {
+        if (this.includeDeleteStatements && writeDeleteStatementForCurrTable) {
             fileWriter.write("DELETE FROM `" + table.getTableName() + "`;" + EOL_MARKER
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }

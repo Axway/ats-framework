@@ -18,19 +18,24 @@ package com.axway.ats.environment.database.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
  * Class representing a single database table - it holds the name
  * of the table and the columns which to exclude from the backup
  */
+@PublicAtsApi
 public class DbTable {
 
     private String       tableName;
     private String       schema;
     private List<String> columnsToExclude;
     private boolean      lockTable             = true;
-    private boolean      dropTable             = false;
+    /**
+     * Whether to drop table. If true - > then drop, else if false -> no, else (null) user did not specify it.
+     * */
+    private Boolean      dropTable             = null;
     private boolean      identityColumnPresent = false;
 
     private String       autoIncrementResetValue;
@@ -67,7 +72,7 @@ public class DbTable {
                     String schema,
                     List<String> columnsToExclude ) {
 
-        this(tableName, schema, columnsToExclude, true, false);
+        this(tableName, schema, columnsToExclude, true, null);
     }
 
     /**
@@ -81,7 +86,7 @@ public class DbTable {
     public DbTable( String tableName,
                     String schema,
                     boolean lockTable,
-                    boolean dropTable ) {
+                    Boolean dropTable ) {
 
         this(tableName, schema, new ArrayList<String>(), lockTable, dropTable);
     }
@@ -99,7 +104,7 @@ public class DbTable {
                     String schema,
                     List<String> columnsToExclude,
                     boolean lockTable,
-                    boolean dropTable ) {
+                    Boolean dropTable ) {
 
         this.tableName = tableName;
         this.schema = schema;
@@ -180,10 +185,11 @@ public class DbTable {
     }
 
     /**
-    *
+    * <p>Get whether to drop table</p>
+    * <p>Note: If not defined, it will be null</p>
     * @return if the table will be recreated or not during the restore process
     */
-    public boolean isDropTable() {
+    public Boolean isDropTable() {
 
         return dropTable;
     }
