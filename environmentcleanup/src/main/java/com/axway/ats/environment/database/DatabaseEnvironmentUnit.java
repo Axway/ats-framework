@@ -31,6 +31,7 @@ import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupE
 import com.axway.ats.environment.database.model.BackupHandler;
 import com.axway.ats.environment.database.model.DbTable;
 import com.axway.ats.environment.database.model.RestoreHandler;
+import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.harness.config.TestBox;
 
 /**
@@ -97,7 +98,9 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
                                                          testBox.getDbUser(),
                                                          testBox.getDbPass(),
                                                          testBox.getDbPort(),
-                                                         customProperties)
+                                                         CommonConfigurator.getInstance()
+                                                                           .mergeProperties(testBox.getProperties(),
+                                                                                            customProperties))
                                     .getDbConnection(),
              dbTables,
              EnvironmentHandlerFactory.getInstance());

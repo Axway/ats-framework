@@ -38,6 +38,7 @@ import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbReturnModes;
 import com.axway.ats.core.dbaccess.cassandra.CassandraDbProvider;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.harness.config.TestBox;
 
 /**
@@ -71,7 +72,7 @@ public class DatabaseOperations {
     @PublicAtsApi
     public DatabaseOperations( TestBox testBox ) {
 
-        this(testBox, null);
+        this(testBox, (testBox != null) ? testBox.getProperties() : null);
     }
 
     /**
@@ -96,7 +97,7 @@ public class DatabaseOperations {
         }
 
         createDbProvider(testBox.getDbType(), testBox.getHost(), testBox.getDbName(), dbUser, dbPass,
-                         testBox.getDbPort(), customProperties);
+                         testBox.getDbPort(), CommonConfigurator.getInstance().mergeProperties(((testBox != null) ? testBox.getProperties() : null), customProperties));
     }
 
     /**

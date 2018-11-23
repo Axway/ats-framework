@@ -42,6 +42,7 @@ import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.utils.StringUtils;
+import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.harness.config.TestBox;
 
 /**
@@ -121,7 +122,13 @@ public class DatabaseSnapshot {
         this.name = name.trim();
 
         this.testBox = testBox;
-        this.customProperties = customProperties;
+
+        this.customProperties = CommonConfigurator.getInstance()
+                                                  .mergeProperties( (testBox != null)
+                                                                                      ? testBox.getProperties()
+                                                                                      : null,
+                                                                    customProperties);
+
     }
 
     /**
