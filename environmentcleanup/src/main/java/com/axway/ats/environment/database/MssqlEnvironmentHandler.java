@@ -344,6 +344,10 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
 
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("Executing SQL query: " + sql);
+                    }
+
                     // catch the exception and rollback, otherwise we are locked
                     try {
                         updateStatement.execute();
@@ -495,7 +499,11 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         ResultSet rs = null;
         try {
             String simpleTableName = tableName.substring(tableName.indexOf('.') + 1, tableName.length());
-            stmnt = connection.prepareStatement("EXEC sp_fkeys '" + simpleTableName + "'");
+            String query = "EXEC sp_fkeys '" + simpleTableName + "'";
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            stmnt = connection.prepareStatement(query);
             rs = stmnt.executeQuery();
             while (rs.next()) {
                 String fKey = rs.getString("FK_NAME");
@@ -530,6 +538,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         PreparedStatement stmnt = null;
         try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
             stmnt = connection.prepareStatement(query);
             stmnt.executeUpdate();
         } catch (SQLException e) {
@@ -557,6 +568,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 if (currentLine.endsWith("GO")) {
                     // commit the transaction
                     try {
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Executing SQL query: " + command.toString());
+                        }
                         stmt = conn.createStatement();
                         stmt.execute(command.toString());
                     } finally {
@@ -591,6 +605,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             callableStatement.setString(2, StringUtils.isNullOrEmpty(foreingKey)
                                                                                  ? null
                                                                                  : foreingKey);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + callableStatement.toString());
+            }
 
             rs = callableStatement.executeQuery();
             String createQuery = new String();
@@ -624,7 +641,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         try {
             callableStatement = connection.prepareCall("{ call generateTableScript(?) }");
             callableStatement.setString(1, tableName);
-
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + callableStatement.toString());
+            }
             rs = callableStatement.executeQuery();
             String createQuery = new String();
             if (rs.next()) {
@@ -657,6 +676,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         Statement callableStatement = null;
         ResultSet rs = null;
         try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
             callableStatement = connection.createStatement();
             rs = callableStatement.executeQuery(query);
 
