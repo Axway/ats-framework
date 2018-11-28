@@ -140,8 +140,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
 
         if (shouldDropTable(table)) {
-            fileWriter.write(DROP_TABLE_MARKER + fullTableName
-                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            //            fileWriter.write(DROP_TABLE_MARKER + fullTableName
+            //                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            writeDropTableStatements(fileWriter, table.getFullTableName(), ConnectionPool.getConnection(dbConnection));
         } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }
@@ -187,6 +188,78 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             }
             fileWriter.flush();
         }
+    }
+
+    private void writeDropTableStatements( Writer fileWriter, String tableName,
+                                           Connection connection ) throws IOException {
+
+        Map<String, List<String>> foreignKeys = getForeingKeys(tableName, connection);
+
+        // execute that so foreign key checks does not fail
+        executeUpdate(disableForeignKeyChecksStart(), connection);
+
+        // generate script for restoring the exact table and return the CREATE TABLE script
+        String generateTableScript = generateTableScript(tableName, connection);
+
+        String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
+
+        // create the generateForeignKeyScript procedure
+        createDatabaseProcedure(connection, scriptContent);
+
+        List<String> generateForeignKeysScripts = new ArrayList<String>();
+        for (Entry<String, List<String>> keyEntry : foreignKeys.entrySet()) {
+            String parentTableName = keyEntry.getKey();
+            for (String key : keyEntry.getValue()) {
+                // generate scripts for creating all foreign keys
+                generateForeignKeysScripts.add(generateForeignKeyScript(parentTableName, key,
+                                                                        connection));
+            }
+        }
+
+        // drop the newly created procedure
+        executeUpdate("DROP PROCEDURE generateForeignKeyScript", connection);
+
+        // drop foreign keys
+        String query = "SELECT "
+                       + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
+                       + "'].[' + OBJECT_NAME(parent_object_id) + "
+                       + "'] DROP CONSTRAINT [' + name + ']' "
+                       + " FROM sys.foreign_keys "
+                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+
+        Statement callableStatementDropForeignKeys = null;
+        ResultSet rsDropForeignKeys = null;
+        try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            callableStatementDropForeignKeys = connection.createStatement();
+            rsDropForeignKeys = callableStatementDropForeignKeys.executeQuery(query);
+
+            while (rsDropForeignKeys.next()) {
+                fileWriter.write(rsDropForeignKeys.getString(1) + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            }
+
+        } catch (Exception e) {
+            throw new DbException("Error while droping the foreign keys of table '" + tableName + "'.", e);
+        } finally {
+            DbUtils.closeStatement(callableStatementDropForeignKeys);
+        }
+
+        // drop table
+        fileWriter.write("DROP TABLE " + tableName + ";" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create table
+        fileWriter.write(generateTableScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create foreign keys
+        for (String script : generateForeignKeysScripts) {
+            fileWriter.write(script + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+
+        // enable again the foreign check
+        executeUpdate(disableForeignKeyChecksEnd(), connection);
     }
 
     protected String getColumnsString(

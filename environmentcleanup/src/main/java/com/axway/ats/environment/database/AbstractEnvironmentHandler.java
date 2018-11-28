@@ -50,7 +50,7 @@ import com.axway.ats.environment.database.model.RestoreHandler;
 abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandler {
 
     private static final Logger    log                        = Logger.getLogger(AbstractEnvironmentHandler.class);
-    private static final String    ERROR_CREATING_BACKUP      = "Could not create backup in file ";
+    protected static final String  ERROR_CREATING_BACKUP      = "Could not create backup in file ";
     protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";
     protected static final String  DROP_TABLE_MARKER          = " -- ATS DROP TABLE ";
@@ -65,6 +65,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
     protected boolean              dropEntireTable;
+    protected boolean              writeGenerateForeignKeyProcedure;
 
     /**
      * Constructor
@@ -77,6 +78,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.addLocks = true;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
+        this.writeGenerateForeignKeyProcedure = true;
         this.dbTables = new LinkedHashMap<>();
     }
 
@@ -113,9 +115,9 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
      * @param fileWriter backup file writer
      * @param backupFileName backup file name
      */
-    private void markBackupFileAsDamaged(
-                                          Writer fileWriter,
-                                          String backupFileName ) {
+    protected void markBackupFileAsDamaged(
+                                            Writer fileWriter,
+                                            String backupFileName ) {
 
         try {
             if (fileWriter != null) {
@@ -327,7 +329,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.dropEntireTable = dropEntireTable;
 
     }
-    
+
     /**
      * <p>Whether to drop table can be specified by either {@link #setDropTables(boolean)} or {@link DbTable#setDropTable(boolean)}</p>
      * This method here wraps the logic that determines what must be done for a particular table

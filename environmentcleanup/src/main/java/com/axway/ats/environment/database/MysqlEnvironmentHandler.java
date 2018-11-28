@@ -212,11 +212,12 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbTable table,
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException {
-        
+
         boolean writeDeleteStatementForCurrTable = true;
         if (shouldDropTable(table)) {
-            fileWriter.write(DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
-                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            /*fileWriter.write(DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);*/
+            writeDropTableStatements(fileWriter, table.getFullTableName(), ConnectionPool.getConnection(dbConnection));
             writeDeleteStatementForCurrTable = false;
         } /*else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
@@ -292,6 +293,21 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             fileWriter.write("UNLOCK TABLES;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
         fileWriter.write(AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+    }
+
+    private void writeDropTableStatements( Writer fileWriter, String fullTableName,
+                                           Connection connection ) throws IOException {
+
+        String tableName = fullTableName;
+        // generate script for restoring the exact table
+        String generateTableScript = generateTableScript(tableName, connection);
+
+        // drop the table
+        fileWriter.write("DROP TABLE " + tableName + ";" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create new table
+        fileWriter.write(generateTableScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
     }
 
     @Override
