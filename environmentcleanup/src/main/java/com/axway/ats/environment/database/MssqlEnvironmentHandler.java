@@ -77,7 +77,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         String fullTableName = table.getFullTableName();
 
-        String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE, "
+        String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, IS_NULLABLE, "
                                    + "columnproperty(object_id('"
                                    + fullTableName
                                    + "'), COLUMN_NAME,'IsIdentity') as isIdentity "
@@ -142,7 +142,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (shouldDropTable(table)) {
             //            fileWriter.write(DROP_TABLE_MARKER + fullTableName
             //                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            writeDropTableStatements(fileWriter, table.getFullTableName(), ConnectionPool.getConnection(dbConnection));
+            writeDropTableStatements(fileWriter, table, ConnectionPool.getConnection(dbConnection));
         } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }
@@ -190,9 +190,10 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
     }
 
-    private void writeDropTableStatements( Writer fileWriter, String tableName,
+    private void writeDropTableStatements( Writer fileWriter, DbTable table,
                                            Connection connection ) throws IOException {
 
+        String tableName = table.getFullTableName();
         Map<String, List<String>> foreignKeys = getForeingKeys(tableName, connection);
 
         // execute that so foreign key checks does not fail
@@ -200,6 +201,19 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // generate script for restoring the exact table and return the CREATE TABLE script
         String generateTableScript = generateTableScript(tableName, connection);
+
+        String partitionName = getPartitionSchemeName(table);
+
+        if (!StringUtils.isNullOrEmpty(partitionName)) {
+            String partitionColumnName = getPartitionColumnName(table);
+            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>",
+                                                              " ON [" + partitionName + "]([" + partitionColumnName
+                                                                                                + "])");
+        } else {
+            // if the table do not have to be partitioned
+            // replace with empty string the partition schemE placeholder
+            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>", "");
+        }
 
         String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
 
@@ -260,6 +274,53 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         // enable again the foreign check
         executeUpdate(disableForeignKeyChecksEnd(), connection);
+    }
+
+    private String getPartitionColumnName( DbTable table ) {
+
+        String query = "select c.name " +
+                       "from  sys.tables t " +
+                       "join  sys.indexes i " +
+                       "      on(i.object_id = t.object_id " +
+                       "      and i.index_id < 2) " +
+                       "join  sys.index_columns ic " +
+                       "      on(ic.partition_ordinal > 0 " +
+                       "      and ic.index_id = i.index_id and ic.object_id = t.object_id) " +
+                       "join  sys.columns c " +
+                       "      on(c.object_id = ic.object_id " +
+                       "      and c.column_id = ic.column_id) " +
+                       "where t.object_id  = object_id('" + table.getFullTableName() + "') ";
+
+        DbRecordValuesList[] rows = dbProvider.select(query);
+        if (rows != null && rows.length > 0) {
+            return (String) rows[0].get("name");
+        } else {
+            return "";
+        }
+    }
+
+    private String getPartitionSchemeName( DbTable table ) {
+
+        String query = "select DISTINCT " +
+                       "ps.[name] AS Ps_Name " +
+                       "from sys.partitions p " +
+                       "inner join sys.indexes i " +
+                       " on p.[object_id] = i.[object_id] " +
+                       " and p.index_id = i.index_id " +
+                       "inner JOIN sys.data_spaces ds " +
+                       " on i.data_space_id = ds.data_space_id " +
+                       "inner JOIN sys.partition_schemes ps " +
+                       " on ds.data_space_id = ps.data_space_id " +
+                       "inner JOIN sys.partition_functions pf " +
+                       " on ps.function_id = pf.function_id " +
+                       " where OBJECT_NAME(p.[object_id]) = '" + table.getTableName() + "' ";
+
+        DbRecordValuesList[] rows = dbProvider.select(query);
+        if (rows != null && rows.length > 0) {
+            return (String) rows[0].get("Ps_Name");
+        } else {
+            return "";
+        }
     }
 
     protected String getColumnsString(

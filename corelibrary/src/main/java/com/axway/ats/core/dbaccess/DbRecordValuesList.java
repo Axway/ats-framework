@@ -35,7 +35,7 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
                 if (foundValue == null) {
                     foundValue = recordValue;
                 } else {
-                    // FIXME Tihomir: Is this possible?
+                    // FIXME: Is this possible?
                     throw new DbException("Ambiguous column name '" + columnName
                                           + "' - the returned record contains more that one column with this name, you need to specify table or index");
                 }

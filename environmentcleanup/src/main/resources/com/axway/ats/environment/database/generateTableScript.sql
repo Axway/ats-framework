@@ -53,7 +53,7 @@ SELECT 'CREATE TABLE ' + @object_name + CHAR(13) + '(' + CHAR(13) + STUFF((
                        THEN '(' + CASE WHEN c.max_length = -1 THEN 'MAX' ELSE CAST(c.max_length / 2 AS VARCHAR(5)) END + ')'
                      WHEN tp.name IN ('datetime2', 'time2', 'datetimeoffset') 
                        THEN '(' + CAST(c.scale AS VARCHAR(5)) + ')'
-                     WHEN tp.name = 'decimal' 
+                     WHEN tp.name IN ('decimal', 'numeric') 
                        THEN '(' + CAST(c.[precision] AS VARCHAR(5)) + ',' + CAST(c.scale AS VARCHAR(5)) + ')'
                     ELSE ''
                 END +
@@ -82,7 +82,7 @@ SELECT 'CREATE TABLE ' + @object_name + CHAR(13) + '(' + CHAR(13) + STUFF((
             + ')' + CHAR(13)
             FROM sys.key_constraints k WITH (NOWAIT)
             WHERE k.parent_object_id = @object_id 
-                AND k.[type] = 'PK'), '') + ')'  + CHAR(13)
+                AND k.[type] = 'PK'), '') + ') <PARTITION_SCHEME_PLACEHOLDER>'  + CHAR(13)
     + ISNULL((SELECT (
         SELECT CHAR(13) +
              'ALTER TABLE ' + @object_name + ' WITH' 
