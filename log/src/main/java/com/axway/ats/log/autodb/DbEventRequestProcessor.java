@@ -1108,6 +1108,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // Check if this error is caused due to deleted run
             if (!dbAccess.isRunPresent(runId)) {
                 // This run seems to be deleted
+                log.warn("Run with id '" + runId + "' appears to be deleted from database '"
+                         + this.dbConnection.getConnHash()
+                         + "'. No additional test data will be inserted for that run.");
             }
         } else {
             throw e;
@@ -1124,6 +1127,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // Check if this error is caused due to deleted suite
             if (!dbAccess.isSuitePresent(suiteId)) {
                 // This suite seems to be deleted
+                log.warn("Suite with id '" + suiteId + "' appears to be deleted from database '"
+                         + this.dbConnection.getConnHash()
+                         + "'. No additional test data will be inserted for that suite.");
             }
         } else {
             throw e;
@@ -1142,6 +1148,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 // This testcase seems to be deleted, mark it as deleted.
                 // On the Agent side, this is the normal way to understand a testcase was deleted.
                 deletedTestcases.add(testcaseId);
+                log.warn("Testcase with id '" + testcaseId + "' appears to be deleted from database '"
+                         + this.dbConnection.getConnHash()
+                         + "'. No additional test data will be inserted for that testcase.");
             }
         } else {
             throw e;

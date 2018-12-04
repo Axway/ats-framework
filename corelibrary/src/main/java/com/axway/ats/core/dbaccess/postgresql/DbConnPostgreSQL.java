@@ -195,7 +195,32 @@ public class DbConnPostgreSQL extends DbConnection {
         ds.setUsername(user);
         ds.setPassword(password);
         ds.setUrl(getURL());
+        applyTimeout();
+
         return ds;
+    }
+
+    @Override
+    public void applyTimeout() {
+
+        StringBuilder sb = new StringBuilder();
+
+        // see if connection timeout is set via system property
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        if (this.timeout == DEFAULT_TIMEOUT) {
+            // we DO NOT have custom timeout for that connection
+            if (connectionTimeout != null) {
+                // use the value of the system property as a connection timeout
+                this.timeout = connectionTimeout;
+            }
+        }
+        if (connectionTimeout != null) {
+            sb.append("connectTimeout=" + connectionTimeout + ";");
+            sb.append("socketTimeout=" + connectionTimeout);
+        }
+        if (sb.length() > 0) {
+            ds.setConnectionProperties(sb.toString());
+        }
     }
 
     @Override
@@ -213,7 +238,7 @@ public class DbConnPostgreSQL extends DbConnection {
     @Override
     public void disconnect() {
 
-        if( ds != null ) {
+        if (ds != null) {
             try {
                 ds.close();
             } catch (Exception e) {

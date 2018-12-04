@@ -45,6 +45,8 @@ public class RestSystemMonitor {
 
     private static final Logger log                             = Logger.getLogger(RestSystemMonitor.class);
 
+    public static final long    DEFAULT_MAXIMUM_RUNNING_TIME    = 60 * 60 * 1000;                                                // 1 hour
+
     private boolean             isStarted                       = false;
 
     // whether we have to log user activity data
@@ -58,6 +60,7 @@ public class RestSystemMonitor {
     private AgentSystemMonitor  systemMonitor;
 
     public RestSystemMonitor() {
+
         readingTypes = new HashSet<>();
         systemMonitor = new AgentSystemMonitor();
     }
@@ -372,7 +375,8 @@ public class RestSystemMonitor {
                                  String monitoredHost,
                                  long startTimestamp,
                                  int pollInterval,
-                                 long executorTimeOffset ) {
+                                 long executorTimeOffset,
+                                 long maximumRunningTime ) {
 
         if (isStarted) {
 
@@ -382,7 +386,8 @@ public class RestSystemMonitor {
         if (logSystemStatistics) {
             List<MonitoringException> errorsStartingMonitoringPhysicalHost = startMonitoringPhysicalHost(monitoredHost,
                                                                                                          pollInterval,
-                                                                                                         executorTimeOffset);
+                                                                                                         executorTimeOffset,
+                                                                                                         maximumRunningTime);
             if (errorsStartingMonitoringPhysicalHost.size() > 0) {
                 for (MonitoringException e : errorsStartingMonitoringPhysicalHost) {
                     log.error("The following error occured while starting the system monitoring process",
@@ -398,7 +403,8 @@ public class RestSystemMonitor {
 
             List<MonitoringException> errorsStartingMonitoringAgent = startMonitoringAgent(monitoredHost,
                                                                                            startTimestamp,
-                                                                                           pollInterval);
+                                                                                           pollInterval,
+                                                                                           maximumRunningTime);
             if (errorsStartingMonitoringAgent.size() > 0) {
                 for (MonitoringException e : errorsStartingMonitoringAgent) {
                     log.error("The following error occured while starting the monitoring process on ATS Agent",
@@ -486,7 +492,8 @@ public class RestSystemMonitor {
     private List<MonitoringException> startMonitoringPhysicalHost(
                                                                    String monitoredHost,
                                                                    int pollingInterval,
-                                                                   long executorTimeOffset ) {
+                                                                   long executorTimeOffset,
+                                                                   long maximumRunningTime ) {
 
         List<MonitoringException> errors = new ArrayList<MonitoringException>();
 
@@ -501,7 +508,8 @@ public class RestSystemMonitor {
         try {
             initializeSystemMonitoringProcess(monitoredHost,
                                               pollingInterval,
-                                              executorTimeOffset);
+                                              executorTimeOffset,
+                                              maximumRunningTime);
         } catch (MonitoringException e) {
             errors.add(e);
         }
@@ -525,13 +533,15 @@ public class RestSystemMonitor {
     private void initializeSystemMonitoringProcess(
                                                     String monitoredHost,
                                                     int pollInterval,
-                                                    long executorTimeOffset ) throws MonitoringException {
+                                                    long executorTimeOffset,
+                                                    long maximumRunningTime ) throws MonitoringException {
 
         log.debug("Initializing the system monitoring process on " + monitoredHost);
         try {
             systemMonitor.initializeMonitoring(new ArrayList<ReadingBean>(this.readingTypes),
                                                pollInterval,
-                                               executorTimeOffset);
+                                               executorTimeOffset,
+                                               maximumRunningTime);
         } catch (Exception e) {
             throw new MonitoringException("Could not start the system monitoring process on " + monitoredHost
                                           + ". For more details check loader logs on that machine", e);
@@ -553,7 +563,8 @@ public class RestSystemMonitor {
     private List<MonitoringException> startMonitoringAgent(
                                                             String monitoredAgent,
                                                             long startTimestamp,
-                                                            int pollInterval ) {
+                                                            int pollInterval,
+                                                            long maximumRunningTime ) {
 
         List<MonitoringException> errors = new ArrayList<MonitoringException>();
         log.debug("Starting ATS Agent monitoring on " + monitoredAgent);
@@ -562,7 +573,7 @@ public class RestSystemMonitor {
 
         userActionsMonitoringAgent.setAgentAddress(monitoredAgent);
 
-        userActionsMonitoringAgent.startMonitoring(startTimestamp, pollInterval);
+        userActionsMonitoringAgent.startMonitoring(startTimestamp, pollInterval, maximumRunningTime);
 
         return errors;
 

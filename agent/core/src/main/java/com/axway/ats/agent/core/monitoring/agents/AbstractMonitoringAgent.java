@@ -29,6 +29,7 @@ public abstract class AbstractMonitoringAgent {
 
     protected int  pollInterval;
     protected long executorTimeOffset;
+    protected long maximumRunningTime;
 
     /**
      * Initializes this instance of the {@link MonitoringAgent}
@@ -47,6 +48,11 @@ public abstract class AbstractMonitoringAgent {
                                           long executorTimeOffset ) {
 
         this.executorTimeOffset = executorTimeOffset;
+    }
+
+    protected void setMaximumRunningTime( long maximumRunningTime ) {
+
+        this.maximumRunningTime = maximumRunningTime;
     }
 
     /**

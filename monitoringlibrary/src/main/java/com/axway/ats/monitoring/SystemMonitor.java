@@ -736,11 +736,26 @@ public class SystemMonitor {
     public void startMonitoring(
                                  int pollingInterval ) {
 
+        startMonitoring(pollingInterval, 0);
+
+    }
+
+    /**
+     * Start monitoring
+     *
+     * @param pollingInterval in how many seconds to record the requested data
+     * @param maximumRunningTime how long (in seconds) the monitoring will run before stopping itself.</br> 
+     *                           This is an <strong>optional</strong> value that prevents the monitoring from running forever. You still can use stopMonitoring() to stop it manually
+     */
+    @PublicAtsApi
+    public void startMonitoring(
+                                 int pollingInterval, long maximumRunningTime ) {
+
         List<String> errorsMessages = new ArrayList<>();
         for (Map.Entry<String, ConnectionInfo> entry : this.connectionsInformation.entrySet()) {
             String monitoredHost = entry.getKey();
             // start monitoring
-            String errorMessage = startMonitoring(pollingInterval, monitoredHost, entry.getValue());
+            String errorMessage = startMonitoring(pollingInterval, maximumRunningTime, monitoredHost, entry.getValue());
             if (errorMessage != null) {
                 errorsMessages.add(errorMessage);
             }
@@ -759,7 +774,8 @@ public class SystemMonitor {
 
     }
 
-    private String startMonitoring( int pollingInterval, String monitoredHost, ConnectionInfo info ) {
+    private String startMonitoring( int pollingInterval, long maximumRunningTime, String monitoredHost,
+                                    ConnectionInfo info ) {
 
         try {
             StringBuilder sb = new StringBuilder();
@@ -783,8 +799,16 @@ public class SystemMonitor {
               .append("\"")
               .append(":")
               .append(pollingInterval)
-              .append(",")
-              .append("\"")
+              .append(",");
+            if (maximumRunningTime > 0) {
+                sb.append("\"")
+                  .append("maximumRunningTime")
+                  .append("\"")
+                  .append(":")
+                  .append(maximumRunningTime)
+                  .append(",");
+            }
+            sb.append("\"")
               .append("startTimestamp")
               .append("\"")
               .append(":")

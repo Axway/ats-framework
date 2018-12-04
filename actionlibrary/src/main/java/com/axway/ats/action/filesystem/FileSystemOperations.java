@@ -1482,7 +1482,7 @@ public class FileSystemOperations {
      * @param zipFilePath the ZIP file path
      * @param outputDirPath output directory which is used as base directory for extracted files
      *
-     * @see #extract(String, String)
+     * @see extract(String, String)
      */
     @Deprecated
     @PublicAtsApi

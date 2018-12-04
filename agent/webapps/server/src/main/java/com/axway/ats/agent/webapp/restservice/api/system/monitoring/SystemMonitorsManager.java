@@ -29,7 +29,7 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static long deinitialize(
-                                                 long resourceId ) {
+                                                  long resourceId ) {
 
         return ResourcesManager.deinitializeResource(resourceId);
 
@@ -79,14 +79,14 @@ public class SystemMonitorsManager {
     }
 
     public synchronized static void startMonitoring( long resourceId, int pollingInterval,
-                                                     long startTimestamp, String atsAgent ) {
+                                                     long startTimestamp, long maximumRunningTime, String atsAgent ) {
 
         RestSystemMonitor monitor = (RestSystemMonitor) ResourcesManager.getResource(resourceId);
 
         // calculate the time offset between the agent and the test executor
         long timeOffset = System.currentTimeMillis() - startTimestamp;
 
-        monitor.startMonitoring(atsAgent, startTimestamp, pollingInterval, timeOffset);
+        monitor.startMonitoring(atsAgent, startTimestamp, pollingInterval, timeOffset, maximumRunningTime);
 
     }
 

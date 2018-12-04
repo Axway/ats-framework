@@ -143,7 +143,7 @@ public class DbUtils {
 
         try {
             sqlServerConnection = new DbConnSQLServer(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = sqlServerConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(sqlServerConnection);//sqlServerConnection.getDataSource().getConnection();
             ps = sqlConnection.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
@@ -180,7 +180,7 @@ public class DbUtils {
 
         try {
             postgreConnection = new DbConnPostgreSQL(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = postgreConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(postgreConnection);//postgreConnection.getDataSource().getConnection();
             ps = sqlConnection.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record

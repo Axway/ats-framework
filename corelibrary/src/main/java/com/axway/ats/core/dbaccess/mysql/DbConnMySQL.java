@@ -23,6 +23,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
@@ -31,24 +32,26 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger       log               = Logger.getLogger(DbConnMySQL.class);
+    private static Logger                 log               = Logger.getLogger(DbConnMySQL.class);
 
     /**
      * Default DB port
      */
-    public static final int     DEFAULT_PORT      = 3306;
+    public static final int               DEFAULT_PORT      = 3306;
 
     /**
      * The JDBC MySQL prefix string
      */
-    private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
+    private static final String           JDBC_MYSQL_PREFIX = "jdbc:mysql://";
 
     /**
      * The connection URL
      */
-    private String              url;
+    private String                        url;
 
-    public static final String  DATABASE_TYPE     = "MYSQL";
+    private MysqlConnectionPoolDataSource dataSource;
+
+    public static final String            DATABASE_TYPE     = "MYSQL";
 
     /**
      * Constructor
@@ -126,7 +129,7 @@ public class DbConnMySQL extends DbConnection {
     @Override
     public DataSource getDataSource() {
 
-        MysqlConnectionPoolDataSource dataSource = new MysqlConnectionPoolDataSource();// do not use connection pool
+        dataSource = new MysqlConnectionPoolDataSource();// do not use connection pool
         dataSource.setServerName(this.host);
         dataSource.setPort(this.port);
         dataSource.setDatabaseName(this.db);
@@ -134,7 +137,24 @@ public class DbConnMySQL extends DbConnection {
         dataSource.setPassword(this.password);
         dataSource.setAllowMultiQueries(true);
 
+        applyTimeout();
+
         return dataSource;
+    }
+
+    @Override
+    protected void applyTimeout() {
+
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        if (this.timeout == DEFAULT_TIMEOUT) {
+            // we DO NOT have custom timeout for that connection
+            if (connectionTimeout != null) {
+                // use the value of the system property as a connection timeout
+                this.timeout = connectionTimeout;
+            }
+        }
+        dataSource.setConnectTimeout(this.timeout);
+        dataSource.setSocketTimeout(this.timeout);
     }
 
     @Override

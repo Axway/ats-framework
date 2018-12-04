@@ -22,6 +22,7 @@ import java.util.Map;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -49,6 +50,8 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
     protected AtsConsoleLogger        atsConsoleLogger      = new AtsConsoleLogger(getClass());
 
+    private static boolean            logDeadlockWarning    = true;
+
     /** Holds information about the parent of each thread
      * <br>
      * child thread id -> parent thread id
@@ -72,6 +75,23 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // init the appender configuration
         // it will be populated when the setters are called
         this.appenderConfig = new DbAppenderConfiguration();
+
+        logWarningForPossibleDealock();
+    }
+
+    private void logWarningForPossibleDealock() {
+
+        if (logDeadlockWarning) {
+            Logger dbcp2Logger = Logger.getLogger("org.apache.commons.dbcp2");
+            if (dbcp2Logger != null) {
+                if (dbcp2Logger.isEnabledFor(Level.DEBUG)) {
+                    atsConsoleLogger.warn("Logger '" + dbcp2Logger.getName() + "' is logging level '"
+                                          + Level.DEBUG.toString() + "'. This may cause deadlock. Please raise severity to INFO or higher.");
+                }
+            }
+            logDeadlockWarning = false;
+        }
+
     }
 
     /*
@@ -105,7 +125,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         DbChannel channel = this.channels.get(channelKey);
         if (channel == null) {
             // check if TestNG does NOT run in parallel
-            if (!parallel && !(this instanceof PassiveDbAppender)) { // if this is not a PassiveDbAppender and we are not in parallel mode
+            if (!parallel && ! (this instanceof PassiveDbAppender)) { // if this is not a PassiveDbAppender and we are not in parallel mode
                 // see if there is at least one db channel created
                 if (!this.channels.isEmpty()) {
                     // get the first channel from the map

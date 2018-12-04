@@ -16,7 +16,6 @@
 package com.axway.ats.core.dbaccess;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.HashMap;
 
 import javax.sql.DataSource;
@@ -24,17 +23,32 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.utils.ExceptionUtils;
 
 public class ConnectionPool {
 
     private static Logger                      log;
 
+    private static final AtsConsoleLogger      atsLog                            = new AtsConsoleLogger(ConnectionPool.class);
+
     /**
-     * we keep a static list of connections in order to reuse them when we have multyple calls for creating the same
+     * The number of times ATS will retry to open a connection when a network exception occurred
+     * */
+    public static final int                    DEFAULT_CONNECTION_TIMEOUT_RETRY  = 5;
+
+    /**
+     * The interval (in seconds) between each retry for a failed connection
+     * */
+    public static final int                    DEFAULT_CONNECTION_RETRY_INTERVAL = 10;
+
+    /**
+     * we keep a static list of connections in order to reuse them when we have multiple calls for creating the same
      * connection
      */
-    private static HashMap<String, DataSource> dataSourceMap = new HashMap<String, DataSource>();
+    private static HashMap<String, DataSource> dataSourceMap                     = new HashMap<String, DataSource>();
 
     //prevent instantiation
     private ConnectionPool() {
@@ -58,30 +72,60 @@ public class ConnectionPool {
         // create the connection identifier
         String connectionDescription = dbConnection.getConnHash();
         DataSource dataSource;
-
-        if (dataSourceMap.containsKey(connectionDescription)) {
-            // use the cached connection
-            dataSource = dataSourceMap.get(connectionDescription);
-        } else {
-            dataSource = dbConnection.getDataSource();
-            dataSourceMap.put(connectionDescription, dataSource);
+        Integer connectionTimeoutRetry = AtsSystemProperties.getPropertyAsNumber("connection.timeout.retry");
+        if (connectionTimeoutRetry == null) {
+            connectionTimeoutRetry = DEFAULT_CONNECTION_TIMEOUT_RETRY;
         }
-
-        try {
-            Connection newConnection;
-            if (dataSource instanceof BasicDataSource) {
-                // DBCP BasicDataSource does not support getConnection(user,pass) method
-                newConnection = dataSource.getConnection();
+        Integer connectionRetryInterval = AtsSystemProperties.getPropertyAsNumber("connection.retry.interval");
+        if (connectionRetryInterval == null) {
+            connectionRetryInterval = DEFAULT_CONNECTION_RETRY_INTERVAL;
+        }
+        int connectionRetriesCount = 0;
+        do {
+            if (dataSourceMap.containsKey(connectionDescription)) {
+                // use the cached connection
+                dataSource = dataSourceMap.get(connectionDescription);
             } else {
-                newConnection = dataSource.getConnection(dbConnection.getUser(),
-                                                         dbConnection.getPassword());
+                dataSource = dbConnection.getDataSource();
+                dataSourceMap.put(connectionDescription, dataSource);
             }
-            return newConnection;
 
-        } catch (SQLException sqle) {
-            throw new DbException("Unable to connect to database using location '" + dbConnection.getURL()
-                                  + "' and user '" + dbConnection.getUser() + "'", sqle);
-        }
+            try {
+                Connection newConnection;
+                if (dataSource instanceof BasicDataSource) {
+                    // DBCP BasicDataSource does not support getConnection(user,pass) method
+                    newConnection = dataSource.getConnection();
+                } else {
+                    newConnection = dataSource.getConnection(dbConnection.getUser(),
+                                                             dbConnection.getPassword());
+                }
+                if (connectionRetriesCount > 0) {
+                    atsLog.info("DB connection to '" + dbConnection.getURL()
+                                + "' obtained. Network connectivity issue resolved.");
+                }
+                return newConnection;
+
+            } catch (Exception e) {
+                connectionRetriesCount++;
+                // check if the exception is network unreachable or connection/socket timeout
+                if (ExceptionUtils.containsMessage("Network is unreachable (connect failed)", e)) {
+                    atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
+                                + "Network unreachable. Retries left "
+                                + (connectionTimeoutRetry - connectionRetriesCount));
+                    try {
+                        Thread.sleep(connectionRetryInterval * 1000);
+                    } catch (InterruptedException ie) {
+                        // do nothing
+                    }
+                }
+                if (connectionRetriesCount >= connectionTimeoutRetry) {
+                    throw new DbException("Unable to connect to database using location '" + dbConnection.getURL()
+                                          + "' and user '" + dbConnection.getUser() + "'", e);
+                }
+            }
+        } while (connectionRetriesCount <= connectionTimeoutRetry);
+
+        return null; // or some exception saying that we can not obtain connection
     }
 
     /**

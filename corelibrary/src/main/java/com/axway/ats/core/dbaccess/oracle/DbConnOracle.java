@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.SslUtils;
@@ -277,11 +278,26 @@ public class DbConnOracle extends DbConnection {
                 }
             }
 
+            applyTimeout();
             return dataSource;
         } catch (SQLException e) {
 
             throw new DbException("Unable to create database source", e);
         }
+    }
+
+    @Override
+    protected void applyTimeout() {
+
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        if (this.timeout == DEFAULT_TIMEOUT) {
+            // we DO NOT have custom timeout for that connection
+            if (connectionTimeout != null) {
+                // use the value of the system property as a connection timeout
+                this.timeout = connectionTimeout;
+            }
+        }
+        dataSource.setLoginTimeout(this.timeout);
     }
 
     @Override
@@ -314,7 +330,7 @@ public class DbConnOracle extends DbConnection {
     @Override
     public void disconnect() {
 
-        if( dataSource != null ) {
+        if (dataSource != null) {
             try {
                 dataSource.close();
             } catch (SQLException e) {

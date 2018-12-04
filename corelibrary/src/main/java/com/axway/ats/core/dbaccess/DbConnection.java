@@ -26,9 +26,18 @@ import javax.sql.DataSource;
 public abstract class DbConnection {
 
     /**
+     * <p>The default (30 seconds) timeout* when working with database.</p>
+     * <p>Note that <strong>timeout</strong> has different meaning for different databases and/or database drivers.</br>
+     * See {@link DbConnection#applyTimeout()} for more information.</p>
+     * */
+    public static final int    DEFAULT_TIMEOUT = 30 * 1000;       // 30 seconds
+
+    /**
      * The type of the database
      */
     protected String              dbType;
+
+    protected int                 timeout         = DEFAULT_TIMEOUT; // should this be included in the connection hash?
 
     //required attributes
     protected String              host;
@@ -207,5 +216,31 @@ public abstract class DbConnection {
      *  in the connection pool associated with this data source.
      */
     public abstract void disconnect();
+
+    /**
+     *  <p>Set connection and/or socket timeout and/or login timeout.</p>
+     *  <p> See {@link DbConnection#applyTimeout()} for more details </p>
+     *  @param timeout the timeout in seconds
+     */
+    public void setTimeout( int timeout ) {
+
+        this.timeout = timeout;
+    }
+
+    /**
+     * Get connection timeout (in seconds)
+     * */
+    public int getTimeout() {
+
+        return this.timeout;
+    }
+
+    /**
+     * <p>Since each database connection (PSQL, MSSQL, etc) 
+     * uses different connection properties for timeout (connectTimeout, socketTimeout, loginTimeout, etc)</br>
+     * This method uses the timeout value, provided by {@link DbConnection#setTimeout(int)}, 
+     * to set the necessary connection timeout values for the specific db connection type and/or db driver</p>
+     * */
+    protected abstract void applyTimeout();
 
 }

@@ -41,7 +41,9 @@ import com.axway.ats.core.utils.StringUtils;
  * <ul>
  *  <li>"JTDS" - default</li>
  *  <li>"JNetDirect" - to use JNetDirect's JSQLConnect driver</li>
+ *  <li>"MSSQL" - to use the official Microsoft SQL driver</li>
  * </ul>
+ * <strong>Note</strong> that both MSSQL and JNetDirect have to be added to the class path if you want to use them. ATS does not include them by default
  * </p>
  *
  */
@@ -169,29 +171,29 @@ public class DbConnSQLServer extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
         updateConnectionSettings();
 
-        url.append( jdbcDriverPrefix ).append( host ).append( ":" ).append( this.port );
-        
-        if( !useSSL && db != null ) {
-            url.append( "/" ).append( db );
+        url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
+
+        if (!useSSL && db != null) {
+            url.append("/").append(db);
         } else {
-            if( DEFAULT_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
-                if( db != null ) {
-                    url.append( "/" ).append( db );
+            if (DEFAULT_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
+                if (db != null) {
+                    url.append("/").append(db);
                 }
-                url.append( ";ssl=require" );
-            } else if( MSSQL_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
+                url.append(";ssl=require");
+            } else if (MSSQL_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
                 // url prefix is missing the ':jtds:' part in SSL connection
                 // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-                url.append( MSSQL_JDBC_DRIVER_PREFIX ).append( host ).append( ":" ).append( this.port );
+                url.append(MSSQL_JDBC_DRIVER_PREFIX).append(host).append(":").append(this.port);
 
-                if( db != null ) {
-                    url.append( ";databaseName=" )
-                       .append( db )
-                       .append( ";integratedSecurity=false;encrypt=true;trustServerCertificate=true" );
+                if (db != null) {
+                    url.append(";databaseName=")
+                       .append(db)
+                       .append(";integratedSecurity=false;encrypt=true;trustServerCertificate=true");
                 }
             } else {
-                throw new DbException( "SSL connection is not possible for the provided driver \""
-                                       + System.getProperty( JDBC_DRIVER_CLASS_KEY ) + "\"." );
+                throw new DbException("SSL connection is not possible for the provided driver \""
+                                      + System.getProperty(JDBC_DRIVER_CLASS_KEY) + "\".");
             }
         }
     }
@@ -285,6 +287,7 @@ public class DbConnSQLServer extends DbConnection {
             ds.setUsername(user);
             ds.setPassword(password);
             ds.setUrl(getURL());
+            applyTimeout();
             return ds;
         } else if (jdbcDataSourceClass.getName().equals(JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME)) {
             DataSource ds = null;
@@ -298,11 +301,13 @@ public class DbConnSQLServer extends DbConnection {
                 Method setDatabase = null;
                 try {
                     setDatabase = jdbcDataSourceClass.getMethod("setDatabase", String.class);
-                }catch (NoSuchMethodException nsme) {
+                } catch (NoSuchMethodException nsme) {
                     // The method name could differ in the different drivers
                     setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 }
                 setDatabase.invoke(ds, this.db);
+                applyTimeout();
+
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
                                       + "' for use", e);
@@ -320,11 +325,71 @@ public class DbConnSQLServer extends DbConnection {
                 Method setDatabase = null;
                 setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 setDatabase.invoke(ds, this.db);
+                applyTimeout();
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
                                       + "' for use", e);
             }
             return ds;
+        }
+    }
+
+    @Override
+    protected void applyTimeout() {
+
+        if (jdbcDataSourceClass.getName().equals(DEFAULT_JDBC_DATASOURCE_CLASS_NAME)) {
+            /**
+             * JTDC uses connectTimeout and socketTimeout.
+             * */
+            StringBuilder sb = new StringBuilder();
+
+            // see if connection timeout is set via system property
+            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+            if (this.timeout == DEFAULT_TIMEOUT) {
+                // we DO NOT have custom timeout for that connection
+                if (connectionTimeout != null) {
+                    // use the value of the system property as a connection timeout
+                    this.timeout = connectionTimeout;
+                }
+            }
+            if (connectionTimeout != null) {
+                sb.append("connectTimeout=" + connectionTimeout + ";");
+                sb.append("socketTimeout=" + connectionTimeout);
+            }
+            if (sb.length() > 0) {
+                ds.setConnectionProperties(sb.toString());
+            }
+
+        } else if (jdbcDataSourceClass.getName().equals(JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME)) {
+            /**
+             * JNET uses loginTimeout
+             * */
+            Integer loginTimeoutValue = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+            if (loginTimeoutValue != null) {
+                Method loginTimeout = null;
+                try {
+                    loginTimeout = jdbcDataSourceClass.getMethod("loginTimeout", int.class);
+                    loginTimeout.invoke(ds, loginTimeoutValue);
+                } catch (Exception e) {
+                    log.error("Unable to set login timeout. Default value will be used", e);
+                }
+            }
+
+        } else {
+            /**
+             * Currently this block is reached when classes from com.microsoft.sqlserver.jdbc package are used.
+             * Those classes use socketTimeout.
+             * */
+            // the amount of time (in seconds) for the connection socket to wait for reading from an established connection before throwing an exception
+            Integer socketTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+            if (socketTimeout != null) {
+                try {
+                    Method setSocketTimeout = jdbcDataSourceClass.getMethod("setSocketTimeout", int.class);
+                    setSocketTimeout.invoke(ds, socketTimeout);
+                } catch (Exception e) {
+                    log.error("Unable to set login timeout. Default value will be used", e);
+                }
+            }
         }
     }
 
@@ -358,13 +423,13 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     public void disconnect() {
 
-        if( ds != null ) {
+        if (ds != null) {
             try {
                 ds.close();
             } catch (Exception e) {
                 throw new DbException("Unable to close database source", e);
             }
-        }    
+        }
     }
 
     /**
@@ -430,13 +495,13 @@ public class DbConnSQLServer extends DbConnection {
                     break;
                 case JNETDIRECT:
                     System.setProperty(JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX);
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 case MSSQL:
                     System.setProperty(JDBC_PREFIX_KEY, MSSQL_JDBC_DRIVER_PREFIX);
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, MSSQL_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, MSSQL_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, MSSQL_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, MSSQL_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 default:
                     // not expected. Just in case if enum is updated w/o implementation here

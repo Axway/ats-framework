@@ -57,42 +57,14 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "/")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Initialize system monitor resource details",
-            summary = "Initialize system monitor resource",
-            url = "/")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Initialize system monitor resource details", summary = "Initialize system monitor resource", url = "/")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully initialize system monitor resource details",
-                                       description = "Successfully initialize system monitor resource",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The resource ID of the newly initialized resource",
-                                               example = "123",
-                                               name = "resourceId",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while initializing system monitor resource details",
-                                       description = "Error while initializing system monitor resource",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully initialize system monitor resource details", description = "Successfully initialize system monitor resource", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The resource ID of the newly initialized resource", example = "123", name = "resourceId", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while initializing system monitor resource details", description = "Error while initializing system monitor resource", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response initialize( @Context HttpServletRequest request ) {
 
@@ -122,47 +94,15 @@ public class SystemMonitorsRestEntryPoint {
     @DELETE
     @Path( "/")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "delete",
-            parametersDefinition = "",
-            summary = "Deinitialize system monitor resource",
-            url = "/")
+    @SwaggerMethod( httpOperation = "delete", parametersDefinition = "", summary = "Deinitialize system monitor resource", url = "/")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;THREAD_ID:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;THREAD_ID:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull deinitialization of system monitor details",
-                                       description = "Successfull deinitialization of system monitor",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "System monitor with resource id '10' successfully deleted",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while deinitializing system monitor details",
-                                       description = "Error while deinitializing system monitor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull deinitialization of system monitor details", description = "Successfull deinitialization of system monitor", parametersDefinitions = {
+                                                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "Status message", example = "System monitor with resource id '10' successfully deleted", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while deinitializing system monitor details", description = "Error while deinitializing system monitor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response deinitialize( @Context HttpServletRequest request,
                                   @QueryParam( "callerId") String callerId,
@@ -198,48 +138,16 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "initializeMonitoringContext")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Initialize monitoring context details",
-            summary = "Initialize monitoring context",
-            url = "initializeMonitoringContext")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Initialize monitoring context details", summary = "Initialize monitoring context", url = "initializeMonitoringContext")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull initialize monitoring context details",
-                                       description = "Successfull initialize monitoring context",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "monitoring context for system monitor with resource id '10' successfully initialized",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while initializing monitoring context details",
-                                       description = "Error while initializing monitoring context",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull initialize monitoring context details", description = "Successfull initialize monitoring context", parametersDefinitions = {
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "Status message", example = "monitoring context for system monitor with resource id '10' successfully initialized", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while initializing monitoring context details", description = "Error while initializing monitoring context", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response initializeMonitoringContext( @Context HttpServletRequest request ) {
 
@@ -280,37 +188,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/monitoring/system")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule system monitoring details",
-            summary = "Schedule system monitoring",
-            url = "schedule/monitoring/system")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule system monitoring details", summary = "Schedule system monitoring", url = "schedule/monitoring/system")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule system monitoring details",
-                                       description = "Successfull schedule system monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled system monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling system monitoring details",
-                                       description = "Error while scheduling system monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule system monitoring details", description = "Successfull schedule system monitoring", parametersDefinitions = {
+                                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled system monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling system monitoring details", description = "Error while scheduling system monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleSystemMonitoring( @Context HttpServletRequest request ) {
 
@@ -352,37 +236,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/monitoring")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule monitoring details",
-            summary = "Schedule monitoring",
-            url = "schedule/monitoring")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule monitoring details", summary = "Schedule monitoring", url = "schedule/monitoring")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule monitoring details",
-                                       description = "Successfull schedule monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling monitoring details",
-                                       description = "Error while scheduling monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule monitoring details", description = "Successfull schedule monitoring", parametersDefinitions = {
+                                                                                                                                                                                                      @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling monitoring details", description = "Error while scheduling monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleMonitoring( @Context HttpServletRequest request ) {
 
@@ -429,37 +289,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/monitoring/process")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule process monitoring details",
-            summary = "Schedule process monitoring",
-            url = "schedule/monitoring/process")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule process monitoring details", summary = "Schedule process monitoring", url = "schedule/monitoring/process")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule process monitoring details",
-                                       description = "Successfull schedule process monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled process monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling process monitoring details",
-                                       description = "Error while scheduling process monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule process monitoring details", description = "Successfull schedule process monitoring", parametersDefinitions = {
+                                                                                                                                                                                                                      @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled process monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling process monitoring details", description = "Error while scheduling process monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleProcessMonitoring( @Context HttpServletRequest request ) {
 
@@ -565,37 +401,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/monitoring/jvm")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule JVM monitoring details",
-            summary = "Schedule JVM monitoring",
-            url = "schedule/monitoring/jvm")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule JVM monitoring details", summary = "Schedule JVM monitoring", url = "schedule/monitoring/jvm")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule JVM monitoring details",
-                                       description = "Successfull schedule JVM monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled JVM monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling JVM monitoring details",
-                                       description = "Error while scheduling JVM monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule JVM monitoring details", description = "Successfull schedule JVM monitoring", parametersDefinitions = {
+                                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled JVM monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling JVM monitoring details", description = "Error while scheduling JVM monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleJvmMonitoring( @Context HttpServletRequest request ) {
 
@@ -655,37 +467,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/monitoring/jvm/custom")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule custom JVM monitoring details",
-            summary = "Schedule custom JVM monitoring",
-            url = "schedule/monitoring/jvm/custom")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule custom JVM monitoring details", summary = "Schedule custom JVM monitoring", url = "schedule/monitoring/jvm/custom")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule custom JVM monitoring details",
-                                       description = "Successfull schedule custom JVM monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled custom JVM monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling custom JVM monitoring details",
-                                       description = "Error while scheduling custom JVM monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule custom JVM monitoring details", description = "Successfull schedule custom JVM monitoring", parametersDefinitions = {
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled custom JVM monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling custom JVM monitoring details", description = "Error while scheduling custom JVM monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleCustomJvmMonitoring( @Context HttpServletRequest request ) {
 
@@ -751,37 +539,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "schedule/userActivity")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Schedule user activity details",
-            summary = "Schedule user activity",
-            url = "schedule/userActivity")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Schedule user activity details", summary = "Schedule user activity", url = "schedule/userActivity")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull schedule user activity details",
-                                       description = "Successfull schedule user activity",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "successfully scheduled user activity monitoring",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while scheduling user activity monitoring details",
-                                       description = "Error while scheduling user activity monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull schedule user activity details", description = "Successfull schedule user activity", parametersDefinitions = {
+                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully scheduled user activity monitoring", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while scheduling user activity monitoring details", description = "Error while scheduling user activity monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                      @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response scheduleUserActivity( @Context HttpServletRequest request ) {
 
@@ -821,37 +585,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "start")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Start monitoring details",
-            summary = "Start monitoring",
-            url = "start")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Start monitoring details", summary = "Start monitoring", url = "start")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull start monitoring details",
-                                       description = "Successfull start monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "monitoring successfully started",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while starting monitoring details",
-                                       description = "Error while starting monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull start monitoring details", description = "Successfull start monitoring", parametersDefinitions = {
+                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "Status message", example = "monitoring successfully started", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while starting monitoring details", description = "Error while starting monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                      @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response startMonitoring( @Context HttpServletRequest request ) {
 
@@ -859,6 +599,7 @@ public class SystemMonitorsRestEntryPoint {
         long resourceId = -1;
         int pollingInterval = -1;
         long startTimestamp = -1;
+        long maximumRunningTime = -1;
         try {
             JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
                                                                                  "UTF-8"))
@@ -880,7 +621,14 @@ public class SystemMonitorsRestEntryPoint {
             if (startTimestamp < 0) {
                 throw new IllegalArgumentException("startTimestamp has invallid value '" + resourceId + "'");
             }
-            SystemMonitorsManager.startMonitoring(resourceId, pollingInterval, startTimestamp,
+            try {
+                maximumRunningTime = getJsonElement(jsonObject, "maximumRunningTime").getAsLong();
+            } catch (Exception e) {
+                // request does not provide maximumRunningTime value, use the default one
+                maximumRunningTime = RestSystemMonitor.DEFAULT_MAXIMUM_RUNNING_TIME;
+            }
+            maximumRunningTime *= 1000; // convert to seconds
+            SystemMonitorsManager.startMonitoring(resourceId, pollingInterval, startTimestamp, maximumRunningTime,
                                                   request.getLocalAddr() + ":" + request.getLocalPort());
             String response = "{\"status_message\":\"monitoring successfully started\"}";
             return Response.ok(response).build();
@@ -901,37 +649,13 @@ public class SystemMonitorsRestEntryPoint {
     @Path( "stop")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Stop monitoring details",
-            summary = "Stop monitoring",
-            url = "stop")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Stop monitoring details", summary = "Stop monitoring", url = "stop")
     @SwaggerMethodParameterDefinitions( { /*TODO*/ })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfull stop monitoring details",
-                                       description = "Successfull stop monitoring",
-                                       parametersDefinitions = {
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "Status message",
-                                                                         example = "monitoring successfully stopped",
-                                                                         name = "status_message",
-                                                                         type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while stopped monitoring details",
-                                       description = "Error while stopped monitoring",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfull stop monitoring details", description = "Successfull stop monitoring", parametersDefinitions = {
+                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "Status message", example = "monitoring successfully stopped", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while stopped monitoring details", description = "Error while stopped monitoring", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response stopMonitoring( @Context HttpServletRequest request ) {
 

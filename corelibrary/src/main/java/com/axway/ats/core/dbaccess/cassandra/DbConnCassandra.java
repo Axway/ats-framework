@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.CassandraKeys;
 import com.axway.ats.common.dbaccess.DbKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 
 /**
@@ -110,8 +111,23 @@ public class DbConnCassandra extends DbConnection {
     @Override
     public DataSource getDataSource() {
 
+        applyTimeout(); // do it here, because no better place is available
         return null;
     }
+
+    @Override
+    protected void applyTimeout() {
+
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        if (this.timeout == DbConnection.DEFAULT_TIMEOUT) {
+            // we DO NOT have custom timeout for that connection
+            if (connectionTimeout != null) {
+                // use the value of the system property as a connection timeout
+                this.timeout = connectionTimeout;
+            }
+        }
+    }
+    
 
     @Override
     public Class<? extends Driver> getDriverClass() {

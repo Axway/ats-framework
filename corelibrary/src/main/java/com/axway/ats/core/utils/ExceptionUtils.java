@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Formatting exceptions to plain String
+ * Utility for working with exceptions (formatting to plain String or better processing of exception details)
  */
 public class ExceptionUtils {
 
@@ -79,6 +79,21 @@ public class ExceptionUtils {
             msg.append(sw.toString());
         }
         return msg.toString();
+    }
+
+    public static boolean containsMessage( String message, Exception e ) {
+
+        Throwable th = e;
+        while (th != null) {
+            String errMsg = th.getMessage();
+            if (!StringUtils.isNullOrEmpty(errMsg)) {
+                if (errMsg.contains(message)) {
+                    return true;
+                }
+            }
+            th = th.getCause();
+        }
+        return false;
     }
 
     private static StringBuilder getMsgLines( String msg ) {
