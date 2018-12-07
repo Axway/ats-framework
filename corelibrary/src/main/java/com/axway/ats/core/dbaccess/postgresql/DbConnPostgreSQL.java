@@ -206,7 +206,7 @@ public class DbConnPostgreSQL extends DbConnection {
         StringBuilder sb = new StringBuilder();
 
         // see if connection timeout is set via system property
-        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
         if (this.timeout == DEFAULT_TIMEOUT) {
             // we DO NOT have custom timeout for that connection
             if (connectionTimeout != null) {

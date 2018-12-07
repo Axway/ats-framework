@@ -23,10 +23,11 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
-import com.axway.ats.core.utils.ExceptionUtils;
+
 
 public class ConnectionPool {
 
@@ -72,11 +73,11 @@ public class ConnectionPool {
         // create the connection identifier
         String connectionDescription = dbConnection.getConnHash();
         DataSource dataSource;
-        Integer connectionTimeoutRetry = AtsSystemProperties.getPropertyAsNumber("connection.timeout.retry");
+        Integer connectionTimeoutRetry = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_TIMEOUT);
         if (connectionTimeoutRetry == null) {
             connectionTimeoutRetry = DEFAULT_CONNECTION_TIMEOUT_RETRY;
         }
-        Integer connectionRetryInterval = AtsSystemProperties.getPropertyAsNumber("connection.retry.interval");
+        Integer connectionRetryInterval = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_INTERVAL);
         if (connectionRetryInterval == null) {
             connectionRetryInterval = DEFAULT_CONNECTION_RETRY_INTERVAL;
         }
@@ -106,17 +107,15 @@ public class ConnectionPool {
                 return newConnection;
 
             } catch (Exception e) {
-                connectionRetriesCount++;
                 // check if the exception is network unreachable or connection/socket timeout
-                if (ExceptionUtils.containsMessage("Network is unreachable (connect failed)", e)) {
-                    atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
-                                + "Network unreachable. Retries left "
-                                + (connectionTimeoutRetry - connectionRetriesCount));
-                    try {
-                        Thread.sleep(connectionRetryInterval * 1000);
-                    } catch (InterruptedException ie) {
-                        // do nothing
-                    }
+                connectionRetriesCount++;
+                atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
+                            + "Reason: '" + e.getMessage() + "'. Retries left "
+                            + (connectionTimeoutRetry - connectionRetriesCount));
+                try {
+                    Thread.sleep(connectionRetryInterval * 1000);
+                } catch (InterruptedException ie) {
+                    // do nothing
                 }
                 if (connectionRetriesCount >= connectionTimeoutRetry) {
                     throw new DbException("Unable to connect to database using location '" + dbConnection.getURL()

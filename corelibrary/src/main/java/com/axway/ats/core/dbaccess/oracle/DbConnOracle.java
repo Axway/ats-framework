@@ -289,7 +289,7 @@ public class DbConnOracle extends DbConnection {
     @Override
     protected void applyTimeout() {
 
-        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
         if (this.timeout == DEFAULT_TIMEOUT) {
             // we DO NOT have custom timeout for that connection
             if (connectionTimeout != null) {

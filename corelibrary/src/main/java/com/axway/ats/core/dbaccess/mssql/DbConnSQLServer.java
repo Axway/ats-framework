@@ -339,12 +339,12 @@ public class DbConnSQLServer extends DbConnection {
 
         if (jdbcDataSourceClass.getName().equals(DEFAULT_JDBC_DATASOURCE_CLASS_NAME)) {
             /**
-             * JTDC uses connectTimeout and socketTimeout.
+             * JTDC uses connectTimeout, socketTimeout and loginTimeout
              * */
             StringBuilder sb = new StringBuilder();
 
             // see if connection timeout is set via system property
-            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
             if (this.timeout == DEFAULT_TIMEOUT) {
                 // we DO NOT have custom timeout for that connection
                 if (connectionTimeout != null) {
@@ -354,7 +354,8 @@ public class DbConnSQLServer extends DbConnection {
             }
             if (connectionTimeout != null) {
                 sb.append("connectTimeout=" + connectionTimeout + ";");
-                sb.append("socketTimeout=" + connectionTimeout);
+                sb.append("socketTimeout=" + connectionTimeout + ";");
+                sb.append("loginTimeout=" + connectionTimeout + ";");
             }
             if (sb.length() > 0) {
                 ds.setConnectionProperties(sb.toString());
@@ -364,12 +365,12 @@ public class DbConnSQLServer extends DbConnection {
             /**
              * JNET uses loginTimeout
              * */
-            Integer loginTimeoutValue = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
-            if (loginTimeoutValue != null) {
+            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
+            if (connectionTimeout != null) {
                 Method loginTimeout = null;
                 try {
                     loginTimeout = jdbcDataSourceClass.getMethod("loginTimeout", int.class);
-                    loginTimeout.invoke(ds, loginTimeoutValue);
+                    loginTimeout.invoke(ds, connectionTimeout);
                 } catch (Exception e) {
                     log.error("Unable to set login timeout. Default value will be used", e);
                 }
@@ -381,11 +382,11 @@ public class DbConnSQLServer extends DbConnection {
              * Those classes use socketTimeout.
              * */
             // the amount of time (in seconds) for the connection socket to wait for reading from an established connection before throwing an exception
-            Integer socketTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
-            if (socketTimeout != null) {
+            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
+            if (connectionTimeout != null) {
                 try {
                     Method setSocketTimeout = jdbcDataSourceClass.getMethod("setSocketTimeout", int.class);
-                    setSocketTimeout.invoke(ds, socketTimeout);
+                    setSocketTimeout.invoke(ds, connectionTimeout);
                 } catch (Exception e) {
                     log.error("Unable to set login timeout. Default value will be used", e);
                 }

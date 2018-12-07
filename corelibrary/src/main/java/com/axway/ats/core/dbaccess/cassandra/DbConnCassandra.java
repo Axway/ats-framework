@@ -118,7 +118,7 @@ public class DbConnCassandra extends DbConnection {
     @Override
     protected void applyTimeout() {
 
-        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber("dbcp.connectionTimeout");
+        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
         if (this.timeout == DbConnection.DEFAULT_TIMEOUT) {
             // we DO NOT have custom timeout for that connection
             if (connectionTimeout != null) {
