@@ -199,43 +199,66 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         this.appenderConfig = appenderConfig;
         this.isBatchMode = isBatchMode;
 
-        if (DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
-                                             Integer.parseInt(appenderConfig.getPort()),
-                                             appenderConfig.getDatabase(),
-                                             appenderConfig.getUser(),
-                                             appenderConfig.getPassword())) {
+        String availableDbType = null;
+        if (String.valueOf(DbConnSQLServer.DEFAULT_PORT).equals(appenderConfig.getPort())) {
 
-            this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
-                                                    Integer.parseInt(appenderConfig.getPort()),
-                                                    appenderConfig.getDatabase(),
-                                                    appenderConfig.getUser(),
-                                                    appenderConfig.getPassword(), null);
+            checkIfMssqlAvailable();
+            availableDbType = DbConnSQLServer.DATABASE_TYPE;
+        } else if (String.valueOf(DbConnPostgreSQL.DEFAULT_PORT).equals(appenderConfig.getPort())) {
 
-            //create the db access layer
-            this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
-
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
-                                                         Integer.parseInt(appenderConfig.getPort()),
-                                                         appenderConfig.getDatabase(),
-                                                         appenderConfig.getUser(),
-                                                         appenderConfig.getPassword())) {
-
-            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
-                                                     Integer.parseInt(appenderConfig.getPort()),
-                                                     appenderConfig.getDatabase(),
-                                                     appenderConfig.getUser(),
-                                                     appenderConfig.getPassword(), null);
-
-            //create the db access layer
-            this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
-
+            checkIfPgsqlAvailable();
+            availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
-                            + (!StringUtils.isNullOrEmpty(appenderConfig.getPort())
-                                                                                    ? appenderConfig.getPort()
-                                                                                    : "")
-                            + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
-            throw new DatabaseAccessException(errMsg);
+
+            Throwable mssqlException = null;
+            Throwable pgsqlException = null;
+
+            try {
+                checkIfMssqlAvailable();
+                availableDbType = DbConnSQLServer.DATABASE_TYPE;
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            try {
+                checkIfPgsqlAvailable();
+                availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+            } catch (Exception e) {
+                pgsqlException = e;
+            }
+
+            if (mssqlException != null && pgsqlException != null) {
+                log.error(mssqlException);
+                log.error(pgsqlException);
+                throw new DatabaseAccessException("Neither Mssql, nor Pgsql ATS LOG database available. See log for details'");
+            }
+        }
+
+        if (availableDbType.equals(DbConnSQLServer.DATABASE_TYPE)) {
+
+            // Create DB connection based on the log4j system settings
+            DbConnection dbConnection = new DbConnSQLServer(this.appenderConfig.getHost(),
+                                                            Integer.parseInt(this.appenderConfig.getPort()),
+                                                            this.appenderConfig.getDatabase(),
+                                                            this.appenderConfig.getUser(),
+                                                            this.appenderConfig.getPassword(), null);
+
+            // Create the database access layer
+            dbAccess = new SQLServerDbWriteAccess(dbConnection, this.isBatchMode);
+        } else if (availableDbType.equals(DbConnPostgreSQL.DATABASE_TYPE)) {
+
+            // Create DB connection based on the log4j system settings
+            DbConnection dbConnection = new DbConnPostgreSQL(this.appenderConfig.getHost(),
+                                                             Integer.parseInt(this.appenderConfig.getPort()),
+                                                             this.appenderConfig.getDatabase(),
+                                                             this.appenderConfig.getUser(),
+                                                             this.appenderConfig.getPassword(), null);
+
+            // Create the database access layer
+            dbAccess = new PGDbWriteAccess(dbConnection, this.isBatchMode);
+        } else {
+            throw new UnsupportedOperationException("Could not use database '" + availableDbType
+                                                    + "' as an ATS LOG database");
         }
 
         this.layout = layout;
@@ -252,6 +275,43 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         if (_state == null) {
             _state = new EventProcessorState();
         }
+    }
+
+    private void checkIfPgsqlAvailable() throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkPgsqlDatabaseAvailability(appenderConfig.getHost(),
+                                                   Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(),
+                                                   appenderConfig.getUser(),
+                                                   appenderConfig.getPassword());
+
+            log.info("[" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnPostgreSQL.DATABASE_TYPE
+                                              + " ATS Log database.", e);
+        }
+    }
+
+    private void checkIfMssqlAvailable() throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkMssqlDatabaseAvailability(appenderConfig.getHost(),
+                                                   Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(),
+                                                   appenderConfig.getUser(),
+                                                   appenderConfig.getPassword());
+
+            log.info("[" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnSQLServer.DATABASE_TYPE
+                                              + " ATS Log database.", e);
+        }
+
     }
 
     /**

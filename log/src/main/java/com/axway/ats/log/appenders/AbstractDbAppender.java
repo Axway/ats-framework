@@ -85,7 +85,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
             Logger dbcp2Logger = Logger.getLogger("org.apache.commons.dbcp2");
             if (dbcp2Logger != null) {
                 if (dbcp2Logger.isEnabledFor(Level.DEBUG)) {
-                    atsConsoleLogger.warn("Logger '" + dbcp2Logger.getName() + "' is logging level '"
+                    atsConsoleLogger.warn("Logger '" + dbcp2Logger.getName() + "' has logging level '"
                                           + Level.DEBUG.toString() + "'. This may cause deadlock. Please raise severity to INFO or higher.");
                 }
             }

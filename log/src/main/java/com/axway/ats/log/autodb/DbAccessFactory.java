@@ -15,22 +15,26 @@
  */
 package com.axway.ats.log.autodb;
 
+import org.apache.log4j.Logger;
+
+import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.appenders.AbstractDbAppender;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public class DbAccessFactory {
 
-    public DbAccessFactory() {
+    private static final Logger log = Logger.getLogger(ConnectionPool.class);
+    
+    public DbAccessFactory() {}
 
-    }
-
-    /**
+    /** 
      * Retrieves the DB info from the log4j system and then creates a new
      * instance for writing into the DB
      * 
@@ -41,48 +45,72 @@ public class DbAccessFactory {
 
         // Our DB appender keeps the DB connection info
         ActiveDbAppender loggingAppender = ActiveDbAppender.getCurrentInstance();
+        String availableDbType = null;
         if (loggingAppender == null) {
             throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS ActiveDbAppender is not attached to log4j system");
         }
 
-        DbConnection dbConnection = null;
-        if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getHost(),
-                                             Integer.parseInt(loggingAppender.getPort()),
-                                             loggingAppender.getDatabase(),
-                                             loggingAppender.getUser(),
-                                             loggingAppender.getPassword())) {
+        if (String.valueOf(DbConnSQLServer.DEFAULT_PORT).equals(loggingAppender.getAppenderConfig().getPort())) {
+
+            checkIfMssqlAvailable(loggingAppender);
+            availableDbType = DbConnSQLServer.DATABASE_TYPE;
+        } else if (String.valueOf(DbConnPostgreSQL.DEFAULT_PORT)
+                         .equals(loggingAppender.getAppenderConfig().getPort())) {
+
+            checkIfPgsqlAvailable(loggingAppender);
+            availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+        } else {
+
+            Throwable mssqlException = null;
+            Throwable pgsqlException = null;
+
+            try {
+                checkIfMssqlAvailable(loggingAppender);
+                availableDbType = DbConnSQLServer.DATABASE_TYPE;
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            try {
+                checkIfPgsqlAvailable(loggingAppender);
+                availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+            } catch (Exception e) {
+                pgsqlException = e;
+            }
+
+            if (mssqlException != null && pgsqlException != null) {
+                log.error(mssqlException);
+                log.error(pgsqlException);
+                throw new DatabaseAccessException("Neither Mssql, nor Pgsql ATS LOG database available. See log for details'");
+            }
+        }
+
+        if (availableDbType.equals(DbConnSQLServer.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
-                                               Integer.parseInt(loggingAppender.getPort()),
-                                               loggingAppender.getDatabase(),
-                                               loggingAppender.getUser(),
-                                               loggingAppender.getPassword(), null);
+            DbConnection dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
+                                                            Integer.parseInt(loggingAppender.getPort()),
+                                                            loggingAppender.getDatabase(),
+                                                            loggingAppender.getUser(),
+                                                            loggingAppender.getPassword(), null);
 
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
-
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getHost(),
-                                                         Integer.parseInt(loggingAppender.getPort()),
-                                                         loggingAppender.getDatabase(),
-                                                         loggingAppender.getUser(),
-                                                         loggingAppender.getPassword())) {
+        } else if (availableDbType.equals(DbConnPostgreSQL.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
-                                                Integer.parseInt(loggingAppender.getPort()),
-                                                loggingAppender.getDatabase(),
-                                                loggingAppender.getUser(),
-                                                loggingAppender.getPassword(), null);
+            DbConnection dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
+                                                             Integer.parseInt(loggingAppender.getPort()),
+                                                             loggingAppender.getDatabase(),
+                                                             loggingAppender.getUser(),
+                                                             loggingAppender.getPassword(), null);
 
             // Create the database access layer
             return new PGDbWriteAccess(dbConnection, false);
 
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getHost() +
-                            "' has database with name '" + loggingAppender.getDatabase() + "'";
-            throw new DatabaseAccessException(errMsg);
-
+            throw new UnsupportedOperationException("Could not use database '" + availableDbType
+                                                    + "' to create write access object");
         }
     }
 
@@ -96,54 +124,116 @@ public class DbAccessFactory {
      * @throws DatabaseAccessException
      */
 
-    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender( ) throws DatabaseAccessException {
+    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender() throws DatabaseAccessException {
 
         PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance();
+        String availableDbType = null;
         if (loggingAppender == null) {
             throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS PassiveDbAppender for caller '"
                                               + ThreadsPerCaller.getCaller()
                                               + "' is not attached to log4j system");
         }
 
-        DbConnection dbConnection = null;
-        if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
-                                             Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                             loggingAppender.getAppenderConfig().getDatabase(),
-                                             loggingAppender.getAppenderConfig().getUser(),
-                                             loggingAppender.getAppenderConfig().getPassword())) {
+        if (String.valueOf(DbConnSQLServer.DEFAULT_PORT).equals(loggingAppender.getAppenderConfig().getPort())) {
+
+            checkIfMssqlAvailable(loggingAppender);
+            availableDbType = DbConnSQLServer.DATABASE_TYPE;
+        } else if (String.valueOf(DbConnPostgreSQL.DEFAULT_PORT)
+                         .equals(loggingAppender.getAppenderConfig().getPort())) {
+
+            checkIfPgsqlAvailable(loggingAppender);
+            availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+        } else {
+
+            Throwable mssqlException = null;
+            Throwable pgsqlException = null;
+
+            try {
+                checkIfMssqlAvailable(loggingAppender);
+                availableDbType = DbConnSQLServer.DATABASE_TYPE;
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            try {
+                checkIfPgsqlAvailable(loggingAppender);
+                availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+            } catch (Exception e) {
+                pgsqlException = e;
+            }
+
+            if (mssqlException != null && pgsqlException != null) {
+                log.error(mssqlException);
+                log.error(pgsqlException);
+                throw new DatabaseAccessException("Neither Mssql, nor Pgsql ATS LOG database available. See log for details'");
+            }
+        }
+
+        if (availableDbType.equals(DbConnSQLServer.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
-                                               Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                               loggingAppender.getAppenderConfig().getDatabase(),
-                                               loggingAppender.getAppenderConfig().getUser(),
-                                               loggingAppender.getAppenderConfig().getPassword(), null);
+            DbConnection dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
+                                                            Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                            .getPort()),
+                                                            loggingAppender.getAppenderConfig().getDatabase(),
+                                                            loggingAppender.getAppenderConfig().getUser(),
+                                                            loggingAppender.getAppenderConfig().getPassword(), null);
 
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
-
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
-                                                         Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                                         loggingAppender.getAppenderConfig().getDatabase(),
-                                                         loggingAppender.getAppenderConfig().getUser(),
-                                                         loggingAppender.getAppenderConfig().getPassword())) {
+        } else if (availableDbType.equals(DbConnPostgreSQL.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
-                                                Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                                loggingAppender.getAppenderConfig().getDatabase(),
-                                                loggingAppender.getAppenderConfig().getUser(),
-                                                loggingAppender.getAppenderConfig().getPassword(), null);
+            DbConnection dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
+                                                             Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                             .getPort()),
+                                                             loggingAppender.getAppenderConfig().getDatabase(),
+                                                             loggingAppender.getAppenderConfig().getUser(),
+                                                             loggingAppender.getAppenderConfig().getPassword(), null);
 
             // Create the database access layer
             return new PGDbWriteAccess(dbConnection, false);
 
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getAppenderConfig().getHost()
-                            +
-                            "' has database with name '" + loggingAppender.getAppenderConfig().getDatabase() + "'";
-            throw new DatabaseAccessException(errMsg);
+            throw new UnsupportedOperationException("Could not use database '" + availableDbType
+                                                    + "' to create write access object");
+        }
 
+    }
+
+    private void checkIfPgsqlAvailable( AbstractDbAppender loggingAppender ) throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkPgsqlDatabaseAvailability(loggingAppender.getAppenderConfig().getHost(),
+                                                   Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
+                                                   loggingAppender.getAppenderConfig().getDatabase(),
+                                                   loggingAppender.getAppenderConfig().getUser(),
+                                                   loggingAppender.getAppenderConfig().getPassword());
+
+            log.info("[" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnPostgreSQL.DATABASE_TYPE
+                                              + " ATS Log database.", e);
+        }
+    }
+
+    private void checkIfMssqlAvailable( AbstractDbAppender loggingAppender ) throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkMssqlDatabaseAvailability(loggingAppender.getAppenderConfig().getHost(),
+                                                   Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
+                                                   loggingAppender.getAppenderConfig().getDatabase(),
+                                                   loggingAppender.getAppenderConfig().getUser(),
+                                                   loggingAppender.getAppenderConfig().getPassword());
+
+            log.info("[" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnSQLServer.DATABASE_TYPE
+                                              + " ATS Log database.", e);
         }
 
     }

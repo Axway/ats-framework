@@ -54,12 +54,6 @@ public class PassiveDbAppender extends AbstractDbAppender {
         callerId = ThreadsPerCaller.getCaller();
     }
 
-    @Override
-    public void activateOptions() {
-
-        super.activateOptions();
-    }
-
     /* (non-Javadoc)
      * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
      */

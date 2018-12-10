@@ -30,14 +30,14 @@ public abstract class DbConnection {
      * <p>Note that <strong>timeout</strong> has different meaning for different databases and/or database drivers.</br>
      * See {@link DbConnection#applyTimeout()} for more information.</p>
      * */
-    public static final int    DEFAULT_TIMEOUT = 30 * 1000;       // 30 seconds
+    public static final int       DEFAULT_TIMEOUT = 30 * 1000; // 30 seconds
 
     /**
      * The type of the database
      */
     protected String              dbType;
 
-    protected int                 timeout         = DEFAULT_TIMEOUT; // should this be included in the connection hash?
+    protected Integer             timeout         = null;
 
     //required attributes
     protected String              host;
@@ -126,6 +126,17 @@ public abstract class DbConnection {
     public String getDb() {
 
         return db;
+    }
+
+    /**
+     * Get the connection port</br>
+     * <strong>Note</strong> that if port was not provided, the default one will be used and also return from that method
+     * 
+     * @return the connection port
+     * */
+    public int getPort() {
+
+        return port;
     }
 
     /**
@@ -230,7 +241,7 @@ public abstract class DbConnection {
     /**
      * Get connection timeout (in seconds)
      * */
-    public int getTimeout() {
+    public Integer getTimeout() {
 
         return this.timeout;
     }

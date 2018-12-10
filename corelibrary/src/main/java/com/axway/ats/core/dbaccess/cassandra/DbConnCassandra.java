@@ -118,16 +118,10 @@ public class DbConnCassandra extends DbConnection {
     @Override
     protected void applyTimeout() {
 
-        Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
-        if (this.timeout == DbConnection.DEFAULT_TIMEOUT) {
-            // we DO NOT have custom timeout for that connection
-            if (connectionTimeout != null) {
-                // use the value of the system property as a connection timeout
-                this.timeout = connectionTimeout;
-            }
+        if (this.timeout == null) {
+            this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
         }
     }
-    
 
     @Override
     public Class<? extends Driver> getDriverClass() {

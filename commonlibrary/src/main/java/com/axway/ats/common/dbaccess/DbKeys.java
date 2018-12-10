@@ -47,16 +47,16 @@ public class DbKeys {
     public static final String KEY_STORE_PASSWORD        = "javax.net.ssl.trustStorePassword";
 
     /**
-     * System property. Use this property to specify the timeout (in seconds) between the connection retries when obtaining a connection
+     * System property. Use this property to specify the number of retries when obtaining a connection
      * */
     @PublicAtsApi
-    public static final String CONNECTION_RETRY_TIMEOUT  = "connection.timeout.retry";
+    public static final String CONNECTION_RETRY_COUNT  = "connection.retry.count";
 
     /**
-     * System property. Use this property to specify the number of retries for obtaining a connection
+     * System property. Use this property to specify the timeout (in seconds) between each of the retries for obtaining a connection
      * */
     @PublicAtsApi
-    public static final String CONNECTION_RETRY_INTERVAL = "connection.retry.interval";
+    public static final String CONNECTION_RETRY_TIMEOUT = "connection.retry.timeout";
 
     /**
      * System property. Use this property to specify the connection, socket and login timeouts (in seconds) for the connection's socket

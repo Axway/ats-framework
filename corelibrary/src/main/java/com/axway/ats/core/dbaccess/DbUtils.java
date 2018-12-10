@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -133,9 +134,10 @@ public class DbUtils {
      * @param dbName the database name
      * @param dbUser the database user name used for login
      * @param dbPassword the database password used for login
-     * @return true if MSSQL database is available
+     * @return <strong>true</strong> if MSSQL database is available
      * */
-    public static boolean isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser, String dbPassword ) {
+    public static void checkMssqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
+                                                       String dbPassword ) throws DbException {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
@@ -143,19 +145,17 @@ public class DbUtils {
 
         try {
             sqlServerConnection = new DbConnSQLServer(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = ConnectionPool.getConnection(sqlServerConnection);//sqlServerConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(sqlServerConnection);
             ps = sqlConnection.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
-                throw new Exception("Could not fetch the database version from MSSQL database using URL '"
-                                    + sqlServerConnection.getURL() + "'");
+                throw new DbException("Could not fetch the database version");
             }
-            return true;
         } catch (Exception e) {
-            return false;
+            throw new DbException("Mssql db not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);
@@ -169,10 +169,9 @@ public class DbUtils {
     * @param dbName the database name
     * @param dbUser the database user name used for login
     * @param dbPassword the database password used for login
-    * @return true if PostgreSQL database is available
     * */
-    public static boolean isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
-                                                         String dbPassword ) {
+    public static void checkPgsqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
+                                                       String dbPassword ) throws DbException {
 
         Connection sqlConnection = null;
         DbConnPostgreSQL postgreConnection = null;
@@ -180,19 +179,17 @@ public class DbUtils {
 
         try {
             postgreConnection = new DbConnPostgreSQL(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = ConnectionPool.getConnection(postgreConnection);//postgreConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(postgreConnection);
             ps = sqlConnection.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
-                throw new Exception("Could not fetch the database version from PostgreSQL database using URL '"
-                                    + postgreConnection.getURL() + "'");
+                throw new DbException("Could not fetch the database version");
             }
-            return true;
         } catch (Exception e) {
-            return false;
+            throw new DbException("Pgsql db not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);

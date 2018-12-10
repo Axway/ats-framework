@@ -343,20 +343,15 @@ public class DbConnSQLServer extends DbConnection {
              * */
             StringBuilder sb = new StringBuilder();
 
-            // see if connection timeout is set via system property
-            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
-            if (this.timeout == DEFAULT_TIMEOUT) {
-                // we DO NOT have custom timeout for that connection
-                if (connectionTimeout != null) {
-                    // use the value of the system property as a connection timeout
-                    this.timeout = connectionTimeout;
-                }
+            if (this.timeout == null) {
+                // no timeout was specified, use the one from the system property or the default one
+                this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
-            if (connectionTimeout != null) {
-                sb.append("connectTimeout=" + connectionTimeout + ";");
-                sb.append("socketTimeout=" + connectionTimeout + ";");
-                sb.append("loginTimeout=" + connectionTimeout + ";");
-            }
+
+            sb.append("connectTimeout=" + this.timeout + ";");
+            sb.append("socketTimeout=" + this.timeout + ";");
+            sb.append("loginTimeout=" + this.timeout + ";");
+
             if (sb.length() > 0) {
                 ds.setConnectionProperties(sb.toString());
             }
@@ -365,31 +360,30 @@ public class DbConnSQLServer extends DbConnection {
             /**
              * JNET uses loginTimeout
              * */
-            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
-            if (connectionTimeout != null) {
-                Method loginTimeout = null;
-                try {
-                    loginTimeout = jdbcDataSourceClass.getMethod("loginTimeout", int.class);
-                    loginTimeout.invoke(ds, connectionTimeout);
-                } catch (Exception e) {
-                    log.error("Unable to set login timeout. Default value will be used", e);
-                }
+            if (this.timeout == null) {
+                this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
-
+            Method loginTimeout = null;
+            try {
+                loginTimeout = jdbcDataSourceClass.getMethod("loginTimeout", int.class);
+                loginTimeout.invoke(ds, this.timeout);
+            } catch (Exception e) {
+                log.error("Unable to set login timeout. Default value will be used", e);
+            }
         } else {
             /**
              * Currently this block is reached when classes from com.microsoft.sqlserver.jdbc package are used.
              * Those classes use socketTimeout.
              * */
             // the amount of time (in seconds) for the connection socket to wait for reading from an established connection before throwing an exception
-            Integer connectionTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT);
-            if (connectionTimeout != null) {
-                try {
-                    Method setSocketTimeout = jdbcDataSourceClass.getMethod("setSocketTimeout", int.class);
-                    setSocketTimeout.invoke(ds, connectionTimeout);
-                } catch (Exception e) {
-                    log.error("Unable to set login timeout. Default value will be used", e);
-                }
+            if (this.timeout == null) {
+                this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+            }
+            try {
+                Method setSocketTimeout = jdbcDataSourceClass.getMethod("setSocketTimeout", int.class);
+                setSocketTimeout.invoke(ds, this.timeout);
+            } catch (Exception e) {
+                log.error("Unable to set login timeout. Default value will be used", e);
             }
         }
     }

@@ -15,6 +15,9 @@
  */
 package com.axway.ats.core.dbaccess;
 
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.sql.Connection;
 import java.util.HashMap;
 
@@ -26,30 +29,31 @@ import org.apache.log4j.Logger;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.log.AtsConsoleLogger;
-
+import com.axway.ats.core.utils.ExceptionUtils;
 
 public class ConnectionPool {
 
-    private static Logger                      log;
+    private static final Logger                log                              = Logger.getLogger(ConnectionPool.class);
 
-    private static final AtsConsoleLogger      atsLog                            = new AtsConsoleLogger(ConnectionPool.class);
-
-    /**
-     * The number of times ATS will retry to open a connection when a network exception occurred
-     * */
-    public static final int                    DEFAULT_CONNECTION_TIMEOUT_RETRY  = 5;
+    private static final AtsConsoleLogger      atsLog                           = new AtsConsoleLogger(ConnectionPool.class);
 
     /**
-     * The interval (in seconds) between each retry for a failed connection
+     * The default number of times ATS will retry to open a connection when a network exception occurred
      * */
-    public static final int                    DEFAULT_CONNECTION_RETRY_INTERVAL = 10;
+    public static final int                    DEFAULT_CONNECTION_RETRY_COUNT   = 5;
+
+    /**
+     * The default interval (in seconds) between each retry for a failed connection
+     * */
+    public static final int                    DEFAULT_CONNECTION_RETRY_TIMEOUT = 10;
 
     /**
      * we keep a static list of connections in order to reuse them when we have multiple calls for creating the same
      * connection
      */
-    private static HashMap<String, DataSource> dataSourceMap                     = new HashMap<String, DataSource>();
+    private static HashMap<String, DataSource> dataSourceMap                    = new HashMap<String, DataSource>();
 
     //prevent instantiation
     private ConnectionPool() {
@@ -73,15 +77,15 @@ public class ConnectionPool {
         // create the connection identifier
         String connectionDescription = dbConnection.getConnHash();
         DataSource dataSource;
-        Integer connectionTimeoutRetry = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_TIMEOUT);
-        if (connectionTimeoutRetry == null) {
-            connectionTimeoutRetry = DEFAULT_CONNECTION_TIMEOUT_RETRY;
+        Integer connectionRetryCount = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_COUNT);
+        if (connectionRetryCount == null) {
+            connectionRetryCount = DEFAULT_CONNECTION_RETRY_COUNT;
         }
-        Integer connectionRetryInterval = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_INTERVAL);
-        if (connectionRetryInterval == null) {
-            connectionRetryInterval = DEFAULT_CONNECTION_RETRY_INTERVAL;
+        Integer connectionRetryTimeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_RETRY_TIMEOUT);
+        if (connectionRetryTimeout == null) {
+            connectionRetryTimeout = DEFAULT_CONNECTION_RETRY_TIMEOUT;
         }
-        int connectionRetriesCount = 0;
+        int retries = 0;
         do {
             if (dataSourceMap.containsKey(connectionDescription)) {
                 // use the cached connection
@@ -100,29 +104,50 @@ public class ConnectionPool {
                     newConnection = dataSource.getConnection(dbConnection.getUser(),
                                                              dbConnection.getPassword());
                 }
-                if (connectionRetriesCount > 0) {
-                    atsLog.info("DB connection to '" + dbConnection.getURL()
-                                + "' obtained. Network connectivity issue resolved.");
+                if (retries > 0) {
+                    if (Logger.getRootLogger().getAppender("com.axway.ats.log.appenders.ActiveDbAppender") != null
+                        || Logger.getRootLogger()
+                                 .getAppender("com.axway.ats.log.appenders.PassiveDbAppender") != null) {
+                        log.info("DB connection to '" + dbConnection.getURL()
+                                 + "' obtained. Network connectivity issue resolved.");
+                    } else {
+                        atsLog.info("DB connection to '" + dbConnection.getURL()
+                                    + "' obtained. Network connectivity issue resolved.");
+                    }
+
                 }
                 return newConnection;
 
             } catch (Exception e) {
                 // check if the exception is network unreachable or connection/socket timeout
-                connectionRetriesCount++;
-                atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
-                            + "Reason: '" + e.getMessage() + "'. Retries left "
-                            + (connectionTimeoutRetry - connectionRetriesCount));
-                try {
-                    Thread.sleep(connectionRetryInterval * 1000);
-                } catch (InterruptedException ie) {
-                    // do nothing
+                retries++;
+                if (Logger.getRootLogger().getAppender("com.axway.ats.log.appenders.ActiveDbAppender") != null
+                    || Logger.getRootLogger()
+                             .getAppender("com.axway.ats.log.appenders.PassiveDbAppender") != null) {
+                    log.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
+                             + "\nConnection Status: \n" + getDbConnectionStatus(dbConnection, e)
+                             + "\nRetries left ("
+                             + (connectionRetryCount - retries) + ") .");
+                } else {
+                    atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
+                                + "\nConnection Status: \n" + getDbConnectionStatus(dbConnection, e)
+                                + "\nRetries left ("
+                                + (connectionRetryCount - retries) + ") .");
                 }
-                if (connectionRetriesCount >= connectionTimeoutRetry) {
+
+                if (retries >= connectionRetryCount) {
                     throw new DbException("Unable to connect to database using location '" + dbConnection.getURL()
                                           + "' and user '" + dbConnection.getUser() + "'", e);
+                } else {
+                    // more retries ahead, sleep for a bit
+                    try {
+                        Thread.sleep(connectionRetryTimeout * 1000);
+                    } catch (InterruptedException ie) {
+                        // do nothing
+                    }
                 }
             }
-        } while (connectionRetriesCount <= connectionTimeoutRetry);
+        } while (retries <= connectionRetryCount);
 
         return null; // or some exception saying that we can not obtain connection
     }
@@ -138,11 +163,90 @@ public class ConnectionPool {
         if (dataSourceMap.containsKey(dbConnection.getConnHash())) {
             dataSourceMap.remove(dbConnection.getConnHash());
         } else {
-            log = Logger.getLogger(ConnectionPool.class);
 
-            log.info("Cannot remove the connection " + dbConnection.hashCode()
-                     + " from the pool, as it is not present in there");
+            if (Logger.getRootLogger().getAppender("com.axway.ats.log.appenders.ActiveDbAppender") != null
+                || Logger.getRootLogger()
+                         .getAppender("com.axway.ats.log.appenders.PassiveDbAppender") != null) {
+                log.info("Cannot remove the connection " + dbConnection.hashCode()
+                         + " from the pool, as it is not present in there");
+            } else {
+                atsLog.info("Cannot remove the connection " + dbConnection.hashCode()
+                            + " from the pool, as it is not present in there");
+            }
 
+        }
+    }
+
+    private static String getDbConnectionStatus( DbConnection dbConnection, Exception exception ) {
+
+        Boolean dbHostReachable = null;
+        Boolean dbServerListening = null;
+
+        dbHostReachable = isDbHostReachable(dbConnection);
+        if (dbHostReachable) {
+            dbServerListening = isDbServerListening(dbConnection);
+        }
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("\tHost reachable:      " + getStatusAsString(dbHostReachable) + ",\n");
+
+        sb.append("\tDb Server listening: " + getStatusAsString(dbServerListening) + ",\n");
+
+        if (dbConnection.getDbType().equals(DbConnSQLServer.DATABASE_TYPE)) {
+            if (ExceptionUtils.containsMessage("The login failed", exception)) {
+                sb.append("\tLogin successful:    " + getStatusAsString(false) + "\n");
+            } else {
+                sb.append("\tLogin successful:    " + getStatusAsString(null) + "\n");
+            }
+        }
+
+        return sb.toString();
+    }
+
+    private static String getStatusAsString( Boolean bool ) {
+
+        if (bool == null) {
+            return "N/A";
+        }
+        if (bool) {
+            return "YES";
+        } else {
+            return "NO";
+        }
+    }
+
+    private static boolean isDbHostReachable( DbConnection dbConnection ) {
+
+        try {
+            return InetAddress.getByName(dbConnection.getHost())
+                              .isReachable(AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT,
+                                                                                   DbConnection.DEFAULT_TIMEOUT));
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private static boolean isDbServerListening( DbConnection dbConnection ) {
+
+        Socket so = null;
+        try {
+            so = new Socket(dbConnection.getHost(), dbConnection.getPort());
+            so.setSoTimeout(AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT,
+                                                                    DbConnection.DEFAULT_TIMEOUT)
+                            * 1000);
+            so.getOutputStream().write(0);
+            return true;
+        } catch (Exception e) {
+            return false;
+        } finally {
+            if (so != null && !so.isClosed()) {
+                try {
+                    so.close();
+                } catch (IOException e) {
+                    // do nothing
+                }
+            }
         }
     }
 }
