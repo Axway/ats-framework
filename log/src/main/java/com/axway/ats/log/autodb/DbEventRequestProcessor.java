@@ -237,22 +237,22 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         if (availableDbType.equals(DbConnSQLServer.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            DbConnection dbConnection = new DbConnSQLServer(this.appenderConfig.getHost(),
-                                                            Integer.parseInt(this.appenderConfig.getPort()),
-                                                            this.appenderConfig.getDatabase(),
-                                                            this.appenderConfig.getUser(),
-                                                            this.appenderConfig.getPassword(), null);
+            this.dbConnection = new DbConnSQLServer(this.appenderConfig.getHost(),
+                                                    Integer.parseInt(this.appenderConfig.getPort()),
+                                                    this.appenderConfig.getDatabase(),
+                                                    this.appenderConfig.getUser(),
+                                                    this.appenderConfig.getPassword(), null);
 
             // Create the database access layer
             dbAccess = new SQLServerDbWriteAccess(dbConnection, this.isBatchMode);
         } else if (availableDbType.equals(DbConnPostgreSQL.DATABASE_TYPE)) {
 
             // Create DB connection based on the log4j system settings
-            DbConnection dbConnection = new DbConnPostgreSQL(this.appenderConfig.getHost(),
-                                                             Integer.parseInt(this.appenderConfig.getPort()),
-                                                             this.appenderConfig.getDatabase(),
-                                                             this.appenderConfig.getUser(),
-                                                             this.appenderConfig.getPassword(), null);
+            this.dbConnection = new DbConnPostgreSQL(this.appenderConfig.getHost(),
+                                                     Integer.parseInt(this.appenderConfig.getPort()),
+                                                     this.appenderConfig.getDatabase(),
+                                                     this.appenderConfig.getUser(),
+                                                     this.appenderConfig.getPassword(), null);
 
             // Create the database access layer
             dbAccess = new PGDbWriteAccess(dbConnection, this.isBatchMode);
@@ -1171,6 +1171,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 log.warn("Run with id '" + runId + "' appears to be deleted from database '"
                          + this.dbConnection.getConnHash()
                          + "'. No additional test data will be inserted for that run.");
+                listener.onRunFinished();
             }
         } else {
             throw e;

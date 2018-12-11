@@ -19,10 +19,12 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
+
 @SuppressWarnings( "serial")
 public class DatabaseAccessException extends LoggingException {
 
-    private static final Logger log = Logger.getLogger(DatabaseAccessException.class);
+    private static final AtsConsoleLogger log = new AtsConsoleLogger(DatabaseAccessException.class);
 
     public DatabaseAccessException( String message ) {
 
