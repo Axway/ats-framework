@@ -30,6 +30,7 @@ import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
 
@@ -125,12 +126,12 @@ public class ConnectionPool {
                     || Logger.getRootLogger()
                              .getAppender("com.axway.ats.log.appenders.PassiveDbAppender") != null) {
                     log.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
-                             + "\nConnection Status: \n" + getDbConnectionStatus(dbConnection, e)
+                             + "\nCONNECTION STATUS: \n" + getDbConnectionStatus(dbConnection, e)
                              + "\nRetries left ("
                              + (connectionRetryCount - retries) + ") .");
                 } else {
                     atsLog.warn("Could not obtain DB connection to '" + dbConnection.getURL() + "'. "
-                                + "\nConnection Status: \n" + getDbConnectionStatus(dbConnection, e)
+                                + "\nCONNECTION STATUS: \n" + getDbConnectionStatus(dbConnection, e)
                                 + "\nRetries left ("
                                 + (connectionRetryCount - retries) + ") .");
                 }
@@ -181,27 +182,58 @@ public class ConnectionPool {
 
         Boolean dbHostReachable = null;
         Boolean dbServerListening = null;
+        Boolean loginSuccessful = null;
+        Boolean dbExists = null;
 
         dbHostReachable = isDbHostReachable(dbConnection);
-        if (dbHostReachable) {
+        if (dbHostReachable != null && dbHostReachable) {
             dbServerListening = isDbServerListening(dbConnection);
+            if (dbServerListening != null && dbServerListening) {
+                loginSuccessful = isLoginSuccessful(dbConnection, exception);
+                dbExists = doesDbExist(dbConnection, exception);
+            }
         }
 
         StringBuilder sb = new StringBuilder();
 
-        sb.append("\tHost reachable:      " + getStatusAsString(dbHostReachable) + ",\n");
+        sb.append("- Host is reachable:         " + getStatusAsString(dbHostReachable) + ",\n");
 
-        sb.append("\tDb Server listening: " + getStatusAsString(dbServerListening) + ",\n");
+        sb.append("- Database Server listening: " + getStatusAsString(dbServerListening) + ",\n");
 
-        if (dbConnection.getDbType().equals(DbConnSQLServer.DATABASE_TYPE)) {
-            if (ExceptionUtils.containsMessage("The login failed", exception)) {
-                sb.append("\tLogin successful:    " + getStatusAsString(false) + "\n");
-            } else {
-                sb.append("\tLogin successful:    " + getStatusAsString(null) + "\n");
-            }
-        }
+        sb.append("- Database exists:           " + getStatusAsString(dbExists) + ",\n");
+
+        sb.append("- Login is successful:       " + getStatusAsString(loginSuccessful) + "\n");
 
         return sb.toString();
+    }
+
+    private static Boolean doesDbExist( DbConnection dbConnection, Exception exception ) {
+
+        if (dbConnection instanceof DbConnSQLServer) {
+            return null;
+        } else if (dbConnection instanceof DbConnPostgreSQL) {
+            if (ExceptionUtils.containsMessage("FATAL: database \"" + dbConnection.getDb() + "\" does not exist",
+                                               exception)) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        return null;
+    }
+
+    private static Boolean isLoginSuccessful( DbConnection dbConnection, Exception exception ) {
+
+        if (dbConnection instanceof DbConnSQLServer) {
+            return null;
+        } else if (dbConnection instanceof DbConnPostgreSQL) {
+            if (ExceptionUtils.containsMessage("FATAL: password authentication failed for user", exception)) {
+                return false;
+            } else {
+                return null;
+            }
+        }
+        return null;
     }
 
     private static String getStatusAsString( Boolean bool ) {

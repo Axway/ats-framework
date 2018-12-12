@@ -26,11 +26,11 @@ import javax.sql.DataSource;
 public abstract class DbConnection {
 
     /**
-     * <p>The default (30 seconds) timeout* when working with database.</p>
+     * <p>The default timeout (in seconds) when working with database.</p>
      * <p>Note that <strong>timeout</strong> has different meaning for different databases and/or database drivers.</br>
      * See {@link DbConnection#applyTimeout()} for more information.</p>
      * */
-    public static final int       DEFAULT_TIMEOUT = 30 * 1000; // 30 seconds
+    public static final int       DEFAULT_TIMEOUT = 30;  // 30 seconds
 
     /**
      * The type of the database
