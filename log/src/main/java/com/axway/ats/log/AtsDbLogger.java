@@ -491,15 +491,18 @@ public class AtsDbLogger {
     }
 
     /**
-     * Updates a suite
-     * 
-     * @param packageName new name for the package
-     * @param suiteName new name for the suite
+     * Update the static information about the current suite.
+     * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
+     *
+     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     *
+     * @param suiteName name of the suite
+     * @param userNote user note of the suite
      */
-    public void updateSuite( String packageName,
-                             String suiteName ) {
+    public void updateSuite( String suiteName,
+                             String userNote ) {
 
-        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, packageName));
+        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, userNote));
     }
 
     /**
