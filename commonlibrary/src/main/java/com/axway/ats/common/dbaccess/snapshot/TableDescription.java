@@ -15,12 +15,17 @@
  */
 package com.axway.ats.common.dbaccess.snapshot;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -28,6 +33,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
 import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
  * Meta information about a table. Used when comparing databases.
@@ -274,8 +280,40 @@ public class TableDescription {
         // check if all indexes from THIS snapshot are present in THAT
         for (String thisName : thisNames) {
             String equivalentThatName = null;
+            Properties thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
+            Properties thatIndexProperties = null;
             for (String thatName : thatNames) {
-                if (nameComparator.isSame(name, thisName, thatName)) {
+
+                thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
+
+                // check if both indexes are on the same column in the table
+                String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
+                if (thisIndexColumnName == null) {
+                    thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                }
+
+                String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
+                if (thatIndexColumnName == null) {
+                    thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                }
+
+                if (!thisIndexColumnName.equals(thatIndexColumnName)) {
+                    continue;
+                }
+
+                String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
+                if (thisIndexName == null) {
+                    thisIndexName = thisIndexProperties.getProperty("index_name");
+                }
+
+                String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
+                if (thatIndexName == null) {
+                    thatIndexName = thatIndexProperties.getProperty("index_name");
+                }
+
+                if (nameComparator.isSame(name,
+                                          thisIndexName,
+                                          thatIndexName)) {
                     equivalentThatName = thatName;
                     break;
                 }
@@ -287,7 +325,9 @@ public class TableDescription {
                                                           this.indexes.get(thisName));
             } else {
                 // there is an index with same name, now check there attributes
-                if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
+                if (!checkIndexesByAttributes(thisIndexProperties,
+                                              thatIndexProperties)) {
+                    //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
                     // index with same name, has different attributes
                     equality.addIndexPresentInOneSnapshotOnly(this.snapshotName, name, thisName,
                                                               this.indexes.get(thisName));
@@ -298,8 +338,40 @@ public class TableDescription {
         // check if all indexes from THAT snapshot are present in THIS
         for (String thatName : thatNames) {
             String equivalentThisName = null;
+            Properties thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
+            Properties thisIndexProperties = null;
             for (String thisName : thisNames) {
-                if (nameComparator.isSame(name, thisName, thatName)) {
+
+                thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
+
+                // check if both indexes are on the same column in the table
+                String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
+                if (thisIndexColumnName == null) {
+                    thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                }
+
+                String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
+                if (thatIndexColumnName == null) {
+                    thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                }
+
+                if (!thisIndexColumnName.equals(thatIndexColumnName)) {
+                    continue;
+                }
+
+                String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
+                if (thisIndexName == null) {
+                    thisIndexName = thisIndexProperties.getProperty("index_name");
+                }
+
+                String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
+                if (thatIndexName == null) {
+                    thatIndexName = thatIndexProperties.getProperty("index_name");
+                }
+
+                if (nameComparator.isSame(name,
+                                          thisIndexName,
+                                          thatIndexName)) {
                     equivalentThisName = thisName;
                     break;
                 }
@@ -310,13 +382,85 @@ public class TableDescription {
                 equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
                                                           that.indexes.get(thatName));
             } else {
-                // there is an index with same name, now check their attributes
-                if (!that.indexes.get(thatName).equals(this.indexes.get(equivalentThisName))) {
+                // there is an index with same name, now check there attributes
+                if (!checkIndexesByAttributes(thisIndexProperties,
+                                              thatIndexProperties)) {
+                    //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
                     // index with same name, has different attributes
                     equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
                                                               that.indexes.get(thatName));
                 }
             }
+        }
+    }
+
+    /**
+     * Create {@link java.util.Properties} object from String
+     * @param inputString the String, containing the properties in format key1=valDELIMITERkey2=val
+     * @param delimiter the delimiter used to separate each property
+     * */
+    private Properties toProperties( String inputString, String delimiter ) {
+
+        inputString = inputString.replace(delimiter, AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        Properties properties = new Properties();
+        try {
+            properties.load(new StringReader(inputString));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load java.util.Properties from java.lang.String using delimiter '"
+                                       + delimiter + "'", e);
+        }
+        return properties;
+    }
+
+    /**
+     * Compare DB table indexes by attributes
+     * @param thisIndex full string representation of an table index from the first snapshot
+     * @param thatIndex full string representation of an table index from the second snapshot
+     * @return <strong>true</strong> if indexes are the same, <strong>false</strong> otherwise
+     * */
+    private boolean checkIndexesByAttributes( Properties thisIndexProps, Properties thatIndexProps ) {
+
+        try {
+
+            // remove the indexes' names since they were already checked via IndexNameMatcher
+            thisIndexProps.remove("INDEX_NAME");
+            thisIndexProps.remove("index_name");
+            thatIndexProps.remove("INDEX_NAME");
+            thatIndexProps.remove("index_name");
+
+            // since there may be multiple indexes for one table
+            // check that both indexes that are compared here are on the same column
+            String thisIndexColumnName = null;
+            String thatIndexColumnName = null;
+
+            if (thisIndexProps.containsKey("COLUMN_NAME")) {
+                thisIndexColumnName = thisIndexProps.getProperty("COLUMN_NAME");
+            } else if (thisIndexProps.containsKey("column_name")) {
+                thisIndexColumnName = thisIndexProps.getProperty("column_name");
+            }
+
+            if (thatIndexProps.containsKey("COLUMN_NAME")) {
+                thatIndexColumnName = thatIndexProps.getProperty("COLUMN_NAME");
+            } else if (thatIndexProps.containsKey("column_name")) {
+                thatIndexColumnName = thatIndexProps.getProperty("column_name");
+            }
+
+            if (thisIndexColumnName
+                                   .equals(thatIndexColumnName)) {
+                StringWriter sw1 = new StringWriter();
+                thisIndexProps.list(new PrintWriter(sw1));
+
+                StringWriter sw2 = new StringWriter();
+                thatIndexProps.list(new PrintWriter(sw2));
+
+                return sw1.toString().equals(sw2.toString());
+            } else {
+                return false;
+            }
+
+        } catch (Exception e) {
+            log.error("Error while comparing db table indexes", e);
+            return false;
         }
     }
 
