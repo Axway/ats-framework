@@ -496,13 +496,13 @@ public class AtsDbLogger {
      *
      * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
      *
-     * @param suiteName name of the suite
-     * @param userNote user note of the suite
+     * @param newSuiteName the new value to set for the name of the current suite
+     * @param newUserNote  the new value to set for the user note of the current suite
      */
-    public void updateSuite( String suiteName,
-                             String userNote ) {
+    public void updateSuite( String newSuiteName,
+                             String newUserNote ) {
 
-        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, userNote));
+        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, newSuiteName, newUserNote));
     }
 
     /**
