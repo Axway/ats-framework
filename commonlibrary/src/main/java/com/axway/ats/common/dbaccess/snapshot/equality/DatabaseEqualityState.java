@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
  * This structure says how equal the snapshots are

@@ -43,7 +43,7 @@ public class StringUtils {
     /**
      * Escapes non-printable characters (ASCII code is < 32)
      * 
-     * @param string the String whom contant will be escaped
+     * @param string the String whom content will be escaped
      * @returns the String with escaped non-printable characters
      */
     public static String escapeNonPrintableAsciiCharacters(String message) {
