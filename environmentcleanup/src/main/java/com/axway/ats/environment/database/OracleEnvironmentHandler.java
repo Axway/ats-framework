@@ -155,7 +155,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);*/
             String owner = table.getTableSchema();
             if (StringUtils.isNullOrEmpty(owner)) {
-                owner = dbProvider.getDbConnection().getURL();
+                owner = dbProvider.getDbConnection().getUser();
             }
             TableConstraints tbConst = writeDropTableStatements(fileWriter, table.getTableName(), owner,
                                                                 ConnectionPool.getConnection(dbConnection));
