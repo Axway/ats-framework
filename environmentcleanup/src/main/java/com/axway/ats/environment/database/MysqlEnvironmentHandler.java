@@ -217,8 +217,15 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (shouldDropTable(table)) {
             /*fileWriter.write(DROP_TABLE_MARKER + table.getTableSchema() + "." + table.getTableName()
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);*/
-            writeDropTableStatements(fileWriter, table.getFullTableName(), ConnectionPool.getConnection(dbConnection));
-            writeDeleteStatementForCurrTable = false;
+            Connection connection = null;
+            try {
+                connection = ConnectionPool.getConnection(dbConnection);
+                writeDropTableStatements(fileWriter, table.getFullTableName(), connection);
+                writeDeleteStatementForCurrTable = false;
+            } finally {
+                DbUtils.closeConnection(connection);
+            }
+            
         } /*else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
           }*/

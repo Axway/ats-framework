@@ -142,7 +142,14 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (shouldDropTable(table)) {
             //            fileWriter.write(DROP_TABLE_MARKER + fullTableName
             //                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            writeDropTableStatements(fileWriter, table, ConnectionPool.getConnection(dbConnection));
+            Connection connection = null;
+            try {
+                connection = ConnectionPool.getConnection(dbConnection);
+                writeDropTableStatements(fileWriter, table, connection);
+            } finally {
+                DbUtils.closeConnection(connection);
+            }
+            
         } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }

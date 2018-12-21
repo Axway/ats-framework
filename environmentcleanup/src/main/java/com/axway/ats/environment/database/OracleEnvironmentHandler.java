@@ -157,11 +157,18 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             if (StringUtils.isNullOrEmpty(owner)) {
                 owner = dbProvider.getDbConnection().getUser();
             }
-            TableConstraints tbConst = writeDropTableStatements(fileWriter, table.getTableName(), owner,
-                                                                ConnectionPool.getConnection(dbConnection));
-            if (tbConst != null) {
-                this.tablesConstraints.add(tbConst);
+            Connection connection = null;
+            try {
+                connection = ConnectionPool.getConnection(dbConnection);
+                TableConstraints tbConst = writeDropTableStatements(fileWriter, table.getTableName(), owner,
+                                                                    connection);
+                if (tbConst != null) {
+                    this.tablesConstraints.add(tbConst);
+                }
+            } finally {
+                DbUtils.closeConnection(connection);
             }
+
         } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }
@@ -423,7 +430,6 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
         super.createBackup(backupFileName);
 
-        
         // In order to add and enable the foreign keys, that are related to the tables for backup
         // all of the columns, referenced in those foreign keys must have values in the referenced table
         // That's why we insert records into all of the tables, added to backup,
@@ -504,7 +510,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                         sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     } else {
                         sql.setLength(sql.length() - EOL_MARKER.length());
-                        if(sql.toString().endsWith(";")) {
+                        if (sql.toString().endsWith(";")) {
                             sql.setLength(sql.length() - 1);
                         }
                         //sql.delete(sql.length() - EOL_MARKER.length() - 1, sql.length());
