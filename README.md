@@ -18,13 +18,22 @@ ATS **key features** include:
   <li>Some functionalities can also be used by non-java projects</li>
 </ul>
 
+---
+
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
 
+---
+
 **Video tutorials** are published on YouTube [here](https://www.youtube.com/watch?v=-4ZlEzU4ucM&list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I)
+
+[![ATS framework preview](https://axway.github.io/ats-framework/images/ATS_Preview_TE_1.png)](https://www.youtube.com/watch?v=JfSYcwU2h8c&index=3&list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I "ATS Framework playlist")
+
+---
 
 ATS framework **artifacts** are available at https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/  
 **Release notes** are published here https://axway.github.io/ats-framework/Release-Notes.html
 
+---
 
 Other **related projects**:
 <ul>
@@ -32,5 +41,7 @@ Other **related projects**:
   <li>ATS HTTP DB Logger at https://github.com/Axway/ats-httpdblogger</li>
   <li>ATS Distribution at https://github.com/Axway/ats-distrib</li>
 </ul>
+
+---
 
 **Contact** ATS team at: _ats.team_  _@axway.com_
