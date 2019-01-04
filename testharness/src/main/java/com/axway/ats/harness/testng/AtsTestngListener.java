@@ -159,10 +159,6 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         Channel channel = getChannel();
 
-        if (!channel.callerId.equals(ExecutorUtils.createCallerId())) {
-            throw new RuntimeException("WOW!");
-        }
-
         /*
          * Close any previous testcase, started from the current channel
          * Close any previous suite, started from the current channel
