@@ -18,7 +18,6 @@ package com.axway.ats.log;
 import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
