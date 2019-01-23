@@ -35,111 +35,149 @@ public class Test_ListDataConfig extends BaseTest {
     public void gettersPositive() {
 
         List<String> args = new ArrayList<String>();
-        args.add( "test1" );
-        args.add( "test2" );
+        args.add("test1");
+        args.add("test2");
 
-        ListDataConfig listDataConfig = new ListDataConfig( "user", args );
+        ListDataConfig listDataConfig = new ListDataConfig("user", args);
 
-        assertEquals( args, listDataConfig.getValues() );
-        assertEquals( "user", listDataConfig.getParameterName() );
-        assertEquals( ParameterProviderLevel.PER_THREAD_STATIC, listDataConfig.getParameterProviderLevel() );
+        assertEquals(args, listDataConfig.getValues());
+        assertEquals("user", listDataConfig.getParameterName());
+        assertEquals(ParameterProviderLevel.PER_THREAD_STATIC, listDataConfig.getParameterProviderLevel());
 
-        listDataConfig = new ListDataConfig( "user", args, ParameterProviderLevel.PER_INVOCATION );
+        listDataConfig = new ListDataConfig("user", args, ParameterProviderLevel.PER_INVOCATION);
 
-        assertEquals( args, listDataConfig.getValues() );
-        assertEquals( "user", listDataConfig.getParameterName() );
-        assertEquals( ParameterProviderLevel.PER_INVOCATION, listDataConfig.getParameterProviderLevel() );
+        assertEquals(args, listDataConfig.getValues());
+        assertEquals("user", listDataConfig.getParameterName());
+        assertEquals(ParameterProviderLevel.PER_INVOCATION, listDataConfig.getParameterProviderLevel());
 
-        listDataConfig = new ListDataConfig( "user", new String[]{ "test1", "test2" } );
+        listDataConfig = new ListDataConfig("user", new String[]{ "test1", "test2" });
 
-        assertEquals( args, listDataConfig.getValues() );
-        assertEquals( "user", listDataConfig.getParameterName() );
-        assertEquals( ParameterProviderLevel.PER_THREAD_STATIC, listDataConfig.getParameterProviderLevel() );
+        assertEquals(args, listDataConfig.getValues());
+        assertEquals("user", listDataConfig.getParameterName());
+        assertEquals(ParameterProviderLevel.PER_THREAD_STATIC, listDataConfig.getParameterProviderLevel());
 
-        listDataConfig = new ListDataConfig( "user",
-                                             new String[]{ "test1", "test2" },
-                                             ParameterProviderLevel.PER_INVOCATION );
+        listDataConfig = new ListDataConfig("user",
+                                            new String[]{ "test1", "test2" },
+                                            ParameterProviderLevel.PER_INVOCATION);
 
-        assertEquals( args, listDataConfig.getValues() );
-        assertEquals( "user", listDataConfig.getParameterName() );
-        assertEquals( ParameterProviderLevel.PER_INVOCATION, listDataConfig.getParameterProviderLevel() );
+        assertEquals(args, listDataConfig.getValues());
+        assertEquals("user", listDataConfig.getParameterName());
+        assertEquals(ParameterProviderLevel.PER_INVOCATION, listDataConfig.getParameterProviderLevel());
     }
 
     @Test
     public void testSerialization() throws IOException, ClassNotFoundException {
 
         List<String> args = new ArrayList<String>();
-        args.add( "test1" );
-        args.add( "test2" );
+        args.add("test1");
+        args.add("test2");
 
-        ListDataConfig listDataConfig = new ListDataConfig( "param1", args );
+        ListDataConfig listDataConfig = new ListDataConfig("param1", args);
 
         ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
-        ObjectOutputStream objectOutStream = new ObjectOutputStream( byteOutStream );
-        objectOutStream.writeObject( listDataConfig );
+        ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
+        objectOutStream.writeObject(listDataConfig);
 
-        ObjectInputStream objectInStream = new ObjectInputStream( new ByteArrayInputStream( byteOutStream.toByteArray() ) );
-        ListDataConfig deserializedListDataConfig = ( ListDataConfig ) objectInStream.readObject();
+        ObjectInputStream objectInStream = new ObjectInputStream(new ByteArrayInputStream(byteOutStream.toByteArray()));
+        ListDataConfig deserializedListDataConfig = (ListDataConfig) objectInStream.readObject();
 
-        assertEquals( "param1", deserializedListDataConfig.getParameterName() );
-        assertEquals( ParameterProviderLevel.PER_THREAD_STATIC,
-                      deserializedListDataConfig.getParameterProviderLevel() );
-        assertEquals( args, deserializedListDataConfig.getValues() );
-    }
-
-    @Test
-    public void distributeSeveralHostsUneven() throws Exception {
-
-        List<String> args = new ArrayList<String>();
-        args.add( "test1" );
-        args.add( "test2" );
-        args.add( "test3" );
-        args.add( "test4" );
-        args.add( "test5" );
-        args.add( "test6" );
-
-        ListDataConfig listDataConfig = new ListDataConfig( "param1", args );
-
-        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute( 3 );
-        assertEquals( 3, dustributedDataConfigs.size() );
-
-        for( int i = 0; i < 3; i++ ) {
-            ListDataConfig currentListDataConfig = ( ListDataConfig ) dustributedDataConfigs.get( i );
-
-            assertEquals( "param1", currentListDataConfig.getParameterName() );
-            assertEquals( listDataConfig.getParameterProviderLevel(),
-                          currentListDataConfig.getParameterProviderLevel() );
-
-            List<?> currentValues = currentListDataConfig.getValues();
-            assertEquals( 2, currentValues.size() );
-            assertEquals( args.get( i * 2 ), currentValues.get( 0 ) );
-            assertEquals( args.get( i * 2 + 1 ), currentValues.get( 1 ) );
-        }
+        assertEquals("param1", deserializedListDataConfig.getParameterName());
+        assertEquals(ParameterProviderLevel.PER_THREAD_STATIC,
+                     deserializedListDataConfig.getParameterProviderLevel());
+        assertEquals(args, deserializedListDataConfig.getValues());
     }
 
     @Test
     public void distributeOneHost() throws Exception {
 
-        List<String> args = new ArrayList<String>();
-        args.add( "test1" );
-        args.add( "test2" );
-        args.add( "test3" );
+        List<String> args = generateValues(100);
 
-        ListDataConfig listDataConfig = new ListDataConfig( "param1", args );
+        ListDataConfig listDataConfig = new ListDataConfig("param1", args);
 
-        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute( 1 );
-        assertEquals( 1, dustributedDataConfigs.size() );
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(1);
+        assertEquals(1, dustributedDataConfigs.size());
 
-        ListDataConfig currentListDataConfig = ( ListDataConfig ) dustributedDataConfigs.get( 0 );
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
 
-        assertEquals( "param1", currentListDataConfig.getParameterName() );
-        assertEquals( listDataConfig.getParameterProviderLevel(),
-                      currentListDataConfig.getParameterProviderLevel() );
+        assertEquals("param1", currentListDataConfig.getParameterName());
+        assertEquals(listDataConfig.getParameterProviderLevel(),
+                     currentListDataConfig.getParameterProviderLevel());
 
         List<?> currentValues = currentListDataConfig.getValues();
-        assertEquals( 3, currentValues.size() );
-        assertEquals( args.get( 0 ), currentValues.get( 0 ) );
-        assertEquals( args.get( 1 ), currentValues.get( 1 ) );
-        assertEquals( args.get( 2 ), currentValues.get( 2 ) );
+        assertEquals(args.size(), currentValues.size());
+        for(int i = 0 ; i < args.size() ; i++) {
+            assertEquals(args.get(i), currentValues.get(i));
+        }
+        
+    }
+
+    @Test
+    public void test_2_loaders_5_values() {
+
+        final List<String> args = generateValues(5);
+
+        final String paramName = "param1";
+
+        final int loadersCount = 2;
+
+        ListDataConfig listDataConfig = new ListDataConfig(paramName, args);
+
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(loadersCount);
+        assertEquals(loadersCount, dustributedDataConfigs.size());
+
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
+        List<?> currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(0), currentValues.get(0));
+        assertEquals(args.get(1), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(1);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(3, currentValues.size());
+        assertEquals(args.get(2), currentValues.get(0));
+        assertEquals(args.get(3), currentValues.get(1));
+        assertEquals(args.get(4), currentValues.get(2));
+    }
+    
+    @Test
+    public void test_3_loaders_6_values() {
+
+        final List<String> args = generateValues(6);
+
+        final String paramName = "param1";
+
+        final int loadersCount = 3;
+
+        ListDataConfig listDataConfig = new ListDataConfig(paramName, args);
+
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(loadersCount);
+        assertEquals(loadersCount, dustributedDataConfigs.size());
+
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
+        List<?> currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(0), currentValues.get(0));
+        assertEquals(args.get(1), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(1);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(2), currentValues.get(0));
+        assertEquals(args.get(3), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(2);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(4), currentValues.get(0));
+        assertEquals(args.get(5), currentValues.get(1));
+    }
+    
+    private List<String> generateValues( int count ) {
+
+        List<String> args = new ArrayList<String>();
+        for(int i = 0 ; i < count ; i++) {
+            args.add(i+"");
+        }
+        return args;
     }
 }
