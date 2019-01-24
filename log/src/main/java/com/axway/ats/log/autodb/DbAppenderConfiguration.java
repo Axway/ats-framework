@@ -195,9 +195,10 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (port == null) {
-            new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. We will set it to the default one for MSSQL databases ("
+            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, section for ATS ActiveDbAppender. "
+                                                  + "Assuming default value for Microsoft SQL Server databases ("
                                                   + DbConnSQLServer.DEFAULT_PORT + ")");
-            port = String.valueOf(DbConnSQLServer.DEFAULT_PORT);
+            this.port = DbConnSQLServer.DEFAULT_PORT + "";
         }
 
         if (database == null) {
