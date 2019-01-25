@@ -65,6 +65,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     // whether the delete statements are already written to file
     protected boolean              deleteStatementsInserted;
     protected boolean              dropEntireTable;
+    protected boolean              skipTableContent;
     protected boolean              writeGenerateForeignKeyProcedure;
 
     /**
@@ -184,15 +185,19 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
                                                               + fullTableName);
             }
 
-            StringBuilder selectQuery = new StringBuilder();
-            selectQuery.append("SELECT ");
-            selectQuery.append(getColumnsString(columnsToSelect));
-            selectQuery.append(" FROM ");
-            selectQuery.append(fullTableName);
+            DbRecordValuesList[] records = new DbRecordValuesList[0];
+            if (!skipTableContent) {
+                StringBuilder selectQuery = new StringBuilder();
+                selectQuery.append("SELECT ");
+                selectQuery.append(getColumnsString(columnsToSelect));
+                selectQuery.append(" FROM ");
+                selectQuery.append(fullTableName);
 
-            DbQuery query = new DbQuery(selectQuery.toString());
-            // assuming not very large tables
-            DbRecordValuesList[] records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
+                DbQuery query = new DbQuery(selectQuery.toString());
+                // assuming not very large tables
+                records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
+
+            }
 
             writeTableToFile(columnsToSelect, dbTable, records, fileWriter);
         }
@@ -327,6 +332,19 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     public void setDropTables( boolean dropEntireTable ) {
 
         this.dropEntireTable = dropEntireTable;
+
+    }
+
+    /**
+     * Choose whether to exclude the tables' content during backup and only backup the tables' metadata - defaul
+     * value is false, which means that both the tables' metadata and content will be backed up
+     * 
+     * @param skipTablesContent - true to skip, false otherwise
+     * @see com.axway.ats.environment.database.model.BackupHandler#setSkipTablesContent(boolean)
+     */
+    public void setSkipTablesContent( boolean skipTablesContent ) {
+
+        this.skipTableContent = skipTablesContent;
 
     }
 

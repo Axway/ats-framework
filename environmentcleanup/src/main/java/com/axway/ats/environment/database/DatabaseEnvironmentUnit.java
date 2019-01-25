@@ -49,6 +49,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     private boolean                   addSeparateLocks;
     private boolean                   dropTables;
+    private boolean                   skipTablesContent;
 
     private boolean                   disableForeignKeys;
     private boolean                   includeDeleteStatements;
@@ -105,6 +106,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
         this.backupFileName = backupFileName;
         this.addSeparateLocks = true;
         this.dropTables = false;
+        this.skipTablesContent = false;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
 
@@ -137,6 +139,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
             dbBackup = environmentHandlerFactory.createDbBackupHandler(dbConnection);
             dbBackup.setLockTables(addSeparateLocks);
             dbBackup.setDropTables(dropTables);
+            dbBackup.setSkipTablesContent(skipTablesContent);
             dbBackup.setForeignKeyCheck(disableForeignKeys);
             dbBackup.setIncludeDeleteStatements(includeDeleteStatements);
             for (DbTable dbTable : dbTables) {
@@ -158,6 +161,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     }
 
     @Override
+    @PublicAtsApi
     public boolean executeRestoreIfNecessary() throws DatabaseEnvironmentCleanupException {
 
         //create db backup handler instance
@@ -195,9 +199,20 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
      * Toggle whether to drop and recreate tables on restore. Default is <strong>false</strong>.
      * @param dropTables
      * */
+    @PublicAtsApi
     public void setDropTables( boolean dropTables ) {
 
         this.dropTables = dropTables;
+    }
+
+    /**
+     * Toggle whether to add the tables' content to the backup.
+     * @param skipTabkesContent - true will add the content of the tables in the backup, false will not
+     * */
+    @PublicAtsApi
+    public void setSkipTablesContent( boolean skipTablesContent ) {
+
+        this.skipTablesContent = skipTablesContent;
     }
 
     public EnvironmentUnit getNewCopy() {
@@ -212,6 +227,8 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
             newDbTables.add(dbTable.getNewCopy());
         }
         newDatabaseEnvironmentUnit.dbTables = newDbTables;
+        newDatabaseEnvironmentUnit.dropTables = this.dropTables;
+        newDatabaseEnvironmentUnit.skipTablesContent = this.skipTablesContent;
 
         return newDatabaseEnvironmentUnit;
     }
