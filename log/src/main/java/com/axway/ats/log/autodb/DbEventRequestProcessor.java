@@ -230,7 +230,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             if (mssqlException != null && pgsqlException != null) {
                 log.error(mssqlException);
                 log.error(pgsqlException);
-                throw new DatabaseAccessException("Neither Mssql, nor Pgsql ATS LOG database available. See log for details'");
+                throw new DatabaseAccessException("Neither Mssql, nor Pgsql ATS LOG database available. See log for details");
             }
         }
 
@@ -1193,6 +1193,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                          + "'. No additional test data will be inserted for that suite.");
             }
         } else {
+            log.error("Suite with id '" + suiteId + "' exists in database '"
+                      + this.dbConnection.getConnHash() + ". But an error occured", e);
             throw e;
         }
     }
@@ -1212,6 +1214,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 log.warn("Testcase with id '" + testcaseId + "' appears to be deleted from database '"
                          + this.dbConnection.getConnHash()
                          + "'. No additional test data will be inserted for that testcase.");
+            } else {
+                log.error("Testcase with id '" + testcaseId + "' exists in database '"
+                          + this.dbConnection.getConnHash() + ". But an error occured", e);
+                throw e;
             }
         } else {
             throw e;
