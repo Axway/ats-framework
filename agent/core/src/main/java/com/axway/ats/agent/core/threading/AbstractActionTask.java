@@ -382,6 +382,8 @@ public abstract class AbstractActionTask implements Runnable {
                         QueueExecutionStatistics.getInstance().registerActionExecutionResult(queueName,
                                                                                              actionName,
                                                                                              false);
+                        
+                        log.insertCheckpoint(ATS_ACTION__QUEUE_EXECUTION_TIME, queueDuration, CheckpointResult.FAILED);
                     }
                     // re-throw the exception
                     throw e;
