@@ -17,7 +17,6 @@ package com.axway.ats.log.autodb;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
@@ -30,8 +29,8 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public class DbAccessFactory {
 
-    private static final Logger log = Logger.getLogger(ConnectionPool.class);
-    
+    private static final Logger log = Logger.getLogger(DbAccessFactory.class);
+
     public DbAccessFactory() {}
 
     /** 
