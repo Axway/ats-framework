@@ -134,7 +134,6 @@ public class DbUtils {
      * @param dbName the database name
      * @param dbUser the database user name used for login
      * @param dbPassword the database password used for login
-     * @return <strong>true</strong> if MSSQL database is available
      * */
     public static void checkMssqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
                                                        String dbPassword ) throws DbException {
