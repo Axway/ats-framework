@@ -40,7 +40,7 @@ import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 public class PassiveDbAppender extends AbstractDbAppender {
 
     /**
-     * The caller that created thet appender
+     * The caller that created that appender
      */
     private String callerId;
 
