@@ -304,11 +304,21 @@ public class TableDescription {
                 String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
                 if (thisIndexName == null) {
                     thisIndexName = thisIndexProperties.getProperty("index_name");
+                    if (thisIndexName == null) {
+                        // MySQL specific case
+                        // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                        thisIndexName = thisName.split(", ")[1].split("=")[1];
+                    }
                 }
 
                 String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
                 if (thatIndexName == null) {
                     thatIndexName = thatIndexProperties.getProperty("index_name");
+                    if (thatIndexName == null) {
+                        // MySQL specific case
+                        // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                        thatIndexName = thatName.split(", ")[1].split("=")[1];
+                    }
                 }
 
                 if (nameComparator.isSame(name,
@@ -362,11 +372,21 @@ public class TableDescription {
                 String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
                 if (thisIndexName == null) {
                     thisIndexName = thisIndexProperties.getProperty("index_name");
+                    if (thisIndexName == null) {
+                        // MySQL specific case
+                        // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                        thisIndexName = thisName.split(", ")[1].split("=")[1];
+                    }
                 }
 
                 String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
                 if (thatIndexName == null) {
                     thatIndexName = thatIndexProperties.getProperty("index_name");
+                    if (thatIndexName == null) {
+                        // MySQL specific case
+                        // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                        thatIndexName = thatName.split(", ")[1].split("=")[1];
+                    }
                 }
 
                 if (nameComparator.isSame(name,
