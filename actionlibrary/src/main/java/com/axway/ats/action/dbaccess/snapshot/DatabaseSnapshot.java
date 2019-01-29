@@ -276,7 +276,8 @@ public class DatabaseSnapshot {
 
         this.indexNameMatcher = new IndexNameMatcher() {
             @Override
-            public boolean isSame( String table, String firstName, String secondName ) {
+            public boolean isSame( String table, String firstName, Map<String, String> firstProperties,
+                                   String secondName, Map<String, String> secondProperties ) {
 
                 Pattern pattern = Pattern.compile(indexNameRegex);
 
@@ -568,7 +569,8 @@ public class DatabaseSnapshot {
             // create a default one which matches index name literally
             return new IndexNameMatcher() {
                 @Override
-                public boolean isSame( String table, String firstName, String secondName ) {
+                public boolean isSame( String table, String firstName, Map<String, String> firstProperties,
+                                       String secondName, Map<String, String> secondProperties ) {
 
                     return firstName.equals(secondName);
                 }

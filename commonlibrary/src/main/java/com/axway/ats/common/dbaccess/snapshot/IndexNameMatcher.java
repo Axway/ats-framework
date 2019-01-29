@@ -15,6 +15,8 @@
  */
 package com.axway.ats.common.dbaccess.snapshot;
 
+import java.util.Map;
+
 import com.axway.ats.common.PublicAtsApi;
 
 /**
@@ -36,9 +38,11 @@ public interface IndexNameMatcher {
      *  
      * @param table table name
      * @param firstName first index name
+     * @param firstProperties map of the first index's properties - column, partition (if available), etc
      * @param secondName second index name
+     * @param secondProperties map of the second index's properties - column, partition (if available), etc
      * @return
      */
     @PublicAtsApi
-    public boolean isSame( String table, String firstName, String secondName );
+    public boolean isSame( String table, String firstName, Map<String, String> firstProperties, String secondName, Map<String, String> secondProperties );
 }
