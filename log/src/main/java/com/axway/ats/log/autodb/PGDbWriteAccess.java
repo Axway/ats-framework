@@ -23,6 +23,7 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -341,6 +342,13 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
 
 	public boolean insertCheckpoint(String name, long startTimestamp, long responseTime, long transferSize,
 			String transferUnit, int result, int loadQueueId, boolean closeConnection) throws DatabaseAccessException {
+	    
+	    boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
+
+        if (userNewImpl) {
+            return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
+                                     loadQueueId, closeConnection);
+        }
 
 		startTimestamp = inUTC(startTimestamp);
 
@@ -377,6 +385,82 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
 		}
 
 	}
+	
+	public void insertCheckpointSummary(
+                                        String name,
+
+                                        int numRunning,
+                                        int numPassed,
+                                        int numFailed,
+
+                                        int minResponseTime,
+                                        float avgResponseTime,
+                                        int maxResponseTime,
+
+                                        float minTransferRate,
+                                        float avgTransferRate,
+                                        float maxTransferRate,
+                                        String transferRateUnit,
+                                        int loadQueueId,
+                                        boolean closeConnection ) throws DatabaseAccessException {
+
+       final String errMsg = "Unable to insert checkpoint summary '" + name + "' for load queue "
+                             + loadQueueId;
+
+       PreparedStatement perparedStatement = null;
+       try {
+           refreshInternalConnection();
+
+           perparedStatement = connection.prepareStatement("INSERT INTO \"tCheckpointsSummary\""
+                                                           + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
+                                                           + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+           perparedStatement.setString(1, name);
+
+           perparedStatement.setInt(2, numRunning);
+           perparedStatement.setInt(3, numPassed);
+           perparedStatement.setInt(4, numFailed);
+
+           perparedStatement.setInt(5, minResponseTime);
+           perparedStatement.setFloat(6, avgResponseTime);
+           perparedStatement.setInt(7, maxResponseTime);
+
+           perparedStatement.setFloat(8, minTransferRate);
+           perparedStatement.setFloat(9, avgTransferRate);
+           perparedStatement.setFloat(10, maxTransferRate);
+
+           perparedStatement.setString(11, transferRateUnit);
+
+           perparedStatement.setInt(12, loadQueueId);
+
+           int updatedRecords = perparedStatement.executeUpdate();
+           if (updatedRecords != 1) {
+               throw new DatabaseAccessException(errMsg);
+           }
+       } catch (SQLException e) {
+           throw new DatabaseAccessException(errMsg, e);
+       } finally {
+           if (closeConnection) {
+               DbUtils.close(connection, perparedStatement);
+           } else {
+               DbUtils.closeStatement(perparedStatement);
+           }
+       }
+   }
+	
+	private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
+                                       String transferUnit, int result, int loadQueueId,
+                                       boolean closeConnection ) throws DatabaseAccessException {
+
+        startTimestamp = inUTC(startTimestamp);
+        dsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
+
+        if (isBatchMode) {
+            return dsDbCache.flush(false);
+        } else {
+            return dsDbCache.flush(true);
+        }
+
+    }
 
 	@Override
 	public void insertUserActivityStatistics(int testCaseId, String machine, String statisticIds,
