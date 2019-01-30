@@ -343,12 +343,12 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
 	public boolean insertCheckpoint(String name, long startTimestamp, long responseTime, long transferSize,
 			String transferUnit, int result, int loadQueueId, boolean closeConnection) throws DatabaseAccessException {
 	    
-	    boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
+	    /*boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
 
         if (userNewImpl) {
             return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
                                      loadQueueId, closeConnection);
-        }
+        }*/
 
 		startTimestamp = inUTC(startTimestamp);
 
