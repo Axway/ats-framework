@@ -32,422 +32,444 @@ import com.axway.ats.log.model.CheckpointLogLevel;
 
 public class PGDbWriteAccess extends SQLServerDbWriteAccess {
 
-	// the DB statements provider
-	// it shadows the DbWriteAccess's private variable with the same name
-	protected PGInsertEventStatementsFactory insertFactory;
+    // the DB statements provider
+    // it shadows the DbWriteAccess's private variable with the same name
+    protected PGInsertEventStatementsFactory insertFactory;
 
-	public PGDbWriteAccess(DbConnection dbConnection, boolean isBatchMode) throws DatabaseAccessException {
-		super(dbConnection, isBatchMode);
-		this.insertFactory = new PGInsertEventStatementsFactory(isBatchMode);
-	}
+    public PGDbWriteAccess( DbConnection dbConnection, boolean isBatchMode ) throws DatabaseAccessException {
 
-	/**
-	 * Update the static information about an existing run
-	 *
-	 * @param runId
-	 * @param runName
-	 * @param osName
-	 * @param productName
-	 * @param versionName
-	 * @param buildName
-	 * @param userNote
-	 * @param hostName
-	 * @param closeConnection
-	 * @throws DatabaseAccessException
-	 */
-	public void updateRun(int runId, String runName, String osName, String productName, String versionName,
-			String buildName, String userNote, String hostName, boolean closeConnection)
-			throws DatabaseAccessException {
+        super(dbConnection, isBatchMode);
+        this.insertFactory = new PGInsertEventStatementsFactory(isBatchMode);
+    }
 
-		final String errMsg = "Unable to update run with name '" + runName + "' and id " + runId;
+    /**
+     * Update the static information about an existing run
+     *
+     * @param runId
+     * @param runName
+     * @param osName
+     * @param productName
+     * @param versionName
+     * @param buildName
+     * @param userNote
+     * @param hostName
+     * @param closeConnection
+     * @throws DatabaseAccessException
+     */
+    public void updateRun( int runId, String runName, String osName, String productName, String versionName,
+                           String buildName, String userNote, String hostName, boolean closeConnection )
+                                                                                                         throws DatabaseAccessException {
 
-		// then start the run
-		final int indexRowsUpdate = 9;
+        final String errMsg = "Unable to update run with name '" + runName + "' and id " + runId;
 
-		CallableStatement callableStatement = null;
-		try {
-			refreshInternalConnection();
+        // then start the run
+        final int indexRowsUpdate = 9;
 
-			callableStatement = connection.prepareCall("{ call sp_update_run(?, ?, ?, ?, ?, ?, ?, ?, ?) }");
-			callableStatement.setString(1, runId + "");
-			callableStatement.setString(2, productName);
-			callableStatement.setString(3, versionName);
-			callableStatement.setString(4, buildName);
-			callableStatement.setString(5, runName);
-			callableStatement.setString(6, osName);
-			callableStatement.setString(7, userNote);
-			callableStatement.setString(8, hostName);
-			callableStatement.registerOutParameter(indexRowsUpdate, Types.INTEGER);
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
 
-			callableStatement.execute();
-			if (callableStatement.getInt(indexRowsUpdate) != 1) {
-				throw new DatabaseAccessException(errMsg);
-			}
-		} catch (Exception e) {
-			throw new DatabaseAccessException(errMsg, e);
-		} finally {
-			if (closeConnection) {
-				DbUtils.close(connection, callableStatement);
-			} else {
-				DbUtils.closeStatement(callableStatement);
-			}
-		}
-	}
+            callableStatement = connection.prepareCall("{ call sp_update_run(?, ?, ?, ?, ?, ?, ?, ?, ?) }");
+            callableStatement.setString(1, runId + "");
+            callableStatement.setString(2, productName);
+            callableStatement.setString(3, versionName);
+            callableStatement.setString(4, buildName);
+            callableStatement.setString(5, runName);
+            callableStatement.setString(6, osName);
+            callableStatement.setString(7, userNote);
+            callableStatement.setString(8, hostName);
+            callableStatement.registerOutParameter(indexRowsUpdate, Types.INTEGER);
 
-	@Override
-	public int startSuite(String packageName, String suiteName, long timestamp, int runId, boolean closeConnection)
-			throws DatabaseAccessException {
+            callableStatement.execute();
+            if (callableStatement.getInt(indexRowsUpdate) != 1) {
+                throw new DatabaseAccessException(errMsg);
+            }
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
+    }
 
-		final String errMsg = "Unable to start suite with name " + suiteName;
-		// create a new suite
+    @Override
+    public int startSuite( String packageName, String suiteName, long timestamp, int runId, boolean closeConnection )
+                                                                                                                      throws DatabaseAccessException {
 
-		timestamp = inUTC(timestamp);
+        final String errMsg = "Unable to start suite with name " + suiteName;
+        // create a new suite
 
-		final int indexRowsInserted = 5;
-		final int indexSuiteId = 6;
+        timestamp = inUTC(timestamp);
 
-		CallableStatement callableStatement = null;
-		try {
-			refreshInternalConnection();
+        final int indexRowsInserted = 5;
+        final int indexSuiteId = 6;
 
-			callableStatement = connection.prepareCall("{ call sp_start_suite(?, ?, ?, ?, ?, ?) }");
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
 
-			if (packageName == null) {
-				packageName = "";
-			}
-			callableStatement.setString(3, packageName);
+            callableStatement = connection.prepareCall("{ call sp_start_suite(?, ?, ?, ?, ?, ?) }");
 
-			callableStatement.setString(1, suiteName);
-			callableStatement.setInt(2, runId);
-			callableStatement.setTimestamp(4, new Timestamp(timestamp));
-			callableStatement.registerOutParameter(5, Types.INTEGER);
-			callableStatement.registerOutParameter(6, Types.INTEGER);
+            if (packageName == null) {
+                packageName = "";
+            }
+            callableStatement.setString(3, packageName);
 
-			callableStatement.execute();
+            callableStatement.setString(1, suiteName);
+            callableStatement.setInt(2, runId);
+            callableStatement.setTimestamp(4, new Timestamp(timestamp));
+            callableStatement.registerOutParameter(5, Types.INTEGER);
+            callableStatement.registerOutParameter(6, Types.INTEGER);
 
-			if (callableStatement.getInt(indexRowsInserted) != 1) {
-				throw new DatabaseAccessException(errMsg);
-			} else {
-				if (callableStatement.getInt(indexSuiteId) == 0) {
-					throw new DatabaseAccessException(errMsg + " - suite ID returned was 0");
-				}
-			}
-			// get the result
-			return callableStatement.getInt(indexSuiteId);
+            callableStatement.execute();
 
-		} catch (Exception e) {
-			throw new DatabaseAccessException(errMsg, e);
-		} finally {
-			if (closeConnection) {
-				DbUtils.close(connection, callableStatement);
-			} else {
-				DbUtils.closeStatement(callableStatement);
-			}
-		}
-	}
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
+            } else {
+                if (callableStatement.getInt(indexSuiteId) == 0) {
+                    throw new DatabaseAccessException(errMsg + " - suite ID returned was 0");
+                }
+            }
+            // get the result
+            return callableStatement.getInt(indexSuiteId);
 
-	@Override
-	public boolean insertMessage(String message, int level, boolean escapeHtml, String machineName, String threadName,
-			long timestamp, int testCaseId, boolean closeConnection) throws DatabaseAccessException {
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
+    }
 
-		// escape characters with ASCII code < 32
-		message = StringUtils.escapeNonPrintableAsciiCharacters(message);
+    @Override
+    public boolean insertMessage( String message, int level, boolean escapeHtml, String machineName, String threadName,
+                                  long timestamp, int testCaseId,
+                                  boolean closeConnection ) throws DatabaseAccessException {
 
-		timestamp = inUTC(timestamp);
+        // escape characters with ASCII code < 32
+        message = StringUtils.escapeNonPrintableAsciiCharacters(message);
 
-		Connection currentConnection;
-		if (!isBatchMode) {
-			currentConnection = refreshInternalConnection();
-		} else {
-			currentConnection = dbEventsCache.connection;
-		}
+        timestamp = inUTC(timestamp);
 
-		CallableStatement insertMessageStatement = insertFactory.getInsertTestcaseMessageStatement(currentConnection,
-				message, level, escapeHtml, machineName, threadName, timestamp, testCaseId);
+        Connection currentConnection;
+        if (!isBatchMode) {
+            currentConnection = refreshInternalConnection();
+        } else {
+            currentConnection = dbEventsCache.connection;
+        }
 
-		if (isBatchMode) {
-			// schedule this event for batch execution
-			return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
-		} else {
-			// execute this event now
-			final String errMsg = "Unable to insert testcase message '" + message + "'";
+        CallableStatement insertMessageStatement = insertFactory.getInsertTestcaseMessageStatement(currentConnection,
+                                                                                                   message, level,
+                                                                                                   escapeHtml,
+                                                                                                   machineName,
+                                                                                                   threadName,
+                                                                                                   timestamp,
+                                                                                                   testCaseId);
 
-			try {
-				insertMessageStatement.execute();
-			} catch (SQLException e) {
-				throw new DatabaseAccessException(errMsg, e);
-			} finally {
-				if (closeConnection) {
-					DbUtils.close(connection, insertMessageStatement);
-				} else {
-					DbUtils.closeStatement(insertMessageStatement);
-				}
-			}
+        if (isBatchMode) {
+            // schedule this event for batch execution
+            return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
+        } else {
+            // execute this event now
+            final String errMsg = "Unable to insert testcase message '" + message + "'";
 
-			return false;
-		}
-	}
+            try {
+                insertMessageStatement.execute();
+            } catch (SQLException e) {
+                throw new DatabaseAccessException(errMsg, e);
+            } finally {
+                if (closeConnection) {
+                    DbUtils.close(connection, insertMessageStatement);
+                } else {
+                    DbUtils.closeStatement(insertMessageStatement);
+                }
+            }
 
-	@Override
-	public boolean insertRunMessage(String message, int level, boolean escapeHtml, String machineName,
-			String threadName, long timestamp, int runId, boolean closeConnection) throws DatabaseAccessException {
+            return false;
+        }
+    }
 
-		String dbVersionString = getDatabaseVersion();
-		int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
+    @Override
+    public boolean insertRunMessage( String message, int level, boolean escapeHtml, String machineName,
+                                     String threadName, long timestamp, int runId,
+                                     boolean closeConnection ) throws DatabaseAccessException {
 
-		if (dbVersion < 350) {
+        String dbVersionString = getDatabaseVersion();
+        int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
 
-			return false;
-		} else {
+        if (dbVersion < 350) {
 
-			// escape characters with ASCII code < 32
-			message = StringUtils.escapeNonPrintableAsciiCharacters(message);
+            return false;
+        } else {
 
-			timestamp = inUTC(timestamp);
+            // escape characters with ASCII code < 32
+            message = StringUtils.escapeNonPrintableAsciiCharacters(message);
 
-			Connection currentConnection;
-			if (!isBatchMode) {
-				currentConnection = refreshInternalConnection();
-			} else {
-				currentConnection = dbEventsCache.connection;
-			}
+            timestamp = inUTC(timestamp);
 
-			CallableStatement insertMessageStatement = insertFactory.getInsertRunMessageStatement(currentConnection,
-					message, level, escapeHtml, machineName, threadName, timestamp, runId);
+            Connection currentConnection;
+            if (!isBatchMode) {
+                currentConnection = refreshInternalConnection();
+            } else {
+                currentConnection = dbEventsCache.connection;
+            }
 
-			if (isBatchMode) {
-				// schedule this event for batch execution
-				return dbEventsCache.addInsertRunMessageEventToBatch(insertMessageStatement);
-			} else {
-				// execute this event now
-				final String errMsg = "Unable to insert run message '" + message + "'";
+            CallableStatement insertMessageStatement = insertFactory.getInsertRunMessageStatement(currentConnection,
+                                                                                                  message, level,
+                                                                                                  escapeHtml,
+                                                                                                  machineName,
+                                                                                                  threadName, timestamp,
+                                                                                                  runId);
 
-				try {
-					insertMessageStatement.execute();
-				} catch (SQLException e) {
-					throw new DatabaseAccessException(errMsg, e);
-				} finally {
-					if (closeConnection) {
-						DbUtils.close(connection, insertMessageStatement);
-					} else {
-						DbUtils.closeStatement(insertMessageStatement);
-					}
-				}
+            if (isBatchMode) {
+                // schedule this event for batch execution
+                return dbEventsCache.addInsertRunMessageEventToBatch(insertMessageStatement);
+            } else {
+                // execute this event now
+                final String errMsg = "Unable to insert run message '" + message + "'";
 
-				return false;
-			}
-		}
-	}
+                try {
+                    insertMessageStatement.execute();
+                } catch (SQLException e) {
+                    throw new DatabaseAccessException(errMsg, e);
+                } finally {
+                    if (closeConnection) {
+                        DbUtils.close(connection, insertMessageStatement);
+                    } else {
+                        DbUtils.closeStatement(insertMessageStatement);
+                    }
+                }
 
-	@Override
-	public boolean insertSuiteMessage(String message, int level, boolean escapeHtml, String machineName,
-			String threadName, long timestamp, int suiteId, boolean closeConnection) throws DatabaseAccessException {
+                return false;
+            }
+        }
+    }
 
-		String dbVersionString = getDatabaseVersion();
-		int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
+    @Override
+    public boolean insertSuiteMessage( String message, int level, boolean escapeHtml, String machineName,
+                                       String threadName, long timestamp, int suiteId,
+                                       boolean closeConnection ) throws DatabaseAccessException {
 
-		if (dbVersion < 350) {
+        String dbVersionString = getDatabaseVersion();
+        int dbVersion = Integer.parseInt(dbVersionString.replace(".", ""));
 
-			return false;
-		} else {
+        if (dbVersion < 350) {
 
-			// escape characters with ASCII code < 32
-			message = StringUtils.escapeNonPrintableAsciiCharacters(message);
+            return false;
+        } else {
 
-			timestamp = inUTC(timestamp);
+            // escape characters with ASCII code < 32
+            message = StringUtils.escapeNonPrintableAsciiCharacters(message);
 
-			Connection currentConnection;
-			if (!isBatchMode) {
-				currentConnection = refreshInternalConnection();
-			} else {
-				currentConnection = dbEventsCache.connection;
-			}
+            timestamp = inUTC(timestamp);
 
-			CallableStatement insertMessageStatement = insertFactory.getInsertSuiteMessageStatement(currentConnection,
-					message, level, escapeHtml, machineName, threadName, timestamp, suiteId);
+            Connection currentConnection;
+            if (!isBatchMode) {
+                currentConnection = refreshInternalConnection();
+            } else {
+                currentConnection = dbEventsCache.connection;
+            }
 
-			if (isBatchMode) {
-				// schedule this event for batch execution
-				return dbEventsCache.addInsertSuiteMessageEventToBatch(insertMessageStatement);
-			} else {
-				// execute this event now
-				final String errMsg = "Unable to insert suite message '" + message + "'";
+            CallableStatement insertMessageStatement = insertFactory.getInsertSuiteMessageStatement(currentConnection,
+                                                                                                    message, level,
+                                                                                                    escapeHtml,
+                                                                                                    machineName,
+                                                                                                    threadName,
+                                                                                                    timestamp, suiteId);
 
-				try {
-					insertMessageStatement.execute();
-				} catch (SQLException e) {
-					throw new DatabaseAccessException(errMsg, e);
-				} finally {
-					if (closeConnection) {
-						DbUtils.close(connection, insertMessageStatement);
-					} else {
-						DbUtils.closeStatement(insertMessageStatement);
-					}
-				}
+            if (isBatchMode) {
+                // schedule this event for batch execution
+                return dbEventsCache.addInsertSuiteMessageEventToBatch(insertMessageStatement);
+            } else {
+                // execute this event now
+                final String errMsg = "Unable to insert suite message '" + message + "'";
 
-				return false;
-			}
-		}
-	}
+                try {
+                    insertMessageStatement.execute();
+                } catch (SQLException e) {
+                    throw new DatabaseAccessException(errMsg, e);
+                } finally {
+                    if (closeConnection) {
+                        DbUtils.close(connection, insertMessageStatement);
+                    } else {
+                        DbUtils.closeStatement(insertMessageStatement);
+                    }
+                }
 
-	public CheckpointInfo startCheckpoint(String name, long startTimestamp, String transferRateUnit, int loadQueueId,
-			boolean closeConnection) throws DatabaseAccessException {
+                return false;
+            }
+        }
+    }
 
-		final String errMsg = "Unable to start checkpoint '" + name + "' in load queue " + loadQueueId;
+    public CheckpointInfo startCheckpoint( String name, long startTimestamp, String transferRateUnit, int loadQueueId,
+                                           boolean closeConnection ) throws DatabaseAccessException {
 
-		startTimestamp = inUTC(startTimestamp);
+        final String errMsg = "Unable to start checkpoint '" + name + "' in load queue " + loadQueueId;
 
-		final int indexCheckpointSummaryId = 5;
-		final int indexCheckpointId = 6;
+        startTimestamp = inUTC(startTimestamp);
 
-		CallableStatement callableStatement = null;
-		try {
-			refreshInternalConnection();
+        final int indexCheckpointSummaryId = 5;
+        final int indexCheckpointId = 6;
 
-			callableStatement = connection.prepareCall("{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?) }");
-			callableStatement.setInt(1, loadQueueId);
-			callableStatement.setString(2, name);
-			callableStatement.setInt(3, checkpointLogLevel.toInt());
-			callableStatement.setString(4, transferRateUnit);
-			callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
-			callableStatement.registerOutParameter(indexCheckpointId, Types.INTEGER);
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
 
-			callableStatement.execute();
+            callableStatement = connection.prepareCall("{ call sp_start_checkpoint(?, ?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, loadQueueId);
+            callableStatement.setString(2, name);
+            callableStatement.setInt(3, checkpointLogLevel.toInt());
+            callableStatement.setString(4, transferRateUnit);
+            callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
+            callableStatement.registerOutParameter(indexCheckpointId, Types.INTEGER);
 
-			// we always update the checkpoint summary table
-			if (callableStatement.getInt(indexCheckpointSummaryId) == 0) {
-				throw new DatabaseAccessException(errMsg + " - checkpoint summary ID returned was 0");
-			}
+            callableStatement.execute();
 
-			// we update the checkpoint table only in FULL mode
-			if (checkpointLogLevel == CheckpointLogLevel.FULL && callableStatement.getInt(indexCheckpointId) == 0) {
-				throw new DatabaseAccessException(errMsg + " - checkpoint ID returned was 0");
-			}
+            // we always update the checkpoint summary table
+            if (callableStatement.getInt(indexCheckpointSummaryId) == 0) {
+                throw new DatabaseAccessException(errMsg + " - checkpoint summary ID returned was 0");
+            }
 
-			int checkpointSummaryId = callableStatement.getInt(indexCheckpointSummaryId);
-			int checkpointId = callableStatement.getInt(indexCheckpointId);
+            // we update the checkpoint table only in FULL mode
+            if (checkpointLogLevel == CheckpointLogLevel.FULL && callableStatement.getInt(indexCheckpointId) == 0) {
+                throw new DatabaseAccessException(errMsg + " - checkpoint ID returned was 0");
+            }
 
-			return new CheckpointInfo(name, checkpointSummaryId, checkpointId, startTimestamp);
+            int checkpointSummaryId = callableStatement.getInt(indexCheckpointSummaryId);
+            int checkpointId = callableStatement.getInt(indexCheckpointId);
 
-		} catch (Exception e) {
-			throw new DatabaseAccessException(errMsg, e);
-		} finally {
-			if (closeConnection) {
-				DbUtils.close(connection, callableStatement);
-			} else {
-				DbUtils.closeStatement(callableStatement);
-			}
-		}
-	}
+            return new CheckpointInfo(name, checkpointSummaryId, checkpointId, startTimestamp);
 
-	public boolean insertCheckpoint(String name, long startTimestamp, long responseTime, long transferSize,
-			String transferUnit, int result, int loadQueueId, boolean closeConnection) throws DatabaseAccessException {
-	    
-	    /*boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
+        } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
+    }
+
+    public boolean insertCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
+                                     String transferUnit, int result, int loadQueueId,
+                                     boolean closeConnection ) throws DatabaseAccessException {
+
+        boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
 
         if (userNewImpl) {
             return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
                                      loadQueueId, closeConnection);
-        }*/
+        }
 
-		startTimestamp = inUTC(startTimestamp);
+        startTimestamp = inUTC(startTimestamp);
 
-		Connection currentConnection;
-		if (!isBatchMode) {
-			currentConnection = refreshInternalConnection();
-		} else {
-			currentConnection = dbEventsCache.connection;
-		}
+        Connection currentConnection;
+        if (!isBatchMode) {
+            currentConnection = refreshInternalConnection();
+        } else {
+            currentConnection = dbEventsCache.connection;
+        }
 
-		CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement(currentConnection,
-				name, responseTime, startTimestamp + responseTime, transferSize, transferUnit, result,
-				checkpointLogLevel, loadQueueId);
+        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement(currentConnection,
+                                                                                                 name, responseTime,
+                                                                                                 startTimestamp + responseTime,
+                                                                                                 transferSize,
+                                                                                                 transferUnit, result,
+                                                                                                 checkpointLogLevel,
+                                                                                                 loadQueueId);
 
-		if (isBatchMode) {
-			// schedule this event for batch execution
-			return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
-		} else {
-			// execute this event now
-			final String errMsg = "Unable to insert checkpoint '" + name + "'";
-			try {
-				insertCheckpointStatement.execute();
-			} catch (SQLException e) {
-				throw new DatabaseAccessException(errMsg, e);
-			} finally {
-				if (closeConnection) {
-					DbUtils.close(connection, insertCheckpointStatement);
-				} else {
-					DbUtils.closeStatement(insertCheckpointStatement);
-				}
-			}
+        if (isBatchMode) {
+            // schedule this event for batch execution
+            return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
+        } else {
+            // execute this event now
+            final String errMsg = "Unable to insert checkpoint '" + name + "'";
+            try {
+                insertCheckpointStatement.execute();
+            } catch (SQLException e) {
+                throw new DatabaseAccessException(errMsg, e);
+            } finally {
+                if (closeConnection) {
+                    DbUtils.close(connection, insertCheckpointStatement);
+                } else {
+                    DbUtils.closeStatement(insertCheckpointStatement);
+                }
+            }
 
-			return false;
-		}
+            return false;
+        }
 
-	}
-	
-	public void insertCheckpointSummary(
-                                        String name,
+    }
 
-                                        int numRunning,
-                                        int numPassed,
-                                        int numFailed,
+    public void insertCheckpointSummary(
+                                         String name,
 
-                                        int minResponseTime,
-                                        float avgResponseTime,
-                                        int maxResponseTime,
+                                         int numRunning,
+                                         int numPassed,
+                                         int numFailed,
 
-                                        float minTransferRate,
-                                        float avgTransferRate,
-                                        float maxTransferRate,
-                                        String transferRateUnit,
-                                        int loadQueueId,
-                                        boolean closeConnection ) throws DatabaseAccessException {
+                                         int minResponseTime,
+                                         float avgResponseTime,
+                                         int maxResponseTime,
 
-       final String errMsg = "Unable to insert checkpoint summary '" + name + "' for load queue "
-                             + loadQueueId;
+                                         float minTransferRate,
+                                         float avgTransferRate,
+                                         float maxTransferRate,
+                                         String transferRateUnit,
+                                         int loadQueueId,
+                                         boolean closeConnection ) throws DatabaseAccessException {
 
-       PreparedStatement perparedStatement = null;
-       try {
-           refreshInternalConnection();
+        final String errMsg = "Unable to insert checkpoint summary '" + name + "' for load queue "
+                              + loadQueueId;
 
-           perparedStatement = connection.prepareStatement("INSERT INTO \"tCheckpointsSummary\""
-                                                           + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
-                                                           + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-           perparedStatement.setString(1, name);
+        PreparedStatement perparedStatement = null;
+        try {
+            refreshInternalConnection();
 
-           perparedStatement.setInt(2, numRunning);
-           perparedStatement.setInt(3, numPassed);
-           perparedStatement.setInt(4, numFailed);
+            perparedStatement = connection.prepareStatement("INSERT INTO \"tCheckpointsSummary\""
+                                                            + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
+                                                            + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+            perparedStatement.setString(1, name);
 
-           perparedStatement.setInt(5, minResponseTime);
-           perparedStatement.setFloat(6, avgResponseTime);
-           perparedStatement.setInt(7, maxResponseTime);
+            perparedStatement.setInt(2, numRunning);
+            perparedStatement.setInt(3, numPassed);
+            perparedStatement.setInt(4, numFailed);
 
-           perparedStatement.setFloat(8, minTransferRate);
-           perparedStatement.setFloat(9, avgTransferRate);
-           perparedStatement.setFloat(10, maxTransferRate);
+            perparedStatement.setInt(5, minResponseTime);
+            perparedStatement.setFloat(6, avgResponseTime);
+            perparedStatement.setInt(7, maxResponseTime);
 
-           perparedStatement.setString(11, transferRateUnit);
+            perparedStatement.setFloat(8, minTransferRate);
+            perparedStatement.setFloat(9, avgTransferRate);
+            perparedStatement.setFloat(10, maxTransferRate);
 
-           perparedStatement.setInt(12, loadQueueId);
+            perparedStatement.setString(11, transferRateUnit);
 
-           int updatedRecords = perparedStatement.executeUpdate();
-           if (updatedRecords != 1) {
-               throw new DatabaseAccessException(errMsg);
-           }
-       } catch (SQLException e) {
-           throw new DatabaseAccessException(errMsg, e);
-       } finally {
-           if (closeConnection) {
-               DbUtils.close(connection, perparedStatement);
-           } else {
-               DbUtils.closeStatement(perparedStatement);
-           }
-       }
-   }
-	
-	private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
+            perparedStatement.setInt(12, loadQueueId);
+
+            int updatedRecords = perparedStatement.executeUpdate();
+            if (updatedRecords != 1) {
+                throw new DatabaseAccessException(errMsg);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, perparedStatement);
+            } else {
+                DbUtils.closeStatement(perparedStatement);
+            }
+        }
+    }
+
+    private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
                                        String transferUnit, int result, int loadQueueId,
                                        boolean closeConnection ) throws DatabaseAccessException {
 
@@ -462,269 +484,278 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
 
     }
 
-	@Override
-	public void insertUserActivityStatistics(int testCaseId, String machine, String statisticIds,
-			String statisticValues, long timestamp, boolean closeConnection) throws DatabaseAccessException {
+    @Override
+    public void insertUserActivityStatistics( int testCaseId, String machine, String statisticIds,
+                                              String statisticValues, long timestamp,
+                                              boolean closeConnection ) throws DatabaseAccessException {
 
-		timestamp = inUTC(timestamp);
+        timestamp = inUTC(timestamp);
 
-		CallableStatement callableStatement = null;
-		try {
-			refreshInternalConnection();
+        CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
 
-			callableStatement = connection
-					.prepareCall("{ call sp_insert_user_activity_statistic_by_ids(?, ?, ?, ?, ?) }");
-			callableStatement.setInt(1, testCaseId);
-			callableStatement.setString(2, machine);
-			callableStatement.setString(3, statisticIds);
-			callableStatement.setString(4, statisticValues);
-			callableStatement.setTimestamp(5, new Timestamp(timestamp));
+            callableStatement = connection
+                                          .prepareCall("{ call sp_insert_user_activity_statistic_by_ids(?, ?, ?, ?, ?) }");
+            callableStatement.setInt(1, testCaseId);
+            callableStatement.setString(2, machine);
+            callableStatement.setString(3, statisticIds);
+            callableStatement.setString(4, statisticValues);
+            callableStatement.setTimestamp(5, new Timestamp(timestamp));
 
-			callableStatement.execute();
+            callableStatement.execute();
 
-		} catch (Exception e) {
-			String errMsg = "Unable to insert user activity statistics, statistic IDs '" + statisticIds
-					+ "', statistic values '" + statisticValues + "', timestamp " + timestamp;
-			throw new DatabaseAccessException(errMsg, e);
-		} finally {
-			if (closeConnection) {
-				DbUtils.close(connection, callableStatement);
-			} else {
-				DbUtils.closeStatement(callableStatement);
-			}
-		}
-	}
+        } catch (Exception e) {
+            String errMsg = "Unable to insert user activity statistics, statistic IDs '" + statisticIds
+                            + "', statistic values '" + statisticValues + "', timestamp " + timestamp;
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
+    }
 
-	public boolean isRunPresent(int runId) throws DatabaseAccessException {
+    public boolean isRunPresent( int runId ) throws DatabaseAccessException {
 
-		Connection connection = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		try {
-			statement = connection.prepareStatement("SELECT COUNT(*) FROM \"tRuns\" WHERE runId = " + runId);
-			rs = statement.executeQuery();
-			if (rs.next()) {
-				return 1 == rs.getInt(1);
-			}
-		} catch (Exception e) {
-			throw new DatabaseAccessException("Error checking whether run with id " + runId + " exists", e);
-		} finally {
-			DbUtils.closeResultSet(rs);
-			DbUtils.close(connection, statement);
-		}
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT COUNT(*) FROM \"tRuns\" WHERE runId = " + runId);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
+            }
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether run with id " + runId + " exists", e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean isSuitePresent(int suiteId) throws DatabaseAccessException {
+    public boolean isSuitePresent( int suiteId ) throws DatabaseAccessException {
 
-		Connection connection = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		try {
-			statement = connection.prepareStatement("SELECT COUNT(*) FROM \"tSuites\" WHERE suiteId = " + suiteId);
-			rs = statement.executeQuery();
-			if (rs.next()) {
-				return 1 == rs.getInt(1);
-			}
-		} catch (Exception e) {
-			throw new DatabaseAccessException("Error checking whether suite with id " + suiteId + " exists", e);
-		} finally {
-			DbUtils.closeResultSet(rs);
-			DbUtils.close(connection, statement);
-		}
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT COUNT(*) FROM \"tSuites\" WHERE suiteId = " + suiteId);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
+            }
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether suite with id " + suiteId + " exists", e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public boolean isTestcasePresent(int testcaseId) throws DatabaseAccessException {
+    public boolean isTestcasePresent( int testcaseId ) throws DatabaseAccessException {
 
-		Connection connection = getConnection();
-		PreparedStatement statement = null;
-		ResultSet rs = null;
-		try {
-			statement = connection
-					.prepareStatement("SELECT COUNT(*) FROM \"tTestcases\" WHERE testcaseId = " + testcaseId);
-			rs = statement.executeQuery();
-			if (rs.next()) {
-				return 1 == rs.getInt(1);
-			}
-		} catch (Exception e) {
-			throw new DatabaseAccessException("Error checking whether testcase with id " + testcaseId + " exists", e);
-		} finally {
-			DbUtils.closeResultSet(rs);
-			DbUtils.close(connection, statement);
-		}
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection
+                                  .prepareStatement("SELECT COUNT(*) FROM \"tTestcases\" WHERE testcaseId = "
+                                                    + testcaseId);
+            rs = statement.executeQuery();
+            if (rs.next()) {
+                return 1 == rs.getInt(1);
+            }
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error checking whether testcase with id " + testcaseId + " exists", e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * Provides the event statements
-	 */
-	protected class PGInsertEventStatementsFactory {
+    /**
+     * Provides the event statements
+     */
+    protected class PGInsertEventStatementsFactory {
 
-		private boolean isBatchMode;
+        private boolean             isBatchMode;
 
-		private CallableStatement insertRunMessageStatement;
-		private CallableStatement insertSuiteMessageStatement;
-		private CallableStatement insertTestcaseMessageStatement;
-		private CallableStatement insertCheckpointStatement;
+        private CallableStatement   insertRunMessageStatement;
+        private CallableStatement   insertSuiteMessageStatement;
+        private CallableStatement   insertTestcaseMessageStatement;
+        private CallableStatement   insertCheckpointStatement;
 
-		private static final String SP_INSERT_RUN_MESSAGE = "{ call sp_insert_run_message(?, ?, ?, ?, ?, ?, ?) }";
-		private static final String SP_INSERT_SUITE_MESSAGE = "{ call sp_insert_suite_message(?, ?, ?, ?, ?, ?, ?) }";
-		private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?) }";
-		private static final String SP_INSERT_CHECKPOINT = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_RUN_MESSAGE      = "{ call sp_insert_run_message(?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_SUITE_MESSAGE    = "{ call sp_insert_suite_message(?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }";
 
-		public PGInsertEventStatementsFactory(boolean isBatchMode) {
+        public PGInsertEventStatementsFactory( boolean isBatchMode ) {
 
-			this.isBatchMode = isBatchMode;
-		}
+            this.isBatchMode = isBatchMode;
+        }
 
-		CallableStatement getInsertCheckpointStatement(Connection connection, String name, long responseTime,
-				long endTimestamp, long transferSize, String transferUnit, int result,
-				CheckpointLogLevel checkpointLogLevel, int loadQueueId) throws DatabaseAccessException {
+        CallableStatement getInsertCheckpointStatement( Connection connection, String name, long responseTime,
+                                                        long endTimestamp, long transferSize, String transferUnit,
+                                                        int result,
+                                                        CheckpointLogLevel checkpointLogLevel,
+                                                        int loadQueueId ) throws DatabaseAccessException {
 
-			// get the statement
-			CallableStatement theStatement;
-			try {
-				if (isBatchMode) {
-					if (insertCheckpointStatement == null) {
-						insertCheckpointStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
-					}
-					theStatement = insertCheckpointStatement;
-				} else {
-					theStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
-				}
-			} catch (SQLException e) {
-				throw new DatabaseAccessException("Unable to create SQL statement for inserting checkpoints", e);
-			}
+            // get the statement
+            CallableStatement theStatement;
+            try {
+                if (isBatchMode) {
+                    if (insertCheckpointStatement == null) {
+                        insertCheckpointStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
+                    }
+                    theStatement = insertCheckpointStatement;
+                } else {
+                    theStatement = connection.prepareCall(SP_INSERT_CHECKPOINT);
+                }
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting checkpoints", e);
+            }
 
-			// apply statement parameters
-			try {
-				theStatement.setInt(1, loadQueueId);
-				theStatement.setString(2, name);
-				theStatement.setLong(3, responseTime);
-				theStatement.setTimestamp(4, new Timestamp(endTimestamp));
-				theStatement.setLong(5, transferSize);
-				theStatement.setString(6, transferUnit);
-				theStatement.setInt(7, result);
-				theStatement.setInt(8, checkpointLogLevel.toInt());
+            // apply statement parameters
+            try {
+                theStatement.setInt(1, loadQueueId);
+                theStatement.setString(2, name);
+                theStatement.setLong(3, responseTime);
+                theStatement.setTimestamp(4, new Timestamp(endTimestamp));
+                theStatement.setLong(5, transferSize);
+                theStatement.setString(6, transferUnit);
+                theStatement.setInt(7, result);
+                theStatement.setInt(8, checkpointLogLevel.toInt());
 
-				return theStatement;
-			} catch (Exception e) {
-				throw new DatabaseAccessException("Unable to set parameters for inserting a checkpoint '" + name + "'",
-						e);
-			}
-		}
+                return theStatement;
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a checkpoint '" + name + "'",
+                                                  e);
+            }
+        }
 
-		public CallableStatement getInsertTestcaseMessageStatement(Connection connection, String message, int level,
-				boolean escapeHtml, String machineName, String threadName, long timestamp, int testCaseId)
-				throws DatabaseAccessException {
+        public CallableStatement getInsertTestcaseMessageStatement( Connection connection, String message, int level,
+                                                                    boolean escapeHtml, String machineName,
+                                                                    String threadName, long timestamp, int testCaseId )
+                                                                                                                        throws DatabaseAccessException {
 
-			// get the statement
-			CallableStatement theStatement;
-			try {
-				if (isBatchMode) {
-					if (insertTestcaseMessageStatement == null) {
-						insertTestcaseMessageStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
-					}
-					theStatement = insertTestcaseMessageStatement;
-				} else {
-					theStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
-				}
-			} catch (SQLException e) {
-				throw new DatabaseAccessException("Unable to create SQL statement for inserting a message", e);
-			}
+            // get the statement
+            CallableStatement theStatement;
+            try {
+                if (isBatchMode) {
+                    if (insertTestcaseMessageStatement == null) {
+                        insertTestcaseMessageStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
+                    }
+                    theStatement = insertTestcaseMessageStatement;
+                } else {
+                    theStatement = connection.prepareCall(SP_INSERT_TESTCASE_MESSAGE);
+                }
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a message", e);
+            }
 
-			try {
-				theStatement.setInt(1, testCaseId);
-				theStatement.setInt(2, level);
-				theStatement.setString(3, message);
-				theStatement.setBoolean(4, escapeHtml);
-				theStatement.setString(5, machineName);
-				theStatement.setString(6, threadName);
-				theStatement.setTimestamp(7, new Timestamp(timestamp));
+            try {
+                theStatement.setInt(1, testCaseId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
 
-				return theStatement;
-			} catch (Exception e) {
-				throw new DatabaseAccessException("Unable to set parameters for inserting a message '" + message + "'",
-						e);
-			}
-		}
+                return theStatement;
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Unable to set parameters for inserting a message '" + message + "'",
+                                                  e);
+            }
+        }
 
-		public CallableStatement getInsertRunMessageStatement(Connection connection, String message, int level,
-				boolean escapeHtml, String machineName, String threadName, long timestamp, int runId)
-				throws DatabaseAccessException {
+        public CallableStatement getInsertRunMessageStatement( Connection connection, String message, int level,
+                                                               boolean escapeHtml, String machineName,
+                                                               String threadName, long timestamp, int runId )
+                                                                                                              throws DatabaseAccessException {
 
-			// get the statement
-			CallableStatement theStatement;
-			try {
-				if (isBatchMode) {
-					if (insertRunMessageStatement == null) {
-						insertRunMessageStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
-					}
-					theStatement = insertRunMessageStatement;
-				} else {
-					theStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
-				}
-			} catch (SQLException e) {
-				throw new DatabaseAccessException("Unable to create SQL statement for inserting a run message", e);
-			}
+            // get the statement
+            CallableStatement theStatement;
+            try {
+                if (isBatchMode) {
+                    if (insertRunMessageStatement == null) {
+                        insertRunMessageStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
+                    }
+                    theStatement = insertRunMessageStatement;
+                } else {
+                    theStatement = connection.prepareCall(SP_INSERT_RUN_MESSAGE);
+                }
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a run message", e);
+            }
 
-			// apply statement parameters
+            // apply statement parameters
 
-			try {
-				theStatement.setInt(1, runId);
-				theStatement.setInt(2, level);
-				theStatement.setString(3, message);
-				theStatement.setBoolean(4, escapeHtml);
-				theStatement.setString(5, machineName);
-				theStatement.setString(6, threadName);
-				theStatement.setTimestamp(7, new Timestamp(timestamp));
+            try {
+                theStatement.setInt(1, runId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
 
-				return theStatement;
-			} catch (Exception e) {
-				throw new DatabaseAccessException(
-						"Unable to set parameters for inserting a run message '" + message + "'", e);
-			}
-		}
+                return theStatement;
+            } catch (Exception e) {
+                throw new DatabaseAccessException(
+                                                  "Unable to set parameters for inserting a run message '" + message
+                                                  + "'", e);
+            }
+        }
 
-		public CallableStatement getInsertSuiteMessageStatement(Connection connection, String message, int level,
-				boolean escapeHtml, String machineName, String threadName, long timestamp, int suiteId)
-				throws DatabaseAccessException {
+        public CallableStatement getInsertSuiteMessageStatement( Connection connection, String message, int level,
+                                                                 boolean escapeHtml, String machineName,
+                                                                 String threadName, long timestamp, int suiteId )
+                                                                                                                  throws DatabaseAccessException {
 
-			// get the statement
-			CallableStatement theStatement;
-			try {
-				if (isBatchMode) {
-					if (insertSuiteMessageStatement == null) {
-						insertSuiteMessageStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
-					}
-					theStatement = insertSuiteMessageStatement;
-				} else {
-					theStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
-				}
-			} catch (SQLException e) {
-				throw new DatabaseAccessException("Unable to create SQL statement for inserting a suite message", e);
-			}
+            // get the statement
+            CallableStatement theStatement;
+            try {
+                if (isBatchMode) {
+                    if (insertSuiteMessageStatement == null) {
+                        insertSuiteMessageStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
+                    }
+                    theStatement = insertSuiteMessageStatement;
+                } else {
+                    theStatement = connection.prepareCall(SP_INSERT_SUITE_MESSAGE);
+                }
+            } catch (SQLException e) {
+                throw new DatabaseAccessException("Unable to create SQL statement for inserting a suite message", e);
+            }
 
-			try {
-				theStatement.setInt(1, suiteId);
-				theStatement.setInt(2, level);
-				theStatement.setString(3, message);
-				theStatement.setBoolean(4, escapeHtml);
-				theStatement.setString(5, machineName);
-				theStatement.setString(6, threadName);
-				theStatement.setTimestamp(7, new Timestamp(timestamp));
+            try {
+                theStatement.setInt(1, suiteId);
+                theStatement.setInt(2, level);
+                theStatement.setString(3, message);
+                theStatement.setBoolean(4, escapeHtml);
+                theStatement.setString(5, machineName);
+                theStatement.setString(6, threadName);
+                theStatement.setTimestamp(7, new Timestamp(timestamp));
 
-				return theStatement;
-			} catch (Exception e) {
-				throw new DatabaseAccessException(
-						"Unable to set parameters for inserting a suite message '" + message + "'", e);
-			}
-		}
+                return theStatement;
+            } catch (Exception e) {
+                throw new DatabaseAccessException(
+                                                  "Unable to set parameters for inserting a suite message '" + message
+                                                  + "'", e);
+            }
+        }
 
-	}
+    }
 
 }

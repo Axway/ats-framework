@@ -69,6 +69,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      * */
     protected boolean                    skipUTCConversion  = false;
 
+    protected DsDbCache                  dsDbCache;
+
     public SQLServerDbWriteAccess( DbConnection dbConnection,
                                    boolean isBatchMode ) throws DatabaseAccessException {
 
@@ -82,12 +84,16 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
                                                                             false);
+
+            dsDbCache = new DsDbCache(dbConnection, getCheckpointLogLevel(), dbEventsCache.maxNumberOfCachedEvents);
         }
     }
-    
+
     @Override
-    public void setMaxNumberOfCachedEvents(int maxNumberOfCachedEvents) {
+    public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
+
         dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
+        dsDbCache.maxCacheCheckpoints = maxNumberOfCachedEvents;
     }
 
     /**
@@ -715,7 +721,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                boolean closeConnection ) throws DatabaseAccessException {
 
         if (testcaseId < 1) {
-            log.getLog4jLogger().warn("Load queue '" + name
+            log.warn("Load queue '" + name
                      + "' will not be registered because there is no database connection!");
             return -1;
         }
@@ -999,6 +1005,13 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                      int loadQueueId,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
+        boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
+
+        if (userNewImpl) {
+            return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
+                                     loadQueueId, closeConnection);
+        }
+
         startTimestamp = inUTC(startTimestamp);
 
         Connection currentConnection;
@@ -1044,6 +1057,21 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             return false;
         }
+    }
+
+    private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
+                                       String transferUnit, int result, int loadQueueId,
+                                       boolean closeConnection ) throws DatabaseAccessException {
+
+        startTimestamp = inUTC(startTimestamp);
+        dsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
+
+        if (isBatchMode) {
+            return dsDbCache.flush(false);
+        } else {
+            return dsDbCache.flush(true);
+        }
+
     }
 
     /**
@@ -1135,16 +1163,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         endTimestamp = inUTC(endTimestamp);
 
         final int indexRowsInserted = 8;
-        int responseTime = ( int ) ( endTimestamp - runningCheckpointInfo.getStartTimestamp() );
+        int responseTime = (int) (endTimestamp - runningCheckpointInfo.getStartTimestamp());
 
         CallableStatement callableStatement = null;
         try {
             refreshInternalConnection();
-            
+
             callableStatement = connection.prepareCall("{ call sp_end_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }");
             callableStatement.setInt(1, runningCheckpointInfo.getCheckpointSummaryId());
             callableStatement.setInt(2, runningCheckpointInfo.getCheckpointId());
-            callableStatement.setInt(3, responseTime >= 0 ? responseTime : 0 );
+            callableStatement.setInt(3, responseTime >= 0
+                                                          ? responseTime
+                                                          : 0);
             callableStatement.setLong(4, transferSize);
             callableStatement.setInt(5, result);
             callableStatement.setInt(6, checkpointLogLevel.toInt());
@@ -1500,6 +1530,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     public void flushCache() throws DatabaseAccessException {
 
         dbEventsCache.flushCache();
+
     }
 
     /**
@@ -1732,11 +1763,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000; // max events to be cached in batch mode
+        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000;      // max events to be cached in batch mode
         private static final long      MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
 
         private long                   cacheBirthTime;
-        private int                    maxNumberOfCachedEvents = MAX_CACHE_EVENTS_DEFAULT_VALUE;
+        private int                    maxNumberOfCachedEvents;
 
         protected Connection           connection;
 
@@ -1774,21 +1805,24 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             numberCachedSuiteMessages = 0;
             numberCachedTestcaseMessages = 0;
             numberCachedCheckpoints = 0;
+
+            this.maxNumberOfCachedEvents = AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS,
+                                                                                   MAX_CACHE_EVENTS_DEFAULT_VALUE);
         }
 
         public Connection getConnection() {
 
             return this.connection;
         }
-        
-        
+
         /**
          * Specify max number of events to be collected for batch mode.
          * Note that if invoked this should be done early enough before any DB insert operation
          * Default value is {@link #MAX_CACHE_EVENTS_DEFAULT_VALUEX}
          * @param maxNumberOfCachedEvents
          */
-        public void setMaxNumberOfCachedEvents(int maxNumberOfCachedEvents) {
+        public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
+
             this.maxNumberOfCachedEvents = maxNumberOfCachedEvents;
         }
 
@@ -1899,10 +1933,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             cacheBirthTime = 0;
 
             if (isMonitorEventsQueue) {
-                log.getLog4jLogger().info("Flushed "
+                log.info("Flushed "
                          + batchCheckpoints + " checkpoints and " + batchMessages + " messages in "
                          + (System.currentTimeMillis() - batchStartTime) + " ms");
             }
+
         }
 
         private boolean flushCacheIfNeeded() throws DatabaseAccessException {
@@ -1950,14 +1985,14 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(e,
+                    log.error(ExceptionUtils.getExceptionMsg(e,
                                                              "Commit failed while inserting "
                                                                 + numberCachedRunMessages
                                                                 + " run messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(rollbackException,
+                    log.error(ExceptionUtils.getExceptionMsg(rollbackException,
                                                              "Commit and rollback both failed while inserting "
                                                                                 + numberCachedRunMessages
                                                                                 + " run messages in one transaction."
@@ -1997,14 +2032,14 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(e,
+                    log.error(ExceptionUtils.getExceptionMsg(e,
                                                              "Commit failed while inserting "
                                                                 + numberCachedSuiteMessages
                                                                 + " suite messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(rollbackException,
+                    log.error(ExceptionUtils.getExceptionMsg(rollbackException,
                                                              "Commit and rollback both failed while inserting "
                                                                                 + numberCachedSuiteMessages
                                                                                 + " suite messages in one transaction."
@@ -2031,6 +2066,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 insertTestcaseMessageStatement.executeBatch();
 
                 // data sent to the DB, commit the transaction
+                if (connection == null || connection.isClosed()) {
+                    connection = parent.refreshInternalConnection();
+                    connection.setAutoCommit(false);
+                }
                 connection.commit();
             } catch (Exception e) {
 
@@ -2042,16 +2081,17 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // rollback the entire transaction
                 try {
+                    log.info("AUTO-COMMIT mode: " + connection.getAutoCommit());
                     connection.rollback();
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(e,
+                    log.error(ExceptionUtils.getExceptionMsg(e,
                                                              "Commit failed while inserting "
                                                                 + numberCachedTestcaseMessages
                                                                 + " testcase messages in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(rollbackException,
+                    log.error(ExceptionUtils.getExceptionMsg(rollbackException,
                                                              "Commit and rollback both failed while inserting "
                                                                                 + numberCachedTestcaseMessages
                                                                                 + " testcase messages in one transaction."
@@ -2091,14 +2131,14 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 try {
                     connection.rollback();
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(e,
+                    log.error(ExceptionUtils.getExceptionMsg(e,
                                                              "Commit failed while inserting "
                                                                 + numberCachedCheckpoints
                                                                 + " checkpoints in one transaction"));
                 } catch (Exception rollbackException) {
                     gotError = true;
 
-                    log.getLog4jLogger().error(ExceptionUtils.getExceptionMsg(rollbackException,
+                    log.error(ExceptionUtils.getExceptionMsg(rollbackException,
                                                              "Commit and rollback both failed while inserting "
                                                                                 + numberCachedCheckpoints
                                                                                 + " checkpoints in one transaction."
@@ -2203,8 +2243,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?, ?) }";
         private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }";
 
-
         public InsertEventStatementsFactory( boolean isBatchMode ) {
+
             this.isBatchMode = isBatchMode;
         }
 

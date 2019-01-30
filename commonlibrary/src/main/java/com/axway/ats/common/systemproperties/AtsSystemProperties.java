@@ -51,6 +51,13 @@ public class AtsSystemProperties {
     @PublicAtsApi
     public static final String  LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
 
+    /**
+     * The MAX number of events that will be processed at once when batch mode is enabled.</br>
+     * This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
+     * */
+    @PublicAtsApi
+    public static final String  LOG__MAX_CACHE_EVENTS                                             = "ats.log.db.max.cache.events";
+
     // TestHarness properties
     // Run name for JUnit executions
     @PublicAtsApi
