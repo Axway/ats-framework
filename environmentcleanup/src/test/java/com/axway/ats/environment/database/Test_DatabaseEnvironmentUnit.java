@@ -89,6 +89,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
 
 		mockBackupHandler.setLockTables(true);
 		mockBackupHandler.setDropTables(false);
+		mockBackupHandler.setSkipTablesContent(false);
 		mockBackupHandler.setForeignKeyCheck(true);
 		mockBackupHandler.setIncludeDeleteStatements(true);
 		mockBackupHandler.addTable(table1);
