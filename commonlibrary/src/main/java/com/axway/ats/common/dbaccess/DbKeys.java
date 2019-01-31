@@ -18,6 +18,12 @@ package com.axway.ats.common.dbaccess;
 
 import com.axway.ats.common.PublicAtsApi;
 
+
+/**
+ * <p>Keys for additional DB connection properties</p>
+ * <p>For additional Oracle properties, see {@link OracleKeys} class
+ * */
+@PublicAtsApi
 public class DbKeys {
 
     /**

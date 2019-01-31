@@ -310,6 +310,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             }
         }
 
+        // get the create scripts for all of the table's indexes
+        Map<String, String> tableIndexesCreateScripts = getTableIndexesCreateScripts(owner, tableName, connection);
+
         // drop the table
         fileWriter.write("DROP TABLE " + tableName + " CASCADE CONSTRAINTS PURGE " + EOL_MARKER
                          + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
@@ -317,6 +320,11 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         // create new table
         fileWriter.write(generateTableScript + EOL_MARKER
                          + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create the table's indexes
+        for (String indexCreateScript : tableIndexesCreateScripts.values()) {
+            fileWriter.write(indexCreateScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
 
         // enable the foreign keys
         for (Entry<String, List<String>> entryKey : foreignKeys.entrySet()) {
@@ -612,11 +620,18 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             }
         }
 
+        Map<String, String> tableIndexesCreateScripts = getTableIndexesCreateScripts(owner, tableName, connection);
+
         // drop the table
         executeUpdate("DROP TABLE " + tableName + " CASCADE CONSTRAINTS PURGE", connection);
 
         // create new table
         executeUpdate(generateTableScript, connection);
+
+        // create the table's indexes
+        for (String indexCreateScript : tableIndexesCreateScripts.values()) {
+            executeUpdate(indexCreateScript, connection);
+        }
 
         // enable the foreign keys
         for (Entry<String, List<String>> entryKey : foreignKeys.entrySet()) {
@@ -628,6 +643,68 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         }
 
         return tbConstraints;
+    }
+
+    private Map<String, String> getTableIndexesCreateScripts( String owner, String tableName, Connection connection ) {
+
+        List<String> indexesNames = getIndexesNames(owner, tableName, connection);
+
+        Map<String, String> indexesCreateScripts = new HashMap<>();
+
+        // query for getting the table's index names
+        for (String indexName : indexesNames) {
+            String query = "SELECT dbms_metadata.get_ddl('INDEX','" + indexName + "','" + owner + "') FROM dual";
+            PreparedStatement stmnt = null;
+            ResultSet rs = null;
+            try {
+                if (log.isTraceEnabled()) {
+                    log.trace("Executing SQL query: " + query);
+                }
+                stmnt = connection.prepareStatement(query);
+                rs = stmnt.executeQuery();
+                while (rs.next()) {
+                    indexesCreateScripts.put(indexName, rs.getString(1));
+                }
+            } catch (SQLException e) {
+                throw new DbException(
+                                      "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                      + e.getMessage(), e);
+            } finally {
+                DbUtils.closeStatement(stmnt);
+            }
+        }
+
+        return indexesCreateScripts;
+
+    }
+
+    private List<String> getIndexesNames( String owner, String tableName, Connection connection ) {
+
+        // query for getting the table's index names
+        String query = "SELECT INDEX_NAME FROM all_indexes WHERE table_name='" + tableName + "' AND table_owner='"
+                       + owner + "'";
+
+        PreparedStatement stmnt = null;
+        ResultSet rs = null;
+        List<String> indexesNames = new ArrayList<>();
+        try {
+            if (log.isTraceEnabled()) {
+                log.trace("Executing SQL query: " + query);
+            }
+            stmnt = connection.prepareStatement(query);
+            rs = stmnt.executeQuery();
+            while (rs.next()) {
+                indexesNames.add(rs.getString("INDEX_NAME"));
+            }
+        } catch (SQLException e) {
+            throw new DbException(
+                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                  + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement(stmnt);
+        }
+
+        return indexesNames;
     }
 
     private Map<String, List<String>> getForeignKeys( String owner, String tableName, Connection connection ) {
