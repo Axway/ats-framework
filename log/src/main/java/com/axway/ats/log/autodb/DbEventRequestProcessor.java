@@ -1059,8 +1059,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 throw e;
             }
         } else {
-            log.error("Suite with id '" + suiteId + "' exists in database '"
-                      + this.dbConnection.getConnHash() + ". But an error occured", e);
             throw e;
         }
     }
