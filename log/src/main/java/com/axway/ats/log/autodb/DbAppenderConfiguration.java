@@ -42,8 +42,8 @@ public class DbAppenderConfiguration implements Serializable {
     private String             mode                                  = "";
 
     // the capacity of our logging queue
-    private String             maxNumberLogEvents                    = "";
     private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private String             maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
 
     //are checkpoints enabled
     private boolean            enableCheckpoints                     = true;

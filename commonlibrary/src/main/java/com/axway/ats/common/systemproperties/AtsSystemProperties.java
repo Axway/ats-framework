@@ -51,6 +51,14 @@ public class AtsSystemProperties {
     @PublicAtsApi
     public static final String  LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
 
+    /**
+     * <p>Enable caching of the class and method that created any of the AbstractLoggingEvent(s).</p>
+     * <p>In other words, when for example a call like AtsDbLogger.startRun() is executed,
+     * the StartRunEvent will cache/save where that call was made in the format: full_class_name.method:line_number</p>
+     * 
+     * */
+    public static final String  LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
+
     // TestHarness properties
     // Run name for JUnit executions
     @PublicAtsApi
