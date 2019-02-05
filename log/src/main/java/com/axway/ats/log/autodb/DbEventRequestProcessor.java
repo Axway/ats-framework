@@ -174,14 +174,14 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * Keeps the ID of the last ended suite
      * */
     private int                           lastEndedSuiteId           = -1;
-    
+
     /**
      * Do not use this constructor.
      * It is implemented only to be used, when a dummy db event request processor is needed to be created.
      * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j.xml
      * */
     public DbEventRequestProcessor() {
-        
+
         this.eventProcessorState = new EventProcessorState();
     }
 
@@ -228,7 +228,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
         } else {
             String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
-                            + (!StringUtils.isNullOrEmpty(appenderConfig.getPort()) ? appenderConfig.getPort() : "")
+                            + (!StringUtils.isNullOrEmpty(appenderConfig.getPort())
+                                                                                    ? appenderConfig.getPort()
+                                                                                    : "")
                             + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
             throw new DatabaseAccessException(errMsg);
         }
@@ -335,7 +337,19 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 }
             } else {
                 //first check if we can process the event at all
-                dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
+                try {
+                    dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
+                } catch (LoggingException e) {
+
+                    log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
+                              + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
+                              "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
+                              + this.getSuiteId() + ",\n\tTESTCASE ID: "
+                              + this.getTestCaseId());
+
+                    throw e;
+                }
+
             }
 
             if (isBatchMode && ! (event instanceof CacheableEvent)
@@ -1032,7 +1046,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 listener.onRunFinished();
             } else {
                 log.error("Run with id '" + runId + "' exists in database '"
-                        + this.dbConnection.getConnHash() + ". But an error occured", e);
+                          + this.dbConnection.getConnHash() + ". But an error occured", e);
                 throw e;
             }
         } else {
@@ -1055,7 +1069,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                          + "'. No additional test data will be inserted for that suite.");
             } else {
                 log.error("Suite with id '" + suiteId + "' exists in database '"
-                        + this.dbConnection.getConnHash() + ". But an error occured", e);
+                          + this.dbConnection.getConnHash() + ". But an error occured", e);
                 throw e;
             }
         } else {
@@ -1184,12 +1198,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             }
 
         } catch (SQLException e) {
-        	/*  
+            /*  
              * Could not obtain run info from database.
              * The exception will be logged to the console only, because the event processor is busy handling the UpdateRunEvent
              * and will not be able to handle the log message event as well
             */
-            new AtsConsoleLogger(getClass()).error("Unable to update run with ID '" + eventProcessorState.getRunId() + "'", e);
+            new AtsConsoleLogger(getClass()).error("Unable to update run with ID '" + eventProcessorState.getRunId()
+                                                   + "'", e);
         }
 
     }
@@ -1206,9 +1221,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
 
-            stmt = tmpConn.prepareStatement( "SELECT * FROM tRuns WHERE runId=" + eventProcessorState.getRunId() );
+            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + eventProcessorState.getRunId());
             if (dbConnection instanceof DbConnPostgreSQL) {
-                stmt = tmpConn.prepareStatement( "SELECT * FROM \"tRuns\" WHERE runId=" + eventProcessorState.getRunId() );
+                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId="
+                                                + eventProcessorState.getRunId());
             }
             ResultSet rs = stmt.executeQuery();
             rs.next();

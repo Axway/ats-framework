@@ -58,6 +58,8 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
+        // this call will cache the source location of the event
+        this.getLocationInformation();
     }
 
     /**
