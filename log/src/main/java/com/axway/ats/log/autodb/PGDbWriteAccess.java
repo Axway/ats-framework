@@ -474,12 +474,12 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                                        boolean closeConnection ) throws DatabaseAccessException {
 
         startTimestamp = inUTC(startTimestamp);
-        dsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
+        checkpointsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
 
         if (isBatchMode) {
-            return dsDbCache.flush(false);
+            return checkpointsDbCache.flush(false);
         } else {
-            return dsDbCache.flush(true);
+            return checkpointsDbCache.flush(true);
         }
 
     }

@@ -35,22 +35,24 @@ import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
-public class DsDbCache {
+public class CheckpointsDbCache {
 
-    DbConnection         dbConnection;
+    private DbConnection         dbConnection;
 
-    List<DsCheckpoint>   checkpoints                    = new ArrayList<>();
-    Map<String, Integer> summaryIdsMap                  = new HashMap<>();
+    private List<Checkpoint>     checkpoints                    = new ArrayList<>();
+    private Map<String, Integer> summaryIdsMap                  = new HashMap<>();
 
-    final static String  CHECKPOINTS_MAP_KEY_DELIMITER  = "^__^";
+    private final static String  CHECKPOINTS_MAP_KEY_DELIMITER  = "^__^";
 
-    int                  checkpointLogLevel;
-    final int            DEFAULT_MAX_CACHE_CHECKPOINTS  = 2000;
-    int                  maxCacheCheckpoints;
+    private int                  checkpointLogLevel;
+    public static final int      DEFAULT_MAX_CACHE_CHECKPOINTS  = 2000;
+    private final int            CACHE_TOO_OLD_TIME_INTERVAL    = 10 * 1000;        // 10 sec
+    private int                  maxCacheCheckpoints;
 
-    long                 firstInsertCheckpointStartTime = -1;
+    private long                 firstInsertCheckpointStartTime = -1;
 
-    public DsDbCache( DbConnection dbConnection, CheckpointLogLevel checkpointLogLevel, int maxCacheCheckpoints ) {
+    public CheckpointsDbCache( DbConnection dbConnection, CheckpointLogLevel checkpointLogLevel,
+                               int maxCacheCheckpoints ) {
 
         this.checkpointLogLevel = checkpointLogLevel.toInt();
 
@@ -91,8 +93,8 @@ public class DsDbCache {
                                int result,
                                int loadQueueId ) {
 
-        DsCheckpoint checkpoint = new DsCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit,
-                                                   result, loadQueueId);
+        Checkpoint checkpoint = new Checkpoint(name, startTimestamp, responseTime, transferSize, transferUnit,
+                                               result, loadQueueId);
         checkpoints.add(checkpoint);
         summaryIdsMap.put(checkpoint.name + CHECKPOINTS_MAP_KEY_DELIMITER + checkpoint.loadQueueId,
                           checkpoint.checkpointSummaryId);
@@ -106,7 +108,8 @@ public class DsDbCache {
     public boolean flush( boolean forced ) {
 
         boolean checkpointChunkSizeReached = checkpoints.size() >= maxCacheCheckpoints;
-        boolean checkpointsCacheTooOld = (System.currentTimeMillis() - firstInsertCheckpointStartTime) >= (10 * 1000);
+        boolean checkpointsCacheTooOld = (System.currentTimeMillis()
+                                          - firstInsertCheckpointStartTime) >= (CACHE_TOO_OLD_TIME_INTERVAL);
 
         if (!checkpointChunkSizeReached && !checkpointsCacheTooOld && !forced) {
             return false;
@@ -132,7 +135,7 @@ public class DsDbCache {
     private String generateInsertCheckpointsSqlQuery() {
 
         StringBuilder query = new StringBuilder();
-        for (DsCheckpoint checkpoint : checkpoints) {
+        for (Checkpoint checkpoint : checkpoints) {
             if (checkpoint.checkpointSummaryId > -1) {
                 query.append(checkpoint.generateUpdateCheckpointSummarySqlQuery())
                      .append("\n");
@@ -147,9 +150,9 @@ public class DsDbCache {
         return query.toString();
     }
 
-    class DsCheckpoint {
+    class Checkpoint {
 
-        AtsConsoleLogger acl = new AtsConsoleLogger(DsCheckpoint.class);
+        AtsConsoleLogger acl = new AtsConsoleLogger(Checkpoint.class);
 
         String           name;
         long             startTimestamp;
@@ -162,13 +165,13 @@ public class DsDbCache {
         double           transferRate;
         long             endTime;
 
-        public DsCheckpoint( String name,
-                             long startTimestamp,
-                             long responseTime,
-                             long transferSize,
-                             String transferUnit,
-                             int result,
-                             int loadQueueId ) {
+        public Checkpoint( String name,
+                           long startTimestamp,
+                           long responseTime,
+                           long transferSize,
+                           String transferUnit,
+                           int result,
+                           int loadQueueId ) {
 
             this.name = name;
             this.startTimestamp = startTimestamp;
@@ -242,7 +245,7 @@ public class DsDbCache {
 
         private double calculateTransferRate() {
 
-            if (DsDbCache.this.checkpointLogLevel == CheckpointLogLevel.SHORT.toInt()) {
+            if (CheckpointsDbCache.this.checkpointLogLevel == CheckpointLogLevel.SHORT.toInt()) {
                 responseTime = 0;
                 transferSize = 0;
             }
@@ -293,6 +296,12 @@ public class DsDbCache {
                 DbUtils.close(conn, statement);
             }
         }
+    }
+
+    public void setMaxCacheCheckpoints( int maxNumberOfCachedEvents ) {
+
+        this.maxCacheCheckpoints = maxNumberOfCachedEvents;
+
     }
 
 }

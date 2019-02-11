@@ -69,7 +69,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      * */
     protected boolean                    skipUTCConversion  = false;
 
-    protected DsDbCache                  dsDbCache;
+    protected CheckpointsDbCache         checkpointsDbCache;
 
     public SQLServerDbWriteAccess( DbConnection dbConnection,
                                    boolean isBatchMode ) throws DatabaseAccessException {
@@ -85,7 +85,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
                                                                             false);
 
-            dsDbCache = new DsDbCache(dbConnection, getCheckpointLogLevel(), dbEventsCache.maxNumberOfCachedEvents);
+            checkpointsDbCache = new CheckpointsDbCache(dbConnection, getCheckpointLogLevel(),
+                                                        dbEventsCache.maxNumberOfCachedEvents);
         }
     }
 
@@ -93,7 +94,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
 
         dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
-        dsDbCache.maxCacheCheckpoints = maxNumberOfCachedEvents;
+        checkpointsDbCache.setMaxCacheCheckpoints(maxNumberOfCachedEvents);
     }
 
     /**
@@ -995,81 +996,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
     }
 
-    public boolean insertCheckpoint(
-                                     String name,
-                                     long startTimestamp,
-                                     long responseTime,
-                                     long transferSize,
-                                     String transferUnit,
-                                     int result,
-                                     int loadQueueId,
+    public boolean insertCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
+                                     String transferUnit, int result, int loadQueueId,
                                      boolean closeConnection ) throws DatabaseAccessException {
 
-        boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
-
-        if (userNewImpl) {
-            return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
-                                     loadQueueId, closeConnection);
-        }
-
         startTimestamp = inUTC(startTimestamp);
-
-        Connection currentConnection;
-        if (!isBatchMode) {
-            currentConnection = refreshInternalConnection();
-        } else {
-            currentConnection = dbEventsCache.connection;
-        }
-
-        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement(currentConnection,
-                                                                                                 name,
-                                                                                                 responseTime,
-                                                                                                 startTimestamp + responseTime,
-                                                                                                 transferSize,
-                                                                                                 transferUnit,
-                                                                                                 result,
-                                                                                                 checkpointLogLevel,
-                                                                                                 loadQueueId);
+        checkpointsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result,
+                                         loadQueueId);
 
         if (isBatchMode) {
-            // schedule this event for batch execution
-            return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
+            return checkpointsDbCache.flush(false);
         } else {
-            // execute this event now
-            final String errMsg = "Unable to insert checkpoint '" + name + "'";
-            // final int indexRowsInserted = 8;
-
-            try {
-                insertCheckpointStatement.execute();
-                // if( insertCheckpointStatement.getInt( indexRowsInserted ) < 1
-                // ) {
-                // throw new DatabaseAccessException( errMsg );
-                // }
-            } catch (SQLException e) {
-                throw new DatabaseAccessException(errMsg, e);
-            } finally {
-                if (closeConnection) {
-                    DbUtils.close(connection, insertCheckpointStatement);
-                } else {
-                    DbUtils.closeStatement(insertCheckpointStatement);
-                }
-            }
-
-            return false;
-        }
-    }
-
-    private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
-                                       String transferUnit, int result, int loadQueueId,
-                                       boolean closeConnection ) throws DatabaseAccessException {
-
-        startTimestamp = inUTC(startTimestamp);
-        dsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
-
-        if (isBatchMode) {
-            return dsDbCache.flush(false);
-        } else {
-            return dsDbCache.flush(true);
+            return checkpointsDbCache.flush(true);
         }
 
     }
