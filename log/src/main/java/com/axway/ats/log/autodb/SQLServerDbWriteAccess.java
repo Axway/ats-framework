@@ -781,6 +781,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                               int loadQueueId,
                               boolean closeConnection ) throws DatabaseAccessException {
 
+        if (isBatchMode) {
+            checkpointsDbCache.flush(true);
+        }
+
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
 
         timestamp = inUTC(timestamp);
@@ -1468,6 +1472,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     public void flushCache() throws DatabaseAccessException {
 
         dbEventsCache.flushCache();
+        checkpointsDbCache.flush(true);
 
     }
 
@@ -1480,6 +1485,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     public void flushCacheIfNeeded() throws DatabaseAccessException {
 
         dbEventsCache.flushCacheIfNeeded();
+        checkpointsDbCache.flush(false);
     }
 
     public void runDbSanityCheck() throws DatabaseAccessException {
@@ -1613,6 +1619,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 // while running the sanity check
                 dbEventsCache.resetCache();
             }
+            
+            if (checkpointsDbCache != null) {
+                checkpointsDbCache.resetCache();
+            }
 
             sanityRun = false;
             try {
@@ -1701,8 +1711,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000;      // max events to be cached in batch mode
-        private static final long      MAX_CACHE_AGE                  = 10 * 1000; // 10 seconds
+        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000;             // max events to be cached in batch mode
+        private static final long      MAX_CACHE_AGE                  = 10 * 1000;        // 10 seconds
 
         private long                   cacheBirthTime;
         private int                    maxNumberOfCachedEvents;
@@ -1728,7 +1738,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         private long                   batchStartTime;
         private int                    batchCheckpoints;
         private int                    batchMessages;
-
+        
         public DbEventsCache( SQLServerDbWriteAccess parent ) throws DatabaseAccessException {
 
             this.parent = parent;

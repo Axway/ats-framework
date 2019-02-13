@@ -111,7 +111,16 @@ public class CheckpointsDbCache {
         boolean checkpointsCacheTooOld = (System.currentTimeMillis()
                                           - firstInsertCheckpointStartTime) >= (CACHE_TOO_OLD_TIME_INTERVAL);
 
-        if (!checkpointChunkSizeReached && !checkpointsCacheTooOld && !forced) {
+        if (!forced) {
+            // We are not forced to flush
+            if (!checkpointChunkSizeReached && !checkpointsCacheTooOld) {
+                // There is still room for more checkpoints and none of them is too old
+                return false;
+            }
+        }
+
+        if (checkpoints.size() <= 0) {
+            // Nothing to flush, event if we are forced to
             return false;
         }
 
@@ -302,6 +311,12 @@ public class CheckpointsDbCache {
 
         this.maxCacheCheckpoints = maxNumberOfCachedEvents;
 
+    }
+
+    public void resetCache() {
+
+       checkpoints.clear();
+        
     }
 
 }

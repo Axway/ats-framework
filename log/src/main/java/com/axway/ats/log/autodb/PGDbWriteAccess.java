@@ -23,7 +23,6 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
 
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -357,57 +356,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
         }
     }
 
-    public boolean insertCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
-                                     String transferUnit, int result, int loadQueueId,
-                                     boolean closeConnection ) throws DatabaseAccessException {
-
-        boolean userNewImpl = AtsSystemProperties.getPropertyAsBoolean("useNewImpl", false);
-
-        if (userNewImpl) {
-            return insertCheckpoint2(name, startTimestamp, responseTime, transferSize, transferUnit, result,
-                                     loadQueueId, closeConnection);
-        }
-
-        startTimestamp = inUTC(startTimestamp);
-
-        Connection currentConnection;
-        if (!isBatchMode) {
-            currentConnection = refreshInternalConnection();
-        } else {
-            currentConnection = dbEventsCache.connection;
-        }
-
-        CallableStatement insertCheckpointStatement = insertFactory.getInsertCheckpointStatement(currentConnection,
-                                                                                                 name, responseTime,
-                                                                                                 startTimestamp + responseTime,
-                                                                                                 transferSize,
-                                                                                                 transferUnit, result,
-                                                                                                 checkpointLogLevel,
-                                                                                                 loadQueueId);
-
-        if (isBatchMode) {
-            // schedule this event for batch execution
-            return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
-        } else {
-            // execute this event now
-            final String errMsg = "Unable to insert checkpoint '" + name + "'";
-            try {
-                insertCheckpointStatement.execute();
-            } catch (SQLException e) {
-                throw new DatabaseAccessException(errMsg, e);
-            } finally {
-                if (closeConnection) {
-                    DbUtils.close(connection, insertCheckpointStatement);
-                } else {
-                    DbUtils.closeStatement(insertCheckpointStatement);
-                }
-            }
-
-            return false;
-        }
-
-    }
-
     public void insertCheckpointSummary(
                                          String name,
 
@@ -467,21 +415,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                 DbUtils.closeStatement(perparedStatement);
             }
         }
-    }
-
-    private boolean insertCheckpoint2( String name, long startTimestamp, long responseTime, long transferSize,
-                                       String transferUnit, int result, int loadQueueId,
-                                       boolean closeConnection ) throws DatabaseAccessException {
-
-        startTimestamp = inUTC(startTimestamp);
-        checkpointsDbCache.addCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
-
-        if (isBatchMode) {
-            return checkpointsDbCache.flush(false);
-        } else {
-            return checkpointsDbCache.flush(true);
-        }
-
     }
 
     @Override
