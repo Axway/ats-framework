@@ -44,34 +44,39 @@ public abstract class AbstractDbAccess {
 
     protected final AtsConsoleLogger     log;
 
-    public static final String           UNABLE_TO_CONNECT_ERRROR = "Unable to connect to log DB";
+    public static final String           UNABLE_TO_CONNECT_ERRROR        = "Unable to connect to log DB";
 
     // full date formats
-    public final static SimpleDateFormat DATE_FORMAT              = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    public final static SimpleDateFormat DATE_FORMAT_IN_UTC       = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat DATE_FORMAT                     = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public final static SimpleDateFormat DATE_FORMAT_IN_UTC              = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     // date formats without the year component
-    public final static SimpleDateFormat DATE_FORMAT_NO_YEAR      = new SimpleDateFormat("MMM dd HH:mm:ss");
+    public final static SimpleDateFormat DATE_FORMAT_NO_YEAR             = new SimpleDateFormat("MMM dd HH:mm:ss");
 
     // time format
-    public static final SimpleDateFormat TIME_FORMAT              = new SimpleDateFormat("HH:mm:ss:SSS");
+    public static final SimpleDateFormat TIME_FORMAT                     = new SimpleDateFormat("HH:mm:ss:SSS");
 
-    private static final int             MIN_IN_SECONDS           = 60;
-    private static final int             HOUR_IN_SECONDS          = MIN_IN_SECONDS * 60;
-    private static final int             DAY_IN_SECONDS           = HOUR_IN_SECONDS * 24;
-    private String                       dbVersion                = null;
+    /**
+     * Max interval (in ms) after which DB events cache will be flushed
+     */
+    static final long                    CACHE_MAX_DURATION_BEFORE_FLUSH = 10 * 1000;                                  // 10 sec 
+
+    private static final int             MIN_IN_SECONDS                  = 60;
+    private static final int             HOUR_IN_SECONDS                 = MIN_IN_SECONDS * 60;
+    private static final int             DAY_IN_SECONDS                  = HOUR_IN_SECONDS * 24;
+    private String                       dbVersion                       = null;
 
     /**
      * dbInternalVersion is introduced in version 3.10.0
     **/
     @BackwardCompatibility
-    private int                          dbInternalVersion        = -1;
+    private int                          dbInternalVersion               = -1;
 
     /**
      * dbInitialVersion is introduced in version 3.10.0
     **/
     @BackwardCompatibility
-    private int                          dbInitialVersion         = -1;
+    private int                          dbInitialVersion                = -1;
 
     static {
         DATE_FORMAT_IN_UTC.setTimeZone(TimeZone.getTimeZone("UTC"));

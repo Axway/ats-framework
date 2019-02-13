@@ -80,7 +80,7 @@ public class QueueLoggerThread extends Thread {
             try {
                 if( isBatchMode ) {
                     // get the next event, wait no more than 10 seconds
-                    logEventRequest = queue.poll( 10, TimeUnit.SECONDS );
+                    logEventRequest = queue.poll( AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH, TimeUnit.MILLISECONDS );
                 } else {
                     // we are not in a hurry,
                     // block until receive an event in the queue

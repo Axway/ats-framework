@@ -1712,7 +1712,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     protected class DbEventsCache {
 
         private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000;             // max events to be cached in batch mode
-        private static final long      MAX_CACHE_AGE                  = 10 * 1000;        // 10 seconds
 
         private long                   cacheBirthTime;
         private int                    maxNumberOfCachedEvents;
@@ -1766,7 +1765,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         /**
          * Specify max number of events to be collected for batch mode.
          * Note that if invoked this should be done early enough before any DB insert operation
-         * Default value is {@link #MAX_CACHE_EVENTS_DEFAULT_VALUEX}
+         * Default value is {@link #MAX_CACHE_EVENTS_DEFAULT_VALUE}
          * @param maxNumberOfCachedEvents
          */
         public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
@@ -1897,7 +1896,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             if (numberEvents > 0) {
                 if (numberEvents >= maxNumberOfCachedEvents) {
                     isTimeToFlush = true;
-                } else if (System.currentTimeMillis() - cacheBirthTime >= MAX_CACHE_AGE) {
+                } else if (System.currentTimeMillis() - cacheBirthTime >= AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH) {
                     isTimeToFlush = true;
                 }
             }

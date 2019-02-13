@@ -354,6 +354,11 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         return _state.getLastExecutedTestCaseId();
     }
 
+    /**
+     * Process each event request - either system (ATS test lifecycle events) or logging one (message, checkpoint 
+     * or statistic)
+     * @param eventRequest the logging event to be processed. If <code>null</code> then flush cache request is assumed.
+     */
     public void processEventRequest( LogEventRequest eventRequest ) throws LoggingException {
 
         if (testcaseToDelete > 0) {
@@ -367,7 +372,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
 
         if (isBatchMode && eventRequest == null) {
-            // timeout waiting for next event - flush the current cache
+            // eventRequest is null when there is timeout waiting for next event from queue. So flush the current cache
             dbAccess.flushCache();
             return;
         }
@@ -550,7 +555,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     throw new LoggingException("Unsupported logging event of type: "
                                                + dbAppenderEvent.getEventType());
             }
-        } else {
+        } else { 
+            // regular Log4J message event
             insertMessage(eventRequest, false, false);
         }
     }

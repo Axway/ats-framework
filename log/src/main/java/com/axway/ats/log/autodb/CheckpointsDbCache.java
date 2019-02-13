@@ -46,7 +46,6 @@ public class CheckpointsDbCache {
 
     private int                  checkpointLogLevel;
     public static final int      DEFAULT_MAX_CACHE_CHECKPOINTS  = 2000;
-    private final int            CACHE_TOO_OLD_TIME_INTERVAL    = 10 * 1000;        // 10 sec
     private int                  maxCacheCheckpoints;
 
     private long                 firstInsertCheckpointStartTime = -1;
@@ -109,7 +108,7 @@ public class CheckpointsDbCache {
 
         boolean checkpointChunkSizeReached = checkpoints.size() >= maxCacheCheckpoints;
         boolean checkpointsCacheTooOld = (System.currentTimeMillis()
-                                          - firstInsertCheckpointStartTime) >= (CACHE_TOO_OLD_TIME_INTERVAL);
+                                          - firstInsertCheckpointStartTime) >= (AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH);
 
         if (!forced) {
             // We are not forced to flush
