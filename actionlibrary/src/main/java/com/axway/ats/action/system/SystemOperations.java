@@ -74,7 +74,7 @@ public class SystemOperations {
      *
      * @param atsAgent the address of the remote ATS agent which will run the wanted operation
      * <p>
-     *    <b>Note:</b> If you want to specify port to IPv6 address, the supported format is: <i>[IP]:PORT</i>
+     *    <b>Note:</b> If you want to specify port to IPv6 address, the supported format is: <strong><i>[IP]:PORT</i></strong>
      * </p>
      */
     @PublicAtsApi
