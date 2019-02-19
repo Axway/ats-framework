@@ -206,75 +206,93 @@ public class HostUtils {
     }
 
     /**
-     * Return a list with addresses.
-     * if called with true, it will try to return the first IPv4 address or if there isn't such - the last IPv6 address
-     * if called with false, it will return a list with all IP addresses
-     *
+     * Return a list with addresses.</br>
+     * if called with true, it will try to return the first IPv4 address or if there isn't such - the last IPv6 address</br>
+     * if called with false, it will return a list with all IP addresses</br>
+     * Note that the system properties 'java.net.preferIPv4Stack' and 'java.net.preferIPv6Addresses' are taken into consideration
+     * @param exitOnFirstIPv4
      * @return
      */
     private static List<InetAddress> getIpAddressesList( boolean exitOnFirstIPv4 ) {
 
-        //list containing all ip addresses
         List<InetAddress> ipList = new ArrayList<InetAddress>();
-        try {
 
+        boolean preferIPv4 = AtsSystemProperties.getPropertyAsBoolean("java.net.preferIPv4Stack", false);
+        boolean preferIPv6 = AtsSystemProperties.getPropertyAsBoolean("java.net.preferIPv6Addresses", false);
+
+        if (preferIPv4) {
+            if (preferIPv6) {
+                log.warn("Both 'java.net.preferIPv4Stack' and 'java.net.preferIPv6Addresses' system properties are set to TRUE. IPv4 will be preferred");
+                preferIPv6 = false;
+            }
+        } else {
+            if (!preferIPv6) {
+                /*
+                 * Since the user did not specify whether IPv4 or IPv6 is preferred,
+                 * iterate over the all of the non-loopback addresses and return them,
+                 * but first set both prefer flags to true
+                 * This is needed in order to NOT skip any IP address (except loopback ones)
+                 * */
+                preferIPv4 = true;
+                preferIPv6 = true;
+            }
+        }
+
+        try {
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
             if (log.isTraceEnabled()) {
-                log.trace( "Start iterating all network interfaces!" );
+                log.trace("Start iterating all network interfaces!");
             }
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
-                if (!netInterface.isLoopback()) {
+                if (!netInterface.isLoopback() && netInterface.isUp()) {
                     if (log.isTraceEnabled()) {
-                        log.trace( "    Start iterating interface '" + netInterface.getName() + "'" );
+                        log.trace("    Start iterating interface '" + netInterface.getName() + "/"
+                                  + netInterface.getDisplayName() + "'");
                     }
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
                     InetAddress ipAddress = null;
                     while (ipAddresses.hasMoreElements()) {
-                        ipAddress = (InetAddress) ipAddresses.nextElement();
 
-                        if (ipAddress instanceof java.net.Inet4Address) {
-                            Inet4Address ipv4 = (Inet4Address) ipAddress;
-                            if (!ipv4.isLoopbackAddress()) {
-                                // we found an appropriate IPv4 address
-                                ipList.add(ipv4);
-                                if (exitOnFirstIPv4) {
-                                    /*
-                                     * return list, containing the last added IP address,
-                                     * which will be the first IPv4 address, that was found
-                                    */
-                                    int listSize = ipList.size();
-                                    return ipList.subList(listSize - 1, listSize);
-                                }
-                            }
-                        } else //if( ip instanceof java.net.Inet6Address )
-                        {
-                            Inet6Address ipv6 = (Inet6Address) ipAddress;
-                            // FIXME: currently we do not filter out the temporary IPv6 addresses
-                            if (!ipv6.isLinkLocalAddress()) {
-                                // We found an appropriate IPv6 address. Remember it, but keep searching for an appropriate IPv4 address.
-                                ipList.add(ipv6);
+                        ipAddress = ipAddresses.nextElement();
+
+                        if (ipAddress.isLoopbackAddress()) {
+                            // skip that IP address
+                            continue;
+                        }
+
+                        if (ipAddress instanceof Inet4Address && preferIPv4) {
+                            ipList.add(ipAddress);
+                            if (exitOnFirstIPv4) {
+
+                                /* return list, containing the last added IP address,
+                                 * which will be the first IPv4 address, that was found
+                                 */
+
+                                int listSize = ipList.size();
+                                return ipList.subList(listSize - 1, listSize);
                             }
                         }
+
+                        if (ipAddress instanceof Inet6Address && preferIPv6) {
+                            ipList.add(ipAddress);
+                        }
+                    }
+                    if (log.isTraceEnabled()) {
+                        log.trace("    End iterating interface '" + netInterface.getName() + "/"
+                                  + netInterface.getDisplayName() + "'");
                     }
                 }
             }
             if (log.isTraceEnabled()) {
-                log.trace( "Finish iterating all network interfaces!" );
+                log.trace("Finish iterating all network interfaces!");
             }
-        } catch (SocketException se) {
-            log.error("Error obtaining the local host address", se);
+        } catch (Exception e) {
+            log.error("Error while iterating network addresses", e);
         }
 
-        /*
-         * We will return either list with the IP addresses or empty list
-         */
-        if (exitOnFirstIPv4 && !ipList.isEmpty()) {
-            int listSize = ipList.size();
-            return ipList.subList(listSize - 1, listSize);
-        }
         return ipList;
     }
 
