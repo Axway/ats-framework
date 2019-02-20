@@ -207,13 +207,12 @@ public class HostUtils {
 
     /**
      * Return a list with addresses.</br>
-     * if called with true, it will try to return the first IPv4 address or if there isn't such - the last IPv6 address</br>
-     * if called with false, it will return a list with all IP addresses</br>
-     * Note that the system properties 'java.net.preferIPv4Stack' and 'java.net.preferIPv6Addresses' are taken into consideration
-     * @param exitOnFirstIPv4
+     * Note that the system properties 'java.net.preferIPv4Stack' and 'java.net.preferIPv6Addresses' are taken into consideration,</br>
+     * so this method may return IPv4/IPv6 address(s) or both
+     * @param exitOnFirstIP - whether to return after finding the first appropriate IP address.
      * @return
      */
-    private static List<InetAddress> getIpAddressesList( boolean exitOnFirstIPv4 ) {
+    private static List<InetAddress> getIpAddressesList( boolean exitOnFirstIP ) {
 
         List<InetAddress> ipList = new ArrayList<InetAddress>();
 
@@ -265,7 +264,7 @@ public class HostUtils {
 
                         if (ipAddress instanceof Inet4Address && preferIPv4) {
                             ipList.add(ipAddress);
-                            if (exitOnFirstIPv4) {
+                            if (exitOnFirstIP) {
 
                                 /* return list, containing the last added IP address,
                                  * which will be the first IPv4 address, that was found
@@ -278,6 +277,15 @@ public class HostUtils {
 
                         if (ipAddress instanceof Inet6Address && preferIPv6) {
                             ipList.add(ipAddress);
+                            if (exitOnFirstIP) {
+
+                                /* return list, containing the last added IP address,
+                                 * which will be the first IPv6 address, that was found
+                                 */
+
+                                int listSize = ipList.size();
+                                return ipList.subList(listSize - 1, listSize);
+                            }
                         }
                     }
                     if (log.isTraceEnabled()) {
