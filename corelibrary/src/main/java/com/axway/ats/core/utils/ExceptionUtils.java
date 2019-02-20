@@ -55,16 +55,16 @@ public class ExceptionUtils {
                 msg.append("\n");
             }
 
-            if (null != e.getMessage()) {
-                msg.append("Message:\n\t");
-                msg.append(getMsgLines(e.getMessage()));
-                msg.append("\n");
-            } else if (null != e.getLocalizedMessage()) {
-                msg.append("Message:\n\t");
+            if (null != e.getLocalizedMessage()) {
+                msg.append("EXCEPTION Message:\n\t");
                 msg.append(getMsgLines(e.getLocalizedMessage()));
                 msg.append("\n");
+            } else if (null != e.getMessage()) {
+                msg.append("EXCEPTION Message:\n\t");
+                msg.append(getMsgLines(e.getMessage()));
+                msg.append("\n");
             } else {
-                msg.append("Message: ");
+                msg.append("EXCEPTION Message: ");
                 msg.append("null");
                 msg.append("\n");
             }
