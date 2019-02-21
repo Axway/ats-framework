@@ -25,7 +25,6 @@ import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -396,45 +395,115 @@ public class ContainerStarter {
 
     private static List<InetAddress> getAllIPAddresses() {
 
-        List<InetAddress> ipList = new ArrayList<InetAddress>();
+        /** 
+         * NOTE: If you are introducing changes here, change HostUtils.getIpAddressesList(boolean) as well
+         **/
+
+        /*
+         * There maybe a situation when the user did not explicitly specify its preference towards either IPv4 or IPv6 addresses.
+         * In that case we usually iterate only over IPv4.
+         * But if the only available ones are IPv6, they will not be returned.
+         * That's why cache all of the available IPs and if there is no IPv4 ones (except the loopback ones), return the IPv6 (except the loopback ones)
+         * and finally if only loopback ones are available, return them
+         * */
+
+        List<InetAddress> ipv4List = new ArrayList<InetAddress>();
+        List<InetAddress> ipv6List = new ArrayList<InetAddress>();
+
+        List<InetAddress> loopbackIPv4List = new ArrayList<InetAddress>();
+        List<InetAddress> loopbackIPv6List = new ArrayList<InetAddress>();
+
+        // get IP version preferences
+        boolean preferIPv4 = Boolean.parseBoolean(System.getProperty("java.net.preferIPv4Stack", "false"));
+        boolean preferIPv6 = Boolean.parseBoolean(System.getProperty("java.net.preferIPv6Addresses", "false"));
+
+        if (preferIPv4) { // user prefers IPv4
+            if (preferIPv6) { // user prefers IPv6 as well
+                // log a WARN that both types of IPs are preferred
+                log.warn("Both 'java.net.preferIPv4Stack' and 'java.net.preferIPv6Addresses' system properties are set to TRUE. "
+                         + "All appropriate IPv4 and IPv6 addresses will be returned.");
+            }
+        }
+
         try {
 
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-            log.debug("---> Start Iterating All Network Interfaces!");
+            if (log.isTraceEnabled()) {
+                log.trace("Start iterating all network interfaces!");
+            }
+
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
-                if (!netInterface.isLoopback()) {
-                    log.debug("---> Start Iterating Interface '" + netInterface.getName() + "'!");
-                    // for each net interface cycle all IP addresses
+                if (log.isTraceEnabled()) {
+                    log.trace("\tStart iterating interface '" + netInterface.getName() + "/"
+                              + netInterface.getDisplayName() + "'");
+                }
+                if (netInterface.isUp()) { // just iterate over UP interfaces
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
-                    InetAddress ipAddress = null;
-                    while (ipAddresses.hasMoreElements()) {
-                        ipAddress = (InetAddress) ipAddresses.nextElement();
-
-                        if (ipAddress instanceof java.net.Inet4Address) {
-                            Inet4Address ipv4 = (Inet4Address) ipAddress;
-                            if (!ipv4.isLoopbackAddress()) {
-                                // we found an appropriate IPv4 address
-                                ipList.add(ipv4);
+                    while (ipAddresses.hasMoreElements()) { // iterate over the current interface IP addresses
+                        InetAddress ipAddress = ipAddresses.nextElement();
+                        if (ipAddress instanceof Inet4Address) { // IP is IPv4
+                            if (ipAddress.isLoopbackAddress()) { // IP is loopback
+                                loopbackIPv4List.add(ipAddress);
+                            } else {
+                                ipv4List.add((Inet4Address) ipAddress);
                             }
-                        } else //if( ip instanceof java.net.Inet6Address )
-                        {
-                            Inet6Address ipv6 = (Inet6Address) ipAddress;
-                            // FIXME: currently we do not filter out the temporary IPv6 addresses
-                            if (!ipv6.isLinkLocalAddress()) {
-                                // We found an appropriate IPv6 address. Remember it, but keep searching for an appropriate IPv4 address.
-                                ipList.add(ipv6);
+                        } else if (ipAddress instanceof Inet6Address) { // IP is IPv6
+                            if (ipAddress.isLoopbackAddress()) { // IP is loopback
+                                loopbackIPv6List.add(ipAddress);
+                            } else {
+                                ipv6List.add(ipAddress);
                             }
                         }
                     }
+                    if (log.isTraceEnabled()) {
+                        log.trace("\tEnd iterating interface '" + netInterface.getName() + "/"
+                                  + netInterface.getDisplayName() + "'");
+                    }
                 }
             }
-            log.debug("---> Finish Iterating All Network Interfaces!");
-        } catch (SocketException se) {
-            log.error("Error obtaining the local host address", se);
+
+            if (log.isTraceEnabled()) {
+                log.trace("Finish iterating all network interfaces!");
+            }
+
+        } catch (Exception e) {
+            log.error("Error while iterating network addresses", e);
         }
-        return ipList;
+
+        if (preferIPv4) {
+            if (!ipv4List.isEmpty()) { // IPv4 addresses are with high priority
+                return ipv4List;
+            } else if (!ipv6List.isEmpty()) {
+                return ipv6List;
+            } else if (!loopbackIPv4List.isEmpty()) {
+                return loopbackIPv4List;
+            } else if (!loopbackIPv6List.isEmpty()) {
+                return loopbackIPv6List;
+            } else {
+                return new ArrayList<InetAddress>();
+            }
+        } else if (preferIPv6) { // IPv6 addresses are with high priority
+            if (!ipv6List.isEmpty()) {
+                return ipv6List;
+            } else if (!ipv4List.isEmpty()) {
+                return ipv4List;
+            } else if (!loopbackIPv6List.isEmpty()) {
+                return loopbackIPv6List;
+            } else if (!loopbackIPv4List.isEmpty()) {
+                return loopbackIPv4List;
+            } else {
+                return new ArrayList<InetAddress>();
+            }
+        } else { // no priority, but iterate IPv4 first
+            // combine all addresses and return them
+            loopbackIPv4List.addAll(loopbackIPv6List);
+            ipv6List.addAll(loopbackIPv4List);
+            ipv4List.addAll(ipv6List);
+            return ipv4List;
+        }
+
     }
 
     private static void logSystemInformation( String jettyHome ) {
