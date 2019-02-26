@@ -67,13 +67,6 @@ public class RemoteConfigurationManager {
 
             // get Agent Version
             String agentVersion = agentServicePort.pushConfiguration(byteOutStream.toByteArray());
-            String atsVersion = AtsVersion.getAtsVersion();
-            if (!atsVersion.equals(agentVersion)) {
-                log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
-                         + " with ATS agent version " + agentVersion + " located at '"
-                         + HostUtils.getAtsAgentIpAndPort(atsAgent)
-                         + "'. This might cause incompatibility problems!");
-            }
 
             log.info("Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
                      + atsAgent + "'");

@@ -738,6 +738,11 @@ public class AgentWsImpl {
     }
     
     @WebMethod
+    public String getAgentVersion() {
+        return AtsVersion.getAtsVersion();
+    }
+    
+    @WebMethod
     public synchronized int getNumberPendingLogEvents() throws AgentException {
 
         final String caller = getCaller();
