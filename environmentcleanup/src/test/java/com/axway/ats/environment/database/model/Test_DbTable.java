@@ -36,7 +36,7 @@ public class Test_DbTable extends BaseTest {
         assertEquals(0, dbTable.getColumnsToExclude().size());
 
         List<String> columns = new ArrayList<String>();
-        dbTable = new DbTable("table2", columns);
+        dbTable = new DbTable("table2", "dbo", columns);
 
         assertEquals("table2", dbTable.getTableName());
         assertEquals(columns, dbTable.getColumnsToExclude());

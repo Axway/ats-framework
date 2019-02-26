@@ -156,9 +156,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.DEBUG,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -175,9 +173,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.DEBUG,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -196,9 +192,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.ERROR,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -215,9 +209,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.ERROR,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -236,9 +228,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.FATAL,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -255,9 +245,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.FATAL,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -276,9 +264,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.INFO,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -291,9 +277,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.INFO,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          sendRunMessage));
@@ -310,9 +294,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.INFO,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -331,9 +313,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.TRACE,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -350,9 +330,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.TRACE,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -371,9 +349,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.WARN,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          t,
                                          false,
                                          false));
@@ -390,9 +366,7 @@ public class AtsDbLogger {
         sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                          logger,
                                          SystemLogLevel.WARN,
-                                         message.toString() != null
-                                                                    ? message.toString()
-                                                                    : "",
+                                         getNonNullToString(message),
                                          null,
                                          false,
                                          false));
@@ -495,15 +469,18 @@ public class AtsDbLogger {
     }
 
     /**
-     * Updates a suite
-     * 
-     * @param packageName new name for the package
-     * @param suiteName new name for the suite
+     * Update the static information about the current suite.
+     * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
+     *
+     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     *
+     * @param newSuiteName the new value to set for the name of the current suite
+     * @param newUserNote  the new value to set for the user note of the current suite
      */
-    public void updateSuite( String packageName,
-                             String suiteName ) {
+    public void updateSuite( String newSuiteName,
+                             String newUserNote ) {
 
-        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, suiteName, packageName));
+        sendEvent(new UpdateSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, newSuiteName, newUserNote));
     }
 
     /**
@@ -1030,4 +1007,14 @@ public class AtsDbLogger {
             logger.callAppenders(event);
         }
     }
-}
+    
+    
+    private String getNonNullToString(Object obj) {
+        if (obj == null ) {
+            return "";
+        } else {
+            return obj.toString(); // possibly this could also return null but seems not an issue
+        }
+        
+    }
+ }

@@ -25,24 +25,24 @@ import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException
  */
 public class DbAppenderConfiguration implements Serializable {
 
-    private static final long serialVersionUID                      = 4786587768915142179L;
+    private static final long serialVersionUID                       = 4786587768915142179L;
     //connection parameters
     private String            host;
     private String            port;
     private String            database;
     private String            user;
     private String            password;
-    private String            mode                                  = "";
+    private String            mode                                   = "";
 
     // the capacity of our logging queue
-    private String            maxNumberLogEvents                    = "";
-    private static final int  DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private String             maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
 
     //are checkpoints enabled
-    private boolean           enableCheckpoints                     = true;
+    private boolean           enableCheckpoints                      = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    private int               loggingThreshold                      = -1;
+    private int               loggingThreshold                       = -1;
 
     public String getHost() {
 
@@ -188,8 +188,8 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (port == null) {
-            new AtsConsoleLogger(getClass()).warn("Database port was not specified in log4j.xml. "
-                                                  + "We will set it to the default one for MSSQL databases ("
+            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, section for ATS ActiveDbAppender. "
+                                                  + "Assuming default value for Microsoft SQL Server databases ("
                                                   + DbConnSQLServer.DEFAULT_PORT + ")");
             this.port = DbConnSQLServer.DEFAULT_PORT + "";
         }

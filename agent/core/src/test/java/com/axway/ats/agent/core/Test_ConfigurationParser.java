@@ -506,6 +506,16 @@ public class Test_ConfigurationParser extends BaseTest {
             simulateOS( currentOs );
         }
     }
+    
+    @Test
+    public void testDB_dropTable() throws Exception {
+
+        InputStream _descriptorFileStream = Test_ConfigurationParser.class.getClassLoader()
+                                                                          .getResourceAsStream( "test_descriptors/test_agent_descriptor.xml" );
+
+        ConfigurationParser configParser = new ConfigurationParser();
+        configParser.parse( _descriptorFileStream, jarFileAbsolutePath );
+    }
 
     @Test
     public void testDB_NoDbName_butServiceName() throws Exception {

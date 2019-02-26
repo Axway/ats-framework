@@ -430,7 +430,18 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 }
             } else {
                 //first check if we can process the event at all
-                dbAppenderEvent.checkIfCanBeProcessed(_state);
+                try {
+                    dbAppenderEvent.checkIfCanBeProcessed(_state);
+                } catch (LoggingException e) {
+
+                    log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
+                              + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
+                              "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
+                              + this.getSuiteId() + ",\n\tTESTCASE ID: "
+                              + this.getTestCaseId());
+
+                    throw e;
+                }
             }
 
             if (isBatchMode && ! (event instanceof CacheableEvent)
@@ -1178,6 +1189,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                          + this.dbConnection.getConnHash()
                          + "'. No additional test data will be inserted for that run.");
                 listener.onRunFinished();
+            } else {
+                log.error("Run with id '" + runId + "' exists in database '"
+                          + this.dbConnection.getConnHash() + ". But an error occured", e);
+                throw e;
             }
         } else {
             throw e;
@@ -1197,6 +1212,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 log.warn("Suite with id '" + suiteId + "' appears to be deleted from database '"
                          + this.dbConnection.getConnHash()
                          + "'. No additional test data will be inserted for that suite.");
+            } else {
+                log.error("Suite with id '" + suiteId + "' exists in database '"
+                          + this.dbConnection.getConnHash() + ". But an error occured", e);
+                throw e;
             }
         } else {
             log.error("Suite with id '" + suiteId + "' exists in database '"
@@ -1342,9 +1361,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         try {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
-            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
-            if (dbConnection instanceof DbConnPostgreSQL) {
+            if (dbConnection instanceof DbConnSQLServer) {
+                stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
+            } else if (dbConnection instanceof DbConnPostgreSQL) {
                 stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _state.getRunId());
+            } else {
+                 // TODO throw some exception about unsupported connection class
             }
             ResultSet rs = stmt.executeQuery();
             rs.next();

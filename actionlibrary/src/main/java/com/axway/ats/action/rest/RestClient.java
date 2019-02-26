@@ -784,8 +784,8 @@ public class RestClient {
     public RestResponse execute( String httpMethod, Object bodyContent ) {
 
         // execute HTTP method
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "execute " + httpMethod
-                                                                           + " against", false );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("execute " + httpMethod
+                                                                          + " against", false);
         RestResponse response;
         if (bodyContent != null) {
             if ( ("put".equalsIgnoreCase(httpMethod) || "post".equalsIgnoreCase(httpMethod))
@@ -818,7 +818,7 @@ public class RestClient {
     public RestResponse get() {
 
         // execute GET
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "GET from", false );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("GET from", false);
         RestResponse response = new RestResponse(invocationBuilder.get());
 
         logRESTResponse(response);
@@ -838,7 +838,7 @@ public class RestClient {
     public RestResponse postObject( Object object ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST object to", false );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST object to", false);
         RestResponse response;
         if (object != null) {
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
@@ -870,7 +870,7 @@ public class RestClient {
     public RestResponse postForm( RestForm restForm ) {
 
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "POST form to", false );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST form to", false);
         RestResponse response = new RestResponse(invocationBuilder.post(Entity.entity(restForm.getForm(),
                                                                                       MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
@@ -893,7 +893,7 @@ public class RestClient {
         // execute PUT
         RestResponse response;
         if (object != null) {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT object to", false );
+            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", false);
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
                 throw new RestException("Content type is not set! Content type is mandatory for PUT.");
             }
@@ -903,8 +903,8 @@ public class RestClient {
                                                                                                          requestMediaCharset)),
                                                                  Response.class));
         } else {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT object to", true );
-            response = new RestResponse( invocationBuilder.method( "PUT", Response.class ) );
+            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", true);
+            response = new RestResponse(invocationBuilder.method("PUT", Response.class));
         }
 
         logRESTResponse(response);
@@ -926,17 +926,17 @@ public class RestClient {
         RestResponse response;
 
         // execute PUT
-        if( restForm != null ) {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", false );
-            response = new RestResponse( invocationBuilder.put( Entity.entity( restForm.getForm(),
-                                                                               MediaType.APPLICATION_FORM_URLENCODED_TYPE ) ) );
+        if (restForm != null) {
+            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to", false);
+            response = new RestResponse(invocationBuilder.put(Entity.entity(restForm.getForm(),
+                                                                            MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
 
         } else {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder( "PUT form to", true );
-            response = new RestResponse( invocationBuilder.put( null ) );
+            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to", true);
+            response = new RestResponse(invocationBuilder.put(null));
         }
 
-        logRESTResponse( response );
+        logRESTResponse(response);
         initInternalVariables();
 
         // return response
@@ -952,7 +952,7 @@ public class RestClient {
     public RestResponse delete() {
 
         // execute DELETE
-        Invocation.Builder invocationBuilder = constructInvocationBuilder( "DELETE from", false );
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("DELETE from", false);
         RestResponse response = new RestResponse(invocationBuilder.delete());
 
         logRESTResponse(response);
@@ -1012,7 +1012,8 @@ public class RestClient {
         }
     }
 
-    private Invocation.Builder constructInvocationBuilder( String descriptionToken, boolean suppresHttpComplianceValidation ) {
+    private Invocation.Builder constructInvocationBuilder( String descriptionToken,
+                                                           boolean suppresHttpComplianceValidation ) {
 
         if (StringUtils.isNullOrEmpty(this.uri)) {
             throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
@@ -1065,6 +1066,28 @@ public class RestClient {
             clientIdKeys.add(propertyEntry.getKey() + "=" + propertyEntry.getValue());
         }
 
+        if (suppresHttpComplianceValidation == true) { // not default value
+            if (properties.containsKey(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION)) { // user provided value found
+                boolean userProvidedValue = (boolean) properties.get(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION);
+                if (userProvidedValue != suppresHttpComplianceValidation) {
+                    // ignore our value
+                    log.info("You are executing PUT with null body and SUPPRESS_HTTP_COMPLIANCE_VALIDATION is set to false. Expect operation to fail.");
+                } else {
+                    // set our value
+                    log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                    clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                    suppresHttpComplianceValidation);
+                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+                }
+            } else { // user provided value not found
+                // set our value
+                log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                suppresHttpComplianceValidation);
+                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+            }
+        }
+
         // basic authorization
         if (username != null) {
             clientIdKeys.add("user=" + username);
@@ -1074,8 +1097,6 @@ public class RestClient {
 
         // now create the client
         client = getClient(clientIdKeys, clientBuilder);
-        // add ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION property to disable certain HTTP compliance checks
-        client.property( ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, suppresHttpComplianceValidation );
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
             client.register(requestFilter);

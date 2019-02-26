@@ -19,6 +19,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.log.autodb.EventProcessorState;
 import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException;
@@ -58,6 +59,9 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
+
+        cacheSourceLocation();
+
     }
 
     /**
@@ -81,6 +85,17 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
 
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
+
+        cacheSourceLocation();
+    }
+
+    private void cacheSourceLocation() {
+
+        if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION, false)) {
+            // this call will cache the source location of the event
+            this.getLocationInformation();
+        }
+
     }
 
     public LoggingEventType getEventType() {

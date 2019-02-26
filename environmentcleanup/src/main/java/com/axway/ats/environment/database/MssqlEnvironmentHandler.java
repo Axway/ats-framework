@@ -19,40 +19,54 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbReturnModes;
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.MssqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
 
 class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log            = Logger.getLogger(MssqlEnvironmentHandler.class);
+    private static final Logger LOG            = Logger.getLogger(MssqlEnvironmentHandler.class);
     private static final String HEX_PREFIX_STR = "0x";
+    private String              defaultSchema  = null;
 
     MssqlEnvironmentHandler( DbConnSQLServer dbConnection,
                              MssqlDbProvider dbProvider ) {
 
         super(dbConnection, dbProvider);
+
+        defaultSchema = getDefaultSchema();
     }
 
     @Override
@@ -61,21 +75,26 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                           String userName ) throws DbException,
                                                                             ColumnHasNoDefaultValueException {
 
-        String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, IS_NULLABLE, "
+        String fullTableName = table.getFullTableName();
+
+        String selectColumnsInfo = "SELECT COLUMN_NAME, DATA_TYPE, COLUMN_DEFAULT, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, IS_NULLABLE, "
                                    + "columnproperty(object_id('"
-                                   + table.getTableName()
+                                   + fullTableName
                                    + "'), COLUMN_NAME,'IsIdentity') as isIdentity "
                                    + "FROM information_schema.COLUMNS WHERE table_name LIKE '"
                                    + table.getTableName() + "'";
+        if (!StringUtils.isNullOrEmpty(table.getTableSchema())) {
+            // add table schema to select query as well
+            selectColumnsInfo += " AND table_schema LIKE '" + table.getTableSchema() + "'";
+        }
         ArrayList<ColumnDescription> columnsToSelect = new ArrayList<ColumnDescription>();
         DbRecordValuesList[] columnsMetaData = null;
         try {
             columnsMetaData = this.dbProvider.select(selectColumnsInfo);
         } catch (DbException e) {
-            log.error("Could not get columns for table "
-                      + table.getTableName()
-                      + ". Check if the table is existing and that the user has permissions. See more details in the trace.");
-            throw e;
+            throw new DbException("Could not get columns for table " + fullTableName
+                                  + ". Check if the table is existing and that the user has permissions. See more details in the trace.",
+                                  e);
         }
 
         table.setIdentityColumnPresent(false); // the Identity column can be skipped(excluded)
@@ -89,14 +108,14 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 ColumnDescription colDescription = new MssqlColumnDescription(columnName,
                                                                               (String) columnMetaData.get("DATA_TYPE"));
                 columnsToSelect.add(colDescription);
-                if ((Integer) columnMetaData.get("isIdentity") == 1) {
+                if (columnMetaData.get("isIdentity") != null && (Integer) columnMetaData.get("isIdentity") == 1) {
                     table.setIdentityColumnPresent(true);
                 }
             } else {
                 //if this column has no default value, we cannot skip it in the backup
                 if (columnMetaData.get("COLUMN_DEFAULT") == null) {
-                    log.error("Cannot skip columns with no default values while creating backup");
-                    throw new ColumnHasNoDefaultValueException(table.getTableName(), columnName);
+                    LOG.error("Cannot skip columns with no default values while creating backup");
+                    throw new ColumnHasNoDefaultValueException(fullTableName, columnName);
                 }
             }
         }
@@ -111,12 +130,32 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      DbRecordValuesList[] records,
                                      Writer fileWriter ) throws IOException, ParseException {
 
-        if (!this.deleteStatementsInserted) {
+        String fullTableName = null;
+        if (table != null) {
+            fullTableName = table.getFullTableName();
+        }
+        if (this.addLocks) {
+            fileWriter.write("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE " + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+
+        if (shouldDropTable(table)) {
+            //            fileWriter.write(DROP_TABLE_MARKER + fullTableName
+            //                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            Connection connection = null;
+            try {
+                connection = ConnectionPool.getConnection(dbConnection);
+                writeDropTableStatements(fileWriter, table, connection);
+            } finally {
+                DbUtils.closeConnection(connection);
+            }
+            
+        } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }
 
         if (table.getAutoIncrementResetValue() != null) {
-            fileWriter.write("DBCC CHECKIDENT ('" + table.getTableName() + "', RESEED, "
+            fileWriter.write("DBCC CHECKIDENT ('" + fullTableName + "', RESEED, "
                              + table.getAutoIncrementResetValue() + ");" + EOL_MARKER
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
         }
@@ -124,12 +163,12 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (records.length > 0) {
 
             StringBuilder insertStatement = new StringBuilder();
-            String insertBegin = "INSERT INTO " + table.getTableName() + "(" + getColumnsString(columns)
+            String insertBegin = "INSERT INTO " + fullTableName + "(" + getColumnsString(columns)
                                  + ") VALUES (";
             String insertEnd = null;
             if (table.isIdentityColumnPresent()) {
-                insertBegin = "SET IDENTITY_INSERT " + table.getTableName() + " ON; " + insertBegin;
-                insertEnd = "); SET IDENTITY_INSERT " + table.getTableName() + " OFF;" + EOL_MARKER
+                insertBegin = "SET IDENTITY_INSERT " + fullTableName + " ON; " + insertBegin;
+                insertEnd = "); SET IDENTITY_INSERT " + fullTableName + " OFF;" + EOL_MARKER
                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
             } else {
                 insertEnd = ");" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
@@ -151,8 +190,143 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 //remove the last comma
                 insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
                 insertStatement.append(insertEnd);
+                fileWriter.write(insertStatement.toString()); // limit memory allocation for big tables. Write after each row
+                insertStatement.setLength(0);
             }
-            fileWriter.write(insertStatement.toString());
+            fileWriter.flush();
+        }
+    }
+
+    private void writeDropTableStatements( Writer fileWriter, DbTable table,
+                                           Connection connection ) throws IOException {
+
+        String tableName = table.getFullTableName();
+        Map<String, List<String>> foreignKeys = getForeingKeys(tableName, connection);
+
+        // execute that so foreign key checks does not fail
+        executeUpdate(disableForeignKeyChecksStart(), connection);
+
+        // generate script for restoring the exact table and return the CREATE TABLE script
+        String generateTableScript = generateTableScript(tableName, connection);
+
+        String partitionName = getPartitionSchemeName(table);
+
+        if (!StringUtils.isNullOrEmpty(partitionName)) {
+            String partitionColumnName = getPartitionColumnName(table);
+            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>",
+                                                              " ON [" + partitionName + "]([" + partitionColumnName
+                                                                                                + "])");
+        } else {
+            // if the table do not have to be partitioned
+            // replace with empty string the partition schemE placeholder
+            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>", "");
+        }
+
+        String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
+
+        // create the generateForeignKeyScript procedure
+        createDatabaseProcedure(connection, scriptContent);
+
+        List<String> generateForeignKeysScripts = new ArrayList<String>();
+        for (Entry<String, List<String>> keyEntry : foreignKeys.entrySet()) {
+            String parentTableName = keyEntry.getKey();
+            for (String key : keyEntry.getValue()) {
+                // generate scripts for creating all foreign keys
+                generateForeignKeysScripts.add(generateForeignKeyScript(parentTableName, key,
+                                                                        connection));
+            }
+        }
+
+        // drop the newly created procedure
+        executeUpdate("DROP PROCEDURE generateForeignKeyScript", connection);
+
+        // drop foreign keys
+        String query = "SELECT "
+                       + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
+                       + "'].[' + OBJECT_NAME(parent_object_id) + "
+                       + "'] DROP CONSTRAINT [' + name + ']' "
+                       + " FROM sys.foreign_keys "
+                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+
+        Statement callableStatementDropForeignKeys = null;
+        ResultSet rsDropForeignKeys = null;
+        try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            callableStatementDropForeignKeys = connection.createStatement();
+            rsDropForeignKeys = callableStatementDropForeignKeys.executeQuery(query);
+
+            while (rsDropForeignKeys.next()) {
+                fileWriter.write(rsDropForeignKeys.getString(1) + EOL_MARKER
+                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            }
+
+        } catch (Exception e) {
+            throw new DbException("Error while droping the foreign keys of table '" + tableName + "'.", e);
+        } finally {
+            DbUtils.closeStatement(callableStatementDropForeignKeys);
+        }
+
+        // drop table
+        fileWriter.write("DROP TABLE " + tableName + ";" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create table
+        fileWriter.write(generateTableScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+
+        // create foreign keys
+        for (String script : generateForeignKeysScripts) {
+            fileWriter.write(script + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+
+        // enable again the foreign check
+        executeUpdate(disableForeignKeyChecksEnd(), connection);
+    }
+
+    private String getPartitionColumnName( DbTable table ) {
+
+        String query = "select c.name " +
+                       "from  sys.tables t " +
+                       "join  sys.indexes i " +
+                       "      on(i.object_id = t.object_id " +
+                       "      and i.index_id < 2) " +
+                       "join  sys.index_columns ic " +
+                       "      on(ic.partition_ordinal > 0 " +
+                       "      and ic.index_id = i.index_id and ic.object_id = t.object_id) " +
+                       "join  sys.columns c " +
+                       "      on(c.object_id = ic.object_id " +
+                       "      and c.column_id = ic.column_id) " +
+                       "where t.object_id  = object_id('" + table.getFullTableName() + "') ";
+
+        DbRecordValuesList[] rows = dbProvider.select(query);
+        if (rows != null && rows.length > 0) {
+            return (String) rows[0].get("name");
+        } else {
+            return "";
+        }
+    }
+
+    private String getPartitionSchemeName( DbTable table ) {
+
+        String query = "select DISTINCT " +
+                       "ps.[name] AS Ps_Name " +
+                       "from sys.partitions p " +
+                       "inner join sys.indexes i " +
+                       " on p.[object_id] = i.[object_id] " +
+                       " and p.index_id = i.index_id " +
+                       "inner JOIN sys.data_spaces ds " +
+                       " on i.data_space_id = ds.data_space_id " +
+                       "inner JOIN sys.partition_schemes ps " +
+                       " on ds.data_space_id = ps.data_space_id " +
+                       "inner JOIN sys.partition_functions pf " +
+                       " on ps.function_id = pf.function_id " +
+                       " where OBJECT_NAME(p.[object_id]) = '" + table.getTableName() + "' ";
+
+        DbRecordValuesList[] rows = dbProvider.select(query);
+        if (rows != null && rows.length > 0) {
+            return (String) rows[0].get("Ps_Name");
+        } else {
+            return "";
         }
     }
 
@@ -197,7 +371,15 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (this.includeDeleteStatements) {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 DbTable dbTable = entry.getValue();
-                fileWriter.write("DELETE FROM " + dbTable.getTableName() + ";" + EOL_MARKER
+                if (shouldDropTable(dbTable)) {
+                    continue;
+                }
+                String fullTableName = null;
+                if (dbTable != null) {
+                    fullTableName = dbTable.getFullTableName();
+                }
+                String deleteQuery = "DELETE FROM " + fullTableName;
+                fileWriter.write(deleteQuery + ";" + EOL_MARKER
                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
             }
             this.deleteStatementsInserted = true;
@@ -249,6 +431,20 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         return insertStatement;
     }
 
+    @Override
+    public void addTable( DbTable table ) {
+
+        if (!StringUtils.isNullOrEmpty(defaultSchema)) {
+            // apply that schema to each table that has no schema specified
+            if (table != null) { // prevent NPE
+                if (StringUtils.isNullOrEmpty(table.getTableSchema())) { // check if the table DOES NOT have schema already specified
+                    table.setTableSchema(defaultSchema);
+                }
+            }
+        }
+        super.addTable(table);
+    }
+
     /**
      * @see com.axway.ats.environment.database.model.RestoreHandler#restore(java.lang.String)
      */
@@ -262,7 +458,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         boolean isAutoCommit = true;
 
         try {
-            log.debug("Starting restoring db backup from file '" + backupFileName + "'");
+            LOG.info("Started restore of database backup from file '" + backupFileName + "'");
 
             backupReader = new BufferedReader(new FileReader(new File(backupFileName)));
 
@@ -277,26 +473,31 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
                 sql.append(line);
 
-                if (line.endsWith(EOL_MARKER)) {
+                if (line.startsWith(DROP_TABLE_MARKER)) {
+
+                    String tableName = line.substring(DROP_TABLE_MARKER.length()).trim();
+                    dropAndRecreateTable(connection, tableName);
+
+                    sql = new StringBuilder(); // clear the sql query buffer
+                } else if (line.endsWith(EOL_MARKER)) {
 
                     // remove the EOL marker
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
 
-                    //catch the exception and rollback, otherwise we are locked
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("Executing SQL query: " + sql);
+                    }
+
+                    // catch the exception and rollback, otherwise we are locked
                     try {
                         updateStatement.execute();
                     } catch (SQLException sqle) {
-                        log.error("Error invoking restore satement: " + sql.toString());
                         //we have to roll back the transaction and re-throw the exception
                         connection.rollback();
-                        throw sqle;
+                        throw new SQLException("Error executing restore satement: " + sql.toString(), sqle);
                     } finally {
-                        try {
-                            updateStatement.close();
-                        } catch (SQLException sqle) {
-                            log.error("Unable to close prepared statement", sqle);
-                        }
+                        DbUtils.closeStatement(updateStatement);
                     }
                     sql = new StringBuilder();
                 } else {
@@ -319,8 +520,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 throw sqle;
             }
 
-            log.debug("Finished restoring db backup from file '" + backupFileName + "'");
-
+            LOG.info("Completed restore of database backup from file '" + backupFileName + "'");
         } catch (IOException ioe) {
             throw new DatabaseEnvironmentCleanupException(ERROR_RESTORING_BACKUP + backupFileName, ioe);
         } catch (SQLException sqle) {
@@ -336,8 +536,301 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     connection.close();
                 }
             } catch (SQLException sqle) {
-                log.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
+                LOG.error(ERROR_RESTORING_BACKUP + backupFileName, sqle);
             }
+        }
+    }
+
+    /**
+     * <p>Get the default schema for the current user and database.</p>
+     * */
+    private String getDefaultSchema() {
+
+        // get user's default schema
+        String query = "SELECT default_schema_name FROM sys.database_principals WHERE type = 'S' and name = '"
+                       + dbProvider.getDbConnection().getUser() + "'";
+        DbRecordValuesList[] defaultSchemaVal = dbProvider.select(new DbQuery(query),
+                                                                  DbReturnModes.ESCAPED_STRING);
+        if (defaultSchemaVal.length > 0) {
+            DbRecordValuesList firstVal = defaultSchemaVal[0];
+            if (firstVal != null) {
+                String defaultSchema = (String) firstVal.get("default_schema_name");
+                if (!StringUtils.isNullOrEmpty(defaultSchema)) {
+                    LOG.info("Set default schema to '" + defaultSchema
+                             + "'. Tables that do not have schema specified will be assigned to that schema."
+                             + " Tables that do have provided schema will not be affected by that.");
+                    return defaultSchema;
+                }
+            }
+        }
+
+        return null;
+
+    }
+
+    private void dropAndRecreateTable( Connection connection, String tableName ) {
+
+        List<String> generateForeignKeysScripts = new ArrayList<String>();
+
+        Map<String, List<String>> foreignKeys = getForeingKeys(tableName, connection);
+
+        // generate script for restoring the exact table
+        String generateTableScript = generateTableScript(tableName, connection);
+
+        String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
+
+        // create the generateForeignKeyScript procedure
+        createDatabaseProcedure(connection, scriptContent);
+
+        for (Entry<String, List<String>> keyEntry : foreignKeys.entrySet()) {
+            String parentTableName = keyEntry.getKey();
+            for (String key : keyEntry.getValue()) {
+                // generate scripts for creating all foreign keys
+                generateForeignKeysScripts.add(generateForeignKeyScript(parentTableName, key,
+                                                                        connection));
+            }
+        }
+
+        // drop the newly created procedure
+        executeUpdate("DROP PROCEDURE generateForeignKeyScript", connection);
+
+        // drop the foreign keys
+        dropForeignKeys(tableName, connection);
+        // drop the table
+        executeUpdate("DROP TABLE " + tableName + ";", connection);
+
+        // create new table
+        executeUpdate(generateTableScript, connection);
+        // create all the missing foreign keys
+        for (String script : generateForeignKeysScripts) {
+            executeUpdate(script, connection);
+        }
+    }
+
+    /**
+     * Get file contents from classpath
+     * @param scriptFileName Relative path is relative to the package of current class.
+     * @return String of  
+     */
+    private String loadScriptFromClasspath( String scriptFileName ) {
+
+        String scriptContents = null;
+        try (InputStream is = this.getClass().getResourceAsStream(scriptFileName)) {
+            if (is != null) {
+                scriptContents = IoUtils.streamToString(is);
+            }
+        } catch (Exception e) {
+            if (e.getSuppressed() != null) { // possible close resources
+                Throwable[] suppressedExc = e.getSuppressed();
+                for (int i = 0; i < suppressedExc.length; i++) {
+                    LOG.warn("Suppressed exception [" + i + "] details", suppressedExc[i]);
+                }
+            }
+            throw new DbException("Could not load SQL server script needed for DB environment restore from classpath. Check "
+                                  + "location of " + scriptFileName + " file", e);
+        }
+        return scriptContents;
+    }
+
+    private Map<String, List<String>> getForeingKeys( String tableName,
+                                                      Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
+        ResultSet rs = null;
+        try {
+            String simpleTableName = tableName.substring(tableName.indexOf('.') + 1, tableName.length());
+            String query = "EXEC sp_fkeys '" + simpleTableName + "'";
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            stmnt = connection.prepareStatement(query);
+            rs = stmnt.executeQuery();
+            while (rs.next()) {
+                String fKey = rs.getString("FK_NAME");
+                String parentTableName = rs.getString("FKTABLE_OWNER") + "."
+                                         + rs.getString("FKTABLE_NAME");
+                if (tableName.equals(parentTableName)) {
+                    // this is the same table, the foreign key is created in the table creation script
+                    continue;
+                }
+                if (tableForeignKey.containsKey(parentTableName)) {
+                    if (!tableForeignKey.get(parentTableName).contains(fKey)) {
+                        tableForeignKey.get(parentTableName).add(fKey);
+                    }
+                } else {
+                    List<String> fKeys = new ArrayList<String>();
+                    fKeys.add(fKey);
+                    tableForeignKey.put(parentTableName, fKeys);
+                }
+            }
+
+            return tableForeignKey;
+        } catch (SQLException e) {
+            throw new DbException(
+                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                  + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement(stmnt);
+        }
+    }
+
+    private void executeUpdate( String query, Connection connection ) throws DbException {
+
+        PreparedStatement stmnt = null;
+        try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            stmnt = connection.prepareStatement(query);
+            stmnt.executeUpdate();
+        } catch (SQLException e) {
+            throw new DbException("Error executing statement: '" + query + "'\n"
+                                  + "  SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                  + e.getMessage(), e);
+        } finally {
+            DbUtils.closeStatement(stmnt);
+        }
+    }
+
+    private void createDatabaseProcedure( Connection conn, String scriptContent ) {
+
+        StringBuilder command = new StringBuilder();
+        Statement stmt = null;
+
+        String currentLine;
+        try (Scanner scanner = new Scanner(scriptContent)) {
+            while (scanner.hasNextLine()) {
+                currentLine = scanner.nextLine();
+                currentLine = currentLine.trim();
+                command.append(currentLine);
+                command.append(" ");
+
+                if (currentLine.endsWith("GO")) {
+                    // commit the transaction
+                    try {
+                        if (LOG.isTraceEnabled()) {
+                            LOG.trace("Executing SQL query: " + command.toString());
+                        }
+                        stmt = conn.createStatement();
+                        stmt.execute(command.toString());
+                    } finally {
+                        DbUtils.closeStatement(stmt);
+                    }
+                    command.setLength(0);
+                }
+            }
+        } catch (Exception e) {
+            String message = "Error while creating database procedure by running command: " + command;
+            if (e instanceof SQLException) {
+                throw new DbException(DbUtils.getFullSqlException(message, (SQLException) e));
+            } else {
+                throw new DbException(message, e);
+            }
+        }
+        String commandStr = command.toString().trim();
+        if (commandStr.length() > 0) {
+            LOG.warn("Command '" + commandStr
+                     + "' will not be executed. If it is needed then add 'GO' statement at the end");
+        }
+    }
+
+    private String generateForeignKeyScript( String tableName, String foreingKey,
+                                             Connection connection ) throws DbException {
+
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            callableStatement = connection.prepareCall("{ call generateForeignKeyScript(?,?) }");
+            callableStatement.setString(1, tableName);
+            callableStatement.setString(2, StringUtils.isNullOrEmpty(foreingKey)
+                                                                                 ? null
+                                                                                 : foreingKey);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + callableStatement.toString());
+            }
+
+            rs = callableStatement.executeQuery();
+            String createQuery = new String();
+            if (rs.next()) {
+                createQuery = rs.getString(1);
+            }
+
+            return createQuery;
+
+        } catch (Exception e) {
+            throw new DbException("Error while generating script for the foreign keys of the table '"
+                                  + tableName + "'.", e);
+        } finally {
+            DbUtils.closeStatement(callableStatement);
+        }
+    }
+
+    private String generateTableScript( String tableName, Connection connection ) throws DbException {
+
+        // script used from https://www.c-sharpcorner.com/UploadFile/67b45a/how-to-generate-a-create-table-script-for-an-existing-table/
+        final String tableScriptFileName = "generateTableScript.sql";
+        //String file = classLoader.getResource(tableName).getPath();
+
+        String scriptContents = loadScriptFromClasspath(tableScriptFileName);
+
+        // create the generateTableScript procedure
+        createDatabaseProcedure(connection, scriptContents);
+
+        CallableStatement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            callableStatement = connection.prepareCall("{ call generateTableScript(?) }");
+            callableStatement.setString(1, tableName);
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + callableStatement.toString());
+            }
+            rs = callableStatement.executeQuery();
+            String createQuery = new String();
+            if (rs.next()) {
+                createQuery = rs.getString(1);
+            }
+
+            return createQuery;
+
+        } catch (Exception e) {
+            throw new DbException("Error while generating script for the table '" + tableName + "'.", e);
+        } finally {
+            DbUtils.closeStatement(callableStatement);
+
+            // drop the newly created procedure
+            // TODO: drop procedure after last table drop invocation
+            executeUpdate("DROP PROCEDURE generateTableScript", connection);
+
+        }
+    }
+
+    private void dropForeignKeys( String tableName, Connection connection ) throws DbException {
+
+        String query = "SELECT "
+                       + "'ALTER TABLE [' +  OBJECT_SCHEMA_NAME(parent_object_id) + "
+                       + "'].[' + OBJECT_NAME(parent_object_id) + "
+                       + "'] DROP CONSTRAINT [' + name + ']' "
+                       + " FROM sys.foreign_keys "
+                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+
+        Statement callableStatement = null;
+        ResultSet rs = null;
+        try {
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query);
+            }
+            callableStatement = connection.createStatement();
+            rs = callableStatement.executeQuery(query);
+
+            while (rs.next()) {
+                executeUpdate(rs.getString(1), connection);
+            }
+
+        } catch (Exception e) {
+            throw new DbException("Error while droping the foreign keys of table '" + tableName + "'.", e);
+        } finally {
+            DbUtils.closeStatement(callableStatement);
         }
     }
 }

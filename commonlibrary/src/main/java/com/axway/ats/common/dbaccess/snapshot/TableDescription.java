@@ -284,6 +284,7 @@ public class TableDescription {
             Properties thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
             Properties thatIndexProperties = null;
             for (String thatName : thatNames) {
+
                 thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
 
                 // check if both indexes are on the same column in the table
@@ -353,6 +354,7 @@ public class TableDescription {
             Properties thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
             Properties thisIndexProperties = null;
             for (String thisName : thisNames) {
+              
                 thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
 
                 // check if both indexes are on the same column in the table
@@ -434,7 +436,7 @@ public class TableDescription {
         }
         return properties;
     }
-    
+  
     private Map<String, String> propertiesToMap(Properties properties) {
         
         /* Since there can only be String(s) and primitives as a property value

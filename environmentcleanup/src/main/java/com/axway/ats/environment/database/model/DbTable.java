@@ -18,15 +18,24 @@ package com.axway.ats.environment.database.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.utils.StringUtils;
+
 /**
  * Class representing a single database table - it holds the name
  * of the table and the columns which to exclude from the backup
  */
+@PublicAtsApi
 public class DbTable {
 
     private String       tableName;
+    private String       schema;
     private List<String> columnsToExclude;
     private boolean      lockTable             = true;
+    /**
+     * Whether to drop table. If true - > then drop, else if false -> no, else (null) user did not specify it.
+     * */
+    private Boolean      dropTable             = null;
     private boolean      identityColumnPresent = false;
 
     private String       autoIncrementResetValue;
@@ -38,47 +47,70 @@ public class DbTable {
      */
     public DbTable( String tableName ) {
 
-        this(tableName, new ArrayList<String>());
-    }
-
-    /**
-     * Constructor
-     *
-     * @param tableName name of the table
-     * @param columnsToExclude list of columns to exclude from the backup
-     */
-    public DbTable( String tableName,
-                    List<String> columnsToExclude ) {
-
-        this(tableName, columnsToExclude, true);
+        this(tableName, new String(), new ArrayList<String>());
     }
 
     /**
      * Constructor - no columns will be excluded from the backup
      *
      * @param tableName name of the table
-     * @param lockTable parameter if the table must be locked during restore
+     * @param schema schema of the table. Note that this is only applicable for <strong>MSSQL</strong> tables
      */
-    public DbTable( String tableName,
-                    boolean lockTable ) {
+    public DbTable( String tableName, String schema ) {
 
-        this(tableName, new ArrayList<String>(), lockTable);
+        this(tableName, schema, new ArrayList<String>());
     }
 
     /**
      * Constructor
      *
      * @param tableName name of the table
+     * @param schema schema of the table
      * @param columnsToExclude list of columns to exclude from the backup
-     * @param lockTable parameter if the table must be locked during restore
      */
     public DbTable( String tableName,
+                    String schema,
+                    List<String> columnsToExclude ) {
+
+        this(tableName, schema, columnsToExclude, true, null);
+    }
+
+    /**
+     * Constructor - no columns will be excluded from the backup
+     *
+     * @param tableName name of the table
+     * @param schema name of the schema
+     * @param lockTable parameter if the table must be locked during restore
+     * @param dropTable parameter if the table must be recreated during restore
+     */
+    public DbTable( String tableName,
+                    String schema,
+                    boolean lockTable,
+                    Boolean dropTable ) {
+
+        this(tableName, schema, new ArrayList<String>(), lockTable, dropTable);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param tableName name of the table
+     * @param schema schema of the table
+     * @param columnsToExclude list of columns to exclude from the backup
+     * @param lockTable parameter if the table must be locked during restore
+     * @param dropTable parameter if the table must be recreated during restore
+     */
+    public DbTable( String tableName,
+                    String schema,
                     List<String> columnsToExclude,
-                    boolean lockTable ) {
+                    boolean lockTable,
+                    Boolean dropTable ) {
 
         this.tableName = tableName;
+        this.schema = schema;
         this.columnsToExclude = columnsToExclude;
         this.lockTable = lockTable;
+        this.dropTable = dropTable;
     }
 
     /**
@@ -89,6 +121,38 @@ public class DbTable {
     public String getTableName() {
 
         return tableName;
+    }
+
+    /**
+     * Get the table schema
+     *
+     * @return the table schema
+     */
+    public String getTableSchema() {
+
+        return schema;
+    }
+
+    /**
+     * <p>Set table schema</p>
+     * <p>Note: This is only applicable for <strong>MSSQL</strong> tables 
+     * @param tableSchema the table schema
+     * */
+    public void setTableSchema( String tableSchema ) {
+
+        this.schema = tableSchema;
+    }
+
+    /**
+     * <p>Get the full (schema_name.table_name) table name</p>
+     * <p>Note that this is only applicable for <strong>MSSQL</strong> tables</p>
+     * */
+    public String getFullTableName() {
+
+        return (!StringUtils.isNullOrEmpty(schema)
+                                                   ? schema + "."
+                                                   : "")
+               + tableName;
     }
 
     /**
@@ -120,6 +184,26 @@ public class DbTable {
         this.lockTable = lockTable;
     }
 
+    /**
+    * <p>Get whether to drop table</p>
+    * <p>Note: If not defined, it will be null</p>
+    * @return if the table will be recreated or not during the restore process
+    */
+    public Boolean isDropTable() {
+
+        return dropTable;
+    }
+
+    /**
+    *
+    * @param dropTable is true if the table will be recreated during the restore process
+    */
+    public void setDropTable(
+                              boolean dropTable ) {
+
+        this.dropTable = dropTable;
+    }
+
     public String getAutoIncrementResetValue() {
 
         return autoIncrementResetValue;
@@ -144,7 +228,7 @@ public class DbTable {
 
     public DbTable getNewCopy() {
 
-        DbTable newDbTable = new DbTable(this.tableName, this.lockTable);
+        DbTable newDbTable = new DbTable(this.tableName, this.schema, this.lockTable, this.dropTable);
 
         List<String> newColumnsToExclude = new ArrayList<String>();
         for (String columnToExclude : this.columnsToExclude) {

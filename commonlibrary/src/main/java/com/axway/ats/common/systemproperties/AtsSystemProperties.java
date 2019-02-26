@@ -52,8 +52,15 @@ public class AtsSystemProperties {
     public static final String  LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
 
     /**
-     * The MAX number of events that will be processed at once when batch mode is enabled.</br>
-     * This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
+     * <p>Enable caching of the class and method that created any of the AbstractLoggingEvent(s).</p>
+     * <p>In other words, when for example a call like AtsDbLogger.startRun() is executed,
+     * the StartRunEvent will cache/save where that call was made in the format: full_class_name.method:line_number</p>
+     * 
+     * */
+    public static final String  LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
+  
+    /** The MAX number of events that will be processed at once when batch mode is enabled.</br>
+     *  This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
      * */
     @PublicAtsApi
     public static final String  LOG__MAX_CACHE_EVENTS                                             = "ats.log.db.max.cache.events";

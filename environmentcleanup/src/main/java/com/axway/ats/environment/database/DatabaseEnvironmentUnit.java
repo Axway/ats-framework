@@ -49,6 +49,9 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     private List<DbTable>             dbTables;
 
     private boolean                   addSeparateLocks;
+    private boolean                   dropTables;
+    private boolean                   skipTablesContent;
+
     private boolean                   disableForeignKeys;
     private boolean                   includeDeleteStatements;
 
@@ -57,22 +60,6 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     //the environment unit description
     private String                    description;
-
-    /**
-     * Constructor
-     *
-     * @param backupFileName the name of the backup file
-     * @param dbConnection database connection
-     * @param dbTables list of database tables to backup
-     */
-    @Deprecated
-    @PublicAtsApi
-    public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
-                                    List<DbTable> dbTables ) {
-
-        this(backupDirPath, backupFileName, dbConnection, dbTables,
-             EnvironmentHandlerFactory.getInstance());
-    }
 
     /**
      * Constructor
@@ -102,8 +89,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
                                                                            .mergeProperties(testBox.getProperties(),
                                                                                             customProperties))
                                     .getDbConnection(),
-             dbTables,
-             EnvironmentHandlerFactory.getInstance());
+             dbTables);
     }
 
     /**
@@ -114,18 +100,20 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
      * @param dbTables list of database tables to backup
      * @param environmentHandlerFactory the factory for creating backup and restore handlers
      */
-    DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
-                             List<DbTable> dbTables, EnvironmentHandlerFactory environmentHandlerFactory ) {
+    public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
+                                    List<DbTable> dbTables ) {
 
         this.dbTables = dbTables;
 
         this.backupDirPath = IoUtils.normalizeDirPath(backupDirPath);
         this.backupFileName = backupFileName;
         this.addSeparateLocks = true;
+        this.dropTables = false;
+        this.skipTablesContent = false;
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
 
-        this.environmentHandlerFactory = environmentHandlerFactory;
+        this.environmentHandlerFactory = EnvironmentHandlerFactory.getInstance();
 
         setDbConnection(dbConnection);
     }
@@ -152,9 +140,11 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
             //create db backup handler instance
             dbBackup = environmentHandlerFactory.createDbBackupHandler(dbConnection);
+            dbBackup.setLockTables(addSeparateLocks);
+            dbBackup.setDropTables(dropTables);
+            dbBackup.setSkipTablesContent(skipTablesContent);
             dbBackup.setForeignKeyCheck(disableForeignKeys);
             dbBackup.setIncludeDeleteStatements(includeDeleteStatements);
-            dbBackup.setLockTables(addSeparateLocks);
             for (DbTable dbTable : dbTables) {
                 dbBackup.addTable(dbTable);
             }
@@ -174,6 +164,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     }
 
     @Override
+    @PublicAtsApi
     public boolean executeRestoreIfNecessary() throws DatabaseEnvironmentCleanupException {
 
         //create db backup handler instance
@@ -207,6 +198,26 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
         return backupDirPath + backupFileName;
     }
 
+    /**
+     * Toggle whether to drop and recreate tables on restore. Default is <strong>false</strong>.
+     * @param dropTables
+     * */
+    @PublicAtsApi
+    public void setDropTables( boolean dropTables ) {
+
+        this.dropTables = dropTables;
+    }
+
+    /**
+     * Toggle whether to add the tables' content to the backup.
+     * @param skipTabkesContent - true will add the content of the tables in the backup, false will not
+     * */
+    @PublicAtsApi
+    public void setSkipTablesContent( boolean skipTablesContent ) {
+
+        this.skipTablesContent = skipTablesContent;
+    }
+
     public EnvironmentUnit getNewCopy() {
 
         DatabaseEnvironmentUnit newDatabaseEnvironmentUnit = new DatabaseEnvironmentUnit(this.backupDirPath,
@@ -219,6 +230,8 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
             newDbTables.add(dbTable.getNewCopy());
         }
         newDatabaseEnvironmentUnit.dbTables = newDbTables;
+        newDatabaseEnvironmentUnit.dropTables = this.dropTables;
+        newDatabaseEnvironmentUnit.skipTablesContent = this.skipTablesContent;
 
         return newDatabaseEnvironmentUnit;
     }

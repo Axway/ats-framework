@@ -15,10 +15,11 @@
  */
 package com.axway.ats.environment.database;
 
-import static org.easymock.EasyMock.createMock; //TODO replace with org.easymock.EasyMock.createMockBuilder
 import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.powermock.api.easymock.PowerMock.createMock;
+import static org.powermock.api.easymock.PowerMock.mockStatic;
+import static org.powermock.api.easymock.PowerMock.replay;
+import static org.powermock.api.easymock.PowerMock.verify;
 import static org.junit.Assert.assertEquals;
 
 import java.io.File;
@@ -29,80 +30,86 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.environment.BaseTest;
 import com.axway.ats.environment.EnvironmentCleanupException;
-import com.axway.ats.environment.database.DatabaseEnvironmentUnit;
-import com.axway.ats.environment.database.EnvironmentHandlerFactory;
 import com.axway.ats.environment.database.model.BackupHandler;
 import com.axway.ats.environment.database.model.DbTable;
 import com.axway.ats.environment.database.model.RestoreHandler;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({ EnvironmentHandlerFactory.class })
 public class Test_DatabaseEnvironmentUnit extends BaseTest {
 
-    private DbConnection              mockDbConnection;
-    private EnvironmentHandlerFactory mockFactory;
-    private RestoreHandler            mockRestoreHandler;
-    private BackupHandler             mockBackupHandler;
-    private File                      tempFile;
+	private DbConnection mockDbConnection;
+	private EnvironmentHandlerFactory mockFactory;
+	private RestoreHandler mockRestoreHandler;
+	private BackupHandler mockBackupHandler;
+	private File tempFile;
 
-    @Before
-    public void setUp() throws IOException {
+	@Before
+	public void setUp() throws IOException {
 
-        mockDbConnection = createMock(DbConnection.class);
-        mockFactory = createMock(EnvironmentHandlerFactory.class);
-        mockRestoreHandler = createMock(RestoreHandler.class);
-        mockBackupHandler = createMock(BackupHandler.class);
+		mockDbConnection = createMock(DbConnection.class);
+		mockRestoreHandler = createMock(RestoreHandler.class);
+		mockBackupHandler = createMock(BackupHandler.class);
+		
 
-        tempFile = File.createTempFile("auto", ".tmp");
-    }
+		tempFile = File.createTempFile("auto", ".tmp");
+	}
 
-    @After
-    public void tearDown() {
+	@After
+	public void tearDown() {
 
-        if (tempFile.exists()) {
-            tempFile.delete();
-        }
-    }
+		if (tempFile.exists()) {
+			tempFile.delete();
+		}
+	}
 
-    @Test
-    public void createBackupMysql() throws EnvironmentCleanupException, IOException {
+	@Test
+	public void createBackupMysql() throws EnvironmentCleanupException, IOException {
 
-        DbTable table1 = new DbTable("table1");
-        DbTable table2 = new DbTable("table2");
+		DbTable table1 = new DbTable("table1");
+		DbTable table2 = new DbTable("table2");
 
-        List<DbTable> tables = new ArrayList<DbTable>();
-        tables.add(table1);
-        tables.add(table2);
+		List<DbTable> tables = new ArrayList<DbTable>();
+		tables.add(table1);
+		tables.add(table2);
 
-        expect(mockFactory.createDbBackupHandler(mockDbConnection)).andReturn(mockBackupHandler);
+		mockFactory = createMock(EnvironmentHandlerFactory.class);
+		mockStatic(EnvironmentHandlerFactory.class);
+		expect(EnvironmentHandlerFactory.getInstance()).andReturn(mockFactory);
+		
+		expect(mockFactory.createDbBackupHandler(mockDbConnection)).andReturn(mockBackupHandler);
 
-        mockBackupHandler.setLockTables(true);
-        mockBackupHandler.setForeignKeyCheck(true);
-        mockBackupHandler.setIncludeDeleteStatements(true);
-        mockBackupHandler.addTable(table1);
-        mockBackupHandler.addTable(table2);
+		mockBackupHandler.setLockTables(true);
+		mockBackupHandler.setDropTables(false);
+		mockBackupHandler.setSkipTablesContent(false);
+		mockBackupHandler.setForeignKeyCheck(true);
+		mockBackupHandler.setIncludeDeleteStatements(true);
+		mockBackupHandler.addTable(table1);
+		mockBackupHandler.addTable(table2);
 
-        mockBackupHandler.createBackup(tempFile.getCanonicalPath());
-        mockBackupHandler.disconnect();
+		mockBackupHandler.createBackup(tempFile.getCanonicalPath());
+		mockBackupHandler.disconnect();
 
-        replay(mockFactory);
-        replay(mockBackupHandler);
+		replay(EnvironmentHandlerFactory.class);
+		replay(mockFactory);
+		replay(mockBackupHandler);
 
-        DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit(tempFile.getParentFile()
-                                                                                        .getCanonicalPath(),
-                                                                                tempFile.getName(),
-                                                                                mockDbConnection,
-                                                                                tables,
-                                                                                mockFactory);
-        dbEnvironmentUnit.backup();
+		DatabaseEnvironmentUnit dbEnvironmentUnit = new DatabaseEnvironmentUnit(
+				tempFile.getParentFile().getCanonicalPath(), tempFile.getName(), mockDbConnection, tables);
+		dbEnvironmentUnit.backup();
 
-        verify(mockFactory);
+		verify(mockFactory);
         verify(mockBackupHandler);
-    }
-
+	}
+	
     @Test
     public void executeRestore() throws EnvironmentCleanupException, IOException {
 
@@ -114,10 +121,15 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
         tables.add(table1);
         tables.add(table2);
 
+        mockFactory = createMock(EnvironmentHandlerFactory.class);
+		mockStatic(EnvironmentHandlerFactory.class);
+		expect(EnvironmentHandlerFactory.getInstance()).andReturn(mockFactory);
+        
         expect(mockFactory.createDbRestoreHandler(mockDbConnection)).andReturn(mockRestoreHandler);
         mockRestoreHandler.restore(tempFile.getCanonicalPath());
         mockRestoreHandler.disconnect();
 
+        replay(EnvironmentHandlerFactory.class);
         replay(mockFactory);
         replay(mockBackupHandler);
 
@@ -125,8 +137,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
                                                                                         .getCanonicalPath(),
                                                                                 tempFile.getName(),
                                                                                 mockDbConnection,
-                                                                                tables,
-                                                                                mockFactory);
+                                                                                tables);
         dbEnvironmentUnit.executeRestoreIfNecessary();
 
         verify(mockFactory);
@@ -152,8 +163,7 @@ public class Test_DatabaseEnvironmentUnit extends BaseTest {
                                                                                         .getCanonicalPath(),
                                                                                 tempFile.getName(),
                                                                                 mockDbConnection,
-                                                                                tables,
-                                                                                mockFactory);
+                                                                                tables);
         assertEquals("MYSQL database in file " + tempFile.getCanonicalPath(),
                      dbEnvironmentUnit.getDescription());
 
