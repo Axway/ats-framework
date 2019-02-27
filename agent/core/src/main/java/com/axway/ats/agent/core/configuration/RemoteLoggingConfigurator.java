@@ -40,27 +40,20 @@ import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 @SuppressWarnings( "serial")
 public class RemoteLoggingConfigurator implements Configurator {
 
-    private static final long serialVersionUID = 1L;
-    
-    private DbAppenderConfiguration      appenderConfiguration;
-    private String                       appenderLogger;
+    private static final long       serialVersionUID  = 1L;
 
-    private static final int             DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
-    
+    private DbAppenderConfiguration appenderConfiguration;
+    private String                  appenderLogger;
+
+    private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
+
     // list of other logger levels defined by the user in their log4j configuration file
-    private Map<String, Integer>         otherLoggerLevels          = new HashMap<String, Integer>();
+    private Map<String, Integer>    otherLoggerLevels = new HashMap<String, Integer>();
 
     // flags telling us what exactly to configure
-    private boolean                      needsToConfigureDbAppender;
-    private boolean                      needsToConfigureUserLoggers;
-    
-    /**
-     * We will try to find if a DB appender has been configured on the local system
-     */
-    public RemoteLoggingConfigurator() {
-        this( null );
-    }
-    
+    private boolean                 needsToConfigureDbAppender;
+    private boolean                 needsToConfigureUserLoggers;
+
     /**
      * We will try to find if a DB appender has been configured on the local system
      * 
@@ -93,9 +86,8 @@ public class RemoteLoggingConfigurator implements Configurator {
                     appenderConfiguration = ((AbstractDbAppender) appender).getAppenderConfig();
                     appenderLogger = log.getName();
 
-                    
                     int atsDbLogLevel = DEFAULT_LOG_LEVEL;
-                    if (customLogLevel!=null) {
+                    if (customLogLevel != null) {
                         // user specified in the test the log level for this agent
                         atsDbLogLevel = customLogLevel.toInt();
                     } else if (log.getLevel() != null) {
@@ -173,7 +165,7 @@ public class RemoteLoggingConfigurator implements Configurator {
             }
 
             log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
-            
+
             final String caller = ThreadsPerCaller.getCaller();
 
             //create the new appender

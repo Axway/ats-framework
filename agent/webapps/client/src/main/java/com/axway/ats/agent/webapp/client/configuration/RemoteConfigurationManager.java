@@ -49,8 +49,8 @@ public class RemoteConfigurationManager {
                                    String atsAgent,
                                    Configurator configurator ) throws AgentException {
 
-        AgentConfigurationLandscape.getInstance( atsAgent ).cacheConfigurator( configurator );
-        
+        AgentConfigurationLandscape.getInstance(atsAgent).cacheConfigurator(configurator);
+
         // get the client instance
         AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
 

@@ -29,6 +29,7 @@ import com.axway.ats.agent.webapp.client.AgentException_Exception;
 import com.axway.ats.agent.webapp.client.AgentService;
 import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.TestCaseState;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.ITestcaseStateListener;
@@ -134,7 +135,8 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                         }
 
                         // Pass the logging configuration to the remote agent
-                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
+                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
+                                                                                                                                       .getDbLogLevel());
                         new RemoteConfigurationManager().pushConfiguration(atsAgent,
                                                                            remoteLoggingConfigurator);
 
