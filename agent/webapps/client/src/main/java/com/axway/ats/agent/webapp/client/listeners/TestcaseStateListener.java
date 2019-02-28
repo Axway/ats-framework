@@ -88,7 +88,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
             } catch (Exception e) {
 
-                log.error("Can't send onTestEnd event to ATS agent '" + atsAgent + "'", e);
+                log.warn("Could not nofity ATS agent on '" + atsAgent
+                         + "' that testcase has ended. Probably the agent have become unreachable during test execution.",
+                         e);
             }
         }
         configuredAgents = null;
