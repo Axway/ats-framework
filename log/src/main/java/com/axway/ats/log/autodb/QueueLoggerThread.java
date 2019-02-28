@@ -38,6 +38,7 @@ import com.axway.ats.log.autodb.model.LoggingEventType;
 public class QueueLoggerThread extends Thread {
 
     final static AtsConsoleLogger               CONSOLE_LOG                            = new AtsConsoleLogger(QueueLoggerThread.class);
+
     // max count of exceptions to log for "not critical" SQL exceptions
     private static final int                    MINOR_SQL_EXCEPTIONS_MAX_LOGGING_COUNT = 5;
 
@@ -63,8 +64,8 @@ public class QueueLoggerThread extends Thread {
 
         // It is the user's responsibility to close appenders before
         // exiting.
-        this.setDaemon( false );
-        this.setName( this.getClass().getSimpleName() );
+        this.setDaemon(false);
+        this.setName(this.getClass().getSimpleName());
     }
 
     /* (non-Javadoc)
@@ -72,40 +73,42 @@ public class QueueLoggerThread extends Thread {
      */
     @Override
     public void run() {
+
         CONSOLE_LOG.info(
-                        "Started logger thread named '"
-                        + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
-                        + " events. Batch mode is " + (isBatchMode
-                                                                   ? "enabled"
-                                                                   : "disabled"));
-        while( true ) {
+                         "Started logger thread named '"
+                         + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
+                         + " events. Batch mode is " + (isBatchMode
+                                                                    ? "enabled"
+                                                                    : "disabled"));
+        while (true) {
             LogEventRequest logEventRequest = null;
             try {
-                if( isBatchMode ) {
+                if (isBatchMode) {
                     // get the next event, wait no more than 10 seconds
-                    logEventRequest = queue.poll( AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH, TimeUnit.MILLISECONDS );
+                    logEventRequest = queue.poll(AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH,
+                                                 TimeUnit.MILLISECONDS);
                 } else {
                     // we are not in a hurry,
                     // block until receive an event in the queue
                     logEventRequest = queue.take();
                 }
-                eventProcessor.processEventRequest( logEventRequest );
-            } catch( InterruptedException ie ) {
+                eventProcessor.processEventRequest(logEventRequest);
+            } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
                 CONSOLE_LOG.error(
-                                 "Logging thread is interrupted and will stop logging.");
+                                  "Logging thread is interrupted and will stop logging.");
                 break;
-            } catch( Exception e ) {
-                if( e instanceof LoggingIsOverException ) {
+            } catch (Exception e) {
+                if (e instanceof LoggingIsOverException) {
                     // This is not an error. 
                     // We are running parallel tests and we just left one of them on the Agent side.
-                    if( queue.size() > 0 ) {
+                    if (queue.size() > 0) {
                         // There are more events in this queue.
                         // This means there is another test serviced by this same thread.
                         // We just go on.
-                        CONSOLE_LOG.info( "We were about to exit thread " + getName()
-                                  + " due to LEAVE_TEST_EVENT, but there are " + queue.size()
-                                  + " events left, so we just go on" );
+                        CONSOLE_LOG.info("We were about to exit thread " + getName()
+                                         + " due to LEAVE_TEST_EVENT, but there are " + queue.size()
+                                         + " events left, so we just go on");
                     } else {
                         // Queue is empty.
                         // CONSOLE_LOG.info( e.getMessage() );
@@ -114,29 +117,28 @@ public class QueueLoggerThread extends Thread {
                         // Future calls to its isAlive() method will return false.
                         return;
                     }
-                }
-                else if( e instanceof LoggingException && logEventRequest != null ) {
-                    LoggingException le = ( LoggingException ) e;
+                } else if (e instanceof LoggingException && logEventRequest != null) {
+                    LoggingException le = (LoggingException) e;
                     LoggingEvent event = logEventRequest.getEvent();
-                    if( event instanceof AbstractLoggingEvent ) {
-                        AbstractLoggingEvent dbAppenderEvent = ( AbstractLoggingEvent ) event;
+                    if (event instanceof AbstractLoggingEvent) {
+                        AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
                         LoggingEventType eventType = dbAppenderEvent.getEventType();
                         // If START_* log entity event do not work, we can not end it
                         // nor we can insert into that entity its sub-entities
 
                         // We do not remember other type of failed events, as these are the only ones we check in the main thread.
                         // The Join Testcase event is the one that connects to the DB on the side of ATS Agent
-                        if( eventType == LoggingEventType.START_RUN
+                        if (eventType == LoggingEventType.START_RUN
                             || eventType == LoggingEventType.START_SUITE
                             || eventType == LoggingEventType.START_TEST_CASE
                             || eventType == LoggingEventType.JOIN_TEST_CASE
-                            || eventType == LoggingEventType.START_CHECKPOINT ) {
+                            || eventType == LoggingEventType.START_CHECKPOINT) {
                             CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(le,
-                                                                            "Error running "
-                                                                                + eventType
-                                                                                + " event"));
+                                                                             "Error running "
+                                                                                 + eventType
+                                                                                 + " event"));
 
-                            synchronized( this ) {
+                            synchronized (this) {
                                 this.loggingException = le;
                             }
                         } else {
@@ -144,18 +146,18 @@ public class QueueLoggerThread extends Thread {
                             // verbose
                             if (minorSqlExceptionsCounter < MINOR_SQL_EXCEPTIONS_MAX_LOGGING_COUNT) {
                                 CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(le, "Error running " + eventType
-                                                                                    + " event"));
+                                                                                     + " event"));
                                 minorSqlExceptionsCounter++;
                             }
 
                         }
-                    } else if( le.getMessage().equalsIgnoreCase( AbstractDbAccess.UNABLE_TO_CONNECT_ERRROR )
-                               && !isUnableToConnect ) {
+                    } else if (le.getMessage().equalsIgnoreCase(AbstractDbAccess.UNABLE_TO_CONNECT_ERRROR)
+                               && !isUnableToConnect) {
                         // We do not log the no connectivity problem on each failure, we do it just once.
                         // This case is likely to happen on a remote Agent host without set DNS servers - in such
                         // case providing FQDN in the log4j.xml makes the DB logging impossible
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
-                                                                        "Error processing log event"));
+                                                                         "Error processing log event"));
 
                         isUnableToConnect = true;
                     }
@@ -164,15 +166,15 @@ public class QueueLoggerThread extends Thread {
                     // we expect to get here when hit some very unusual errors
                     if (logEventRequest != null) {
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
-                                                                        "Error processing log event "
-                                                                           + logEventRequest.getEvent()
-                                                                                            .getMessage()));
+                                                                         "Error processing log event "
+                                                                            + logEventRequest.getEvent()
+                                                                                             .getMessage()));
                     } else {
                         // The 'log event request' object is null because timed out while waiting for it from the queue.
                         // This happens when running in batch mode.
                         // Then we tried to flush the current events, but this was not successful, so came here.
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
-                                                                        "Error processing log events in batch mode"));
+                                                                         "Error processing log events in batch mode"));
                     }
                 }
             }
@@ -185,8 +187,8 @@ public class QueueLoggerThread extends Thread {
             // here we send a reference to the logging exception and
             // release the local variable, so it can be set again if a new
             // error appear
-            if( loggingException != null ) {
-                return new LoggingException( loggingException );
+            if (loggingException != null) {
+                return new LoggingException(loggingException);
             } else {
                 return null;
             }

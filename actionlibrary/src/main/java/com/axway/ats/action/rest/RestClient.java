@@ -1013,7 +1013,7 @@ public class RestClient {
     }
 
     private Invocation.Builder constructInvocationBuilder( String descriptionToken,
-                                                           boolean suppresHttpComplianceValidation ) {
+                                                           boolean suppressHttpComplianceValidation ) {
 
         if (StringUtils.isNullOrEmpty(this.uri)) {
             throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
@@ -1066,25 +1066,25 @@ public class RestClient {
             clientIdKeys.add(propertyEntry.getKey() + "=" + propertyEntry.getValue());
         }
 
-        if (suppresHttpComplianceValidation == true) { // not default value
+        if (suppressHttpComplianceValidation == true) { // not default value
             if (properties.containsKey(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION)) { // user provided value found
                 boolean userProvidedValue = (boolean) properties.get(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION);
-                if (userProvidedValue != suppresHttpComplianceValidation) {
+                if (userProvidedValue != suppressHttpComplianceValidation) {
                     // ignore our value
                     log.info("You are executing PUT with null body and SUPPRESS_HTTP_COMPLIANCE_VALIDATION is set to false. Expect operation to fail.");
                 } else {
                     // set our value
                     log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
                     clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                    suppresHttpComplianceValidation);
-                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+                                    suppressHttpComplianceValidation);
+                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppressHttpComplianceValidation);
                 }
             } else { // user provided value not found
                 // set our value
                 log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
                 clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                suppresHttpComplianceValidation);
-                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
+                                suppressHttpComplianceValidation);
+                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppressHttpComplianceValidation);
             }
         }
 

@@ -183,6 +183,8 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             }
 
             for (AgentInfo ai : agentInfosList) {
+                
+                log.info("Pushing configuration to ATS Agent at '" + ai.address + "'");
 
                 RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
                 new RemoteConfigurationManager().pushConfiguration(ai.address,

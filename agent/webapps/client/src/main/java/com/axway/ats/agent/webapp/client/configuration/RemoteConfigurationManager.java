@@ -23,6 +23,7 @@ import org.apache.log4j.Logger;
 import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.RestHelper;
+import com.axway.ats.agent.webapp.restservice.api.agent.AgentPropertiesRestEntryPoint;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
@@ -55,6 +56,25 @@ public class RemoteConfigurationManager {
         // create callerId
         String callerId = ExecutorUtils.createCallerId();
 
+        // get the ATS Agent version
+        String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/properties", "GET",
+                                                                 "{\"callerId\":\"" + callerId + "\",\"operation\":\""
+                                                                                                      + AgentPropertiesRestEntryPoint.GET_ATS_VERSION_OPERATION
+                                                                                                      + "\"}",
+                                                                 "ats_version",
+                                                                 String.class);
+
+        // get the ats version of the test executor
+        String atsVersion = AtsVersion.getAtsVersion();
+
+        // compare both versions and log warning if they do are not the same
+        if (!atsVersion.equals(agentVersion)) {
+            log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
+                     + " with ATS agent version " + agentVersion + " located at '"
+                     + HostUtils.getAtsAgentIpAndPort(atsAgent)
+                     + "'. This might cause incompatibility problems!");
+        }
+
         // create request body
         StringBuilder requestBody = new StringBuilder();
         requestBody.append("{")
@@ -69,19 +89,10 @@ public class RemoteConfigurationManager {
                    .append(restHelper.serializeJavaObject(configurators))
                    .append("}");
 
-        // put the configurator to the agent and get the agent's ATS version
-        String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/configurations", "PUT",
-                                                                 requestBody.toString(),
-                                                                 "ats_version", String.class);
-        // get the ats version of the test executor
-        String atsVersion = AtsVersion.getAtsVersion();
-
-        if (!atsVersion.equals(agentVersion)) {
-            log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
-                     + " with ATS agent version " + agentVersion + " located at '"
-                     + HostUtils.getAtsAgentIpAndPort(atsAgent)
-                     + "'. This might cause incompatibility problems!");
-        }
+        // configure the agent
+        restHelper.executeRequest(atsAgent, "agent/configurations", "PUT",
+                                  requestBody.toString(),
+                                  null, null);
 
         log.info("Successfully set the " + configurator.getDescription() + " on ATS Agent at '"
                  + atsAgent + "'");

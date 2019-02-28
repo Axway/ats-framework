@@ -425,7 +425,7 @@ public class AtsDbLogger {
      * Update the static information about the current run. <br><b>NOTE</b>: This method can be called at anytime after
      * a run is started.
      *
-     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     * <br><br><b>NOTE</b>: Pass null value to any parameter which must not be modified.
      *
      * @param runName name of the run
      * @param osName name of the OS
@@ -472,7 +472,7 @@ public class AtsDbLogger {
      * Update the static information about the current suite.
      * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
      *
-     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     * <br><br><b>NOTE</b>: Pass null value to any parameter which must not be modified.
      *
      * @param newSuiteName the new value to set for the name of the current suite
      * @param newUserNote  the new value to set for the user note of the current suite

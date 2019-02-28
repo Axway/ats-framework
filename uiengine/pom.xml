@@ -10,8 +10,8 @@
 
     <artifactId>ats-uiengine</artifactId>
     <name>ATS-UIEngine</name>
-    <description>ATS UI Engine library for performing tests over applications in HTML/JS/ and Swing</description>
-    <url>https://github.com/Axway/ats-framework</url>
+    <description>ATS UI Engine library for performing tests over applications in HTML/JS and Swing</description>
+    <url>https://axway.github.io/ats-framework/Automated-testing-of-HTML-and-Javascript-application.html</url>
 
     <properties>
         <selenium-java.version>3.8.1</selenium-java.version>
@@ -108,7 +108,7 @@
             <artifactId>ats-core</artifactId>
             <version>${project.version}</version>
             <exclusions>
-	            <!-- Excluding guava version from io.appium because it is too old -->
+	            <!-- Excluding guava version from cassandra because it is too old -->
             	<exclusion>
             		<groupId>com.google.guava</groupId>
             		<artifactId>guava</artifactId>

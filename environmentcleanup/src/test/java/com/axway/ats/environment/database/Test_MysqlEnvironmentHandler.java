@@ -119,7 +119,7 @@ public class Test_MysqlEnvironmentHandler extends BaseTest {
         expect(mockDbProvider.select(isA(String.class))).andReturn(columnsMetaData);
         expect(mockDbProvider.select(isA(DbQuery.class), eq(DbReturnModes.ESCAPED_STRING))).andReturn(recordValues);
 
-      //expect the file writer calls
+        //expect the file writer calls
 
         //foreign keys check start
         mockFileWriter.write("SET FOREIGN_KEY_CHECKS = 0;" + EOL_MARKER + LINE_SEPARATOR);

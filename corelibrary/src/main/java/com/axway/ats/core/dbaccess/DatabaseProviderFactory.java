@@ -33,8 +33,6 @@ import org.xml.sax.SAXException;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.cassandra.CassandraDbProvider;
 import com.axway.ats.core.dbaccess.cassandra.DbConnCassandra;
-//import com.axway.ats.core.dbaccess.db2.Db2DbProvider;
-//import com.axway.ats.core.dbaccess.db2.DbConnDb2;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
