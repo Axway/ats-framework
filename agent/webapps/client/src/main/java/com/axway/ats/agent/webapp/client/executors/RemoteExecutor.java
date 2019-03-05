@@ -137,13 +137,16 @@ public class RemoteExecutor extends AbstractClientExecutor {
         }
 
         if (configureAgent) {
-            //configure the remote executor(an ATS agent)
             try {
+                //configure the remote executor(an ATS agent)
                 TestcaseStateEventsDispacher.getInstance().onConfigureAtsAgents(Arrays.asList(atsAgent));
             } catch (Exception e) {
-                // we know for sure this is an AgentException, but as the interface declaration is in Core library,
-                // we could not declare the AgentException, but its parent - the regular java Exception
-                throw(AgentException) e;
+                if (e instanceof AgentException) {
+                    throw(AgentException) e;
+                } else {
+                    throw new AgentException("Error while configuring ATS Agent at '"
+                                             + HostUtils.getAtsAgentIpAndPort(atsAgent) + "'", e);
+                }
             }
         }
     }
