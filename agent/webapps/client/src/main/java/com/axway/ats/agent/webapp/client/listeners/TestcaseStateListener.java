@@ -31,9 +31,7 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.TestCaseState;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
-import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.ITestcaseStateListener;
-import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
 
 public class TestcaseStateListener implements ITestcaseStateListener {
@@ -125,7 +123,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                         log.info("Pushing configuration to ATS Agent at '" + atsAgent + "'");
 
-                        String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
+                        /*String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
                         String atsVersion = AtsVersion.getAtsVersion();
                         if (agentVersion != null) {
                             if (!AtsVersion.getAtsVersion().equals(agentVersion)) {
@@ -134,7 +132,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                                          + HostUtils.getAtsAgentIpAndPort(atsAgent)
                                          + "'. This might cause incompatibility problems!");
                             }
-                        }
+                        }*/
 
                         // Pass the logging configuration to the remote agent
                         RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
