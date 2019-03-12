@@ -31,7 +31,7 @@ public class StartAfterSuiteEvent extends AbstractLoggingEvent {
     @Override
     protected LifeCycleState getExpectedLifeCycleState( LifeCycleState state ) {
 
-        return LifeCycleState.SUITE_STARTED;
+        return LifeCycleState.ATLEAST_RUN_STARTED;
     }
 
 }
