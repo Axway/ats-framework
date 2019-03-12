@@ -77,6 +77,12 @@ public class AtsSystemProperties {
     @PublicAtsApi
     public static final String  CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
 
+    /**
+     * Toggle whether ATS Agent will be configured and flag as configured by both SystemMonitor and TestcaseStateListener.
+     * This fix is when user wants to stop monitoring and continue using the same agent (executing actions).
+     * */
+    public static final String  MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
+
     /*
      * Following are system properties which are not supposed to be changed
      * during the VM lifetime, so we do not need to read them more than once.

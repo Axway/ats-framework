@@ -16,17 +16,21 @@
 package com.axway.ats.monitoring;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
+import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
@@ -620,6 +624,9 @@ public class SystemMonitor {
     @PublicAtsApi
     public void stopMonitoring() {
 
+        boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
+                                                                                     true);
+
         Iterator<String> it = this.monitoredHosts.iterator();
         while (it.hasNext()) {
             String monitoredHost = it.next();
@@ -631,7 +638,11 @@ public class SystemMonitor {
             if (!StringUtils.isNullOrEmpty(errorMsg)) {
                 throw new MonitoringException(errorMsg);
             }
-            performCleanup(monitoredHost);
+
+            // use old logic/behavior if FALSE
+            if (!configureAgentExplicitely) {
+                leaveTestcase(monitoredHost);
+            }
         }
 
         isStarted = false;
@@ -678,18 +689,6 @@ public class SystemMonitor {
 
     }
 
-    /**
-     * Removes the PassiveDbAppender on the agent, that was appended via
-     * initializeDbConnection(), and leaves the current testcase.
-     */
-    private void performCleanup(
-                                 String monitoredHost ) {
-
-        leaveTestcase(monitoredHost);
-        // we don't want to explicitly remove any appender, attached on the agent from this caller 
-        deinitializeDbConenction(monitoredHost);
-    }
-
     private void initializeDbConnection(
                                          String monitoredHost ) {
 
@@ -704,10 +703,10 @@ public class SystemMonitor {
         this.monitoredHosts.add(monitoredHost);
 
         /* see if log level was already set for this monitored host */
-        LogLevel userLogLevel = AgentConfigurationLandscape.getInstance( monitoredHost ).getDbLogLevel();
-        int logLevel = ( userLogLevel == null )
-                                                ? Logger.getRootLogger().getEffectiveLevel().toInt()
-                                                : userLogLevel.toInt();
+        LogLevel userLogLevel = AgentConfigurationLandscape.getInstance(monitoredHost).getDbLogLevel();
+        int logLevel = (userLogLevel == null)
+                                              ? Logger.getRootLogger().getEffectiveLevel().toInt()
+                                              : userLogLevel.toInt();
 
         /*
          * create RestHelper instance, ready to connect with the specified
@@ -755,9 +754,24 @@ public class SystemMonitor {
 
         if (testCaseState.getRunId() < 1 || testCaseState.getTestcaseId() < 1) {
 
-            throw new MonitoringException("Run ID and/or Testcase ID are invallid. "
-                                          + "Did you attach AtsTestngListener to your Test class?");
+            String message = "Could not join testcase on ATS Agent at '" + monitoredHost + "'. "
+                             + "Either you did not attach AtsTestngListener listener to your test class hierarchy or "
+                             + "you are invoking System monitoring operation outside of @Test, @BeforeMethod or @AfterMethod annotated methods.";
 
+            throw new MonitoringException(message);
+
+        }
+
+        boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
+                                                                                     true);
+        if (configureAgentExplicitely) {
+            try {
+                TestcaseStateListener.getInstance().onConfigureAtsAgents(Arrays.asList(monitoredHost));
+            } catch (Exception e) {
+                throw new MonitoringException("There were errors while joining testcase on ATS Agent at '"
+                                              + monitoredHost
+                                              + "'", e);
+            }
         }
 
         String errorMsg = performMonitoringOperation(monitoredHost,
@@ -770,8 +784,13 @@ public class SystemMonitor {
         if (!StringUtils.isNullOrEmpty(errorMsg)) {
             throw new MonitoringException(errorMsg);
         }
+
     }
 
+    /**
+     * Temporal method to preserve old (pre 4.0.6) behavior
+     * */
+    @Deprecated
     private void leaveTestcase(
                                 String monitoredHost ) {
 
@@ -783,17 +802,6 @@ public class SystemMonitor {
         if (!StringUtils.isNullOrEmpty(errorMsg)) {
             throw new MonitoringException(errorMsg);
         }
-    }
-
-    // this code if left commented for now
-    private void deinitializeDbConenction(
-                                           String monitoredHost ) {
-        // we don't want to explicitly remove any appender, attached on the agent from this caller
-        //        performMonitoringOperation( monitoredHost,
-        //                                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-        //                                    RestHelper.DEINITIALIZE_DB_CONNECTION_RELATIVE_URI,
-        //                                    "There were errors while deinitializing db connection",
-        //                                    new Object[]{ null } );
     }
 
     private void scheduleProcessMonitoring(
