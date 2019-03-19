@@ -290,11 +290,17 @@ public class TableDescription {
                 String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
                 if (thisIndexColumnName == null) {
                     thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                    if (thisIndexColumnName == null) {
+                        thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                    }
                 }
 
                 String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
                 if (thatIndexColumnName == null) {
                     thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                    if (thatIndexColumnName == null) {
+                        thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                    }
                 }
 
                 if (!thisIndexColumnName.equals(thatIndexColumnName)) {
@@ -336,7 +342,9 @@ public class TableDescription {
             } else {
                 // there is an index with same name, now check there attributes
                 if (!checkIndexesByAttributes(thisIndexProperties,
-                                              thatIndexProperties)) {
+                                              thisName,
+                                              thatIndexProperties,
+                                              equivalentThatName)) {
                     //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
                     // index with same name, has different attributes
                     equality.addIndexPresentInOneSnapshotOnly(this.snapshotName, name, thisName,
@@ -358,11 +366,17 @@ public class TableDescription {
                 String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
                 if (thisIndexColumnName == null) {
                     thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                    if (thisIndexColumnName == null) {
+                        thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                    }
                 }
 
                 String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
                 if (thatIndexColumnName == null) {
                     thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                    if (thatIndexColumnName == null) {
+                        thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                    }
                 }
 
                 if (!thisIndexColumnName.equals(thatIndexColumnName)) {
@@ -404,7 +418,9 @@ public class TableDescription {
             } else {
                 // there is an index with same name, now check there attributes
                 if (!checkIndexesByAttributes(thisIndexProperties,
-                                              thatIndexProperties)) {
+                                              equivalentThisName,
+                                              thatIndexProperties,
+                                              thatName)) {
                     //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
                     // index with same name, has different attributes
                     equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
@@ -412,6 +428,28 @@ public class TableDescription {
                 }
             }
         }
+    }
+
+    /**
+     * For Oracle DB, the column name is only presented in the Index's UID value.</br>
+     * This method extracts the column name from that UID.</br>
+     * It is expected that either column_name or COLUMN_NAME key is presented in the UID. </br>
+     * */
+    private String getIndexColumnNameFromIndexUid( String indexUid ) {
+
+        String[] tokens = indexUid.split(", ");
+        if (tokens != null) {
+            for (String token : tokens) {
+                if (token == null) {
+                    continue;
+                }
+                if (token.contains("column_name") || token.contains("COLUMN_NAME")) {
+                    return token.split("=")[1];
+                }
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -438,7 +476,8 @@ public class TableDescription {
      * @param thatIndex full string representation of an table index from the second snapshot
      * @return <strong>true</strong> if indexes are the same, <strong>false</strong> otherwise
      * */
-    private boolean checkIndexesByAttributes( Properties thisIndexProps, Properties thatIndexProps ) {
+    private boolean checkIndexesByAttributes( Properties thisIndexProps, String thisIndexUid, Properties thatIndexProps,
+                                              String thatIndexUid ) {
 
         try {
 
@@ -457,12 +496,16 @@ public class TableDescription {
                 thisIndexColumnName = thisIndexProps.getProperty("COLUMN_NAME");
             } else if (thisIndexProps.containsKey("column_name")) {
                 thisIndexColumnName = thisIndexProps.getProperty("column_name");
+            } else {
+                thisIndexColumnName = getIndexColumnNameFromIndexUid(thisIndexUid);
             }
 
             if (thatIndexProps.containsKey("COLUMN_NAME")) {
                 thatIndexColumnName = thatIndexProps.getProperty("COLUMN_NAME");
             } else if (thatIndexProps.containsKey("column_name")) {
                 thatIndexColumnName = thatIndexProps.getProperty("column_name");
+            } else {
+                thatIndexColumnName = getIndexColumnNameFromIndexUid(thatIndexUid);
             }
 
             if (thisIndexColumnName
