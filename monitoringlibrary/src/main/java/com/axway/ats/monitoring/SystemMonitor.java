@@ -762,6 +762,14 @@ public class SystemMonitor {
 
         }
 
+        String errorMsg = performMonitoringOperation(monitoredHost,
+                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
+                                                     RestHelper.JOIN_TESTCASE_RELATIVE_URI,
+                                                     "There were errors while joining testcase",
+                                                     new Object[]{ null,
+                                                                   testCaseState.getRunId(),
+                                                                   testCaseState.getTestcaseId() });
+        
         boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
                                                                                      true);
         if (configureAgentExplicitely) {
@@ -773,14 +781,7 @@ public class SystemMonitor {
                                               + "'", e);
             }
         }
-
-        String errorMsg = performMonitoringOperation(monitoredHost,
-                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                                     RestHelper.JOIN_TESTCASE_RELATIVE_URI,
-                                                     "There were errors while joining testcase",
-                                                     new Object[]{ null,
-                                                                   testCaseState.getRunId(),
-                                                                   testCaseState.getTestcaseId() });
+        
         if (!StringUtils.isNullOrEmpty(errorMsg)) {
             throw new MonitoringException(errorMsg);
         }
