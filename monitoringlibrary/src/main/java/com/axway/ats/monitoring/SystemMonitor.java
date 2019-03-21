@@ -611,7 +611,7 @@ public class SystemMonitor {
                 log.error("The following error occured while stating the system monitoring process: "
                           + errorMessage);
             }
-            throw new MonitoringException("There were error starting the system monitoring process");
+            throw new MonitoringException("There were error starting the system monitoring process. Check previous error(s) logged");
         }
 
         isStarted = true;
@@ -768,7 +768,8 @@ public class SystemMonitor {
                                                      "There were errors while joining testcase",
                                                      new Object[]{ null,
                                                                    testCaseState.getRunId(),
-                                                                   testCaseState.getTestcaseId() });
+                                                                   testCaseState.getTestcaseId(),
+                                                                   testCaseState.getLastExecutedTestcaseId()});
         
         boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
                                                                                      true);

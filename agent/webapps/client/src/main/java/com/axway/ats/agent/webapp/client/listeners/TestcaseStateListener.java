@@ -174,6 +174,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             TestCaseState wsTestCaseState = new TestCaseState();
             wsTestCaseState.setTestcaseId(testCaseState.getTestcaseId());
             wsTestCaseState.setRunId(testCaseState.getRunId());
+            wsTestCaseState.setLastExecutedTestcaseId(testCaseState.getLastExecutedTestcaseId());
             return wsTestCaseState;
         }
     }

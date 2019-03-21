@@ -19,15 +19,19 @@ public class JoinTestcasePojo extends BasePojo {
 
     private int runId;
     private int testcaseId;
+    private int lastExecutedTestcaseId;
 
     public JoinTestcasePojo() {
 
     }
 
     public JoinTestcasePojo( int runId,
-                             int testcaseId ) {
+                             int testcaseId,
+                             int lastExecutedTestcaseId ) {
+
         this.runId = runId;
         this.testcaseId = testcaseId;
+        this.lastExecutedTestcaseId = lastExecutedTestcaseId;
     }
 
     public int getRunId() {
@@ -50,6 +54,16 @@ public class JoinTestcasePojo extends BasePojo {
                                int testcaseId ) {
 
         this.testcaseId = testcaseId;
+    }
+
+    public int getLastExecutedTestcaseId() {
+
+        return lastExecutedTestcaseId;
+    }
+
+    public void setLastExecutedTestcaseId( int lastExecutedTestcaseId ) {
+
+        this.lastExecutedTestcaseId = lastExecutedTestcaseId;
     }
 
 }

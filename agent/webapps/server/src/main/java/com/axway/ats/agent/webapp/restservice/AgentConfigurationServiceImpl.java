@@ -189,6 +189,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             TestCaseState newTestCaseState = new TestCaseState();
             newTestCaseState.setRunId(testCaseStatePojo.getRunId());
             newTestCaseState.setTestcaseId(testCaseStatePojo.getTestcaseId());
+            newTestCaseState.setLastExecutedTestcaseId(testCaseStatePojo.getLastExecutedTestcaseId());
 
             // get the current state on the agent
             TestCaseState currentState = dbLog.getCurrentTestCaseState();
@@ -222,11 +223,16 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                 restSystemMonitor = new RestSystemMonitor();
                 sd.setSystemMonitor(restSystemMonitor);
                 dbLog.joinTestCase(newTestCaseState);
+                
+                logClassPath(newTestCaseState);
+
+                return Response.ok("{\"status\": \"testcase joined.\"}").build();
+            } else {
+                
+                return Response.ok("{\"status\": \"testcase already joined.\"}").build();
             }
 
-            logClassPath(newTestCaseState);
-
-            return Response.ok("{\"status\": \"testcase joined.\"}").build();
+            
         } catch (Exception e) {
             return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {

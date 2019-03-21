@@ -62,7 +62,8 @@ public class JsonMonitoringUtils {
 
     public static final String[] JOIN_TESTCASE_KEYS                      = new String[]{ "uid",
                                                                                          "runId",
-                                                                                         "testcaseId" };
+                                                                                         "testcaseId",
+                                                                                         "lastExecutedTestcaseId" };
 
     public static final String[] SCHEDULE_SYSTEM_MONITORING_KEYS         = new String[]{ "uid", "readings" };
 
