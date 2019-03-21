@@ -83,6 +83,11 @@ public class AtsSystemProperties {
      * */
     public static final String  MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
 
+    /**
+     * Toggle whether to log all of the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
+     * */
+    public static final String  SYSTEM_MONITOR_VERBOSE_MODE                                       = "ats.system.monitor.verbose.mode";
+
     /*
      * Following are system properties which are not supposed to be changed
      * during the VM lifetime, so we do not need to read them more than once.

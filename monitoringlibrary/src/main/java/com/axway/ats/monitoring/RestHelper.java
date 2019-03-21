@@ -211,8 +211,13 @@ public class RestHelper {
 
         // create RestClient instance
         this.restClient = new RestClient("http://" + atsAgentIp + baseRestUri + relativeRestUri);
-        // disable any logging (both REST headers and body)
-        this.restClient.setVerboseMode(RESTDebugLevel.NONE);
+        if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.SYSTEM_MONITOR_VERBOSE_MODE, false)) {
+            // enable all logging (both REST headers and body)
+            this.restClient.setVerboseMode(RESTDebugLevel.ALL);
+        } else {
+            // disable any logging (both REST headers and body)
+            this.restClient.setVerboseMode(RESTDebugLevel.NONE);
+        }
         this.restClient.setRequestMediaType(RestMediaType.APPLICATION_JSON);
         this.restClient.setResponseMediaType(RestMediaType.APPLICATION_JSON);
         // set ATS_UID header
