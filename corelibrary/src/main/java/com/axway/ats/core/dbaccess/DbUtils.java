@@ -133,9 +133,9 @@ public class DbUtils {
      * @param dbName the database name
      * @param dbUser the database user name used for login
      * @param dbPassword the database password used for login
-     * @return true if MSSQL database is available
+     * @return null if MSSQL database is available, and an Exception if MSSQL database is NOT available
      * */
-    public static boolean isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser, String dbPassword ) {
+    public static Exception isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser, String dbPassword ) {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
@@ -153,9 +153,9 @@ public class DbUtils {
                 throw new Exception("Could not fetch the database version from MSSQL database using URL '"
                                     + sqlServerConnection.getURL() + "'");
             }
-            return true;
+            return null;
         } catch (Exception e) {
-            return false;
+            return e;
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);
@@ -169,9 +169,9 @@ public class DbUtils {
     * @param dbName the database name
     * @param dbUser the database user name used for login
     * @param dbPassword the database password used for login
-    * @return true if PostgreSQL database is available
+    * @return null if PostgreSQL database is available, and an Exception if PostgreSQL database is NOT available
     * */
-    public static boolean isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
+    public static Exception isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
                                                          String dbPassword ) {
 
         Connection sqlConnection = null;
@@ -190,9 +190,9 @@ public class DbUtils {
                 throw new Exception("Could not fetch the database version from PostgreSQL database using URL '"
                                     + postgreConnection.getURL() + "'");
             }
-            return true;
+            return null;
         } catch (Exception e) {
-            return false;
+            return e;
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);

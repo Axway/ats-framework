@@ -46,11 +46,12 @@ public class DbAccessFactory {
         }
 
         DbConnection dbConnection = null;
-        if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getHost(),
-                                             Integer.parseInt(loggingAppender.getPort()),
-                                             loggingAppender.getDatabase(),
-                                             loggingAppender.getUser(),
-                                             loggingAppender.getPassword())) {
+        Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getHost(),
+                                                                    Integer.parseInt(loggingAppender.getPort()),
+                                                                    loggingAppender.getDatabase(),
+                                                                    loggingAppender.getUser(),
+                                                                    loggingAppender.getPassword());
+        if (mssqlException == null) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
@@ -62,28 +63,33 @@ public class DbAccessFactory {
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
 
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getHost(),
-                                                         Integer.parseInt(loggingAppender.getPort()),
-                                                         loggingAppender.getDatabase(),
-                                                         loggingAppender.getUser(),
-                                                         loggingAppender.getPassword())) {
-
-            // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
-                                                Integer.parseInt(loggingAppender.getPort()),
-                                                loggingAppender.getDatabase(),
-                                                loggingAppender.getUser(),
-                                                loggingAppender.getPassword(), null);
-
-            // Create the database access layer
-            return new PGDbWriteAccess(dbConnection, false);
-
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getHost() +
-                            "' has database with name '" + loggingAppender.getDatabase() + "'";
-            throw new DatabaseAccessException(errMsg);
+            Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getHost(),
+                                                                             Integer.parseInt(loggingAppender.getPort()),
+                                                                             loggingAppender.getDatabase(),
+                                                                             loggingAppender.getUser(),
+                                                                             loggingAppender.getPassword());
+            if (pgsqlException == null) {
+                // Create DB connection based on the log4j system settings
+                dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
+                                                    Integer.parseInt(loggingAppender.getPort()),
+                                                    loggingAppender.getDatabase(),
+                                                    loggingAppender.getUser(),
+                                                    loggingAppender.getPassword(), null);
 
+                // Create the database access layer
+                return new PGDbWriteAccess(dbConnection, false);
+            } else {
+                String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getHost() + ":"
+                                + loggingAppender.getPort() +
+                                "' has database with name '" + loggingAppender.getDatabase()
+                                + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                + "\n\nException for PostgreSQL is: \n\t"
+                                + pgsqlException;
+                throw new DatabaseAccessException(errMsg);
+            }
         }
+
     }
 
     /**
@@ -107,11 +113,13 @@ public class DbAccessFactory {
         }
 
         DbConnection dbConnection = null;
-        if (DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
-                                             Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                             loggingAppender.getAppenderConfig().getDatabase(),
-                                             loggingAppender.getAppenderConfig().getUser(),
-                                             loggingAppender.getAppenderConfig().getPassword())) {
+        Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
+                                                                    Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                                    .getPort()),
+                                                                    loggingAppender.getAppenderConfig().getDatabase(),
+                                                                    loggingAppender.getAppenderConfig().getUser(),
+                                                                    loggingAppender.getAppenderConfig().getPassword());
+        if (mssqlException == null) {
 
             // Create DB connection based on the log4j system settings
             dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
@@ -123,28 +131,37 @@ public class DbAccessFactory {
             // Create the database access layer
             return new SQLServerDbWriteAccess(dbConnection, false);
 
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getAppenderConfig().getHost(),
-                                                         Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                                         loggingAppender.getAppenderConfig().getDatabase(),
-                                                         loggingAppender.getAppenderConfig().getUser(),
-                                                         loggingAppender.getAppenderConfig().getPassword())) {
-
-            // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
-                                                Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                                loggingAppender.getAppenderConfig().getDatabase(),
-                                                loggingAppender.getAppenderConfig().getUser(),
-                                                loggingAppender.getAppenderConfig().getPassword(), null);
-
-            // Create the database access layer
-            return new PGDbWriteAccess(dbConnection, false);
-
         } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getAppenderConfig().getHost()
-                            +
-                            "' has database with name '" + loggingAppender.getAppenderConfig().getDatabase() + "'";
-            throw new DatabaseAccessException(errMsg);
+            Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getAppenderConfig()
+                                                                                            .getHost(),
+                                                                             Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                                             .getPort()),
+                                                                             loggingAppender.getAppenderConfig()
+                                                                                            .getDatabase(),
+                                                                             loggingAppender.getAppenderConfig()
+                                                                                            .getUser(),
+                                                                             loggingAppender.getAppenderConfig()
+                                                                                            .getPassword());
+            if (pgsqlException == null) {
+                // Create DB connection based on the log4j system settings
+                dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
+                                                    Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
+                                                    loggingAppender.getAppenderConfig().getDatabase(),
+                                                    loggingAppender.getAppenderConfig().getUser(),
+                                                    loggingAppender.getAppenderConfig().getPassword(), null);
 
+                // Create the database access layer
+                return new PGDbWriteAccess(dbConnection, false);
+            } else {
+                String errMsg = "Neither MSSQL, nor PostgreSQL server at '"
+                                + loggingAppender.getAppenderConfig().getHost() +
+                                "' has database with name '" + loggingAppender.getAppenderConfig().getHost() + ":"
+                                + loggingAppender.getAppenderConfig().getPort()
+                                + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                + "\n\nException for PostgreSQL is: \n\t"
+                                + pgsqlException;
+                throw new DatabaseAccessException(errMsg);
+            }
         }
 
     }

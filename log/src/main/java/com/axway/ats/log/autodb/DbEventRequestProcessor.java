@@ -198,11 +198,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         this.appenderConfig = appenderConfig;
         this.isBatchMode = isBatchMode;
 
-        if (DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
-                                             Integer.parseInt(appenderConfig.getPort()),
-                                             appenderConfig.getDatabase(),
-                                             appenderConfig.getUser(),
-                                             appenderConfig.getPassword())) {
+        Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                                    Integer.parseInt(appenderConfig.getPort()),
+                                                                    appenderConfig.getDatabase(),
+                                                                    appenderConfig.getUser(),
+                                                                    appenderConfig.getPassword());
+        if (mssqlException == null) {
 
             this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
                                                     Integer.parseInt(appenderConfig.getPort()),
@@ -212,27 +213,31 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             //create the db access layer
             this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
 
-        } else if (DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+        } else {
+            Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                                             Integer.parseInt(appenderConfig.getPort()),
+                                                                             appenderConfig.getDatabase(),
+                                                                             appenderConfig.getUser(),
+                                                                             appenderConfig.getPassword());
+
+            if (pgsqlException == null) {
+                this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
                                                          Integer.parseInt(appenderConfig.getPort()),
                                                          appenderConfig.getDatabase(),
-                                                         appenderConfig.getUser(),
-                                                         appenderConfig.getPassword())) {
+                                                         appenderConfig.getUser(), appenderConfig.getPassword(), null);
 
-            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
-                                                     Integer.parseInt(appenderConfig.getPort()),
-                                                     appenderConfig.getDatabase(),
-                                                     appenderConfig.getUser(), appenderConfig.getPassword(), null);
+                //create the db access layer
+                this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
+            } else {
+                String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                                + appenderConfig.getPort() +
+                                "' has database with name '" + appenderConfig.getDatabase()
+                                + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                + "\n\nException for PostgreSQL is: \n\t"
+                                + pgsqlException;
+                throw new DatabaseAccessException(errMsg);
+            }
 
-            //create the db access layer
-            this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
-
-        } else {
-            String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
-                            + (!StringUtils.isNullOrEmpty(appenderConfig.getPort())
-                                                                                    ? appenderConfig.getPort()
-                                                                                    : "")
-                            + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
-            throw new DatabaseAccessException(errMsg);
         }
 
         this.eventProcessorState = new EventProcessorState();
