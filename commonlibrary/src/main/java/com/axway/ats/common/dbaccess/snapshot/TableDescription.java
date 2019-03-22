@@ -292,6 +292,10 @@ public class TableDescription {
                     thisIndexColumnName = thisIndexProperties.getProperty("column_name");
                     if (thisIndexColumnName == null) {
                         thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                        if (thisIndexColumnName == null) {
+                            // log warning
+                            logMissingColumnNameWarning(thisName);
+                        }
                     }
                 }
 
@@ -300,6 +304,10 @@ public class TableDescription {
                     thatIndexColumnName = thatIndexProperties.getProperty("column_name");
                     if (thatIndexColumnName == null) {
                         thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                        if (thatIndexColumnName == null) {
+                            // log warning
+                            logMissingColumnNameWarning(thatName);
+                        }
                     }
                 }
 
@@ -368,6 +376,10 @@ public class TableDescription {
                     thisIndexColumnName = thisIndexProperties.getProperty("column_name");
                     if (thisIndexColumnName == null) {
                         thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                        if (thisIndexColumnName == null) {
+                            // log warning
+                            logMissingColumnNameWarning(thisName);
+                        }
                     }
                 }
 
@@ -376,11 +388,17 @@ public class TableDescription {
                     thatIndexColumnName = thatIndexProperties.getProperty("column_name");
                     if (thatIndexColumnName == null) {
                         thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                        if (thatIndexColumnName == null) {
+                            // log warning
+                            logMissingColumnNameWarning(thatName);
+                        }
                     }
                 }
 
-                if (!thisIndexColumnName.equals(thatIndexColumnName)) {
-                    continue;
+                if (thisIndexColumnName != null && thatIndexColumnName != null) {
+                    if (!thisIndexColumnName.equals(thatIndexColumnName)) {
+                        continue;
+                    }
                 }
 
                 String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
@@ -428,6 +446,13 @@ public class TableDescription {
                 }
             }
         }
+    }
+
+    private void logMissingColumnNameWarning( String indexName ) {
+
+        log.warn("ATS was not able to obtain the column name for index '" + indexName
+                 + "'. Comparison will proceed, but be carefull that you will be comparing indexes that maybe are over different columns.");
+
     }
 
     /**
@@ -508,23 +533,32 @@ public class TableDescription {
                 thatIndexColumnName = getIndexColumnNameFromIndexUid(thatIndexUid);
             }
 
-            if (thisIndexColumnName
-                                   .equals(thatIndexColumnName)) {
-                StringWriter sw1 = new StringWriter();
-                thisIndexProps.list(new PrintWriter(sw1));
-
-                StringWriter sw2 = new StringWriter();
-                thatIndexProps.list(new PrintWriter(sw2));
-
-                return sw1.toString().equals(sw2.toString());
+            if (thisIndexColumnName != null && thatIndexColumnName != null) {
+                if (thisIndexColumnName
+                                       .equals(thatIndexColumnName)) {
+                    return compareIndexProperties(thisIndexProps, thatIndexProps);
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                return compareIndexProperties(thisIndexProps, thatIndexProps);
             }
 
         } catch (Exception e) {
             log.error("Error while comparing db table indexes", e);
             return false;
         }
+    }
+
+    private boolean compareIndexProperties( Properties thisIndexProps, Properties thatIndexProps ) {
+
+        StringWriter sw1 = new StringWriter();
+        thisIndexProps.list(new PrintWriter(sw1));
+
+        StringWriter sw2 = new StringWriter();
+        thatIndexProps.list(new PrintWriter(sw2));
+
+        return sw1.toString().equals(sw2.toString());
     }
 
     @Override
