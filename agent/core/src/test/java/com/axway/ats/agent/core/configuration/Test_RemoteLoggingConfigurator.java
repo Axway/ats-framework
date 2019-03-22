@@ -108,7 +108,7 @@ public class Test_RemoteLoggingConfigurator {
         } catch (Exception e) {
             if (!e.getCause()
                   .getMessage()
-                  .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'.")) {
+                  .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.")) {
                 // an exception was caught, but its cause is not the expected one
                 // re-throw the exception
                 throw e;
@@ -177,7 +177,7 @@ public class Test_RemoteLoggingConfigurator {
         } catch (Exception e) {
             if (!e.getCause()
                   .getMessage()
-                  .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'.")) {
+                  .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.")) {
                 // an exception was caught, but its cause is not the expected one
                 // re-throw the exception
                 throw e;
