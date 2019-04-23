@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.glassfish.jersey.client.spi.ConnectorProvider;
+
 import com.axway.ats.common.PublicAtsApi;
 
 /**
@@ -37,6 +39,16 @@ public class RestClientConfigurator {
     private String              certPassword;
 
     /**
+     * Provide third-party {@link ConnectorProvider}, like ApacheConnector, etc
+     * */
+    private ConnectorProvider   connectorProvider;
+    /**
+     * Additional properties for configuring the  {@link ConnectorProvider} </br>
+     * If there is no connector provider, those properties will not be applied.
+     * */
+    private Map<String, Object> connectorProviderProperties;
+
+    /**
      * Basic constructor
      */
     @PublicAtsApi
@@ -45,6 +57,7 @@ public class RestClientConfigurator {
         providers = new ArrayList<Object>();
         providerClasses = new ArrayList<Class<?>>();
         properties = new HashMap<String, Object>();
+        connectorProviderProperties = new HashMap<String, Object>();
     }
 
     /**
@@ -117,6 +130,22 @@ public class RestClientConfigurator {
         properties.put(name, value);
     }
 
+    /**
+     * Register third-party {@link ConnectorProvider}, like ApacheConnector, etc, along with (optional) configuration properties for the provider
+     * @param connectorProvider - the connection provider
+     * @param properties - optional configuration properties for the connection provider
+     **/
+    @PublicAtsApi
+    public void registerConnectorProvider( ConnectorProvider connectorProvider,
+                                           Map<String, Object> properties ) {
+
+        this.connectorProvider = connectorProvider;
+        if (properties != null) {
+            this.connectorProviderProperties.putAll(properties);
+        }
+
+    }
+
     RestClientConfigurator newCopy() {
 
         RestClientConfigurator newConfigurator = new RestClientConfigurator();
@@ -140,6 +169,11 @@ public class RestClientConfigurator {
             newConfigurator.properties.put(propEntry.getKey(), propEntry.getValue());
         }
 
+        newConfigurator.connectorProvider = this.connectorProvider;
+        if (this.connectorProviderProperties != null) {
+            newConfigurator.connectorProviderProperties.putAll(this.connectorProviderProperties);
+        }
+
         return newConfigurator;
     }
 
@@ -156,5 +190,15 @@ public class RestClientConfigurator {
     Map<String, Object> getProperties() {
 
         return properties;
+    }
+
+    Map<String, Object> getConnectorProviderProperties() {
+
+        return connectorProviderProperties;
+    }
+
+    ConnectorProvider getConnectorProvider() {
+
+        return connectorProvider;
     }
 }

@@ -42,7 +42,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 
@@ -100,17 +102,19 @@ public class RestClient {
         public static final int ALL        = HEADERS | BODY;
     }
 
-    private int                        debugLevel                     = RESTDebugLevel.TARGET_URI;
+    private static final String        APACHE_CONNECTOR_CLASSNAME      = "org.glassfish.jersey.apache.connector.ApacheConnectorProvider";
 
-    private static final Logger        log                            = Logger.getLogger(RestClient.class);
+    private int                        debugLevel                      = RESTDebugLevel.TARGET_URI;
+
+    private static final Logger        log                             = Logger.getLogger(RestClient.class);
 
     private Client                     client;
 
     private String                     uri;
-    private List<String>               resourcePath                   = new ArrayList<String>();
-    private Map<String, List<Object>>  requestHeaders                 = new HashMap<String, List<Object>>();
+    private List<String>               resourcePath                    = new ArrayList<String>();
+    private Map<String, List<Object>>  requestHeaders                  = new HashMap<String, List<Object>>();
 
-    private Map<String, List<String>>  requestParameters              = new HashMap<String, List<String>>();
+    private Map<String, List<String>>  requestParameters               = new HashMap<String, List<String>>();
 
     private String                     requestMediaType;
     private String                     requestMediaCharset;
@@ -118,19 +122,23 @@ public class RestClient {
     private String                     responseMediaType;
     private String                     responseMediaCharset;
 
-    private List<Cookie>               cookies                        = new ArrayList<Cookie>();
+    private List<Cookie>               cookies                         = new ArrayList<Cookie>();
 
     // Basic authorization info
     private String                     username;
     private String                     password;
 
-    private String[]                   supportedProtocols             = new String[]{ "TLSv1.2" };
+    private String[]                   supportedProtocols              = new String[]{ "TLSv1.2" };
 
-    private RestClientConfigurator     clientConfigurator             = new RestClientConfigurator();
+    private RestClientConfigurator     clientConfigurator              = new RestClientConfigurator();
 
-    private boolean                    requestFilterNeedsRegistration = false;
+    private boolean                    requestFilterNeedsRegistration  = false;
 
-    private boolean                    requestFilterAlreadyRegistered = false;
+    private boolean                    requestFilterAlreadyRegistered  = false;
+
+    private static boolean             verbosityLevelMessageLogged     = false;
+
+    private static boolean             bodyOnlyDebugLevelMessageLogged = false;
 
     /**
      * There is a memory leak in the way Jersey uses HK2's PerThreadContext class
@@ -152,10 +160,10 @@ public class RestClient {
      *
      *  FIXME: remove this code when the fix is available
      */
-    private static Map<String, Client> clients                        = new HashMap<String, Client>();
+    private static Map<String, Client> clients                         = new HashMap<String, Client>();
 
     /* Used to remove JerseyClient instance from map, when disconnect() is invoked */
-    private String                     finalClientIdKey               = null;
+    private String                     finalClientIdKey                = null;
 
     /**
      * Constructor not specifying the target URI.
@@ -255,6 +263,8 @@ public class RestClient {
         }
 
         newClient.supportedProtocols = this.supportedProtocols;
+
+        newClient.debugLevel = this.debugLevel;
 
         return newClient;
     }
@@ -1035,6 +1045,64 @@ public class RestClient {
 
         // create the client builder
         ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        if (this.clientConfigurator.getConnectorProvider() != null) {
+
+            // add provider to the unique client ID keys
+            clientIdKeys.add("provider=" + this.clientConfigurator.getConnectorProvider().getClass().getSimpleName());
+
+            // register ConnectorProvider and apply any configuration for it
+            ClientConfig clientConfig = new ClientConfig();
+            clientConfig.connectorProvider(clientConfigurator.getConnectorProvider());
+            Map<String, Object> connectorProviderProperties = this.clientConfigurator.getConnectorProviderProperties();
+            if (connectorProviderProperties != null
+                && !connectorProviderProperties.isEmpty()) {
+                for (Entry<String, Object> propEntry : connectorProviderProperties.entrySet()) {
+                    clientConfig.property(propEntry.getKey(), propEntry.getValue());
+                }
+            }
+            try {
+                Class<?> clss = Class.forName(APACHE_CONNECTOR_CLASSNAME);
+                if (clss != null
+                    && this.clientConfigurator.getConnectorProvider().getClass().getName().equals(clss.getName())) {
+
+                    Logger headersLogger = Logger.getLogger("org.apache.http.headers");
+                    Logger wireLogger = Logger.getLogger("org.apache.http.wire");
+
+                    if (headersLogger.isDebugEnabled() || wireLogger.isDebugEnabled()) {
+                        if (!verbosityLevelMessageLogged) {
+                            verbosityLevelMessageLogged = true;
+                            log.info("Rest client's verbose mode will not be applied because "
+                                     + "either 'org.apache.http.headers' or 'org.apache.http.wire.content' Log4J logger is set to DEBUG or greather log level");
+                        }
+                    } else {
+                        if ( (this.debugLevel & RESTDebugLevel.ALL) == RESTDebugLevel.ALL) {
+                            headersLogger.setLevel(Level.OFF); // should we disable this , due to wire logger logging headers as well?
+                            wireLogger.setLevel(Level.DEBUG);
+                        } else if ( (this.debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY) {
+                            headersLogger.setLevel(Level.OFF);
+                            wireLogger.setLevel(Level.OFF);
+                            if (!bodyOnlyDebugLevelMessageLogged) {
+                                bodyOnlyDebugLevelMessageLogged = true;
+                                log.info("Debug level is set to BODY only. "
+                                         + "Both 'org.apache.http.headers' and 'org.apache.http.wire.content' Log4J loggers will be disabled.");
+                            }
+
+                        } else if ( (this.debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
+                            headersLogger.setLevel(Level.DEBUG);
+                            wireLogger.setLevel(Level.OFF);
+                        } else if ( (this.debugLevel & RESTDebugLevel.TARGET_URI) == RESTDebugLevel.TARGET_URI) {
+                            headersLogger.setLevel(Level.OFF);
+                            wireLogger.setLevel(Level.OFF);
+                        } else if ( (this.debugLevel & RESTDebugLevel.NONE) == RESTDebugLevel.NONE) {
+                            headersLogger.setLevel(Level.OFF);
+                            wireLogger.setLevel(Level.OFF);
+                        }
+                    }
+
+                }
+            } catch (Exception e) {}
+            clientBuilder = clientBuilder.withConfig(clientConfig);
+        }
 
         if (this.uri.startsWith("https")) {
             // configure Trust-all SSL context
@@ -1076,15 +1144,17 @@ public class RestClient {
                     // set our value
                     log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
                     clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                    suppressHttpComplianceValidation);
-                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppressHttpComplianceValidation);
+                                           suppressHttpComplianceValidation);
+                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "="
+                                     + suppressHttpComplianceValidation);
                 }
             } else { // user provided value not found
                 // set our value
                 log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
                 clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                suppressHttpComplianceValidation);
-                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppressHttpComplianceValidation);
+                                       suppressHttpComplianceValidation);
+                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "="
+                                 + suppressHttpComplianceValidation);
             }
         }
 
@@ -1182,8 +1252,9 @@ public class RestClient {
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
                 responseMessage.append("Body: "
-                                       + response.getBodyAsString().substring(0,
-                                                                              RestResponse.MAX_RESPONSE_SIZE)
+                                       + response.getBodyAsString()
+                                                 .substring(0,
+                                                            RestResponse.MAX_RESPONSE_SIZE)
                                        + "... [Response body truncated.]" + "\n");
             }
         }
