@@ -115,6 +115,11 @@ public enum LoggingEventType {
     DELETE_TEST_CASE,
 
     /**
+     * Add testcase meta info
+     */
+    ADD_TESTCASE_METAINFO,
+
+    /**
      * Get the state of the current test case (label and type)
      */
     GET_CURRENT_TEST_CASE_STATE,

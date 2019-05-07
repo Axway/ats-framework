@@ -47,6 +47,7 @@ import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
 import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.AddTestcaseMetainfoEvent;
 import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
 import com.axway.ats.log.autodb.events.EndCheckpointEvent;
 import com.axway.ats.log.autodb.events.EndLoadQueueEvent;
@@ -340,6 +341,40 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                      * */
                     return;
                 }
+            } else if (dbAppenderEvent instanceof AddTestcaseMetainfoEvent) {
+                try {
+                    dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
+                } catch (Exception e) {
+                    AddTestcaseMetainfoEvent atmie = ((AddTestcaseMetainfoEvent) dbAppenderEvent);
+                    boolean throwException = false;
+                    if (atmie.getTestcaseId() == -1) {
+
+                        if (eventProcessorState.getTestCaseId() == -1
+                            && eventProcessorState.getLastExecutedTestCaseId() == -1) {
+
+                            // No testcase was either running or previously finished.
+                            // ATS needs to throw an Exception
+
+                            throwException = true;
+                        }
+
+                    } else {
+                        // Testcase ID was specified with the event, but still an error occurred. ATS needs to throw an Exception
+                        throwException = true;
+                    }
+
+                    if (throwException) {
+
+                        log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
+                                  + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
+                                  "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
+                                  + this.getSuiteId() + ",\n\tTESTCASE ID: "
+                                  + this.getTestCaseId());
+
+                        throw e;
+
+                    }
+                }
             } else {
                 //first check if we can process the event at all
                 try {
@@ -430,6 +465,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     break;
                 case LEAVE_TEST_CASE:
                     leaveTestCase();
+                    break;
+                case ADD_TESTCASE_METAINFO:
+                    addTestcaseMetainfo((AddTestcaseMetainfoEvent) event);
                     break;
                 case START_AFTER_METHOD:
                     afterMethodMode = true;
@@ -628,6 +666,28 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         dbAccess.addScenarioMetainfo(eventProcessorState.getTestCaseId(),
                                      addScenarioMetainfoEvent.getMetaKey(),
                                      addScenarioMetainfoEvent.getMetaValue(), true);
+    }
+
+    private void
+            addTestcaseMetainfo( AddTestcaseMetainfoEvent addTestcaseMetainfoEvent ) throws DatabaseAccessException {
+
+        if (addTestcaseMetainfoEvent.getTestcaseId() != -1) {
+            dbAccess.addTestcaseMetainfo(addTestcaseMetainfoEvent.getTestcaseId(),
+                                         addTestcaseMetainfoEvent.getMetaKey(),
+                                         addTestcaseMetainfoEvent.getMetaValue(), true);
+        } else {
+            if (afterMethodMode) {
+                dbAccess.addTestcaseMetainfo(eventProcessorState.getLastExecutedTestCaseId(),
+                                             addTestcaseMetainfoEvent.getMetaKey(),
+                                             addTestcaseMetainfoEvent.getMetaValue(), true);
+            } else {
+                dbAccess.addTestcaseMetainfo(eventProcessorState.getTestCaseId(),
+                                             addTestcaseMetainfoEvent.getMetaKey(),
+                                             addTestcaseMetainfoEvent.getMetaValue(), true);
+            }
+
+        }
+
     }
 
     private void startTestCase( StartTestCaseEvent startTestCaseEvent,

@@ -32,6 +32,7 @@ import com.axway.ats.log.autodb.entities.Statistic;
 import com.axway.ats.log.autodb.entities.StatisticDescription;
 import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.autodb.entities.Testcase;
+import com.axway.ats.log.autodb.entities.TestcaseMetainfo;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public interface IDbReadAccess {
@@ -170,5 +171,7 @@ public interface IDbReadAccess {
     public List<RunMetaInfo> getRunMetaInfo( int runId ) throws DatabaseAccessException;
 
     public List<ScenarioMetaInfo> getScenarioMetaInfo( int scenarioId ) throws DatabaseAccessException;
+
+    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId ) throws DatabaseAccessException;
 
 }

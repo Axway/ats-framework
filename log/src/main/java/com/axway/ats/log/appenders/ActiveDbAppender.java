@@ -23,15 +23,23 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.core.dbaccess.DbConnection;
+import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.LogEventRequest;
+import com.axway.ats.log.autodb.PGDbReadAccess;
+import com.axway.ats.log.autodb.SQLServerDbReadAccess;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
+import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
  * This appender is capable of arranging the database storage and storing messages into it.
@@ -57,11 +65,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
      * We use this mutex for synchronization aid. 
      */
     private Object                  listenerMutex                            = new Object();
-    
-    public static final String DUMMY_DB_HOST = "ATS_NO_DB_HOST_SET";
-    public static final String DUMMY_DB_DATABASE = "ATS_NO_DB_NAME_SET";
-    public static final String DUMMY_DB_USER = "ATS_NO_DB_USER_SET";
-    public static final String DUMMY_DB_PASSWORD = "ATS_NO_DB_PASSWORD_SET";
+
+    public static final String      DUMMY_DB_HOST                            = "ATS_NO_DB_HOST_SET";
+    public static final String      DUMMY_DB_DATABASE                        = "ATS_NO_DB_NAME_SET";
+    public static final String      DUMMY_DB_USER                            = "ATS_NO_DB_USER_SET";
+    public static final String      DUMMY_DB_PASSWORD                        = "ATS_NO_DB_PASSWORD_SET";
+
+    private static IDbReadAccess    dbReadAccess;
 
     /**
      * Constructor
@@ -69,7 +79,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public ActiveDbAppender() {
 
         super();
-        
+
         /** create dummy appender configuration 
          *  This configuration will be replaced with one from log4j.xml file
          * */
@@ -77,18 +87,19 @@ public class ActiveDbAppender extends AbstractDbAppender {
         appenderConfig.setDatabase(DUMMY_DB_DATABASE);
         appenderConfig.setUser(DUMMY_DB_USER);
         appenderConfig.setPassword(DUMMY_DB_PASSWORD);
-        
+
         /**
          * Create dummy event request processor.
          * This processor will be replaced once config from log4j.xml is loaded
          * */
         eventProcessor = new DbEventRequestProcessor();
     }
-    
+
     @Override
-    public void activateOptions(){
+    public void activateOptions() {
+
         super.activateOptions();
-        
+
         /* this flag is changed here, since this is the first place where the Apache log4j package interacts with this class
          */
         isAttached = true;
@@ -235,6 +246,58 @@ public class ActiveDbAppender extends AbstractDbAppender {
     }
 
     /**
+     * Get {@link IDbReadAccess} using the appender's db configuration
+     * @throws DatabaseAccessException 
+     * */
+    public IDbReadAccess obtainDbReadAccessObject() throws DatabaseAccessException {
+
+        DbConnection dbConnection = null;
+        if (dbReadAccess == null) {
+            Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                                        Integer.parseInt(appenderConfig.getPort()),
+                                                                        appenderConfig.getDatabase(),
+                                                                        appenderConfig.getUser(),
+                                                                        appenderConfig.getPassword());
+            if (mssqlException == null) {
+
+                dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
+                                                   Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(),
+                                                   appenderConfig.getUser(), appenderConfig.getPassword(), null);
+
+                //create the db access layer
+                dbReadAccess = new SQLServerDbReadAccess((DbConnSQLServer) dbConnection);
+
+            } else {
+                Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+                                                                                 Integer.parseInt(appenderConfig.getPort()),
+                                                                                 appenderConfig.getDatabase(),
+                                                                                 appenderConfig.getUser(),
+                                                                                 appenderConfig.getPassword());
+
+                if (pgsqlException == null) {
+                    dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
+                                                        Integer.parseInt(appenderConfig.getPort()),
+                                                        appenderConfig.getDatabase(),
+                                                        appenderConfig.getUser(), appenderConfig.getPassword(), null);
+
+                    //create the db access layer
+                    dbReadAccess = new PGDbReadAccess((DbConnPostgreSQL) dbConnection);
+                } else {
+                    String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                                    + appenderConfig.getPort() +
+                                    "' has database with name '" + appenderConfig.getDatabase()
+                                    + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                    + "\n\nException for PostgreSQL is: \n\t"
+                                    + pgsqlException;
+                    throw new DatabaseAccessException(errMsg);
+                }
+            }
+        }
+        return dbReadAccess;
+    }
+
+    /**
      * Here we block the test execution until this event gets executed.
      * If this event fail, we will abort the execution of the tests.
      *
@@ -352,7 +415,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 }
             }
         }
-        
+
         if (instance != null) {
             return instance;
         }
@@ -365,7 +428,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         new AtsConsoleLogger(ActiveDbAppender.class).warn(
                                                           "ATS Database appender is not specified in log4j.xml file. "
                                                           + "Methods such as ActiveDbAppender@getRunId() will not work.");
-        
+
         isAttached = false;
         instance = new ActiveDbAppender();
         return instance;
@@ -393,6 +456,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         private Object listenerMutex;
 
         SimpleEventRequestProcessorListener( Object listenerMutex ) {
+
             this.listenerMutex = listenerMutex;
         }
 

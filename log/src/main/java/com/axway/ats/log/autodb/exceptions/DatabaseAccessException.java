@@ -19,10 +19,14 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
+
 @SuppressWarnings( "serial")
 public class DatabaseAccessException extends LoggingException {
 
-    private static final Logger log = Logger.getLogger(DatabaseAccessException.class);
+    private static final Logger           log        = Logger.getLogger(DatabaseAccessException.class);
+
+    private static final AtsConsoleLogger consoleLog = new AtsConsoleLogger(DatabaseAccessException.class);
 
     public DatabaseAccessException( String message ) {
 
@@ -35,11 +39,21 @@ public class DatabaseAccessException extends LoggingException {
 
         if (cause instanceof java.sql.SQLException) {
 
-            log.error("Got SQL exception while trying to work with ATS logging DB: "
-                      + message);
-            log.error("Printing exception chain: ");
+            consoleLog.error("Got SQL exception while trying to work with ATS logging DB: "
+                             + message);
+            consoleLog.error("Printing exception chain: ");
 
             SQLException next = (SQLException) cause;
+            while (next != null) {
+                next = printStackTrace(next);
+
+            }
+
+            log.error("Got SQL exception while trying to work with ATS logging DB: "
+                             + message);
+            log.error("Printing exception chain: ");
+
+            next = (SQLException) cause;
             while (next != null) {
                 next = printStackTrace(next);
 
@@ -49,10 +63,10 @@ public class DatabaseAccessException extends LoggingException {
 
     private SQLException printStackTrace( SQLException sqle ) {
 
-        log.error("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
-                  + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
+        consoleLog.error("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
+                         + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
         sqle.printStackTrace();
-        log.error("------------------------------------------------");
+        consoleLog.error("------------------------------------------------");
 
         return sqle.getNextException();
     }
