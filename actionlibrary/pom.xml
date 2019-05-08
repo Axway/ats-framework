@@ -154,7 +154,13 @@
             <artifactId>jersey-media-multipart</artifactId>
             <version>${org.glassfish.jersey.jersey-client.version}</version>
             <scope>compile</scope>
-        </dependency>       
+        </dependency>
+        <dependency>
+			<groupId>org.glassfish.jersey.connectors</groupId>
+			<artifactId>jersey-apache-connector</artifactId>
+			<version>${org.glassfish.jersey.jersey-client.version}</version>
+			<optional>true</optional>
+		</dependency>
         <!-- this dependency is required after jersey 2.26 -->
         <!-- https://stackoverflow.com/questions/44088493/jersey-stopped-working-with-injectionmanagerfactory-not-found -->
 		<!-- <dependency>
