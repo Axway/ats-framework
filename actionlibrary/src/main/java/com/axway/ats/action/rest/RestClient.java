@@ -120,6 +120,9 @@ public class RestClient {
 
     private static final String        APACHE_CONNECTOR_CLASSNAME      = "org.glassfish.jersey.apache.connector.ApacheConnectorProvider";
 
+    private static final String        APACHE_HTTP_HEADERS_LOGGER_NAME = "org.apache.http.headers";
+    private static final String        APACHE_HTTP_WIRE_LOGGER_NAME    = "org.apache.http.wire";
+
     private static final Logger        log                             = Logger.getLogger(RestClient.class);
 
     private static boolean             verbosityLevelMessageLogged     = false;
@@ -1061,14 +1064,16 @@ public class RestClient {
             if (isApache) {
 
                 // configure wire logging
-                Logger headersLogger = Logger.getLogger("org.apache.http.headers");
-                Logger wireLogger = Logger.getLogger("org.apache.http.wire");
+                Logger headersLogger = Logger.getLogger(APACHE_HTTP_HEADERS_LOGGER_NAME);
+                Logger wireLogger = Logger.getLogger(APACHE_HTTP_WIRE_LOGGER_NAME);
 
                 if (headersLogger.isDebugEnabled() || wireLogger.isDebugEnabled()) {
                     if (!verbosityLevelMessageLogged) {
                         verbosityLevelMessageLogged = true;
                         log.info("Rest client's verbose mode will not be applied because "
-                                 + "either 'org.apache.http.headers' or 'org.apache.http.wire.content' Log4J logger is set to DEBUG or greater LOG level");
+                                 + "either '" + APACHE_HTTP_HEADERS_LOGGER_NAME + "' or '"
+                                 + APACHE_HTTP_WIRE_LOGGER_NAME
+                                 + "' Log4J logger is set to DEBUG or greater LOG level");
                     }
                 } else {
                     if ( (this.debugLevel & RESTDebugLevel.ALL) == RESTDebugLevel.ALL) {
@@ -1080,7 +1085,8 @@ public class RestClient {
                         if (!bodyOnlyDebugLevelMessageLogged) {
                             bodyOnlyDebugLevelMessageLogged = true;
                             log.info("Debug level is set to BODY only. "
-                                     + "Both 'org.apache.http.headers' and 'org.apache.http.wire.content' Log4J loggers will be disabled.");
+                                     + "Both '" + APACHE_HTTP_HEADERS_LOGGER_NAME + "' and '"
+                                     + APACHE_HTTP_WIRE_LOGGER_NAME + "' Log4J loggers will be disabled.");
                         }
                     } else if ( (this.debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
                         headersLogger.setLevel(Level.DEBUG);
