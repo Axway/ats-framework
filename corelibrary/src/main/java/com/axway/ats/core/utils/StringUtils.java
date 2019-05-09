@@ -31,11 +31,11 @@ public class StringUtils {
     // Max sizes when parsing method's input arguments
     private static final int     METHOD_ARGS__MAX_NUMBER_ELEMENTS = 10;
     private static final int     METHOD_ARGS__MAX_ELEMENT_LENGTH  = 100;
-    
+
     // ASCII codes for some non-printable characters
-    public static final int TAB_CODE = 9;
-    public static final int NL_CODE = 10;
-    public static final int CR_CODE = 13;
+    public static final int      TAB_CODE                         = 9;
+    public static final int      NL_CODE                          = 10;
+    public static final int      CR_CODE                          = 13;
 
     // Command line arguments pattern
     private static final Pattern COMMAND_ARGUMENTS_PATTERN        = Pattern.compile("(?:\\\"[^\\\"]*\\\")|(?:\\'[^\\']*\\')|(?:[^\\s]+)");
@@ -43,28 +43,31 @@ public class StringUtils {
     /**
      * Escapes non-printable characters (ASCII code is < 32)
      * 
-     * @param string the String whom contant will be escaped
+     * @param string the String which will be checked
      * @returns the String with escaped non-printable characters
      */
-    public static String escapeNonPrintableAsciiCharacters(String message) {
-		char[] escapedMessage = message.toCharArray();
-		for (int i = 0; i < escapedMessage.length; i++) {
-			int asciiCode = (int) escapedMessage[i];
-			if (asciiCode < 32) {
-				if (asciiCode != TAB_CODE && asciiCode != NL_CODE && asciiCode != CR_CODE) {
-					message = message.replace(escapedMessage[i] + "",
-							"\\0x" + Integer.toHexString(asciiCode).toUpperCase());
-				}
-			}
-		}
-		return message;
-	}
-    
+    public static String escapeNonPrintableAsciiCharacters( String message ) {
+
+        char[] escapedMessage = message.toCharArray();
+        for (int i = 0; i < escapedMessage.length; i++) {
+            int asciiCode = (int) escapedMessage[i];
+            if (asciiCode < 32) {
+                if (asciiCode != TAB_CODE && asciiCode != NL_CODE && asciiCode != CR_CODE) {
+                    message = message.replace(escapedMessage[i] + "",
+                                              "\\0x" + Integer.toHexString(asciiCode).toUpperCase());
+                }
+            }
+        }
+        return message;
+    }
+
     /**
-     * Tests if a string is null or empty
+     * Tests if a string is null or empty. It does not perform trimming of spaces/whitespace characters.
+     * {@link org.apache.commons.lang3.StringUtils#isBlank(CharSequence)} could be used for trimming. It handles more 
+     * whitespace separators (see its JavaDoc)
      *
-     * @param string
-     * @return if we provided a null or empty string
+     * @param string to be checked
+     * @return true only if null or empty string is provided
      */
     public static boolean isNullOrEmpty( String string ) {
 
