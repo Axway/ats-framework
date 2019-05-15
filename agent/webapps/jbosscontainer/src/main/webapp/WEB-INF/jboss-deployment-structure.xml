@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jboss-deployment-structure>
+   <deployment>
+      <dependencies>
+         <!-- WildFly module which could be used as convenience to contain all dependencies of Action classes.
+             If not needed you may delete this file to prevent deployment error -->
+         <!-- <module name="com.axway.ats.action.dependencies" /> -->
+      </dependencies>
+   </deployment>
+ </jboss-deployment-structure>
