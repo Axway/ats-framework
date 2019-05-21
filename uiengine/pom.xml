@@ -20,7 +20,6 @@
 
         <!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
         <fest.swing.version>1.2.1</fest.swing.version>
-        <testng.version>6.8.8</testng.version> <!-- non-patched version is needed just to activate Surefire TestNG runner -->
         <xml-apis.version>1.4.01</xml-apis.version>
         <com.github.detro.ghostdriver.phantomjsdriver>1.2.1</com.github.detro.ghostdriver.phantomjsdriver>
         <org.json.simple.version>1.1.1</org.json.simple.version>
@@ -136,17 +135,12 @@
         <!-- <version>${project.version}</version> -->
         <!-- <scope>test</scope> -->
         <!-- </dependency> -->
-        <!-- TODO: copy to FunctionalTests as all tests are moved there -->
-        <!-- TestNG original (not patched version) should exist for running
-            TestNG tests. Note that it is ordered AFTER our patched version. Surefire
-            plugin relies on this in order to know what kind of tests to run - JUnit
-            or TestNG -->
-        <dependency>
+        <!--<dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
-        </dependency>
+        </dependency>-->
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
