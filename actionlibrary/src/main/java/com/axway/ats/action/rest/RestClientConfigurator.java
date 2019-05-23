@@ -132,10 +132,12 @@ public class RestClientConfigurator {
     }
 
     /**
-     * Register third-party {@link ConnectorProvider}, like ApacheConnector, etc, along with (optional) configuration properties for the provider<br/>
+     * Register third-party {@link ConnectorProvider}, like ApacheConnector, etc, along with (optional) configuration properties for the provider.<br/>
+     * If not specified, <code>org.glassfish.jersey.client.HttpUrlConnectorProvider</code> is used as a connection provider.<br/>
      * Example for registering Apache connector provider:<br/><br/>
      * <code>RestClientConfigurator rcc = new RestClientConfigurator();<br/>
      * rcc.registerConnectorProvider(new ApacheConnectorProvider(), null);</code><br/>
+     * </br>Note: Currently only Apache connector is expected to work properly. Other connector providers may or may not work if additional configuration is needed.
      * 
      * @param connectorProvider - the connection provider
      * @param properties - optional configuration properties for the connection provider

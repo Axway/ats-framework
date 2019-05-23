@@ -1207,7 +1207,30 @@ public class RestClient {
     private Builder constructThirdPartyConnectorInvocationBuilder( List<String> clientIdKeys, String descriptionToken,
                                                                    boolean suppressHttpComplianceValidation ) {
 
-        throw new UnsupportedOperationException("Only ApacheConnectorProvider is supported as a third-party one");
+        // create the client config object
+        ClientConfig clientConfig = createClientConfig(clientIdKeys, suppressHttpComplianceValidation);
+
+        // create the client builder
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().withConfig(clientConfig);
+
+        // handle HTTPS requests
+        if (this.uri.startsWith("https")) {
+            // configure Trust-all SSL context
+
+            SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
+                                                           clientConfigurator.getCertificateFilePassword(),
+                                                           supportedProtocols[0]);
+
+            clientBuilder = clientBuilder.sslContext(sslContext)
+                                         .hostnameVerifier(new SslUtils.DefaultHostnameVerifier());
+            clientIdKeys.add("cert_file=" + clientConfigurator.getCertificateFileName());
+        }
+
+        // now create the client
+        client = getClient(clientIdKeys, clientBuilder);
+
+        return createInvocationBuilder(descriptionToken);
+
     }
 
     private Builder createInvocationBuilder( String descriptionToken ) {
