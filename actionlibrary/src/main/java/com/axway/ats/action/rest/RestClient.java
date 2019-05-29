@@ -61,6 +61,7 @@ import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.media.multipart.MultiPartMediaTypes;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.exceptions.RestException;
@@ -813,18 +814,30 @@ public class RestClient {
         // execute HTTP method
         Invocation.Builder invocationBuilder = constructInvocationBuilder("execute " + httpMethod
                                                                           + " against", false);
-        RestResponse response;
+        RestResponse response = null;
         if (bodyContent != null) {
             if ( ("put".equalsIgnoreCase(httpMethod) || "post".equalsIgnoreCase(httpMethod))
                  && StringUtils.isNullOrEmpty(requestMediaType)) {
                 throw new RestException("Content type is not set! Content type is mandatory for PUT and POST.");
             }
 
-            response = new RestResponse(invocationBuilder.method(httpMethod,
-                                                                 Entity.entity(getActualBodyObject(bodyContent),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
+            if (isApacheConnectorInUse()) {
+                if (this.requestMediaType.equals(RestMediaType.MULTIPART_FORM_DATA)) {
+                    response = new RestResponse(invocationBuilder.method(httpMethod,
+                                                                         Entity.entity(getActualBodyObject(bodyContent),
+                                                                                       MultiPartMediaTypes.createFormData()),
+                                                                         Response.class));
+                }
+            }
+
+            if (response == null) {
+                response = new RestResponse(invocationBuilder.method(httpMethod,
+                                                                     Entity.entity(getActualBodyObject(bodyContent),
+                                                                                   RestMediaType.toMediaType(requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class));
+            }
+
         } else {
             response = new RestResponse(invocationBuilder.method(httpMethod, Response.class));
         }
@@ -866,16 +879,32 @@ public class RestClient {
 
         // execute POST
         Invocation.Builder invocationBuilder = constructInvocationBuilder("POST object to", false);
-        RestResponse response;
+        RestResponse response = null;
         if (object != null) {
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
                 throw new RestException("Content type is not set! Content type is mandatory for POST.");
             }
-            response = new RestResponse(invocationBuilder.method("POST",
-                                                                 Entity.entity(getActualBodyObject(object),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
+            /*
+             * Due to a bug in Apache connector, handling of Multipart form data must be done by providing a particular MediaType
+             * */
+            if (isApacheConnectorInUse()) {
+                // check if the request's Content-Type is multipart form data
+                if (this.requestMediaType.equals(RestMediaType.MULTIPART_FORM_DATA)) {
+                    response = new RestResponse(invocationBuilder.method("POST",
+                                                                         Entity.entity(getActualBodyObject(object),
+                                                                                       MultiPartMediaTypes.createFormData()),
+                                                                         Response.class));
+                }
+            }
+
+            if (response == null) {
+                response = new RestResponse(invocationBuilder.method("POST",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   RestMediaType.toMediaType(requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class));
+            }
+
         } else {
             response = new RestResponse(invocationBuilder.method("POST", Response.class));
         }
@@ -918,19 +947,34 @@ public class RestClient {
     public RestResponse putObject( Object object ) {
 
         // execute PUT
-        RestResponse response;
+        Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", false);
+        RestResponse response = null;
         if (object != null) {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", false);
             if (StringUtils.isNullOrEmpty(requestMediaType)) {
                 throw new RestException("Content type is not set! Content type is mandatory for PUT.");
             }
-            response = new RestResponse(invocationBuilder.method("PUT",
-                                                                 Entity.entity(getActualBodyObject(object),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
+            /*
+             * Due to a bug in Apache connector, handling of Multipart form data must be done by providing a particular MediaType
+             * */
+            if (isApacheConnectorInUse()) {
+                // check if the request's Content-Type is multipart form data
+                if (this.requestMediaType.equals(RestMediaType.MULTIPART_FORM_DATA)) {
+                    response = new RestResponse(invocationBuilder.method("PUT",
+                                                                         Entity.entity(getActualBodyObject(object),
+                                                                                       MultiPartMediaTypes.createFormData()),
+                                                                         Response.class));
+                }
+            }
+
+            if (response == null) {
+                response = new RestResponse(invocationBuilder.method("PUT",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   RestMediaType.toMediaType(requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class));
+            }
+
         } else {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", true);
             response = new RestResponse(invocationBuilder.method("PUT", Response.class));
         }
 
@@ -1450,6 +1494,20 @@ public class RestClient {
         }
 
         return requestHeaders.containsKey(name);
+    }
+
+    /**
+     * Checks if Apache connector provider is in use
+     * */
+    private boolean isApacheConnectorInUse() {
+
+        boolean hasThirdPartyConnector = this.clientConfigurator.getConnectorProvider() != null;
+        if (hasThirdPartyConnector) {
+            return APACHE_CONNECTOR_CLASSNAME.equals(this.clientConfigurator.getConnectorProvider()
+                                                                            .getClass()
+                                                                            .getName());
+        }
+        return false;
     }
 
     private class RequestFilter implements ClientRequestFilter {
