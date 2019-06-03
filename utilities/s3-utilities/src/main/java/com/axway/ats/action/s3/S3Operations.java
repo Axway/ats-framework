@@ -44,6 +44,7 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest.KeyVersion;
+import com.amazonaws.services.s3.model.DeleteObjectsResult;
 import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.MultiObjectDeleteException;
 import com.amazonaws.services.s3.model.ObjectListing;
@@ -196,6 +197,78 @@ public class S3Operations {
             handleExeption(e, "Error deleting multiple objects");
         }
         LOG.info("Deleted " + objectsList.size() + " objects from bucket '" + bucketName + "'");
+    }
+
+    /**
+     * Delete all objects matching given prefix. This method is preferred for efficient deletion of many files
+     * 
+     * @param folderPrefix empty path is expected for objects in the "root" of the bucket 
+     * @param searchString what pattern to be matched. If null it means all, i.e. &quot;.*&quot;
+     * @param recursive if true searches recursively for matching in nested path levels (&quot;/&quot;)
+     * 
+     * @return list of deleted objects
+     * @throws S3OperationException in case of an error from server
+     */
+    @PublicAtsApi
+    public void deleteObjects( String folderPrefix, String searchString, boolean recursive ) {
+
+        //Alternative but not documented in S3 API: getClient().listObjectsV2(bucket, "prefix")
+        ListObjectsRequest request = new ListObjectsRequest(bucketName, folderPrefix, null, recursive
+                                                                                                      ? null
+                                                                                                      : "/",
+                                                            null);
+        int totallyDeleted = 0;
+        try {
+            ObjectListing objectListing = s3Client.listObjects(request);
+            int i = 0;
+            if (searchString == null) {
+                searchString = ".*"; // any string
+            }
+            List<KeyVersion> keysForDelete = new ArrayList<KeyVersion>(100);
+            Pattern searchStringPattern = Pattern.compile(searchString);
+            while (true) {
+                keysForDelete.clear();
+                for (Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext();) {
+                    S3ObjectSummary objectSummary = (S3ObjectSummary) iterator.next();
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("listObjects(" + (++i) + "): " + objectSummary.toString());
+                    }
+
+                    String[] fileTokens = objectSummary.getKey().split("/");
+                    String s3Object = fileTokens[fileTokens.length - 1];
+
+                    Matcher matcher = searchStringPattern.matcher(s3Object);
+                    if (matcher.find()) {
+                        keysForDelete.add(new KeyVersion(objectSummary.getKey()));
+                        //allListElements.add(new S3ObjectInfo(objectSummary));
+                    }
+                }
+                // delete current set / batch size
+                DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(keysForDelete)
+                                                                                                    .withQuiet(false);
+                DeleteObjectsResult delObjRes = s3Client.deleteObjects(multiObjectDeleteRequest);
+                int currentlyDeletedCount = delObjRes.getDeletedObjects().size();
+                totallyDeleted = totallyDeleted + currentlyDeletedCount;
+                // verify size of deleted objects
+                if (keysForDelete.size() != currentlyDeletedCount) {
+                    LOG.warn("The number of actually deleted objects " + currentlyDeletedCount +
+                             " does not match the expected size of " + keysForDelete.size());
+                } else {
+                    LOG.warn("Number of deleted in current batch is " + currentlyDeletedCount);
+                }
+
+                // more objects to retrieve (1K batch size of objects)
+                if (objectListing.isTruncated()) {
+                    objectListing = s3Client.listNextBatchOfObjects(objectListing);
+                } else {
+                    break;
+                }
+            }
+            LOG.info("Successfully deleted objects " + totallyDeleted);
+        } catch (AmazonClientException e) {
+            throw new S3OperationException("Error deleting multiple objects matching pattern " + searchString 
+                                           + ". Number of deleted objects is " + totallyDeleted, e);
+        } 
     }
 
     /**
