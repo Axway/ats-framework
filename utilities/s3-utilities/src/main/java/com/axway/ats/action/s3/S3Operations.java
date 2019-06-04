@@ -254,7 +254,7 @@ public class S3Operations {
                     LOG.warn("The number of actually deleted objects " + currentlyDeletedCount +
                              " does not match the expected size of " + keysForDelete.size());
                 } else {
-                    LOG.warn("Number of deleted in current batch is " + currentlyDeletedCount);
+                    LOG.debug("Number of deleted S3 objects in current batch is " + currentlyDeletedCount);
                 }
 
                 // more objects to retrieve (1K batch size of objects)
@@ -278,15 +278,8 @@ public class S3Operations {
      */
     @PublicAtsApi
     public void deleteBucket() throws S3OperationException {
-
-        List<String> keys = new ArrayList<String>();
-        for (S3ObjectInfo s3Element : listBucket("" /* all */, ".*", true)) {
-            keys.add(s3Element.getName());
-        }
-
-        // remove all Objects before deleting the bucket
-        deleteObjects(keys);
-
+        deleteObjects("", ".*", true); // empty bucket is needed before bucket delete operation
+        
         try {
             s3Client.deleteBucket(bucketName);
         } catch (Exception e) {
