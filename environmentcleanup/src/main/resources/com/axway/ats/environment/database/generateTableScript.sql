@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [generateTableScript]
+CREATE PROCEDURE [generateTableScript]
 
 @tableName SYSNAME
 

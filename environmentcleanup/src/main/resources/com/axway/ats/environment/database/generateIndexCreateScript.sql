@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [generateIndexCreateScript]
+CREATE PROCEDURE [generateIndexCreateScript]
 	
 	@schemaName SYSNAME,
 	@tableName SYSNAME,

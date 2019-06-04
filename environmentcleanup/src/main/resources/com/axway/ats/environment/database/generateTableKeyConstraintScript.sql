@@ -1,4 +1,4 @@
-CREATE OR ALTER PROCEDURE [generateTableKeyConstraintScript]
+CREATE PROCEDURE [generateTableKeyConstraintScript]
 	
 	@schemaName SYSNAME,
 	@tableName SYSNAME,
