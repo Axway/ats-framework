@@ -53,10 +53,10 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Firefox browser
      * @param url the URL to open
      * @param browserPath the path to the browser starting file or
-     *  the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
+     *  the remote Selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      *
      * @return new FirefoxDriver instance
      */
@@ -69,10 +69,10 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Firefox browser
      * @param url the target application URL
      * @param browserPath the browser start path
-     * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
+     * @param remoteSeleniumURL the remote Selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      * @return new FirefoxDriver instance
      */
     @PublicAtsApi
@@ -85,7 +85,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Internet Explorer browser
      * @param url the URL to open
      * @return new InternetExplorerDriver instance
      */
@@ -97,7 +97,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Edge browser
      * @param url the URL to open
      * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      * @return new EdgeDriver instance
@@ -137,7 +137,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Chrome browser
      * @param url the URL to open
      * @return new ChromeDriver instance
      */
@@ -149,9 +149,9 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Chrome browser
      * @param url the URL to open
-     * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
+     * @param remoteSeleniumURL the remote Selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      * @return new ChromeDriver instance
      */
     @PublicAtsApi
@@ -163,7 +163,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Safari browser
      * @param url the URL to open
      * @return new SafariDriver instance
      */
@@ -177,7 +177,7 @@ public abstract class UiDriver {
     /**
      *
      * @param url the URL to open
-     * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
+     * @param remoteSeleniumURL the remote Selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      * @return new SafariDriver instance
      */
     @PublicAtsApi
@@ -201,7 +201,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with HiddenBrowser (headless browser)
      * @param url the URL to open
      * @param browserVersion a {@link BrowserVersion} to emulate
      * @return new HiddenBrowserDriver instance
@@ -215,12 +215,13 @@ public abstract class UiDriver {
     }
 
     /**
-    *
+    * 
     * @param url the URL to open
     * @param browserPath the browser absolute path
     * @return new PhantomJSDriver instance
     */
     @PublicAtsApi
+    @Deprecated
     public static PhantomJsDriver getPhantomJSDriver(
                                                       String url,
                                                       String browserPath ) {
@@ -239,7 +240,7 @@ public abstract class UiDriver {
     }
 
     /**
-     *
+     * Get instance of driver working with Swing UI application
      * @param mainClassOfTestedApplication the class containing the "main" method
      * @return new SwingDriver instance
      */
