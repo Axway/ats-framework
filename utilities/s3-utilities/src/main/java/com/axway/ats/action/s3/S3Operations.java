@@ -158,6 +158,17 @@ public class S3Operations {
     }
 
     /**
+     * Delete all objects with keys having this prefix.
+     * Directory (object with this exact key) is not removed
+     * 
+     * @param prefixName the common key prefix of all objects for removal
+     */
+    @PublicAtsApi
+    public void deleteAll( String prefixName ) {
+        deleteObjects(prefixName, ".*", true);
+    }
+    
+    /**
      * Delete object
      * @param object name/key of the object to be deleted
      */
@@ -203,7 +214,9 @@ public class S3Operations {
      * Delete all objects matching given prefix. This method is preferred for efficient deletion of many files
      * 
      * @param folderPrefix empty path is expected for objects in the "root" of the bucket 
-     * @param searchString what pattern to be matched. If null it means all, i.e. &quot;.*&quot;
+     * @param searchString what pattern to be matched. This pattern will be matched against "short file name", i.e. 
+     *                     the object's ID after last path separator (&quot;/&quot;).<br />
+     *                     If null it means all ( string &quot;.*&quot;). 
      * @param recursive if true searches recursively for matching in nested path levels (&quot;/&quot;)
      * 
      * @return list of deleted objects
@@ -231,7 +244,7 @@ public class S3Operations {
                 for (Iterator<?> iterator = objectListing.getObjectSummaries().iterator(); iterator.hasNext();) {
                     S3ObjectSummary objectSummary = (S3ObjectSummary) iterator.next();
                     if (LOG.isTraceEnabled()) {
-                        LOG.trace("listObjects(" + (++i) + "): " + objectSummary.toString());
+                        LOG.trace("listObject[" + (++i) + "]: " + objectSummary.toString());
                     }
 
                     String[] fileTokens = objectSummary.getKey().split("/");
@@ -243,18 +256,21 @@ public class S3Operations {
                         //allListElements.add(new S3ObjectInfo(objectSummary));
                     }
                 }
-                // delete current set / batch size
-                DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(keysForDelete)
-                                                                                                    .withQuiet(false);
-                DeleteObjectsResult delObjRes = s3Client.deleteObjects(multiObjectDeleteRequest);
-                int currentlyDeletedCount = delObjRes.getDeletedObjects().size();
-                totallyDeleted = totallyDeleted + currentlyDeletedCount;
-                // verify size of deleted objects
-                if (keysForDelete.size() != currentlyDeletedCount) {
-                    LOG.warn("The number of actually deleted objects " + currentlyDeletedCount +
-                             " does not match the expected size of " + keysForDelete.size());
-                } else {
-                    LOG.debug("Number of deleted S3 objects in current batch is " + currentlyDeletedCount);
+                if (keysForDelete.size() > 0) {
+                    // delete current set / batch size
+                    DeleteObjectsRequest multiObjectDeleteRequest = new DeleteObjectsRequest(bucketName).withKeys(keysForDelete)
+                                                                                                        .withQuiet(false);
+                    DeleteObjectsResult delObjRes = s3Client.deleteObjects(multiObjectDeleteRequest);
+                    int currentlyDeletedCount = delObjRes.getDeletedObjects().size();
+                    totallyDeleted = totallyDeleted + currentlyDeletedCount;
+
+                    // verify size of deleted objects
+                    if (keysForDelete.size() != currentlyDeletedCount) {
+                        LOG.warn("The number of actually deleted objects " + currentlyDeletedCount +
+                                 " does not match the expected size of " + keysForDelete.size());
+                    } else {
+                        LOG.debug("Number of deleted S3 objects in current batch is " + currentlyDeletedCount);
+                    }
                 }
 
                 // more objects to retrieve (1K batch size of objects)
@@ -264,7 +280,7 @@ public class S3Operations {
                     break;
                 }
             }
-            LOG.info("Successfully deleted objects " + totallyDeleted);
+            LOG.info("Successfully deleted " + totallyDeleted + " objects");
         } catch (AmazonClientException e) {
             throw new S3OperationException("Error deleting multiple objects matching pattern " + searchString 
                                            + ". Number of deleted objects is " + totallyDeleted, e);
@@ -545,25 +561,6 @@ public class S3Operations {
         } catch (Exception e) {
             handleExeption(e, "S3 object move error");
         }
-    }
-
-    /**
-     * Delete all objects with keys having this prefix.
-     * Directory (object with this exact key) is not removed
-     * 
-     * @param prefixName the common key prefix of all objects for removal
-     */
-    @PublicAtsApi
-    public void deleteAll( String prefixName ) {
-
-        List<String> folderElements = new ArrayList<String>();
-        // remove all Objects in the pointed directory
-        for (S3ObjectInfo element : listBucket(prefixName, ".*", true)) {
-            if (!element.getName().equals(prefixName))
-                folderElements.add(element.getName());
-        }
-
-        deleteObjects(folderElements);
     }
 
     /**
