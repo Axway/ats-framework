@@ -121,48 +121,48 @@ public class RestClient {
         public static final int ALL        = HEADERS | BODY;
     }
 
-    private int                       debugLevel                      = RESTDebugLevel.TARGET_URI;
+    private int                        debugLevel                      = RESTDebugLevel.TARGET_URI;
 
-    private static final String       APACHE_CONNECTOR_CLASSNAME      = "org.glassfish.jersey.apache.connector.ApacheConnectorProvider";
+    private static final String        APACHE_CONNECTOR_CLASSNAME      = "org.glassfish.jersey.apache.connector.ApacheConnectorProvider";
 
-    private static final String       APACHE_HTTP_HEADERS_LOGGER_NAME = "org.apache.http.headers";
-    private static final String       APACHE_HTTP_WIRE_LOGGER_NAME    = "org.apache.http.wire";
+    private static final String        APACHE_HTTP_HEADERS_LOGGER_NAME = "org.apache.http.headers";
+    private static final String        APACHE_HTTP_WIRE_LOGGER_NAME    = "org.apache.http.wire";
 
-    private static final Logger       log                             = Logger.getLogger(RestClient.class);
+    private static final Logger        log                             = Logger.getLogger(RestClient.class);
 
-    private static boolean            verbosityLevelMessageLogged     = false;
+    private static boolean             verbosityLevelMessageLogged     = false;
 
-    private static boolean            bodyOnlyDebugLevelMessageLogged = false;
+    private static boolean             bodyOnlyDebugLevelMessageLogged = false;
 
-    private Client                    client;
+    private Client                     client;
 
-    private String                    uri;
-    private List<String>              resourcePath                    = new ArrayList<String>();
-    private Map<String, List<Object>> requestHeaders                  = new HashMap<String, List<Object>>();
+    private String                     uri;
+    private List<String>               resourcePath                    = new ArrayList<String>();
+    private Map<String, List<Object>>  requestHeaders                  = new HashMap<String, List<Object>>();
 
-    private Map<String, List<String>> requestParameters               = new HashMap<String, List<String>>();
+    private Map<String, List<String>>  requestParameters               = new HashMap<String, List<String>>();
 
-    private Object                    requestMediaType;
-    private String                    requestMediaCharset;
+    private Object                     requestMediaType;
+    private String                     requestMediaCharset;
 
-    private String                    responseMediaType;
-    private String                    responseMediaCharset;
+    private String                     responseMediaType;
+    private String                     responseMediaCharset;
 
-    private List<Cookie>              cookies                         = new ArrayList<Cookie>();
+    private List<Cookie>               cookies                         = new ArrayList<Cookie>();
 
     // Basic authorization info
-    private String                    username;
-    private String                    password;
+    private String                     username;
+    private String                     password;
 
-    private String[]                  supportedProtocols              = new String[]{ "TLSv1.2" };
+    private String[]                   supportedProtocols              = new String[]{ "TLSv1.2" };
 
-    private RestClientConfigurator    clientConfigurator              = new RestClientConfigurator();
+    private RestClientConfigurator     clientConfigurator              = new RestClientConfigurator();
 
-    private boolean                   requestFilterNeedsRegistration  = false;
+    private boolean                    requestFilterNeedsRegistration  = false;
 
-    private boolean                   requestFilterAlreadyRegistered  = false;
+    private boolean                    requestFilterAlreadyRegistered  = false;
 
-    private boolean                   bufferResponse                  = false;
+    private boolean                    bufferResponse                  = false;
 
     /**
      * There is a memory leak in the way Jersey uses HK2's PerThreadContext class
@@ -187,7 +187,7 @@ public class RestClient {
     private static Map<String, Client> clients                         = new HashMap<String, Client>();
 
     /* Used to remove JerseyClient instance from map, when disconnect() is invoked */
-    private String                    finalClientIdKey                = null;
+    private String                     finalClientIdKey                = null;
 
     /**
      * Constructor not specifying the target URI.
@@ -1528,19 +1528,12 @@ public class RestClient {
 
         Client client = clients.get(finalClientIdKey);
         if (client == null) {
-            boolean hasThirdPartyConnector = this.clientConfigurator.getConnectorProvider() != null;
-            if (hasThirdPartyConnector) {
-                boolean isApache = APACHE_CONNECTOR_CLASSNAME.equals(this.clientConfigurator.getConnectorProvider()
-                                                                                            .getName());
-                if (!isApache) {
-                    clients.put(finalClientIdKey, client);
-                }
-            } else {
+            // no appropriate client, create one
+            client = newClientBuilder.build();
+            if (!isApacheConnectorProviderInUse()) { // cache only clients that DO NOT use Apache connector
                 clients.put(finalClientIdKey, client);
             }
         }
-        // no appropriate client, create one
-        client = newClientBuilder.build();
         if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
             RequestFilter requestFilter = new RequestFilter();
             client.register(requestFilter);
@@ -1550,9 +1543,23 @@ public class RestClient {
         return client;
     }
 
+    private boolean isApacheConnectorProviderInUse() {
+
+        boolean hasThirdPartyConnector = this.clientConfigurator.getConnectorProvider() != null;
+        if (hasThirdPartyConnector) {
+            boolean isApache = APACHE_CONNECTOR_CLASSNAME.equals(this.clientConfigurator.getConnectorProvider()
+                                                                                        .getName());
+            return isApache;
+        } else {
+            return false;
+        }
+
+    }
+
     private void logRESTResponse( RestResponse response ) {
 
-        if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
+        if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI
+            || isApacheConnectorProviderInUse()) {
             return;
         }
 
