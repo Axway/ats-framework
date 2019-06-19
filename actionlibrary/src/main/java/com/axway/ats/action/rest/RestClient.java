@@ -1612,7 +1612,8 @@ public class RestClient {
         @Override
         public void filter( ClientRequestContext context ) throws IOException {
 
-            if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
+            if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI
+                || isApacheConnectorProviderInUse()) {
                 return;
             }
 
