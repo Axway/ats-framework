@@ -21,6 +21,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.HttpConnectionFactory;
+import org.glassfish.jersey.apache.connector.ApacheClientProperties;
 import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.spi.ConnectorProvider;
 
@@ -32,22 +36,30 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class RestClientConfigurator {
 
-    private List<Object>        providers;
-    private List<Class<?>>      providerClasses;
-    private Map<String, Object> properties;
+    private List<Object>                       providers;
+    private List<Class<?>>                     providerClasses;
+    private Map<String, Object>                properties;
 
-    private String              certFileName;
-    private String              certPassword;
+    private String                             certFileName;
+    private String                             certPassword;
 
     /**
      * Provide third-party {@link ConnectorProvider}, like ApacheConnector, etc
      * */
-    private ConnectorProvider   connectorProvider;
+    private Class<? extends ConnectorProvider> connectorProvider;
     /**
      * Additional properties for configuring the  {@link ConnectorProvider} </br>
      * If there is no connector provider, those properties will not be applied.
      * */
-    private Map<String, Object> connectorProviderProperties;
+    private Map<String, Object>                connectorProviderProperties;
+
+    /*
+     * TODO: httpclient dependency is needed for that class even if ApacheConnector will not be used.
+     *       Make another class that extends this one and is only responsible for ApacheConnector configuration
+     * */
+    private HttpClientConnectionManager        connectionManager = null;
+
+    private HttpConnectionFactory              connectionFactory = null;
 
     /**
      * Basic constructor
@@ -132,18 +144,15 @@ public class RestClientConfigurator {
     }
 
     /**
-     * Register third-party {@link ConnectorProvider}, like ApacheConnector, etc, along with (optional) configuration properties for the provider.<br/>
+     * Register third-party {@link ConnectorProvider}, like org.glassfish.jersey.apache.connector.ApacheConnectorProvider, etc, along with (optional) configuration properties for the provider.<br/>
      * If not specified, <code>org.glassfish.jersey.client.HttpUrlConnectorProvider</code> is used as a connection provider.<br/>
-     * Example for registering Apache connector provider:<br/><br/>
-     * <code>RestClientConfigurator rcc = new RestClientConfigurator();<br/>
-     * rcc.registerConnectorProvider(new ApacheConnectorProvider(), null);</code><br/>
      * </br>Note: Currently only Apache connector is expected to work properly. Other connector providers may or may not work if additional configuration is needed.
      * 
      * @param connectorProvider - the connection provider
-     * @param properties - optional configuration properties for the connection provider
+     * @param properties - (optional) configuration properties for the connection provider
      **/
     @PublicAtsApi
-    public void registerConnectorProvider( ConnectorProvider connectorProvider,
+    public void registerConnectorProvider( Class<? extends ConnectorProvider> connectorProvider,
                                            Map<String, Object> properties ) {
 
         this.connectorProvider = connectorProvider;
@@ -151,6 +160,67 @@ public class RestClientConfigurator {
             this.connectorProviderProperties.putAll(properties);
         }
 
+    }
+
+    /**
+     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider
+     */
+    @PublicAtsApi
+    public void registerApacheConnectorProvider() {
+
+        registerApacheConnectorProvider(ApacheConnectorProvider.class, null, null, null);
+    }
+
+    /**
+     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider
+     * @param properties - (optional) configuration properties for the connection provider
+     */
+    @PublicAtsApi
+    public void registerApacheConnectorProvider( Map<String, Object> properties ) {
+
+        registerApacheConnectorProvider(ApacheConnectorProvider.class, properties, null, null);
+    }
+
+    /** <strong>Note</strong>: For internal usage only. Using this method may lead to undesired effects
+     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider<br/>
+     * @param connectorProvider - the connector provider's class
+     * @param properties - (optional) configuration properties for the connection provider.
+     * <strong>Note</strong>: If connections will be done over SSL (HTTPS), any of the needed configuration must be done by you.
+     * ATS will NOT apply any of the logic, related to that functionality if connectionManager parameter is not null.
+     * @param connectionManager - (optional) specify the connection manager to be used with the connector provider. If this parameter is not null, connection factory must also be provider
+     * @param connectionFactory - (optional) specify the connection factory
+     */
+    public void registerApacheConnectorProvider( Class<? extends ConnectorProvider> connectorProvider,
+                                                 Map<String, Object> properties,
+                                                 HttpClientConnectionManager connectionManager,
+                                                 HttpConnectionFactory connectionFactory ) {
+
+        if (properties != null) {
+            if (properties.get(ApacheClientProperties.REQUEST_CONFIG) != null) {
+                // do nothing the user has provided such property
+            } else {
+                // add pool request timeout of 30 seconds
+                RequestConfig requestConfig = (RequestConfig) properties.get(ApacheClientProperties.REQUEST_CONFIG);
+                if (requestConfig != null) {
+                    // Throw an org.apache.http.conn.ConnectionPoolTimeoutException exception if connection can not be leased/obtained from the pool after 30 sec
+                    requestConfig = RequestConfig.copy(requestConfig).setConnectionRequestTimeout(30 * 1000).build();
+                } else {
+                    // Throw an org.apache.http.conn.ConnectionPoolTimeoutException exception if connection can not be leased/obtained from the pool after 30 sec
+                    requestConfig = RequestConfig.custom().setConnectionRequestTimeout(30 * 1000).build();
+                }
+
+            }
+        } else {
+            // construct properties maps and add pool request timeout of 30 seconds
+            properties = new HashMap<String, Object>();
+            // Throw an org.apache.http.conn.ConnectionPoolTimeoutException exception if connection can not be leased/obtained from the pool after 30 sec
+            properties.put(ApacheClientProperties.REQUEST_CONFIG,
+                           RequestConfig.custom().setConnectionRequestTimeout(30 * 1000).build());
+        }
+
+        registerConnectorProvider(connectorProvider, properties);
+        this.connectionManager = connectionManager;
+        this.connectionFactory = connectionFactory;
     }
 
     RestClientConfigurator newCopy() {
@@ -176,10 +246,13 @@ public class RestClientConfigurator {
             newConfigurator.properties.put(propEntry.getKey(), propEntry.getValue());
         }
 
+        // Only copy the connector. The Rest Client will handle the creation of a connection manager/factory
         newConfigurator.connectorProvider = this.connectorProvider;
         if (this.connectorProviderProperties != null) {
             newConfigurator.connectorProviderProperties.putAll(this.connectorProviderProperties);
         }
+        newConfigurator.connectionManager = null;
+        newConfigurator.connectionFactory = null;
 
         return newConfigurator;
     }
@@ -204,8 +277,26 @@ public class RestClientConfigurator {
         return connectorProviderProperties;
     }
 
-    ConnectorProvider getConnectorProvider() {
+    Class<? extends ConnectorProvider> getConnectorProvider() {
 
         return connectorProvider;
     }
+
+    /**
+     * Get the underlying connection manager that is used when ApacheConnectorProvider is used. Otherwise return null
+     * */
+    HttpClientConnectionManager getConnectionManager() {
+
+        return connectionManager;
+
+    }
+
+    /**
+     * Get the underlying connection factory that is used when ApacheConnectorProvider is used. Otherwise return null
+     * */
+    HttpConnectionFactory getConnectionFactory() {
+
+        return connectionFactory;
+    }
+
 }
