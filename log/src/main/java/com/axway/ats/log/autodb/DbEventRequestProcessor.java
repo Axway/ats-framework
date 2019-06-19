@@ -769,8 +769,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                  ? getLastExecutedTestCaseId()
                                                  : getTestCaseId();
 
-        dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription,
-                                testcaseName, userNote, testcaseResult, testcaseId, timestamp, true);
+        if (deletedTestcases.contains(testcaseId)) {
+            // it appears that this testcase was explicitly requested to be deleted, probably from a com.axway.ats.harness.testng.RetryAnalyzer.retry() method
+            // do not send this event to the Log DB
+        } else {
+            dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription,
+                                    testcaseName, userNote, testcaseResult, testcaseId, timestamp, true);
+        }
 
     }
 
