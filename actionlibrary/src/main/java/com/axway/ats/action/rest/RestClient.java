@@ -236,7 +236,7 @@ public class RestClient {
              * we must remove it from the map,
              * because all of its resources are deallocated and the client is not usable anymore
             */
-            //clients.remove(finalClientIdKey);
+            clients.remove(finalClientIdKey);
         }
     }
 
