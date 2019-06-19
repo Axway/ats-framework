@@ -15,6 +15,9 @@
  */
 package com.axway.ats.action.rest;
 
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import javax.ws.rs.core.MediaType;
 
 import org.apache.log4j.Logger;
@@ -110,9 +113,53 @@ public class RestMediaType {
         return mediaType;
     }
 
-    static MediaType toMediaType( String typeAndSubtype, String charset ) {
+    /**
+     * Convert this object to {@link MediaType} instance.
+     * @param typeAndSubtypeAndParameter Example: multipart/form-data;boundary=;charset=UTF-8 or application/json
+     * @param charset - the charset parameter ( charset=UTF-8 )
+     * */
 
-        String[] typeTokens = typeAndSubtype.split("/");
-        return new MediaType(typeTokens[0], typeTokens[1], charset);
+    static MediaType toMediaType( String typeSubtypeAndParameters, String charset ) {
+
+        String[] typeTokens = typeSubtypeAndParameters.split("/");
+        String type = typeTokens[0];
+        String subtype = (typeTokens.length > 1)
+                                                 ? typeTokens[1].split(";")[0]
+                                                 : null;
+        // use LinkedHashMap so keys insert order is preserved
+        Map<String, String> parameterMap = new LinkedHashMap<String, String>();
+        if (!StringUtils.isNullOrEmpty(charset)) {
+            // include the charset to the parameters' list
+            parameterMap.put(MediaType.CHARSET_PARAMETER, charset);
+        }
+        if (typeTokens[1] != null) {
+            if (typeTokens[1].contains(";")) {
+                String[] parameters = typeTokens[1].split(";");
+                for (String parameter : parameters) {
+                    // since the sub-type will as well be included as a parameter, due to the splitting by ';'
+                    // this check is in order to not include it in the final parameter map
+                    if (!parameter.equals(subtype)) {
+                        String[] parameterTokens = parameter.split("=");
+                        if (parameterTokens.length < 2) {
+                            log.warn("A malformed parameter found ( " + parameter
+                                     + " ). It will not be included in the final media type");
+                            continue;
+                        }
+                        if (parameterMap.containsKey(parameterTokens[0].toLowerCase())) {
+                            throw new IllegalArgumentException("Parameter with name '"
+                                                               + parameterTokens[0].toLowerCase()
+                                                               + "' already specified.");
+                        }
+                        parameterMap.put(parameterTokens[0].toLowerCase(), parameterTokens[1]);
+                    }
+                }
+            }
+        }
+        if (parameterMap != null && !parameterMap.isEmpty()) {
+            return new MediaType(type, subtype, parameterMap);
+        } else {
+            return new MediaType(typeTokens[0], typeTokens[1], charset);
+        }
+
     }
 }
