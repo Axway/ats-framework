@@ -1109,11 +1109,22 @@ public class RestClient {
     }
 
     /**
-     * Whether the response will be buffered once it is created. Default is false</br>
-     * It is highly recommended to set it to <code>true</code> if you are using ApacheConnector provider
-     * @param bufferResponse - true/false.
+     * Whether the response body will be buffered <strong>immediately</strong> after the HTTP request is executed by 
+     * the RestClient. 
+     * <ul>
+     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br/>
+     *      If possible, RestClient will still <strong>try</strong> to buffer the response body (if not too big),  
+     *      but this will happen only <strong>after</strong> explicit usage of getBodyAsXYZ() method in test code. </li>
+     *  <li>If <code>true</code> then body will be consumed and buffered automatically. This allows usage of the 
+     *      RestClient without explicitly (in your code) to have to consume the (whole) response body. One such case is if 
+     *      you verify only the returned HTTP status code or the headers.</br>
+     *      It is highly recommended to set it to <code>true</code> if you are using <code>ApacheConnector</code> 
+     *      provider.</li>
+     * </ul> 
      * 
-     * */
+     * @param bufferResponse - true/false with behavior explained above.
+     * 
+     */
     @PublicAtsApi
     public RestClient setBufferResponse( boolean bufferResponse ) {
 
