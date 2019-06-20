@@ -1115,9 +1115,11 @@ public class RestClient {
      * 
      * */
     @PublicAtsApi
-    public void setBufferResponse( boolean bufferResponse ) {
+    public RestClient setBufferResponse( boolean bufferResponse ) {
 
         this.bufferResponse = bufferResponse;
+
+        return this;
     }
 
     private Invocation.Builder constructInvocationBuilder( String descriptionToken,
