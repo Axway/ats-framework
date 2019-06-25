@@ -156,14 +156,6 @@
       <version>${org.glassfish.jersey.jersey-client.version}</version>
       <scope>compile</scope>
     </dependency>
-    <dependency> 
-      <!-- This dependency should be explicitly added for projects using RestClient with Apache HTTP Client connector.
-          It provides complete tracing of HTTP requests compared to standard Jersey connector using java.net.URLConnection -->
-      <groupId>org.glassfish.jersey.connectors</groupId>
-      <artifactId>jersey-apache-connector</artifactId>
-      <version>${org.glassfish.jersey.jersey-client.version}</version>
-      <optional>true</optional>
-    </dependency>
     <!-- this dependency is required after jersey 2.26 -->
     <!-- https://stackoverflow.com/questions/44088493/jersey-stopped-working-with-injectionmanagerfactory-not-found -->
     <!-- <dependency> 

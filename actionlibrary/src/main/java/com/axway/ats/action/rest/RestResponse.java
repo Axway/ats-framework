@@ -48,13 +48,9 @@ public class RestResponse {
 
     private Response            response;
 
-    RestResponse( Response response, boolean bufferResponse ) {
+    RestResponse( Response response ) {
 
         this.response = response;
-
-        if (bufferResponse) {
-            checkResponseBodyStatus();
-        }
     }
 
     /**
@@ -111,7 +107,7 @@ public class RestResponse {
 
         return response.readEntity(theClass);
     }
-
+    
     /**
      * Return the response body as any java Object
      *
@@ -123,7 +119,7 @@ public class RestResponse {
 
         checkResponseBodyStatus();
 
-        return response.readEntity(theType);
+        return response.readEntity( theType );
     }
 
     /**
@@ -412,8 +408,8 @@ public class RestResponse {
          * So we restrict the max size.
          * Note that length of -1 could be indication of a very large chunked body.
         */
-        if ("chunked".equals(response.getHeaderString("Transfer-Encoding"))
-            || (response.getLength() >= 0 && response.getLength() < MAX_RESPONSE_SIZE)) {
+        if( "chunked".equals( response.getHeaderString( "Transfer-Encoding" ) )
+            || ( response.getLength() > 0 && response.getLength() < MAX_RESPONSE_SIZE ) ) {
             response.bufferEntity();
         }
     }
