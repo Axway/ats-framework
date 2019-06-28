@@ -144,10 +144,18 @@ public class QueueLoggerThread extends Thread {
                         } else {
                             // Other "not critical" exceptions. We limit logging of such failures as it would be too 
                             // verbose
-                            if (minorSqlExceptionsCounter < MINOR_SQL_EXCEPTIONS_MAX_LOGGING_COUNT) {
-                                CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(le, "Error running " + eventType
-                                                                                     + " event"));
-                                minorSqlExceptionsCounter++;
+                            /**
+                             * Explicitly skip error when a message can not be inserted in Log DB
+                             * or when Thread has already been registered with a load queue.
+                             * This is done, because those errors are expected in some cases when using ATS
+                             * */
+                            if (eventType != LoggingEventType.REGISTER_THREAD_WITH_LOADQUEUE
+                                && eventType != LoggingEventType.INSERT_MESSAGE) {
+                                if (minorSqlExceptionsCounter < MINOR_SQL_EXCEPTIONS_MAX_LOGGING_COUNT) {
+                                    CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(le, "Error running " + eventType
+                                                                                         + " event"));
+                                    minorSqlExceptionsCounter++;
+                                }
                             }
 
                         }

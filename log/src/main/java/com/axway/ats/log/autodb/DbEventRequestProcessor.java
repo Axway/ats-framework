@@ -49,6 +49,7 @@ import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
 import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.AddTestcaseMetainfoEvent;
 import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
 import com.axway.ats.log.autodb.events.EndCheckpointEvent;
 import com.axway.ats.log.autodb.events.EndLoadQueueEvent;
@@ -428,6 +429,40 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                      * */
                     return;
                 }
+            } else if (dbAppenderEvent instanceof AddTestcaseMetainfoEvent) {
+				try {
+                    dbAppenderEvent.checkIfCanBeProcessed(_state);
+                } catch (Exception e) {
+                    AddTestcaseMetainfoEvent atmie = ((AddTestcaseMetainfoEvent) dbAppenderEvent);
+                    boolean throwException = false;
+                    if (atmie.getTestcaseId() == -1) {
+
+                         if (_state.getTestCaseId() == -1
+                            && _state.getLastExecutedTestCaseId() == -1) {
+
+                             // No testcase was either running or previously finished.
+                             // ATS needs to throw an Exception
+
+                             throwException = true;
+                        }
+
+                     } else {
+                        // Testcase ID was specified with the event, but still an error occurred. ATS needs to throw an Exception
+                        throwException = true;
+                    }
+
+                     if (throwException) {
+
+                         log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
+                                  + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
+                                  "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
+                                  + this.getSuiteId() + ",\n\tTESTCASE ID: "
+                                  + this.getTestCaseId());
+
+                         throw e;
+
+                     }
+                }
             } else {
                 //first check if we can process the event at all
                 try {
@@ -486,7 +521,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     }
                     break;
                 case END_SUITE:
-
                     endSuite(eventRequest.getTimestamp());
                     break;
                 case UPDATE_SUITE:
@@ -523,6 +557,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                         threadId = getThreadId(event.getThreadName());
                     }
                     leaveTestCase(threadId);
+                    break;
+                case ADD_TESTCASE_METAINFO:
+                    addTestcaseMetainfo((AddTestcaseMetainfoEvent) event);
                     break;
                 case START_AFTER_METHOD:
                     afterMethodMode = true;
@@ -736,7 +773,27 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         dbAccess.addScenarioMetainfo(_state.getTestCaseId(), addScenarioMetainfoEvent.getMetaKey(),
                                      addScenarioMetainfoEvent.getMetaValue(), true);
     }
+    
+    private void
+            addTestcaseMetainfo( AddTestcaseMetainfoEvent addTestcaseMetainfoEvent ) throws DatabaseAccessException {
 
+         if (addTestcaseMetainfoEvent.getTestcaseId() != -1) {
+            dbAccess.addTestcaseMetainfo(addTestcaseMetainfoEvent.getTestcaseId(),
+                                         addTestcaseMetainfoEvent.getMetaKey(),
+                                         addTestcaseMetainfoEvent.getMetaValue(), true);
+        } else {
+            if (afterMethodMode) {
+                dbAccess.addTestcaseMetainfo(_state.getLastExecutedTestCaseId(),
+                                             addTestcaseMetainfoEvent.getMetaKey(),
+                                             addTestcaseMetainfoEvent.getMetaValue(), true);
+            } else {
+                dbAccess.addTestcaseMetainfo(_state.getTestCaseId(),
+                                             addTestcaseMetainfoEvent.getMetaKey(),
+                                             addTestcaseMetainfoEvent.getMetaValue(), true);
+            }
+         }
+     }
+    
     private void startTestCase( StartTestCaseEvent startTestCaseEvent,
                                 long timeStamp ) throws LoggingException {
 
@@ -817,8 +874,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                  ? getLastExecutedTestCaseId()
                                                  : getTestCaseId();
 
-        dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription, testcaseName, userNote,
-                                testcaseResult, testcaseId, timestamp, true);
+		if (deletedTestcases.contains(testcaseId)) {
+            // it appears that this testcase was explicitly requested to be deleted, probably from a com.axway.ats.harness.testng.RetryAnalyzer.retry() method
+            // do not send this event to the Log DB
+        } else {
+            dbAccess.updateTestcase(suiteFullName, scenarioName, scenarioDescription,
+                                    testcaseName, userNote, testcaseResult, testcaseId, timestamp, true);
+        }
 
     }
 

@@ -149,7 +149,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             } finally {
                 DbUtils.closeConnection(connection);
             }
-            
+
         } else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
         }
@@ -213,13 +213,19 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         if (!StringUtils.isNullOrEmpty(partitionName)) {
             String partitionColumnName = getPartitionColumnName(table);
-            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>",
+            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>",
                                                               " ON [" + partitionName + "]([" + partitionColumnName
                                                                                                 + "])");
         } else {
             // if the table do not have to be partitioned
-            // replace with empty string the partition schemE placeholder
-            generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_PLACEHOLDER>", "");
+            // check if the table is on a filegroup
+            String fileGroupName = getFileGroupName(table);
+            if (!StringUtils.isNullOrEmpty(fileGroupName)) {
+                generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>", " ON [" + fileGroupName + "]");
+            } else {
+                // Table is neither partitioned, nor its data is on file group other than the default one
+                generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>", "");
+            }
         }
 
         String scriptContent = loadScriptFromClasspath("generateForeignKeyScript.sql");
@@ -271,6 +277,27 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         // drop table
         fileWriter.write("DROP TABLE " + tableName + ";" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
 
+        // create indexes
+        List<String> indexesCreateScripts = generateIndexesCreateScripts(connection, table);
+        StringBuilder sb = new StringBuilder();
+        for (String indexCreateScript : indexesCreateScripts) {
+            sb.append(indexCreateScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+
+        generateTableScript = generateTableScript.replace("<TABLE_INDEXES_PLACEHOLDER>", sb.toString());
+
+        // add table's key constraints (PRIMARY OR UNIQUE)
+        sb = new StringBuilder();
+        List<String> keyConstraintsScripts = generateKeyConstraintsCreateScripts(connection, table);
+        sb = new StringBuilder();
+        for (String keyConstraintScript : keyConstraintsScripts) {
+            sb.append(keyConstraintScript + "," + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        }
+        if (sb.length() > 0) {
+            sb.setLength(sb.toString().length() - (1 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR.length()));
+        }
+        generateTableScript = generateTableScript.replace("<KEY_CONSTRAINTS_PLACEHOLDER>", sb.toString());
+
         // create table
         fileWriter.write(generateTableScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
 
@@ -283,17 +310,164 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         executeUpdate(disableForeignKeyChecksEnd(), connection);
     }
 
+    private String getFileGroupName( DbTable table ) {
+
+        String query = "SELECT OBJECT_SCHEMA_NAME(t.object_id) AS schema_name\r\n" +
+                       ",t.name AS table_name\r\n" +
+                       ",i.index_id\r\n" +
+                       ",i.name AS index_name\r\n" +
+                       ",i.*\r\n" +
+                       ",ds.name AS filegroup_name\r\n" +
+                       "FROM sys.tables t\r\n" +
+                       "INNER JOIN sys.indexes i ON t.object_id=i.object_id\r\n" +
+                       "INNER JOIN sys.filegroups ds ON i.data_space_id=ds.data_space_id\r\n" +
+                       "INNER JOIN sys.partitions p ON i.object_id=p.object_id AND i.index_id=p.index_id\r\n" +
+                       "WHERE t.name = '" + table.getTableName() + "'\r\n" +
+                       "ORDER BY t.name, i.index_id";
+
+        DbRecordValuesList[] rows = dbProvider.select(query);
+        if (rows != null && rows.length > 0) {
+            return (String) rows[0].get("filegroup_name");
+        } else {
+            return "";
+        }
+    }
+
+    private List<String> generateKeyConstraintsCreateScripts( Connection connection, DbTable table ) {
+
+        List<String> indexesNames = getAllIndexesNamesForTable(connection, table);
+        List<String> indexesCreateScripts = new ArrayList<>();
+
+        final String scriptFileName = "generateTableKeyConstraintScript.sql";
+
+        String scriptContent = loadScriptFromClasspath(scriptFileName);
+
+        // create the db procedure
+        try {
+            createDatabaseProcedure(connection, scriptContent);
+            for (String indexName : indexesNames) {
+                CallableStatement callableStatement = null;
+                ResultSet rs = null;
+                try {
+                    callableStatement = connection.prepareCall("{ call generateTableKeyConstraintScript(?,?,?) }");
+                    callableStatement.setString(1, table.getTableSchema());
+                    callableStatement.setString(2, table.getTableName());
+                    callableStatement.setString(3, indexName);
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("Executing SQL query: " + callableStatement.toString());
+                    }
+                    rs = callableStatement.executeQuery();
+                    String createQuery = new String();
+                    if (rs.next()) {
+                        createQuery = rs.getString(1);
+                    }
+                    if (!StringUtils.isNullOrEmpty(createQuery) && !"NULL".equalsIgnoreCase(createQuery)) {
+                        indexesCreateScripts.add(createQuery);
+                    }
+
+                } finally {
+                    DbUtils.closeStatement(callableStatement);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DbException(DbUtils.getFullSqlException("Error while generating Key constraints for table '"
+                                                              + table.getFullTableName() + "'", e),
+                                  e);
+        } finally {
+            // drop the newly created procedure
+            executeUpdate("DROP PROCEDURE generateTableKeyConstraintScript", connection);
+        }
+        return indexesCreateScripts;
+    }
+
+    private List<String> generateIndexesCreateScripts( Connection connection, DbTable table ) {
+
+        List<String> indexesNames = getAllIndexesNamesForTable(connection, table);
+        List<String> indexesCreateScripts = new ArrayList<>();
+
+        final String scriptFileName = "generateIndexCreateScript.sql";
+
+        String scriptContent = loadScriptFromClasspath(scriptFileName);
+
+        // create the db procedure
+        try {
+            createDatabaseProcedure(connection, scriptContent);
+            for (String indexName : indexesNames) {
+                CallableStatement callableStatement = null;
+                ResultSet rs = null;
+                try {
+                    callableStatement = connection.prepareCall("{ call generateIndexCreateScript(?,?,?) }");
+                    callableStatement.setString(1, table.getTableSchema());
+                    callableStatement.setString(2, table.getTableName());
+                    callableStatement.setString(3, indexName);
+                    if (LOG.isTraceEnabled()) {
+                        LOG.trace("Executing SQL query: " + callableStatement.toString());
+                    }
+                    rs = callableStatement.executeQuery();
+                    String createQuery = new String();
+                    if (rs.next()) {
+                        createQuery = rs.getString(1);
+                    }
+                    if (!StringUtils.isNullOrEmpty(createQuery) && !"NULL".equalsIgnoreCase(createQuery)) {
+                        indexesCreateScripts.add(createQuery);
+                    }
+                } finally {
+                    DbUtils.closeStatement(callableStatement);
+                }
+            }
+        } catch (SQLException e) {
+            throw new DbException(DbUtils.getFullSqlException("Error while generating CREATE INDEX scripts for table '"
+                                                              + table.getFullTableName() + "'", e),
+                                  e);
+        } finally {
+            // drop the newly created procedure
+            executeUpdate("DROP PROCEDURE generateIndexCreateScript", connection);
+        }
+        return indexesCreateScripts;
+    }
+
+    private List<String> getAllIndexesNamesForTable( Connection connection, DbTable table ) {
+
+        List<String> indexesNames = new ArrayList<>();
+        ResultSet rs = null;
+        try {
+
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT schemaName = sch.name, tableName = t.name, indexName = ind.name ")
+                 .append("FROM sys.schemas sch ")
+                 .append("INNER JOIN sys.tables t ON sch.schema_id = t.schema_id ")
+                 .append("INNER JOIN sys.indexes ind ON ind.object_id = t.object_id ")
+                 .append("WHERE sch.name = '" + table.getTableSchema() + "' ")
+                 .append("AND t.name = '" + table.getTableName() + "' ")
+                 .append("AND ind.name IS NOT NULL");
+            if (LOG.isTraceEnabled()) {
+                LOG.trace("Executing SQL query: " + query.toString());
+            }
+            rs = connection.createStatement().executeQuery(query.toString());
+            while (rs.next()) {
+                indexesNames.add(rs.getString("indexName"));
+            }
+        } catch (SQLException e) {
+            throw new DbException(DbUtils.getFullSqlException("Error while obtaining ALL indexes' names for table '"
+                                                              + table.getFullTableName() + "'", e),
+                                  e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+        }
+        return indexesNames;
+    }
+
     private String getPartitionColumnName( DbTable table ) {
 
         String query = "select c.name " +
                        "from  sys.tables t " +
-                       "join  sys.indexes i " +
+                       "left join  sys.indexes i " +
                        "      on(i.object_id = t.object_id " +
                        "      and i.index_id < 2) " +
-                       "join  sys.index_columns ic " +
+                       "left join  sys.index_columns ic " +
                        "      on(ic.partition_ordinal > 0 " +
                        "      and ic.index_id = i.index_id and ic.object_id = t.object_id) " +
-                       "join  sys.columns c " +
+                       "left join  sys.columns c " +
                        "      on(c.object_id = ic.object_id " +
                        "      and c.column_id = ic.column_id) " +
                        "where t.object_id  = object_id('" + table.getFullTableName() + "') ";
@@ -311,14 +485,14 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         String query = "select DISTINCT " +
                        "ps.[name] AS Ps_Name " +
                        "from sys.partitions p " +
-                       "inner join sys.indexes i " +
+                       "left join sys.indexes i " +
                        " on p.[object_id] = i.[object_id] " +
                        " and p.index_id = i.index_id " +
-                       "inner JOIN sys.data_spaces ds " +
+                       "left JOIN sys.data_spaces ds " +
                        " on i.data_space_id = ds.data_space_id " +
-                       "inner JOIN sys.partition_schemes ps " +
+                       "left JOIN sys.partition_schemes ps " +
                        " on ds.data_space_id = ps.data_space_id " +
-                       "inner JOIN sys.partition_functions pf " +
+                       "left JOIN sys.partition_functions pf " +
                        " on ps.function_id = pf.function_id " +
                        " where OBJECT_NAME(p.[object_id]) = '" + table.getTableName() + "' ";
 
@@ -431,6 +605,9 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         return insertStatement;
     }
 
+    /**
+     * Add table for backup.<br/>If the table's schema is not specified, ATS will obtain and use the default schema for the user that will interact with the database during backup/restore
+     * */
     @Override
     public void addTable( DbTable table ) {
 
@@ -704,7 +881,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 currentLine = scanner.nextLine();
                 currentLine = currentLine.trim();
                 command.append(currentLine);
-                command.append(" ");
+                command.append("\r\n");
 
                 if (currentLine.endsWith("GO")) {
                     // commit the transaction

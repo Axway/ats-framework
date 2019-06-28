@@ -29,6 +29,7 @@ import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.ActionClient;
 import com.axway.ats.agent.webapp.client.RestHelper;
+import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
@@ -122,8 +123,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                             ai.testConfigured = false;
                         } catch (Exception e) {
-                            log.error("Can't send onTestEnd event to ATS agent '" + ai.address
-                                      + "'", e);
+                            log.warn("Could not nofity ATS agent on '" + ai.address
+                                     + "' that testcase has ended. Probably the agent have become unreachable during test execution.",
+                                     e);
                         }
                     }
                 }
@@ -143,7 +145,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
         if (ActiveDbAppender.getCurrentInstance() == null) {
-            // database logger attached/specified in log4j.xml
+            // database logger not attached/specified in log4j.xml
             return;
         }
 
@@ -183,10 +185,11 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             }
 
             for (AgentInfo ai : agentInfosList) {
-                
+
                 log.info("Pushing configuration to ATS Agent at '" + ai.address + "'");
 
-                RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator();
+                RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(ai.address)
+                                                                                                                               .getDbLogLevel());
                 new RemoteConfigurationManager().pushConfiguration(ai.address,
                                                                    remoteLoggingConfigurator);
                 ai.logConfigured = true;

@@ -383,65 +383,6 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
         }
     }
 
-    private Map<String, String> extractPhantomJSCapabilityValues(
-                                                                  String capabiliesString ) {
-
-        Map<String, String> capabilities = new HashMap<String, String>();
-        if (capabiliesString.indexOf('{') > -1) {
-
-            // there are multiple capabilities in format:  {cap 1: value 1}, {cap 2 : value 2}
-            Pattern multipleCapablitiesPattern = Pattern.compile("\\{\\s*([^:]+)\\s*:\\s*([^\\}]+)\\},?");
-            Matcher matcher = multipleCapablitiesPattern.matcher(capabiliesString);
-            while (matcher.find()) {
-                capabilities.put(matcher.group(1).trim(), matcher.group(2).trim());
-            }
-        } else {
-
-            capabilities.put(capabiliesString.substring(0, capabiliesString.indexOf(':')).trim(),
-                             capabiliesString.substring(capabiliesString.indexOf(':') + 1).trim());
-        }
-        return capabilities;
-    }
-
-    private void setFirefoxProxyIfAvailable(
-                                             DesiredCapabilities capabilities ) {
-
-        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
-            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
-
-            capabilities.setCapability(CapabilityType.PROXY,
-                                       new Proxy().setHttpProxy(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST
-                                                                + ':'
-                                                                + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
-        }
-    }
-
-    private void setPhantomJSProxyIfAvailable(
-                                               List<String> cliArgsCapabilities ) {
-
-        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
-            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
-
-            cliArgsCapabilities.add("--proxy=" + AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST + ":"
-                                    + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT);
-            // cliArgsCap.add("--proxy-auth=username:password");
-            // cliArgsCap.add("--proxy-type=http");
-        }
-    }
-
-    // private void waitPageToLoad(
-    // int timeout ) {
-    //
-    // long endLoadTime = System.currentTimeMillis() + timeout;
-    // while( System.currentTimeMillis() - endLoadTime < 0 ) {
-    // if( this.seleniumBrowser.isElementPresent( "//body" ) ) {
-    // return;
-    // }
-    // UiEngineUtilities.sleep( 200 );
-    // }
-    //        throw new SeleniumOperationException( "Html application did not load within " + timeout + " ms" );
-    // }
-
     @Override
     @PublicAtsApi
     public void stop() {
@@ -455,7 +396,7 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
             new File(PhantomJsDriver.cookiesFile).delete();
         }
 
-        log.info("Stoping selenium browser with " + this.getClass().getSimpleName());
+        log.info("Stopping selenium browser with " + this.getClass().getSimpleName());
         webDriver.quit();
     }
 
@@ -606,4 +547,55 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
             throw new ElementNotFoundException(e);
         }
     }
+    
+
+    private void setFirefoxProxyIfAvailable(
+                                             DesiredCapabilities capabilities ) {
+
+        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
+            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
+
+            capabilities.setCapability(CapabilityType.PROXY,
+                                       new Proxy().setHttpProxy(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST
+                                                                + ':'
+                                                                + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT));
+        }
+    }
+
+    @Deprecated
+    private void setPhantomJSProxyIfAvailable(
+                                               List<String> cliArgsCapabilities ) {
+
+        if (!StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST)
+            && !StringUtils.isNullOrEmpty(AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT)) {
+
+            cliArgsCapabilities.add("--proxy=" + AtsSystemProperties.SYSTEM_HTTP_PROXY_HOST + ":"
+                                    + AtsSystemProperties.SYSTEM_HTTP_PROXY_PORT);
+            // cliArgsCap.add("--proxy-auth=username:password");
+            // cliArgsCap.add("--proxy-type=http");
+        }
+    }
+
+    @Deprecated
+    private Map<String, String> extractPhantomJSCapabilityValues(
+                                                                 String capabiliesString ) {
+
+       Map<String, String> capabilities = new HashMap<String, String>();
+       if (capabiliesString.indexOf('{') > -1) {
+
+           // there are multiple capabilities in format:  {cap 1: value 1}, {cap 2 : value 2}
+           Pattern multipleCapablitiesPattern = Pattern.compile("\\{\\s*([^:]+)\\s*:\\s*([^\\}]+)\\},?");
+           Matcher matcher = multipleCapablitiesPattern.matcher(capabiliesString);
+           while (matcher.find()) {
+               capabilities.put(matcher.group(1).trim(), matcher.group(2).trim());
+           }
+       } else {
+
+           capabilities.put(capabiliesString.substring(0, capabiliesString.indexOf(':')).trim(),
+                            capabiliesString.substring(capabiliesString.indexOf(':') + 1).trim());
+       }
+       return capabilities;
+   }
+
+
 }

@@ -15,7 +15,11 @@
  */
 package com.axway.ats.log;
 
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.LogManager;
@@ -29,8 +33,10 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.DbChannel;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
+import com.axway.ats.log.autodb.entities.TestcaseMetainfo;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
 import com.axway.ats.log.autodb.events.AddScenarioMetainfoEvent;
+import com.axway.ats.log.autodb.events.AddTestcaseMetainfoEvent;
 import com.axway.ats.log.autodb.events.CleanupLoadQueueStateEvent;
 import com.axway.ats.log.autodb.events.ClearScenarioMetainfoEvent;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
@@ -61,6 +67,8 @@ import com.axway.ats.log.autodb.events.StartTestCaseEvent;
 import com.axway.ats.log.autodb.events.UpdateRunEvent;
 import com.axway.ats.log.autodb.events.UpdateSuiteEvent;
 import com.axway.ats.log.autodb.events.UpdateTestcaseEvent;
+import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.model.IDbReadAccess;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
 import com.axway.ats.log.model.SystemLogLevel;
@@ -73,13 +81,15 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsDbLogger {
 
-    private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
+    private final static String                  ATS_DB_LOGGER_CLASS_NAME    = AtsDbLogger.class.getName();
 
     /**
      * Flag that is used to log WARN for not attached ATS DB logger only once
      */
     private static boolean      isWarningMessageLogged   = false;
     protected Logger            logger;
+    
+    private Map<Integer, List<TestcaseMetainfo>> testcaseMetainfoPerTestcase = Collections.synchronizedMap(new HashMap<Integer, List<TestcaseMetainfo>>());
 
     private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
 
@@ -643,6 +653,35 @@ public class AtsDbLogger {
 
         sendEvent(new DeleteTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testCaseId));
     }
+    
+    /**
+     * Add some meta info about a testcase.
+     * Must be called inside [@Test/@BeforeMethod/@AfterMethod]
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addTestcaseMetainfo(
+                                     String metaKey,
+                                     String metaValue ) {
+
+         sendEvent(new AddTestcaseMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
+    }
+
+     /**
+     * Add some meta info about a testcase.
+     * Must be called while there is an existing testcase
+     * 
+     * @param metaKey key
+     * @param metaValue value
+     */
+    public void addTestcaseMetainfo(
+                                     int testcaseId,
+                                     String metaKey,
+                                     String metaValue ) {
+
+         sendEvent(new AddTestcaseMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testcaseId, metaKey, metaValue));
+    }
 
     /**
      * Register a thread with the given load queue
@@ -1008,7 +1047,6 @@ public class AtsDbLogger {
         }
     }
     
-    
     private String getNonNullToString(Object obj) {
         if (obj == null ) {
             return "";
@@ -1017,4 +1055,37 @@ public class AtsDbLogger {
         }
         
     }
+    
+    /*
+     * Reading methods
+     * */
+
+     /**
+     * Retrieve {@link TestcaseMetainfo} for a particular testcase. Works on the Test Executor only
+     * @param testcaseId - the testcase ID ( for current testcase ID, invoke {@link ActiveDbAppender#getTestCaseId()})
+     * @param cacheResults - whether to cache the obtained {@link TestcaseMetainfo} list</br>
+     * Note that once you invoke this method with cacheResult = true, 
+     * any changes to the testcase meta info will not be refreshed, but instead you will work with the internal cache only
+     * @return list of {@link TestcaseMetainfo}
+     * @throws DatabaseAccessException
+     * */
+    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId,
+                                                       boolean cacheResult ) throws DatabaseAccessException {
+
+         if (testcaseMetainfoPerTestcase.containsKey(testcaseId)) {
+            synchronized (this) {
+                return testcaseMetainfoPerTestcase.get(testcaseId);
+            }
+        } else {
+            IDbReadAccess dbReadAccess = ActiveDbAppender.getCurrentInstance().obtainDbReadAccessObject();
+            List<TestcaseMetainfo> metainfo = dbReadAccess.getTestcaseMetainfo(testcaseId);
+            if (cacheResult) {
+                synchronized (this) {
+                    testcaseMetainfoPerTestcase.put(testcaseId, metainfo);
+                }
+            }
+            return metainfo;
+        }
+
+     }
  }

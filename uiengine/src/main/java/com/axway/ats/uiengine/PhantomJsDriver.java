@@ -30,9 +30,12 @@ import com.axway.ats.core.utils.IoUtils;
  * <a href="http://phantomjs.org/">PhantomJS</a> browser
  * 
  * <br/>
- * This is a headless(no UI) browser.
+ * This is a headless(no UI) browser.<br />
+ * <em>Note</em> that PahntomJS has no recent updates so it is deprecated and will be removed as supported driver.
+ *
  */
 @PublicAtsApi
+@Deprecated
 public class PhantomJsDriver extends AbstractRealBrowserDriver {
 
     private static Logger         log                        = Logger.getLogger(PhantomJsDriver.class);

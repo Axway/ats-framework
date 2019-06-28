@@ -709,6 +709,52 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             DbUtils.close(connection, callableStatement);
         }
     }
+    
+    /**
+     * Update meta info about an existing test case.
+     *
+     * @param testcaseId
+     * @param metaKey
+     * @param metaValue
+     * @param closeConnection
+     * @throws DatabaseAccessException
+     */
+    public void addTestcaseMetainfo(
+                                     int testcaseId,
+                                     String metaKey,
+                                     String metaValue,
+                                     boolean closeConnection ) throws DatabaseAccessException {
+
+         final String errMsg = "Unable to add testcase meta info '" + metaKey + "=" + metaValue
+                              + "' to testcase for with id " + testcaseId;
+
+         final int indexRowsInserted = 4;
+
+         CallableStatement callableStatement = null;
+        try {
+            refreshInternalConnection();
+
+             callableStatement = connection.prepareCall("{ call sp_add_testcase_metainfo(?, ?, ?, ?) }");
+            callableStatement.setInt(1, testcaseId);
+            callableStatement.setString(2, metaKey);
+            callableStatement.setString(3, metaValue);
+            callableStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
+
+             callableStatement.execute();
+            if (callableStatement.getInt(indexRowsInserted) != 1) {
+                throw new DatabaseAccessException(errMsg);
+            }
+
+         } catch (Exception e) {
+            throw new DatabaseAccessException(errMsg, e);
+        } finally {
+            if (closeConnection) {
+                DbUtils.close(connection, callableStatement);
+            } else {
+                DbUtils.closeStatement(callableStatement);
+            }
+        }
+    }
 
     public int startLoadQueue(
                                String name,

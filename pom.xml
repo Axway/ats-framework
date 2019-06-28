@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.axway.ats.framework</groupId>
@@ -37,7 +38,7 @@
         <maven-surefire-plugin.version>2.19.1</maven-surefire-plugin.version>
         <maven-clean-plugin.version>2.6.1</maven-clean-plugin.version>
         <maven.antrun.plugin.version>1.7</maven.antrun.plugin.version>
-        <maven-enforcer-plugin.version>1.4.1</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0-M2</maven-enforcer-plugin.version>
         <!-- Travis CI plugin versions -->
         <org.apache.maven.plugins.maven.source.plugin.version>2.2.1</org.apache.maven.plugins.maven.source.plugin.version>
         <org.apache.maven.plugins.maven.javadoc.plugin.version>2.9.1</org.apache.maven.plugins.maven.javadoc.plugin.version>
@@ -157,6 +158,32 @@
                 <version>${maven-clean-plugin.version}</version>
             </plugin>
             <plugin>
+               <groupId>org.apache.maven.plugins</groupId>
+               <artifactId>maven-enforcer-plugin</artifactId>
+               <version>${maven-enforcer-plugin.version}</version>
+               <executions>
+                   <execution>
+                       <id>enforce-rules</id>
+                       <phase>validate</phase>
+                       <goals>
+                           <goal>enforce</goal>
+                       </goals>
+                       <configuration>
+                           <rules>
+                               <requireJavaVersion>
+                                   <message>At least Java 8 is required for ATS framework compilation. Most of the target modules (excluding UI Engine) should also run with Java 7 after compilation. The limitations come from third-party dependencies.
+                                   </message>
+                                   <version>${java.version}</version>
+                               </requireJavaVersion>
+                               <requireMavenVersion>
+                                   <version>${maven.min.version}</version>
+                               </requireMavenVersion>
+                           </rules>
+                       </configuration>
+                   </execution>
+               </executions>
+           </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
                 <version>3.0.0</version>
@@ -164,7 +191,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>6.19</version><!-- was 7.5.1, 6.19 is max version to support Java 7 -->
+                        <version>8.19</version><!-- 6.19 is max version to support Java 7 -->
                     </dependency>
                 </dependencies>
                 <executions>
@@ -230,29 +257,6 @@
                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
                </configuration>
-           </plugin>
-           <plugin>
-               <groupId>org.apache.maven.plugins</groupId>
-               <artifactId>maven-enforcer-plugin</artifactId>
-               <version>${maven-enforcer-plugin.version}</version>
-               <executions>
-                   <execution>
-                       <id>enforce-rules</id>
-                       <goals>
-                           <goal>enforce</goal>
-                       </goals>
-                       <configuration>
-                           <rules>
-                               <requireJavaVersion>
-                                   <version>${java.version}</version>
-                               </requireJavaVersion>
-                               <requireMavenVersion>
-                                   <version>${maven.min.version}</version>
-                               </requireMavenVersion>
-                           </rules>
-                       </configuration>
-                   </execution>
-               </executions>
            </plugin>
            <!-- Used only when deploying new release version -->
            <plugin>
