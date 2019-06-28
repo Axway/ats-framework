@@ -1,3 +1,4 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
 <suite name="Run sample Hidden Browser HTML tests" verbose="1">
 
     <test name="Testing with Hidden browser" >

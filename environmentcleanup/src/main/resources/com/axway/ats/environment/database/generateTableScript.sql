@@ -70,19 +70,9 @@ SELECT 'CREATE TABLE ' + @object_name + CHAR(13) + '(' + CHAR(13) + STUFF((
     WHERE c.[object_id] = @object_id
     ORDER BY c.column_id
     FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 2, CHAR(9) + ' ')
-    + ISNULL((SELECT CHAR(9) + ', CONSTRAINT [' + k.name + '] PRIMARY KEY (' + 
-                    (SELECT STUFF((
-                         SELECT ', [' + c.name + '] ' + CASE WHEN ic.is_descending_key = 1 THEN 'DESC' ELSE 'ASC' END
-                         FROM sys.index_columns ic WITH (NOWAIT)
-                         JOIN sys.columns c WITH (NOWAIT) ON c.[object_id] = ic.[object_id] AND c.column_id = ic.column_id
-                         WHERE ic.is_included_column = 0
-                             AND ic.[object_id] = k.parent_object_id 
-                             AND ic.index_id = k.unique_index_id     
-                         FOR XML PATH(N''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 2, ''))
-            + ')' + CHAR(13)
-            FROM sys.key_constraints k WITH (NOWAIT)
-            WHERE k.parent_object_id = @object_id 
-                AND k.[type] = 'PK'), '') + ') <PARTITION_SCHEME_PLACEHOLDER>'  + CHAR(13)
+    + ' <KEY_CONSTRAINTS_PLACEHOLDER> ' + CHAR(13)
+    + ') <PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>'  + CHAR(13)
+    + ' <TABLE_INDEXES_PLACEHOLDER> ' + CHAR(13)
     + ISNULL((SELECT (
         SELECT CHAR(13) +
              'ALTER TABLE ' + @object_name + ' WITH' 
@@ -121,27 +111,5 @@ SELECT 'CREATE TABLE ' + @object_name + CHAR(13) + '(' + CHAR(13) + STUFF((
         JOIN sys.objects ro WITH (NOWAIT) ON ro.[object_id] = fk.referenced_object_id
         WHERE fk.parent_object_id = @object_id
         FOR XML PATH(N''), TYPE).value('.', 'NVARCHAR(MAX)')), '')
-    + ISNULL(((SELECT
-         CHAR(13) + 'CREATE' + CASE WHEN i.is_unique = 1 THEN ' UNIQUE' ELSE '' END 
-                + ' NONCLUSTERED INDEX [' + i.name + '] ON ' + @object_name + ' (' +
-                STUFF((
-                SELECT ', [' + c.name + ']' + CASE WHEN c.is_descending_key = 1 THEN ' DESC' ELSE ' ASC' END
-                FROM index_column c
-                WHERE c.is_included_column = 0
-                    AND c.index_id = i.index_id
-                FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 2, '') + ')'  
-                + ISNULL(CHAR(13) + 'INCLUDE (' + 
-                    STUFF((
-                    SELECT ', [' + c.name + ']'
-                    FROM index_column c
-                    WHERE c.is_included_column = 1
-                        AND c.index_id = i.index_id
-                    FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)'), 1, 2, '') + ')', '')  + CHAR(13)
-        FROM sys.indexes i WITH (NOWAIT)
-        WHERE i.[object_id] = @object_id
-            AND i.is_primary_key = 0
-            AND i.[type] = 2
-        FOR XML PATH(''), TYPE).value('.', 'NVARCHAR(MAX)')
-    ), '')
 
 GO

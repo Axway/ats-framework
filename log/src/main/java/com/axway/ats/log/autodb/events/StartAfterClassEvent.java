@@ -30,7 +30,9 @@ public class StartAfterClassEvent extends AbstractLoggingEvent {
 
     @Override
     protected LifeCycleState getExpectedLifeCycleState( LifeCycleState state ) {
-
+        /* This event is fired after a suite is already closed,
+           since ATS (AtsTestngListener) could not be certain that @AfterClass will be available
+         */
         return LifeCycleState.ATLEAST_RUN_STARTED;
     }
 

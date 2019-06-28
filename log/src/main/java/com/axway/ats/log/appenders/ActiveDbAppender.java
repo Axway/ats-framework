@@ -22,17 +22,25 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.core.dbaccess.DbConnection;
+import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.EventProcessorState;
+import com.axway.ats.log.autodb.PGDbReadAccess;
+import com.axway.ats.log.autodb.SQLServerDbReadAccess;
 import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
+import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
- * This appender is capable of arranging the database storage and storing messages into it.
- * It works on the Test Executor side.
+ * This appender is capable of arranging the database storage and storing
+ * messages into it. It works on the Test Executor side.
  */
 public class ActiveDbAppender extends AbstractDbAppender {
 
@@ -40,22 +48,29 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     public static boolean             isAttached                               = false;
 
-    /** enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated Java methods **/
+    /**
+     * enables/disabled logging of messages from @BeforeXXX and @AfterXXX annotated
+     * Java methods
+     **/
     public static boolean             isBeforeAndAfterMessagesLoggingSupported = false;
 
     /**
-     * Holds information about the run (id, name, etc)
-     * <br>The information is populated inside {@link DbEventRequestProcessor} startRun method
-     * <br> Even when we have parallel test execution, the starting and ending of a Run,
-     * is performed on the main thread, so this is where we populate the run information.
-     * <br> Each other thread does not have that Run information.
-     * */
+     * Holds information about the run (id, name, etc) <br>
+     * The information is populated inside {@link DbEventRequestProcessor} startRun
+     * method <br>
+     * Even when we have parallel test execution, the starting and ending of a Run,
+     * is performed on the main thread, so this is where we populate the run
+     * information. <br>
+     * Each other thread does not have that Run information.
+     */
     public static EventProcessorState runState                                 = new EventProcessorState();
 
     public static final String        DUMMY_DB_HOST                            = "ATS_NO_DB_HOST_SET";
     public static final String        DUMMY_DB_DATABASE                        = "ATS_NO_DB_NAME_SET";
     public static final String        DUMMY_DB_USER                            = "ATS_NO_DB_USER_SET";
     public static final String        DUMMY_DB_PASSWORD                        = "ATS_NO_DB_PASSWORD_SET";
+
+    private static IDbReadAccess      dbReadAccess;
 
     /**
      * Constructor
@@ -64,8 +79,9 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         super();
 
-        /** create dummy appender configuration 
-         *  This configuration will be replaced with one from log4j.xml file
+        /**
+         * create dummy appender configuration This configuration will be replaced with
+         * one from log4j.xml file
          **/
         appenderConfig.setHost(DUMMY_DB_HOST);
         appenderConfig.setDatabase(DUMMY_DB_DATABASE);
@@ -73,12 +89,14 @@ public class ActiveDbAppender extends AbstractDbAppender {
         appenderConfig.setPassword(DUMMY_DB_PASSWORD);
 
         isAttached = true;
-        
 
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+    /*
+     * (non-Javadoc)
+     * 
+     * @see
+     * org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
      */
     @Override
     protected void append( LoggingEvent event ) {
@@ -104,6 +122,68 @@ public class ActiveDbAppender extends AbstractDbAppender {
         // get current test case id which will be passed to ATS agent
         event.setTestCaseState(channel.testCaseState);
         return event;
+    }
+
+    /**
+     * Get {@link IDbReadAccess} using the appender's db configuration
+     * 
+     * @throws DatabaseAccessException
+     */
+    public IDbReadAccess obtainDbReadAccessObject() throws DatabaseAccessException {
+
+        DbConnection dbConnection = null;
+        if (dbReadAccess == null) {
+            Exception mssqlException = null;
+            try {
+                DbUtils.checkMssqlDatabaseAvailability(appenderConfig.getHost(),
+                                                       Integer.parseInt(appenderConfig.getPort()),
+                                                       appenderConfig.getDatabase(),
+                                                       appenderConfig.getUser(),
+                                                       appenderConfig.getPassword());
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            if (mssqlException == null) {
+
+                dbConnection = new DbConnSQLServer(appenderConfig.getHost(), Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(), appenderConfig.getUser(),
+                                                   appenderConfig.getPassword(), null);
+
+                // create the db access layer
+                dbReadAccess = new SQLServerDbReadAccess((DbConnSQLServer) dbConnection);
+
+            } else {
+                Exception pgsqlException = null;
+                try {
+                    DbUtils.checkPgsqlDatabaseAvailability(appenderConfig.getHost(),
+                                                           Integer.parseInt(appenderConfig.getPort()),
+                                                           appenderConfig.getDatabase(),
+                                                           appenderConfig.getUser(),
+                                                           appenderConfig.getPassword());
+                } catch (Exception e) {
+                    pgsqlException = e;
+                }
+
+                if (pgsqlException == null) {
+                    dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
+                                                        Integer.parseInt(appenderConfig.getPort()),
+                                                        appenderConfig.getDatabase(),
+                                                        appenderConfig.getUser(), appenderConfig.getPassword(), null);
+
+                    // create the db access layer
+                    dbReadAccess = new PGDbReadAccess((DbConnPostgreSQL) dbConnection);
+                } else {
+                    String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                                    + appenderConfig.getPort() + "' has database with name '"
+                                    + appenderConfig.getDatabase()
+                                    + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                    + "\n\nException for PostgreSQL is: \n\t" + pgsqlException;
+                    throw new DatabaseAccessException(errMsg);
+                }
+            }
+        }
+        return dbReadAccess;
     }
 
     public String getHost() {
@@ -157,8 +237,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
     }
 
     /**
-     * This method doesn't create a new instance,
-     * but returns the already created one (from log4j) or null if there is no such.
+     * This method doesn't create a new instance, but returns the already created
+     * one (from log4j) or null if there is no such.
      *
      * @return the current DB appender instance
      */
@@ -183,12 +263,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
         }
 
         /*
-         * Configuration in log4j.xml file was not found for ActiveDbAppender
-         * A dummy DbAppenderConfiguration will be provided
-         * in order to prevent NPE when invoking methods such as getRunId()
+         * Configuration in log4j.xml file was not found for ActiveDbAppender A dummy
+         * DbAppenderConfiguration will be provided in order to prevent NPE when
+         * invoking methods such as getRunId()
          */
-        new AtsConsoleLogger(ActiveDbAppender.class).warn(
-                                                          "ATS Database appender is not specified in log4j.xml file. "
+        new AtsConsoleLogger(ActiveDbAppender.class).warn("ATS Database appender is not specified in log4j.xml file. "
                                                           + "Methods such as ActiveDbAppender@getRunId() will not work.");
 
         isAttached = false;
@@ -216,7 +295,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 executorId = ((ImportantThread) thisThread).getExecutorId();
             } else {
                 // use the thread name
-                executorId = thisThread.getId()+"";
+                executorId = thisThread.getId() + "";
             }
         }
 

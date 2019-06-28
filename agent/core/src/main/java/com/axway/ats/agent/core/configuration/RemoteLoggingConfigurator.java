@@ -57,17 +57,6 @@ public class RemoteLoggingConfigurator implements Configurator {
     /**
      * We will try to find if a DB appender has been configured on the local system
      * 
-     * @param atsAgent the Agent to configure
-     */
-    public RemoteLoggingConfigurator() {
-
-        this(null);
-    }
-
-    /**
-     * We will try to find if a DB appender has been configured on the local system
-     * 
-     * @param atsAgent the Agent to configure
      * @param customLogLevel log level specified in the test
      */
     @SuppressWarnings( "unchecked")

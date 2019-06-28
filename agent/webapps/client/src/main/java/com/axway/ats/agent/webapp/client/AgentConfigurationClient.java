@@ -144,9 +144,9 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setLogLevel( LogLevel logLevel ) throws AgentException {
 
-        AgentConfigurationLandscape.getInstance( atsAgent ).setDbLogLevel( logLevel );
+        AgentConfigurationLandscape.getInstance(atsAgent).setDbLogLevel(logLevel);
 
-        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator( logLevel );
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(logLevel);
 
         applyConfiguration(rlc);
     }
@@ -258,7 +258,7 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void useHttpsConnection() {
 
-        AgentConfigurationLandscape.getInstance( atsAgent ).setConnectionProtocol( "https" );
+        AgentConfigurationLandscape.getInstance(atsAgent).setConnectionProtocol("https");
     }
 
     /**

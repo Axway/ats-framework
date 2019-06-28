@@ -78,6 +78,14 @@ public class FileTransferClient {
     /** Property for customizing the HTTP/HTTPS client's socket buffer in bytes */
     @PublicAtsApi
     public final static String    HTTP_HTTPS_SOCKET_BUFFER_SIZE                    = FileTransferHttpClient.SOCKET_BUFFER_SIZE;
+
+    /** Property for customizing the HTTP/HTTPS client's request <strong>Transfer-Encoding</strong>.<br/> 
+     *  Currently only supported value is <strong>chunked</strong>
+     *  */
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_TRANSFER_ENCODING_MODE                = FileTransferHttpClient.TRANSFER_ENCODING_MODE;
+    @PublicAtsApi
+    public final static String    HTTP_HTTPS_TRANSFER_ENCODING_MODE__CHUNKED       = FileTransferHttpClient.TRANSFER_ENCODING_MODE_CHUNKED;
     /**
      * Constants for setting HTTP/HTTPS client's upload method.
      * The default value is PUT

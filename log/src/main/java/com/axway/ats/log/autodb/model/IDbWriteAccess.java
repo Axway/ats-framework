@@ -21,13 +21,13 @@ import com.axway.ats.log.autodb.CheckpointInfo;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public interface IDbWriteAccess {
-    
+
     /**
      * Specify max number of events to be collected for batch mode.
      * <p>Should be invoked before any insert event is invoked.</p>
      * @param maxNumberOfCachedEvents
      */
-    public void setMaxNumberOfCachedEvents(int maxNumberOfCachedEvents);
+    public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents );
 
     /**
      * Insert a new run in the database
@@ -101,6 +101,9 @@ public interface IDbWriteAccess {
                              boolean closeConnection ) throws DatabaseAccessException;
 
     public void addScenarioMetainfo( int testcaseId, String metaKey, String metaValue,
+                                     boolean closeConnection ) throws DatabaseAccessException;
+
+    public void addTestcaseMetainfo( int testcaseId, String metaKey, String metaValue,
                                      boolean closeConnection ) throws DatabaseAccessException;
 
     public void clearScenarioMetainfo(

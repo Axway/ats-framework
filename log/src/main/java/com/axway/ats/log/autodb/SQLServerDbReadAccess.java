@@ -44,6 +44,7 @@ import com.axway.ats.log.autodb.entities.Statistic;
 import com.axway.ats.log.autodb.entities.StatisticDescription;
 import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.autodb.entities.Testcase;
+import com.axway.ats.log.autodb.entities.TestcaseMetainfo;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
@@ -1540,12 +1541,12 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
             statement = connection.prepareStatement("SELECT * FROM tScenarioMetainfo WHERE scenarioId = " + scenarioId);
             rs = statement.executeQuery();
             while (rs.next()) {
-                ScenarioMetaInfo runMetainfo = new ScenarioMetaInfo();
-                runMetainfo.metaInfoId = rs.getInt("metaInfoId");
-                runMetainfo.scenarioId = rs.getInt("scenarioId");
-                runMetainfo.name = rs.getString("name");
-                runMetainfo.value = rs.getString("value");
-                scenarioMetaInfoList.add(runMetainfo);
+                ScenarioMetaInfo scenarioMetainfo = new ScenarioMetaInfo();
+                scenarioMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                scenarioMetainfo.scenarioId = rs.getInt("scenarioId");
+                scenarioMetainfo.name = rs.getString("name");
+                scenarioMetainfo.value = rs.getString("value");
+                scenarioMetaInfoList.add(scenarioMetainfo);
             }
         } catch (Exception e) {
             throw new DatabaseAccessException("Error retrieving scenario metainfo for scenario with id '" + scenarioId
@@ -1556,6 +1557,35 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         }
 
         return scenarioMetaInfoList;
+    }
+
+    @Override
+    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId ) throws DatabaseAccessException {
+
+        List<TestcaseMetainfo> list = new ArrayList<>();
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+            statement = connection.prepareStatement("SELECT * FROM tTestcaseMetainfo WHERE testcaseId = " + testcaseId);
+            rs = statement.executeQuery();
+            while (rs.next()) {
+                TestcaseMetainfo testcaseMetainfo = new TestcaseMetainfo();
+                testcaseMetainfo.metaInfoId = rs.getInt("metaInfoId");
+                testcaseMetainfo.testcaseId = rs.getInt("testcaseId");
+                testcaseMetainfo.name = rs.getString("name");
+                testcaseMetainfo.value = rs.getString("value");
+                list.add(testcaseMetainfo);
+            }
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error retrieving testcase metainfo for testcase with id '" + testcaseId
+                                              + "'", e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
+        }
+
+        return list;
     }
 
 }

@@ -40,7 +40,7 @@ public class RetryAnalyzer implements IRetryAnalyzer {
      * The value is static, so can easily be retrieved from our TestNG listeners. That is ok as no more
      * than one instance of this class exists at a time.
      */
-    private static int               passedRuns;
+    private static int               passedRuns; //FIXME: possible problem when tests are run in parallel
 
     public RetryAnalyzer() {
 

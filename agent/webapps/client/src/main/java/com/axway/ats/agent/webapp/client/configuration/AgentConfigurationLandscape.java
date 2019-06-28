@@ -70,10 +70,10 @@ public class AgentConfigurationLandscape {
      */
     public static synchronized AgentConfigurationLandscape getInstance( String agent ) {
 
-        AgentConfigurationLandscape instance = instances.get( agent );
-        if( instance == null ) {
+        AgentConfigurationLandscape instance = instances.get(agent);
+        if (instance == null) {
             instance = new AgentConfigurationLandscape();
-            instances.put( agent, instance );
+            instances.put(agent, instance);
         }
 
         return instance;
@@ -86,12 +86,12 @@ public class AgentConfigurationLandscape {
      */
     public void cacheConfigurator( Configurator configurator ) {
 
-        if( configurator instanceof RemoteLoggingConfigurator ) {
-            loggingConfigurator = ( RemoteLoggingConfigurator ) configurator;
-        } else if( configurator instanceof AgentConfigurator ) {
-            agentConfigurator = ( AgentConfigurator ) configurator;
-        } else if( configurator instanceof GenericAgentConfigurator ) {
-            genericConfigurator = ( GenericAgentConfigurator ) configurator;
+        if (configurator instanceof RemoteLoggingConfigurator) {
+            loggingConfigurator = (RemoteLoggingConfigurator) configurator;
+        } else if (configurator instanceof AgentConfigurator) {
+            agentConfigurator = (AgentConfigurator) configurator;
+        } else if (configurator instanceof GenericAgentConfigurator) {
+            genericConfigurator = (GenericAgentConfigurator) configurator;
         }
     }
 

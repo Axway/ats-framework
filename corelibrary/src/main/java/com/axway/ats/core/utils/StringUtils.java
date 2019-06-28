@@ -43,10 +43,11 @@ public class StringUtils {
     /**
      * Escapes non-printable characters (ASCII code is < 32)
      * 
-     * @param string the String whom content will be escaped
+     * @param string the String which will be checked
      * @returns the String with escaped non-printable characters
      */
     public static String escapeNonPrintableAsciiCharacters(String message) {
+
 		char[] escapedMessage = message.toCharArray();
 		for (int i = 0; i < escapedMessage.length; i++) {
 			int asciiCode = (int) escapedMessage[i];
@@ -61,10 +62,12 @@ public class StringUtils {
 	}
     
     /**
-     * Tests if a string is null or empty
+     * Tests if a string is null or empty. It does not perform trimming of spaces/whitespace characters.
+     * {@link org.apache.commons.lang3.StringUtils#isBlank(CharSequence)} could be used for trimming. It handles more 
+     * whitespace separators (see its JavaDoc)
      *
-     * @param string
-     * @return if we provided a null or empty string
+     * @param string to be checked
+     * @return true only if null or empty string is provided
      */
     public static boolean isNullOrEmpty( String string ) {
 
