@@ -35,7 +35,8 @@ public class BaseRestServiceImpl {
     */
 
     /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
-    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(), true);
+    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
+                                                                               true);
 
     protected static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());
 
@@ -71,7 +72,7 @@ public class BaseRestServiceImpl {
                 sessions.put(uid, sd);
             } else {
                 throw new SessionNotFoundException("Could not obtain session with uid '" + uid
-                                                   + "'. Please consult the documentation.");
+                                                   + "'. It is possible that the agent had been restarted so no sessions are available");
             }
         }
         sd.updateLastUsedFlag();

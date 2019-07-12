@@ -256,7 +256,8 @@ public class SystemMonitor {
 
     private Map<String, RestHelper> restHelpers;
 
-    private boolean                 isStarted = false;
+    private boolean                 isStarted      = false;
+    private boolean                 alreadyStopped = false;
 
     /* keeps track if which agents are already configured 
      * (e.g. DB connection and join testcase has been executed on the agent 
@@ -619,7 +620,7 @@ public class SystemMonitor {
     }
 
     /**
-     * Stop all monitoring activity
+     * Stop all monitoring activity.</br>Note that after this call, the current instance could not be used anymore.
      */
     @PublicAtsApi
     public void stopMonitoring() {
@@ -646,6 +647,8 @@ public class SystemMonitor {
         }
 
         isStarted = false;
+        alreadyStopped = true;
+
     }
 
     /**
@@ -769,8 +772,8 @@ public class SystemMonitor {
                                                      new Object[]{ null,
                                                                    testCaseState.getRunId(),
                                                                    testCaseState.getTestcaseId(),
-                                                                   testCaseState.getLastExecutedTestcaseId()});
-        
+                                                                   testCaseState.getLastExecutedTestcaseId() });
+
         boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
                                                                                      true);
         if (configureAgentExplicitely) {
@@ -782,7 +785,7 @@ public class SystemMonitor {
                                               + "'", e);
             }
         }
-        
+
         if (!StringUtils.isNullOrEmpty(errorMsg)) {
             throw new MonitoringException(errorMsg);
         }
@@ -882,6 +885,11 @@ public class SystemMonitor {
                                                String relativeUri,
                                                String errorMessage,
                                                Object[] values ) {
+
+        if (alreadyStopped) {
+            throw new MonitoringException("SystemMonitor.stopMonitoring() has already been invoked on this instance. "
+                                          + "This instance of SystemMonitor could not be used anymore");
+        }
 
         RestHelper helper = null;
         RestResponse response = null;
