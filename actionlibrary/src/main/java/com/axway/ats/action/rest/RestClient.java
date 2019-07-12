@@ -15,12 +15,15 @@
  */
 package com.axway.ats.action.rest;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -42,9 +45,25 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.config.Registry;
+import org.apache.http.config.RegistryBuilder;
+import org.apache.http.conn.HttpClientConnectionManager;
+import org.apache.http.conn.HttpConnectionFactory;
+import org.apache.http.conn.socket.ConnectionSocketFactory;
+import org.apache.http.conn.socket.PlainConnectionSocketFactory;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.apache.http.ssl.TrustStrategy;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
+import org.glassfish.jersey.media.multipart.MultiPartMediaTypes;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.exceptions.RestException;
@@ -57,7 +76,7 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * A utility class for working with REST requests and responses
  *
- * <br/><br/>
+ * <br/><br/>   
  * <b>User guide</b> page related to this class is
  * <a href="https://axway.github.io/ats-framework/REST-Operations.html">here</a>
  *
@@ -100,62 +119,57 @@ public class RestClient {
         public static final int ALL        = HEADERS | BODY;
     }
 
-    private int                        debugLevel                     = RESTDebugLevel.TARGET_URI;
+    private int                       debugLevel                         = RESTDebugLevel.TARGET_URI;
 
-    private static final Logger        log                            = Logger.getLogger(RestClient.class);
+    public static final String        APACHE_CONNECTOR_CLASSNAME         = "org.glassfish.jersey.apache.connector.ApacheConnectorProvider";
+    public static final String        APACHE_CLIENT_PROPERTIES_CLASSNAME = "org.glassfish.jersey.apache.connector.ApacheClientProperties";
 
-    private Client                     client;
+    private static final String       APACHE_HTTP_HEADERS_LOGGER_NAME    = "org.apache.http.headers";
+    private static final String       APACHE_HTTP_WIRE_LOGGER_NAME       = "org.apache.http.wire";
 
-    private String                     uri;
-    private List<String>               resourcePath                   = new ArrayList<String>();
-    private Map<String, List<Object>>  requestHeaders                 = new HashMap<String, List<Object>>();
+    private static final Logger       log                                = Logger.getLogger(RestClient.class);
 
-    private Map<String, List<String>>  requestParameters              = new HashMap<String, List<String>>();
+    private static final String       COOKIE_HEADER_VALUE_DELIMITER      = "; ";
 
-    private String                     requestMediaType;
-    private String                     requestMediaCharset;
+    private static boolean            verbosityLevelMessageLogged        = false;
 
-    private String                     responseMediaType;
-    private String                     responseMediaCharset;
+    private static boolean            bodyOnlyDebugLevelMessageLogged    = false;
 
-    private List<Cookie>               cookies                        = new ArrayList<Cookie>();
+    private Client                    client;
+    private WebTarget                 webTarget;
+    private Invocation.Builder        invocationBuilder;
+
+    private String                    uri;
+    private List<String>              resourcePath                       = new ArrayList<String>();
+    private Map<String, List<Object>> requestHeaders                     = new HashMap<String, List<Object>>();
+
+    private Map<String, List<String>> requestParameters                  = new HashMap<String, List<String>>();
+
+    private Object                    requestMediaType;
+    private String                    requestMediaCharset;
+
+    private String                    responseMediaType;
+    private String                    responseMediaCharset;
+
+    private List<Cookie>              cookies                            = new ArrayList<Cookie>();
 
     // Basic authorization info
-    private String                     username;
-    private String                     password;
+    private String                    username;
+    private String                    password;
 
-    private String[]                   supportedProtocols             = new String[]{ "TLSv1.2" };
+    private String[]                  supportedProtocols                 = new String[]{ "TLSv1.2" };
 
-    private RestClientConfigurator     clientConfigurator             = new RestClientConfigurator();
+    private RestClientConfigurator    clientConfigurator                 = new RestClientConfigurator();
 
-    private boolean                    requestFilterNeedsRegistration = false;
+    private boolean                   requestFilterNeedsRegistration     = false;
 
-    private boolean                    requestFilterAlreadyRegistered = false;
+    private boolean                   requestFilterAlreadyRegistered     = false;
 
-    /**
-     * There is a memory leak in the way Jersey uses HK2's PerThreadContext class
-     * https://java.net/jira/browse/JERSEY-2830
-     * https://java.net/jira/browse/JERSEY-2463
-     * https://java.net/jira/browse/HK2-205
-     *
-     * The leak is present when many instances of the Jersey client are created.
-     * Within hours of tests it can easily eat 1GB memory.
-     * The issue is not resolved until Jersey 2.19
-     *
-     * It is suggested to use just one instance of Jersey client, but in our case this is not good
-     * as in some cases you will need to use different parameters which set the client behavior.
-     *
-     * So here we make a map of clients, so same clients can be reused.
-     *
-     * Jersey methods are synchronized internally so same client can be used by many threads in performance tests,
-     * but this is still not good enough as this synchronization will slow down the executions.
-     *
-     *  FIXME: remove this code when the fix is available
-     */
-    private static Map<String, Client> clients                        = new HashMap<String, Client>();
+    private boolean                   bufferResponse                     = false;
 
-    /* Used to remove JerseyClient instance from map, when disconnect() is invoked */
-    private String                     finalClientIdKey               = null;
+    private boolean                   invalidateClient                   = true;
+
+    private boolean                   usePooling                         = false;
 
     /**
      * Constructor not specifying the target URI.
@@ -200,16 +214,19 @@ public class RestClient {
          */
         if (this.client != null) {
             this.client.close();
+            this.client = null;
+            this.invocationBuilder = null;
+            this.webTarget = null;
+            this.invalidateClient = true;
             /* After invoking close() on the JerseyClient instance,
              * we must remove it from the map,
              * because all of its resources are deallocated and the client is not usable anymore
-            */
-            clients.remove(finalClientIdKey);
+             */
         }
     }
 
     /**
-     * This gives you another instance of same client.
+     * This gives you another instance of same client, except session-related information (cookies are not copied)
      *
      * For example if need to work with 2 identical client copies, but each of them pointing to a different HTTP resources.
      * Using this method you will not need to repeat the steps for setting headers, request parameters, authentication info, etc.
@@ -250,11 +267,23 @@ public class RestClient {
         newClient.clientConfigurator = this.clientConfigurator.newCopy();
 
         newClient.cookies = new ArrayList<Cookie>();
-        for (Cookie cookie : this.cookies) {
+        /*for (Cookie cookie : this.cookies) {
             newClient.cookies.add(cookie);
-        }
+        }*/
+        //newClient.client = this.client;
+        //newClient.webTarget = this.webTarget;
+        //newClient.invocationBuilder = this.invocationBuilder;
 
         newClient.supportedProtocols = this.supportedProtocols;
+
+        //newClient.debugLevel = this.debugLevel;
+        newClient.setVerboseMode(this.debugLevel);
+
+        newClient.bufferResponse = this.bufferResponse;
+
+        newClient.invalidateClient = true;//this.invalidateClient;
+
+        newClient.usePooling = this.usePooling;
 
         return newClient;
     }
@@ -314,6 +343,10 @@ public class RestClient {
 
         this.uri = uri;
 
+        // should we clear some cookies as well, since a new URI is set?
+
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -331,6 +364,8 @@ public class RestClient {
         this.username = username;
         this.password = password;
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -341,9 +376,13 @@ public class RestClient {
      *
      * @param supportedProtocols preferred protocols. <em>Note</em> that currently only the first one will be used!
      */
-    public void setSupportedProtocols( String[] supportedProtocols ) {
+    public RestClient setSupportedProtocols( String[] supportedProtocols ) {
 
         this.supportedProtocols = supportedProtocols;
+
+        this.invalidateClient = true;
+
+        return this;
     }
 
     /**
@@ -376,6 +415,7 @@ public class RestClient {
                 for (String token : resourcePathToken.split("/")) {
                     if (token.length() > 0) {
                         this.resourcePath.add(token);
+                        this.invalidateClient = true;
                     }
                 }
             }
@@ -411,6 +451,8 @@ public class RestClient {
             requestHeaders.put(name, values);
         }
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -441,6 +483,8 @@ public class RestClient {
             values.add(value);
             requestHeaders.put(name, values);
         }
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -473,6 +517,8 @@ public class RestClient {
             requestHeaders.put(name, values);
         }
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -490,6 +536,8 @@ public class RestClient {
         List<Object> values = new ArrayList<>();
         values.add(value);
         requestHeaders.put(name, values);
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -519,6 +567,8 @@ public class RestClient {
         if (!atLeastOneHeaderFound) {
             log.warn("Header with name '" + name
                      + "' will not be removed since it was not found in request headers.");
+        } else {
+            this.invalidateClient = true;
         }
 
         return this;
@@ -541,6 +591,7 @@ public class RestClient {
             for (String name : names) {
                 if (key.equalsIgnoreCase(name)) {
                     keys.remove();
+                    this.invalidateClient = true;
                 }
             }
         }
@@ -571,6 +622,8 @@ public class RestClient {
 
         requestParameters.put(name, valuesList);
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -589,6 +642,8 @@ public class RestClient {
     public RestClient addRequestParameter( String name, List<String> values ) {
 
         requestParameters.put(name, values);
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -610,6 +665,8 @@ public class RestClient {
             this.requestParameters.put(valueEntry.getKey(), valueEntry.getValue());
         }
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -629,6 +686,7 @@ public class RestClient {
             String key = keys.next();
             if (key.equals(name)) {
                 keys.remove();
+                this.invalidateClient = true;
                 return this;
             }
         }
@@ -657,6 +715,7 @@ public class RestClient {
             for (String name : names) {
                 if (key.equals(name)) {
                     keys.remove();
+                    this.invalidateClient = true;
                 }
             }
         }
@@ -676,6 +735,8 @@ public class RestClient {
 
         this.cookies.add(cookie);
 
+        this.invalidateClient = true;
+
         return this;
     }
 
@@ -688,6 +749,8 @@ public class RestClient {
     public RestClient clearCookies() {
 
         this.cookies.clear();
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -704,6 +767,20 @@ public class RestClient {
     public RestClient setRequestMediaType( String mediaType ) {
 
         this.requestMediaType = RestMediaType.checkValueIsValid(mediaType);
+
+        switch ((String) this.requestMediaType) {
+            case RestMediaType.MULTIPART_FORM_DATA:
+                this.requestMediaType = MultiPartMediaTypes.createFormData().toString();
+                break;
+            case RestMediaType.MULTIPART_MIXED:
+                this.requestMediaType = MultiPartMediaTypes.createMixed().toString();
+                break;
+            default:
+                // do nothing
+                break;
+        }
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -722,7 +799,22 @@ public class RestClient {
     public RestClient setRequestMediaType( String mediaType, String mediaCharset ) {
 
         this.requestMediaType = RestMediaType.checkValueIsValid(mediaType);
+
+        switch ((String) this.requestMediaType) {
+            case RestMediaType.MULTIPART_FORM_DATA:
+                this.requestMediaType = MultiPartMediaTypes.createFormData().toString();
+                break;
+            case RestMediaType.MULTIPART_MIXED:
+                this.requestMediaType = MultiPartMediaTypes.createMixed().toString();
+                break;
+            default:
+                // do nothing
+                break;
+        }
+
         this.requestMediaCharset = mediaCharset;
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -739,6 +831,8 @@ public class RestClient {
     public RestClient setResponseMediaType( String mediaType ) {
 
         this.responseMediaType = RestMediaType.checkValueIsValid(mediaType);
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -757,6 +851,8 @@ public class RestClient {
 
         this.responseMediaType = RestMediaType.checkValueIsValid(mediaType);
         this.responseMediaCharset = mediaCharset;
+
+        this.invalidateClient = true;
 
         return this;
     }
@@ -777,30 +873,52 @@ public class RestClient {
      * Execute any HTTP method
      *
      * @param httpMethod the HTTP method name(for example GET or POST)
-     * @param bodyContent the request body content(pass null if none)
+     * @param bodyContent the request body content(pass null if no body required)
      * @return the response
      */
     @PublicAtsApi
     public RestResponse execute( String httpMethod, Object bodyContent ) {
 
+        if (this.invalidateClient) {
+            constructInvocationBuilder("execute " + httpMethod
+                                       + " against", false);
+            this.invalidateClient = false;
+        }
         // execute HTTP method
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("execute " + httpMethod
-                                                                          + " against", false);
-        RestResponse response;
+        RestResponse response = null;
+        String errorMessage = "Content type is not set! Content type is mandatory for POST or PUT.";
         if (bodyContent != null) {
-            if ( ("put".equalsIgnoreCase(httpMethod) || "post".equalsIgnoreCase(httpMethod))
-                 && StringUtils.isNullOrEmpty(requestMediaType)) {
-                throw new RestException("Content type is not set! Content type is mandatory for PUT and POST.");
+            if (this.requestMediaType == null) {
+                throw new RestException(errorMessage);
+            }
+            if (this.requestMediaType instanceof String) {
+                if (StringUtils.isNullOrEmpty((String) requestMediaType)) {
+                    throw new RestException(errorMessage);
+                }
+                response = new RestResponse(invocationBuilder.method(httpMethod,
+                                                                     Entity.entity(getActualBodyObject(bodyContent),
+                                                                                   RestMediaType.toMediaType((String) requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else if (this.requestMediaType instanceof MediaType) {
+                this.requestMediaType = ((MediaType) this.requestMediaType).withCharset(this.requestMediaCharset);
+                response = new RestResponse(invocationBuilder.method(httpMethod,
+                                                                     Entity.entity(getActualBodyObject(bodyContent),
+                                                                                   (MediaType) this.requestMediaType),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else {
+                throw new IllegalArgumentException("Could not construct Content-Type from object of class '"
+                                                   + this.requestMediaType.getClass() + "'");
             }
 
-            response = new RestResponse(invocationBuilder.method(httpMethod,
-                                                                 Entity.entity(getActualBodyObject(bodyContent),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
         } else {
-            response = new RestResponse(invocationBuilder.method(httpMethod, Response.class));
+            response = new RestResponse(invocationBuilder.method(httpMethod, Response.class), this.bufferResponse);
         }
+
+        logRESTResponse(response);
+        initInternalVariables();
 
         logRESTResponse(response);
         initInternalVariables();
@@ -817,9 +935,13 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse get() {
 
+        if (this.invalidateClient) {
+            constructInvocationBuilder("GET from", false);
+            this.invalidateClient = false;
+        }
+
         // execute GET
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("GET from", false);
-        RestResponse response = new RestResponse(invocationBuilder.get());
+        RestResponse response = new RestResponse(invocationBuilder.get(), this.bufferResponse);
 
         logRESTResponse(response);
         initInternalVariables();
@@ -837,20 +959,42 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse postObject( Object object ) {
 
+        if (this.invalidateClient) {
+            constructInvocationBuilder("POST object to", false);
+            this.invalidateClient = false;
+        }
+
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST object to", false);
-        RestResponse response;
+        RestResponse response = null;
+        String errorMessage = "Content type is not set! Content type is mandatory for POST.";
         if (object != null) {
-            if (StringUtils.isNullOrEmpty(requestMediaType)) {
-                throw new RestException("Content type is not set! Content type is mandatory for POST.");
+            if (this.requestMediaType == null) {
+                throw new RestException(errorMessage);
             }
-            response = new RestResponse(invocationBuilder.method("POST",
-                                                                 Entity.entity(getActualBodyObject(object),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
+            if (this.requestMediaType instanceof String) {
+                if (StringUtils.isNullOrEmpty((String) requestMediaType)) {
+                    throw new RestException(errorMessage);
+                }
+                response = new RestResponse(invocationBuilder.method("POST",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   RestMediaType.toMediaType((String) requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else if (this.requestMediaType instanceof MediaType) {
+                this.requestMediaType = ((MediaType) this.requestMediaType).withCharset(this.requestMediaCharset);
+                response = new RestResponse(invocationBuilder.method("POST",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   (MediaType) this.requestMediaType),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else {
+                throw new IllegalArgumentException("Could not construct Content-Type from object of class '"
+                                                   + this.requestMediaType.getClass() + "'");
+            }
+
         } else {
-            response = new RestResponse(invocationBuilder.method("POST", Response.class));
+            response = new RestResponse(invocationBuilder.method("POST", Response.class), this.bufferResponse);
         }
 
         logRESTResponse(response);
@@ -869,10 +1013,15 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse postForm( RestForm restForm ) {
 
+        if (this.invalidateClient) {
+            constructInvocationBuilder("POST form to", false);
+            this.invalidateClient = false;
+        }
+
         // execute POST
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("POST form to", false);
         RestResponse response = new RestResponse(invocationBuilder.post(Entity.entity(restForm.getForm(),
-                                                                                      MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
+                                                                                      MediaType.APPLICATION_FORM_URLENCODED_TYPE)),
+                                                 this.bufferResponse);
 
         logRESTResponse(response);
         initInternalVariables();
@@ -890,21 +1039,47 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse putObject( Object object ) {
 
-        // execute PUT
-        RestResponse response;
-        if (object != null) {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", false);
-            if (StringUtils.isNullOrEmpty(requestMediaType)) {
-                throw new RestException("Content type is not set! Content type is mandatory for PUT.");
+        if (this.invalidateClient) {
+            if (object != null) {
+                constructInvocationBuilder("PUT object to", false);
+            } else {
+                constructInvocationBuilder("PUT object to", true);
             }
-            response = new RestResponse(invocationBuilder.method("PUT",
-                                                                 Entity.entity(getActualBodyObject(object),
-                                                                               RestMediaType.toMediaType(requestMediaType,
-                                                                                                         requestMediaCharset)),
-                                                                 Response.class));
+
+            this.invalidateClient = false;
+        }
+
+        // execute PUT
+        RestResponse response = null;
+        String errorMessage = "Content type is not set! Content type is mandatory for PUT.";
+        if (object != null) {
+            if (this.requestMediaType == null) {
+                throw new RestException(errorMessage);
+            }
+            if (this.requestMediaType instanceof String) {
+                if (StringUtils.isNullOrEmpty((String) requestMediaType)) {
+                    throw new RestException(errorMessage);
+                }
+                response = new RestResponse(invocationBuilder.method("PUT",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   RestMediaType.toMediaType((String) requestMediaType,
+                                                                                                             requestMediaCharset)),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else if (this.requestMediaType instanceof MediaType) {
+                this.requestMediaType = ((MediaType) this.requestMediaType).withCharset(this.requestMediaCharset);
+                response = new RestResponse(invocationBuilder.method("PUT",
+                                                                     Entity.entity(getActualBodyObject(object),
+                                                                                   (MediaType) this.requestMediaType),
+                                                                     Response.class),
+                                            this.bufferResponse);
+            } else {
+                throw new IllegalArgumentException("Could not construct Content-Type from object of class '"
+                                                   + this.requestMediaType.getClass() + "'");
+            }
+
         } else {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT object to", true);
-            response = new RestResponse(invocationBuilder.method("PUT", Response.class));
+            response = new RestResponse(invocationBuilder.method("PUT", Response.class), this.bufferResponse);
         }
 
         logRESTResponse(response);
@@ -923,17 +1098,25 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse putForm( RestForm restForm ) {
 
-        RestResponse response;
+        if (this.invalidateClient) {
+            if (restForm != null) {
+                constructInvocationBuilder("PUT form to", false);
+            } else {
+                constructInvocationBuilder("PUT form to", true);
+            }
+
+            this.invalidateClient = false;
+        }
 
         // execute PUT
+        RestResponse response;
         if (restForm != null) {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to", false);
             response = new RestResponse(invocationBuilder.put(Entity.entity(restForm.getForm(),
-                                                                            MediaType.APPLICATION_FORM_URLENCODED_TYPE)));
+                                                                            MediaType.APPLICATION_FORM_URLENCODED_TYPE)),
+                                        this.bufferResponse);
 
         } else {
-            Invocation.Builder invocationBuilder = constructInvocationBuilder("PUT form to", true);
-            response = new RestResponse(invocationBuilder.put(null));
+            response = new RestResponse(invocationBuilder.put(null), this.bufferResponse);
         }
 
         logRESTResponse(response);
@@ -951,9 +1134,14 @@ public class RestClient {
     @PublicAtsApi
     public RestResponse delete() {
 
+        if (this.invalidateClient) {
+            constructInvocationBuilder("DELETE from", false);
+
+            this.invalidateClient = false;
+        }
+
         // execute DELETE
-        Invocation.Builder invocationBuilder = constructInvocationBuilder("DELETE from", false);
-        RestResponse response = new RestResponse(invocationBuilder.delete());
+        RestResponse response = new RestResponse(invocationBuilder.delete(), this.bufferResponse);
 
         logRESTResponse(response);
         initInternalVariables();
@@ -993,9 +1181,11 @@ public class RestClient {
      * @param clientConfigurator the client configurator
      */
     @PublicAtsApi
-    public void setClientConfigurator( RestClientConfigurator clientConfigurator ) {
+    public RestClient setClientConfigurator( RestClientConfigurator clientConfigurator ) {
 
         this.clientConfigurator = clientConfigurator;
+
+        return this;
     }
 
     /**
@@ -1004,39 +1194,128 @@ public class RestClient {
      *
      * @param level http debug level. Use constants in {@link RESTDebugLevel}
      */
-    public void setVerboseMode( int level ) {
+    public RestClient setVerboseMode( int level ) {
 
         debugLevel = level;
         if (debugLevel != RESTDebugLevel.NONE && debugLevel != RESTDebugLevel.TARGET_URI) {
             requestFilterNeedsRegistration = true;
         }
+        return this;
     }
 
-    private Invocation.Builder constructInvocationBuilder( String descriptionToken,
-                                                           boolean suppresHttpComplianceValidation ) {
+    /**
+     * Whether the response body will be buffered <strong>immediately</strong> after the HTTP request is executed by 
+     * the RestClient. 
+     * <ul>
+     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br/>
+     *      If possible, RestClient will still <strong>try</strong> to buffer the response body (if not too big),  
+     *      but this will happen only <strong>after</strong> explicit usage of getBodyAsXYZ() method in test code. </li>
+     *  <li>If <code>true</code> then body will be consumed and buffered automatically. This allows usage of the 
+     *      RestClient without explicitly (in your code) to have to consume the (whole) response body. One such case is if 
+     *      you verify only the returned HTTP status code or the headers.</br>
+     *      It is highly recommended to set it to <code>true</code> if you are using <code>ApacheConnector</code> 
+     *      provider.</li>
+     * </ul> 
+     * 
+     * @param bufferResponse - true/false with behavior explained above.
+     * 
+     */
+    @PublicAtsApi
+    public RestClient setBufferResponse( boolean bufferResponse ) {
 
-        if (StringUtils.isNullOrEmpty(this.uri)) {
-            throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
+        this.bufferResponse = bufferResponse;
+
+        return this;
+    }
+
+    @PublicAtsApi
+    public RestClient setUsePooling( boolean usePooling ) {
+
+        this.usePooling = usePooling;
+
+        return this;
+    }
+
+    private void constructInvocationBuilder( String descriptionToken,
+                                             boolean suppressHttpComplianceValidation ) {
+
+        constructUrl();
+
+        boolean hasThirdPartyConnector = this.clientConfigurator.getConnectorProvider() != null;
+        if (hasThirdPartyConnector) {
+
+            boolean isApache = APACHE_CONNECTOR_CLASSNAME.equals(this.clientConfigurator.getConnectorProvider()
+                                                                                        .getClass()
+                                                                                        .getName());
+
+            if (isApache) {
+
+                // configure wire logging
+                Logger headersLogger = Logger.getLogger(APACHE_HTTP_HEADERS_LOGGER_NAME);
+                Logger wireLogger = Logger.getLogger(APACHE_HTTP_WIRE_LOGGER_NAME);
+
+                if (headersLogger.isDebugEnabled() || wireLogger.isDebugEnabled()) {
+                    if (!verbosityLevelMessageLogged) {
+                        verbosityLevelMessageLogged = true;
+                        log.info("Rest client's verbose mode will not be applied because "
+                                 + "either '" + APACHE_HTTP_HEADERS_LOGGER_NAME + "' or '"
+                                 + APACHE_HTTP_WIRE_LOGGER_NAME
+                                 + "' Log4J logger is set to DEBUG or greater LOG level. "
+                                 + "Headers " + (wireLogger.isDebugEnabled()
+                                                                             ? "and body"
+                                                                             : "")
+                                 + " (for both request and response) will be logged");
+                    }
+                } else {
+                    if ( (this.debugLevel & RESTDebugLevel.ALL) == RESTDebugLevel.ALL) {
+                        headersLogger.setLevel(Level.OFF);
+                        wireLogger.setLevel(Level.DEBUG);
+                    } else if ( (this.debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY) {
+                        headersLogger.setLevel(Level.OFF);
+                        wireLogger.setLevel(Level.OFF);
+                        if (!bodyOnlyDebugLevelMessageLogged) {
+                            bodyOnlyDebugLevelMessageLogged = true;
+                            log.info("Debug level is set to BODY only. "
+                                     + "Both '" + APACHE_HTTP_HEADERS_LOGGER_NAME + "' and '"
+                                     + APACHE_HTTP_WIRE_LOGGER_NAME + "' Log4J loggers will be disabled.");
+                        }
+                    } else if ( (this.debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
+                        headersLogger.setLevel(Level.DEBUG);
+                        wireLogger.setLevel(Level.OFF);
+                    } else if ( (this.debugLevel & RESTDebugLevel.TARGET_URI) == RESTDebugLevel.TARGET_URI) {
+                        headersLogger.setLevel(Level.OFF);
+                        wireLogger.setLevel(Level.OFF);
+                    } else if ( (this.debugLevel & RESTDebugLevel.NONE) == RESTDebugLevel.NONE) {
+                        headersLogger.setLevel(Level.OFF);
+                        wireLogger.setLevel(Level.OFF);
+                    }
+                }
+
+                constructApacheConnectorInvocationBuilder(descriptionToken,
+                                                          suppressHttpComplianceValidation);
+            } else {
+                constructThirdPartyConnectorInvocationBuilder(descriptionToken,
+                                                              suppressHttpComplianceValidation);
+            }
+
+        } else {
+
+            constructHttpUrlConnectionInvocationBuilder(descriptionToken,
+                                                        suppressHttpComplianceValidation);
         }
+    }
 
-        URL url;
-        try {
-            url = new URL(this.uri);
-        } catch (MalformedURLException e) {
-            throw new IllegalArgumentException("Please specify a valid URI. You have provided '" + this.uri
-                                               + "'");
-        }
+    private void constructHttpUrlConnectionInvocationBuilder( String descriptionToken,
+                                                              boolean suppressHttpComplianceValidation ) {
 
-        // remember these client id keys in order to work around a Jersey memory leak
-        List<String> clientIdKeys = new ArrayList<String>();
-
-        clientIdKeys.add("host_base_path=" + url.getProtocol() + "://" + url.getHost() + ":"
-                         + url.getPort());
+        // create the client config object
+        ClientConfig clientConfig = createClientConfig(suppressHttpComplianceValidation);
 
         // create the client builder
-        ClientBuilder clientBuilder = ClientBuilder.newBuilder();
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().withConfig(clientConfig);
 
-        if (this.uri.startsWith("https")) {
+        // handle HTTPS requests
+        if (isHttps()) {
             // configure Trust-all SSL context
 
             SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
@@ -1045,66 +1324,163 @@ public class RestClient {
 
             clientBuilder = clientBuilder.sslContext(sslContext)
                                          .hostnameVerifier(new SslUtils.DefaultHostnameVerifier());
-            clientIdKeys.add("cert_file=" + clientConfigurator.getCertificateFileName());
-        }
-
-        // attach any configuration providers instances or classes
-        // (e.g. features or individual entity providers, filters or interceptors)
-        for (Object provider : clientConfigurator.getProviders()) {
-            clientBuilder.register(provider);
-            clientIdKeys.add(provider.getClass().getName());
-        }
-        for (Class<?> providerClass : clientConfigurator.getProviderClasses()) {
-            clientBuilder.register(providerClass);
-            clientIdKeys.add(providerClass.getName());
-        }
-
-        // attach any configuration properties
-        Map<String, Object> properties = clientConfigurator.getProperties();
-        for (Entry<String, Object> propertyEntry : properties.entrySet()) {
-            clientBuilder.property(propertyEntry.getKey(), propertyEntry.getValue());
-            clientIdKeys.add(propertyEntry.getKey() + "=" + propertyEntry.getValue());
-        }
-
-        if (suppresHttpComplianceValidation == true) { // not default value
-            if (properties.containsKey(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION)) { // user provided value found
-                boolean userProvidedValue = (boolean) properties.get(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION);
-                if (userProvidedValue != suppresHttpComplianceValidation) {
-                    // ignore our value
-                    log.info("You are executing PUT with null body and SUPPRESS_HTTP_COMPLIANCE_VALIDATION is set to false. Expect operation to fail.");
-                } else {
-                    // set our value
-                    log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
-                    clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                    suppresHttpComplianceValidation);
-                    clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
-                }
-            } else { // user provided value not found
-                // set our value
-                log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
-                clientBuilder.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
-                                suppresHttpComplianceValidation);
-                clientIdKeys.add(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION + "=" + suppresHttpComplianceValidation);
-            }
-        }
-
-        // basic authorization
-        if (username != null) {
-            clientIdKeys.add("user=" + username);
-            clientIdKeys.add("password=" + password);
-            clientBuilder.register(HttpAuthenticationFeature.basic(username, password));
         }
 
         // now create the client
-        client = getClient(clientIdKeys, clientBuilder);
-        if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
-            RequestFilter requestFilter = new RequestFilter();
-            client.register(requestFilter);
-            requestFilterNeedsRegistration = false;
-            requestFilterAlreadyRegistered = true;
+        createClient(clientBuilder);
+
+        createInvocationBuilder(descriptionToken);
+    }
+
+    private boolean isHttps() {
+
+        return this.uri.toLowerCase().startsWith("https");
+    }
+
+    private void constructApacheConnectorInvocationBuilder( String descriptionToken,
+                                                            boolean suppressHttpComplianceValidation ) {
+
+        // create the client config object
+        ClientConfig clientConfig = createClientConfig(suppressHttpComplianceValidation);
+
+        // check if user had specified custom connection manager and custom connection factory
+        boolean hasConnectionManager = this.clientConfigurator.getConnectionManager() != null;
+        boolean hasConnectionFactory = this.clientConfigurator.getConnectionFactory() != null;
+        // handle HTTPS requests
+        Registry registry = null;
+        if (isHttps()) {
+            // configure Trust-all SSL context
+            if (!hasConnectionManager) {
+
+            }
+            registry = constructRegistry();
+
         }
 
-        WebTarget webTarget = client.target(this.uri);
+        HttpClientConnectionManager connectionManager = null;
+        HttpConnectionFactory connectionFactory = null;
+        if (hasConnectionManager) {
+            connectionManager = this.clientConfigurator.getConnectionManager();
+            if (hasConnectionFactory) {
+                connectionFactory = this.clientConfigurator.getConnectionFactory();
+            } else {
+                throw new RuntimeException("Connection manager was specified, but connection factory was not. "
+                                           + "Provide both if you want to use custom connection manager");
+            }
+        } else {
+            if (hasConnectionFactory) {
+                connectionFactory = this.clientConfigurator.getConnectionFactory();
+            } else {
+                connectionFactory = new ManagedHttpClientConnectionFactory();
+            }
+            if (registry != null) {
+                if (usePooling) {
+                    connectionManager = new PoolingHttpClientConnectionManager(registry, connectionFactory);
+                } else {
+                    connectionManager = new BasicHttpClientConnectionManager(registry, connectionFactory);
+                }
+
+            } else {
+                if (usePooling) {
+                    connectionManager = new PoolingHttpClientConnectionManager(connectionFactory);
+                } else {
+                    connectionManager = new BasicHttpClientConnectionManager(RegistryBuilder.<ConnectionSocketFactory> create()
+                                                                                            .register("http",
+                                                                                                      PlainConnectionSocketFactory.getSocketFactory())
+                                                                                            .register("https",
+                                                                                                      SSLConnectionSocketFactory.getSocketFactory())
+                                                                                            .build(),
+                                                                             connectionFactory);
+                }
+            }
+
+        }
+
+        if (connectionManager != null && connectionManager instanceof PoolingHttpClientConnectionManager) {
+            ((PoolingHttpClientConnectionManager) connectionManager).setValidateAfterInactivity(10 * 1000); // 10 sec
+        }
+
+        try {
+            Class<?> apacheClientProperties = Class.forName(RestClient.APACHE_CLIENT_PROPERTIES_CLASSNAME);
+            clientConfig.property((String) apacheClientProperties.getDeclaredField("CONNECTION_MANAGER")
+                                                                 .get(null),
+                                  connectionManager);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not set validity timeinterval for '"
+                                       + connectionManager.getClass().getName() + "'", e);
+        }
+
+        // create the client builder
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().withConfig(clientConfig);
+
+        // now create the client
+        createClient(clientBuilder);
+
+        createInvocationBuilder(descriptionToken);
+    }
+
+    private Registry constructRegistry() {
+
+        try {
+            SSLContextBuilder builder = SSLContextBuilder.create();
+
+            if (!StringUtils.isNullOrEmpty(clientConfigurator.getCertificateFileName())) {
+                builder.loadKeyMaterial(convertToKeyStore(clientConfigurator.getCertificateFileName()),
+                                        clientConfigurator.getCertificateFilePassword().toCharArray());
+            }
+
+            // Trust all certificates
+            builder.loadTrustMaterial(new TrustStrategy() {
+                @Override
+                public boolean isTrusted( X509Certificate[] chain, String authType ) throws CertificateException {
+
+                    return true;
+                }
+            });
+            SSLContext sslContext = builder.build();
+
+            SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext,
+                                                                              new NoopHostnameVerifier());
+
+            Registry registry = RegistryBuilder.create().register("https", sslsf).build();
+
+            return registry;
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to setup SSL context for REST client with Apache connector provider", e);
+        }
+    }
+
+    private void constructThirdPartyConnectorInvocationBuilder( String descriptionToken,
+                                                                boolean suppressHttpComplianceValidation ) {
+
+        // create the client config object
+        ClientConfig clientConfig = createClientConfig(suppressHttpComplianceValidation);
+
+        // create the client builder
+        ClientBuilder clientBuilder = ClientBuilder.newBuilder().withConfig(clientConfig);
+
+        // handle HTTPS requests
+        if (isHttps()) {
+            // configure Trust-all SSL context
+
+            SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
+                                                           clientConfigurator.getCertificateFilePassword(),
+                                                           supportedProtocols[0]);
+
+            clientBuilder = clientBuilder.sslContext(sslContext)
+                                         .hostnameVerifier(new SslUtils.DefaultHostnameVerifier());
+        }
+
+        // now create the client
+        createClient(clientBuilder);
+
+        createInvocationBuilder(descriptionToken);
+
+    }
+
+    private void createInvocationBuilder( String descriptionToken ) {
+
+        webTarget = client.target(this.uri);
 
         // navigate to internal resource
         for (String token : resourcePath) {
@@ -1121,7 +1497,7 @@ public class RestClient {
             log.info("We will " + descriptionToken + " " + webTarget.getUri());
         }
 
-        Invocation.Builder invocationBuilder = webTarget.request();
+        invocationBuilder = webTarget.request();
 
         // set response media type
         if (!StringUtils.isNullOrEmpty(responseMediaType)) {
@@ -1133,36 +1509,173 @@ public class RestClient {
         for (Entry<String, List<Object>> requestHeaderEntry : requestHeaders.entrySet()) {
             List<Object> headerValues = requestHeaderEntry.getValue();
             for (Object headerValue : headerValues) {
+                if (requestHeaderEntry.getKey().equalsIgnoreCase("content-length")) {
+                    if (isApacheConnectorProviderInUse()) {
+                        log.warn("Apache connector does not support setting custom Content-Length header. "
+                                 + "An automatic one will be added by the underlying connector provider");
+                        continue;
+                    }
+                }
                 invocationBuilder.header(requestHeaderEntry.getKey(), headerValue);
             }
         }
 
         // add request cookies
+        StringBuilder sb = new StringBuilder();
         for (Cookie cookie : cookies) {
-            invocationBuilder.cookie(cookie);
+            sb.append(cookieToHeaderValue(cookie) + COOKIE_HEADER_VALUE_DELIMITER);
         }
 
-        return invocationBuilder;
+        invocationBuilder.header("Cookie", sb.toString());
+
     }
 
-    private Client getClient( List<String> clientIdKeys, ClientBuilder newClientBuilder ) {
+    /**
+     * Convert Cookie to a HTTP Header value
+     * @param cookie - the cookie
+     * @return a proper String representation of that cookie, suitable for sending to the HTTP server as a header
+     * */
+    private String cookieToHeaderValue( Cookie cookie ) {
 
-        // sort so can get same key for same inputs
-        Collections.sort(clientIdKeys);
-        finalClientIdKey = clientIdKeys.toString();
+        String name = cookie.getName();
+        String value = cookie.getValue();
 
-        Client client = clients.get(finalClientIdKey);
-        if (client == null) {
-            // no appropriate client, create one
-            client = newClientBuilder.build();
-            clients.put(finalClientIdKey, client);
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(name + "=" + value);
+
+        return sb.toString();
+    }
+
+    private ClientConfig createClientConfig(
+                                             boolean suppressHttpComplianceValidation ) {
+
+        ClientConfig clientConfig = new ClientConfig();
+
+        // register third-party connector provider
+        if (this.clientConfigurator.getConnectorProvider() != null) {
+
+            Map<String, Object> connectorProviderProperties = this.clientConfigurator.getConnectorProviderProperties();
+            if (connectorProviderProperties != null
+                && !connectorProviderProperties.isEmpty()) {
+                for (Entry<String, Object> propEntry : connectorProviderProperties.entrySet()) {
+                    clientConfig.property(propEntry.getKey(), propEntry.getValue());
+                }
+            }
+            try {
+                clientConfig.connectorProvider(clientConfigurator.getConnectorProvider());
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to register connector provider '"
+                                           + clientConfigurator.getConnectorProvider().getClass().getName() + "'");
+            }
         }
-        return client;
+
+        // attach any configuration providers instances or classes
+        // (e.g. features or individual entity providers, filters or interceptors)
+        for (Object provider : clientConfigurator.getProviders()) {
+            clientConfig.register(provider);
+        }
+        for (Class<?> providerClass : clientConfigurator.getProviderClasses()) {
+            clientConfig.register(providerClass);
+        }
+
+        // attach any configuration properties
+        Map<String, Object> properties = clientConfigurator.getProperties();
+        for (Entry<String, Object> propertyEntry : properties.entrySet()) {
+            clientConfig.property(propertyEntry.getKey(), propertyEntry.getValue());
+        }
+
+        if (suppressHttpComplianceValidation == true) { // not default value
+            if (properties.containsKey(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION)) { // user provided value found
+                boolean userProvidedValue = (boolean) properties.get(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION);
+                if (userProvidedValue != suppressHttpComplianceValidation) {
+                    // ignore our value
+                    log.info("You are executing PUT with null body and SUPPRESS_HTTP_COMPLIANCE_VALIDATION is set to false. Expect operation to fail.");
+                } else {
+                    // set our value
+                    log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                    clientConfig.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                          suppressHttpComplianceValidation);
+                }
+            } else { // user provided value not found
+                // set our value
+                log.warn("You are executing PUT operation with null body. Expect the client implementation to complain.");
+                clientConfig.property(ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION,
+                                      suppressHttpComplianceValidation);
+            }
+        }
+
+        // basic authorization
+        if (username != null) {
+            clientConfig.register(HttpAuthenticationFeature.basic(username, password));
+        }
+
+        return clientConfig;
+    }
+
+    private URL constructUrl() {
+
+        if (StringUtils.isNullOrEmpty(this.uri)) {
+            throw new IllegalArgumentException("Null or empty target URI. Please specify a valid one");
+        }
+
+        URL url;
+        try {
+            url = new URL(this.uri);
+        } catch (MalformedURLException e) {
+            throw new IllegalArgumentException("Please specify a valid URI. You have provided '" + this.uri
+                                               + "'");
+        }
+
+        return url;
+    }
+
+    private KeyStore convertToKeyStore( String certificateFileName ) {
+
+        try {
+            X509Certificate[] certificates = new X509Certificate[]{ SslUtils.convertFileToX509Certificate(new File(certificateFileName)) };
+            KeyStore keystore = KeyStore.getInstance("JKS");
+            keystore.load(null);
+            if (certificates != null) {
+                for (X509Certificate certificate : certificates) {
+                    keystore.setCertificateEntry(certificate.getSubjectDN().getName(), certificate);
+                }
+            }
+            return keystore;
+        } catch (Exception e) {
+            throw new RestException("Failed to create keystore from certificate", e);
+        }
+    }
+
+    private void createClient( ClientBuilder newClientBuilder ) {
+
+        client = newClientBuilder.build();
+        if (requestFilterNeedsRegistration && !requestFilterAlreadyRegistered) {
+            RequestFilter requestFilter = new RequestFilter();
+            client.register(requestFilter);
+            requestFilterNeedsRegistration = false;
+            requestFilterAlreadyRegistered = true;
+        }
+    }
+
+    private boolean isApacheConnectorProviderInUse() {
+
+        boolean hasThirdPartyConnector = this.clientConfigurator.getConnectorProvider() != null;
+        if (hasThirdPartyConnector) {
+            boolean isApache = APACHE_CONNECTOR_CLASSNAME.equals(this.clientConfigurator.getConnectorProvider()
+                                                                                        .getClass()
+                                                                                        .getName());
+            return isApache;
+        } else {
+            return false;
+        }
+
     }
 
     private void logRESTResponse( RestResponse response ) {
 
-        if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
+        if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI
+            || isApacheConnectorProviderInUse()) {
             return;
         }
 
@@ -1176,14 +1689,15 @@ public class RestClient {
         }
         if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY
              && response.getContentLength() != -1) {
-            //log response body
+            // log response body
             if (response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE) {
                 responseMessage.append("Body: " + response.getBodyAsString() + "\n");
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
                 responseMessage.append("Body: "
-                                       + response.getBodyAsString().substring(0,
-                                                                              RestResponse.MAX_RESPONSE_SIZE)
+                                       + response.getBodyAsString()
+                                                 .substring(0,
+                                                            RestResponse.MAX_RESPONSE_SIZE)
                                        + "... [Response body truncated.]" + "\n");
             }
         }
@@ -1214,7 +1728,8 @@ public class RestClient {
         @Override
         public void filter( ClientRequestContext context ) throws IOException {
 
-            if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI) {
+            if (debugLevel == RESTDebugLevel.NONE || debugLevel == RESTDebugLevel.TARGET_URI
+                || isApacheConnectorProviderInUse()) {
                 return;
             }
 
@@ -1230,7 +1745,7 @@ public class RestClient {
                 }
             }
             if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY && context.hasEntity()) {
-                //log request body
+                // log request body
                 Object entity = context.getEntity();
                 if (entity instanceof Form) {
                     requestMessage.append("Body: " + ((Form) entity).asMap());
