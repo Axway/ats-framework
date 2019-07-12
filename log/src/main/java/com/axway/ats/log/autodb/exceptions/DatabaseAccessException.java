@@ -19,6 +19,7 @@ import java.sql.SQLException;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.log.AtsConsoleLogger;
 
 @SuppressWarnings( "serial")
@@ -39,35 +40,15 @@ public class DatabaseAccessException extends LoggingException {
 
         if (cause instanceof java.sql.SQLException) {
 
-            consoleLog.error("Got SQL exception while trying to work with ATS logging DB: "
-                             + message);
-            consoleLog.error("Printing exception chain: ");
+            message = "Got SQL exception while trying to work with ATS logging DB: "
+                      + message + "\nPrinting exception chain: \n\n";
 
-            SQLException next = (SQLException) cause;
-            while (next != null) {
-                next = printStackTrace(next);
+            String finalMessage = DbUtils.getFullSqlException(message, (SQLException) cause);
 
-            }
+            consoleLog.error(finalMessage, cause);
+            log.error(finalMessage, cause);
 
-            log.error("Got SQL exception while trying to work with ATS logging DB: "
-                             + message);
-            log.error("Printing exception chain: ");
-
-            next = (SQLException) cause;
-            while (next != null) {
-                next = printStackTrace(next);
-
-            }
         }
     }
 
-    private SQLException printStackTrace( SQLException sqle ) {
-
-        consoleLog.error("SQL Exception:\nMessage: " + sqle.getMessage() + "\nSQL state: "
-                         + sqle.getSQLState() + "\nVendor code: " + sqle.getErrorCode());
-        sqle.printStackTrace();
-        consoleLog.error("------------------------------------------------");
-
-        return sqle.getNextException();
-    }
 }
