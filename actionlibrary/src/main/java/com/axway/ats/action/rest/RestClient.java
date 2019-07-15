@@ -1228,6 +1228,11 @@ public class RestClient {
         return this;
     }
 
+    /**
+     * Set whether a connection pool will be used to obtain connection.</br>
+     * <strong>Note</strong> that this currently works only if ApacheConnectorProvider is registered
+     * @param usePooling - true/false with behavior explained above.
+     * */
     @PublicAtsApi
     public RestClient setUsePooling( boolean usePooling ) {
 
@@ -1423,6 +1428,8 @@ public class RestClient {
 
         try {
             SSLContextBuilder builder = SSLContextBuilder.create();
+
+            builder.useProtocol(this.supportedProtocols[0]);
 
             if (!StringUtils.isNullOrEmpty(clientConfigurator.getCertificateFileName())) {
                 builder.loadKeyMaterial(convertToKeyStore(clientConfigurator.getCertificateFileName()),
