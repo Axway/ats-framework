@@ -15,11 +15,8 @@
  */
 package com.axway.ats.log;
 
-import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.LogManager;
@@ -74,20 +71,18 @@ import com.axway.ats.log.model.TestCaseResult;
 /**
  * Utility class for working with the ATS logging system
  * 
- * */
+ */
 @PublicAtsApi
 public class AtsDbLogger {
 
-    private final static String                  ATS_DB_LOGGER_CLASS_NAME    = AtsDbLogger.class.getName();
+    private final static String ATS_DB_LOGGER_CLASS_NAME = AtsDbLogger.class.getName();
 
     /**
      * Flag that is used to log WARN for not attached ATS DB logger only once
      */
-    private static boolean                       isWarningMessageLogged      = false;
+    private static boolean      isWarningMessageLogged = false;
 
-    protected Logger                             logger;
-
-    private Map<Integer, List<TestcaseMetainfo>> testcaseMetainfoPerTestcase = Collections.synchronizedMap(new HashMap<Integer, List<TestcaseMetainfo>>());
+    protected Logger            logger;
 
     private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
 
@@ -107,15 +102,13 @@ public class AtsDbLogger {
     }
 
     @PublicAtsApi
-    public static synchronized AtsDbLogger getLogger(
-                                                      String name ) {
+    public static synchronized AtsDbLogger getLogger( String name ) {
 
         return new AtsDbLogger(Logger.getLogger(name), false);
     }
 
     @PublicAtsApi
-    public static synchronized AtsDbLogger getLogger(
-                                                      Logger logger ) {
+    public static synchronized AtsDbLogger getLogger( Logger logger ) {
 
         return new AtsDbLogger(logger, false);
     }
@@ -137,7 +130,7 @@ public class AtsDbLogger {
      * This method is intended for internal (by ATS devs) usage only.
      * @param logger the Apache log4j logger
      * @param skipAppenderCheck enable/disable check for availability of db appender
-     * */
+     */
     public static synchronized AtsDbLogger getLogger(
                                                       Logger logger, boolean skipAppenderCheck ) {
 
@@ -425,6 +418,7 @@ public class AtsDbLogger {
                                 String metaKey,
                                 String metaValue ) {
 
+        // TODO Check on lower level that there is no existing metaKey with same value. Otherwise UPDATE should be performed
         sendEvent(new AddRunMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
     }
 
@@ -517,6 +511,7 @@ public class AtsDbLogger {
                                      String metaKey,
                                      String metaValue ) {
 
+        // TODO Check on lower level that there is no existing metaKey with same value. Otherwise UPDATE should be performed
         sendEvent(new AddScenarioMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
     }
 
@@ -600,15 +595,17 @@ public class AtsDbLogger {
 
     /**
      * Add some meta info about a testcase.
-     * Must be called inside [@Test/@BeforeMethod/@AfterMethod]
+     * Must be called inside @Test/@BeforeMethod/@AfterMethod
      * 
      * @param metaKey key
      * @param metaValue value
      */
+    @PublicAtsApi
     public void addTestcaseMetainfo(
                                      String metaKey,
                                      String metaValue ) {
 
+        // TODO Check on lower level that there is no existing metaKey with same value. Otherwise UPDATE should be performed
         sendEvent(new AddTestcaseMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, metaKey, metaValue));
     }
 
@@ -624,6 +621,7 @@ public class AtsDbLogger {
                                      String metaKey,
                                      String metaValue ) {
 
+        // TODO Check on lower level that there is no existing metaKey with same value. Otherwise UPDATE should be performed
         sendEvent(new AddTestcaseMetainfoEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testcaseId, metaKey, metaValue));
     }
 
@@ -977,32 +975,34 @@ public class AtsDbLogger {
      * */
 
     /**
-     * Retrieve {@link TestcaseMetainfo} for a particular testcase. Works on the Test Executor only
-     * @param testcaseId - the testcase ID ( for current testcase ID, invoke {@link ActiveDbAppender#getTestCaseId()})
-     * @param cacheResults - whether to cache the obtained {@link TestcaseMetainfo} list</br>
-     * Note that once you invoke this method with cacheResult = true, 
-     * any changes to the testcase meta info will not be refreshed, but instead you will work with the internal cache only
+     * Retrieve {@link TestcaseMetainfo} for current testcase. Works on the Test Executor only.
+     * Note that this method always reads from DB in order to make sure that such information is already in database. 
+     * For cases where metainfo should be read often it is recommended that values are cached.
      * @return list of {@link TestcaseMetainfo}
-     * @throws DatabaseAccessException
-     * */
-    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId,
-                                                       boolean cacheResult ) throws DatabaseAccessException {
+     * @throws DatabaseAccessException in case of a DB error
+     */
+    @PublicAtsApi
+    public List<TestcaseMetainfo> getTestcaseMetainfo() throws DatabaseAccessException {
 
-        if (testcaseMetainfoPerTestcase.containsKey(testcaseId)) {
-            synchronized (this) {
-                return testcaseMetainfoPerTestcase.get(testcaseId);
-            }
-        } else {
-            IDbReadAccess dbReadAccess = ActiveDbAppender.getCurrentInstance().obtainDbReadAccessObject();
-            List<TestcaseMetainfo> metainfo = dbReadAccess.getTestcaseMetainfo(testcaseId);
-            if (cacheResult) {
-                synchronized (this) {
-                    testcaseMetainfoPerTestcase.put(testcaseId, metainfo);
-                }
-            }
-            return metainfo;
-        }
+        int testcaseId = ActiveDbAppender.getCurrentInstance().getTestCaseId();
+        return getTestcaseMetainfo(testcaseId);
+    }
+    
+    /**
+     * Retrieve {@link TestcaseMetainfo} for a particular testcase. Works on the Test Executor only.
+     * @param testcaseId - the testcase ID. For current testcase ID, you may use 
+     * <pre>{@code ActiveDbAppender.getCurrentInstance().getTestCaseId()}</pre>
+     * Note that this method always reads from DB in order to make sure that such information is already in database. 
+     * For cases where metainfo should be read often it is recommended that values are cached.
+     * @return list of {@link TestcaseMetainfo}
+     * @throws DatabaseAccessException in case of a DB error
+     */
+    @PublicAtsApi
+    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId) throws DatabaseAccessException {
 
+        IDbReadAccess dbReadAccess = ActiveDbAppender.getCurrentInstance().obtainDbReadAccessObject();
+        List<TestcaseMetainfo> metainfo = dbReadAccess.getTestcaseMetainfo(testcaseId);
+        return metainfo;
     }
 
     /**

@@ -210,9 +210,10 @@ public class DbUtils {
                                                    StringBuilder sb ) {
 
         sb.append("SQL Exception:");
-        sb.append("\n\tMessage: ").append(sqle.getMessage());
+        // The same is in the stacktrace: sb.append("\n\tMessage: ").append(sqle.getMessage());
         sb.append("\n\tSQL state: ").append(sqle.getSQLState());
         sb.append("\n\tVendor code: ").append(sqle.getErrorCode());
+        sb.append("\n\tMessage and trace: ");
         StringWriter stringWriter = new StringWriter();
         sqle.printStackTrace(new PrintWriter(stringWriter));
         sb.append(stringWriter.toString());

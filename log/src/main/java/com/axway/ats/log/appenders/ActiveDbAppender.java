@@ -42,8 +42,11 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
- * This appender is capable of arranging the database storage and storing messages into it.
- * It works on the Test Executor side.
+ * This appender is bridge between Log4J events and ATS database. In addition it keeps the test execution state like
+ * DB connection info, current run and testcase ID. 
+ * <p><em>Note</em> that this class is internal for the framework and DB-related public operations are available via 
+ * AtsDbLogger</p>
+ * It is used only on the Test Executor side and not on ATS Agents.
  */
 public class ActiveDbAppender extends AbstractDbAppender {
 
