@@ -15,6 +15,13 @@
  */
 package com.axway.ats.log.autodb.entities;
 
+import com.axway.ats.common.PublicAtsApi;
+
+/**
+ * POJO class for keeping sincle testcase meta info as name:value pair  
+ * 
+ */
+@PublicAtsApi
 public class TestcaseMetainfo extends DbEntity {
 
     private static final long serialVersionUID = 1L;
@@ -24,4 +31,10 @@ public class TestcaseMetainfo extends DbEntity {
     public String             name;
     public String             value;
 
+    @Override
+    public String toString() {
+
+        return "TestcaseMetainfo [name=" + name + ", value=" + value + ", meta info ID =" + metaInfoId + ", testcase ID=" + testcaseId + "]";
+    }
+    
 }

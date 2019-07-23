@@ -129,8 +129,8 @@ public class MailSender extends PackageSender {
     public void send( Package sourcePackage ) throws ActionException {
 
         if (! (sourcePackage instanceof MimePackage)) {
-            throw new WrongPackageException("Cannot send '" + sourcePackage.getClass().getSimpleName()
-                                            + "' packages");
+            throw new WrongPackageException("Could not send '" + sourcePackage.getClass().getSimpleName()
+                                            + "' packages. " + MimePackage.class.getSimpleName() + " is expected");
         }
 
         // initialize the SMTP session
@@ -177,7 +177,7 @@ public class MailSender extends PackageSender {
             transport.close();
             transport.removeTransportListener(transListener);
         } catch (MessagingException e) {
-            throw new ActionException("Could not send package", e);
+            throw new ActionException("Could not send package via SMTP to host '" + mailHost + "' and port " + mailPort, e);
         } catch (InterruptedException e) {
             throw new ActionException("Could not send package", e);
         }
