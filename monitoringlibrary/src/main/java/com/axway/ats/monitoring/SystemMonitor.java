@@ -243,7 +243,8 @@ public class SystemMonitor {
 
     private Map<String, ConnectionInfo> connectionsInformation;
 
-    private boolean                     isStarted = false;
+    private boolean                     isStarted      = false;
+    private boolean                     alreadyStopped = false;
 
     /**
      * This class encapsulates necessary connection information to each ATS agent on which a monitoring is started
@@ -823,7 +824,7 @@ public class SystemMonitor {
     }
 
     /**
-     * Stop all monitoring activity
+     * Stop all monitoring activity.</br>Note that after this call, the current instance could not be used anymore.
      */
     @PublicAtsApi
     public void stopMonitoring() {
@@ -848,6 +849,7 @@ public class SystemMonitor {
         }
 
         isStarted = false;
+        alreadyStopped = true;
     }
 
     private String stopMonitoring( String monitoredHost, ConnectionInfo info ) {
@@ -897,6 +899,11 @@ public class SystemMonitor {
      */
     private ConnectionInfo performSetup(
                                          String monitoredHost ) {
+											 
+		if (alreadyStopped) {
+            throw new MonitoringException("SystemMonitor.stopMonitoring() has already been invoked on this instance. "
+                                          + "This instance of SystemMonitor could not be used anymore");
+        }
 
         ConnectionInfo info = this.connectionsInformation.get(monitoredHost);
         if (info != null) {
