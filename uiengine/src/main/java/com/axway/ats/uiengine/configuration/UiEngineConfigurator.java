@@ -20,7 +20,9 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
+import org.openqa.selenium.ie.InternetExplorerOptions;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -34,39 +36,51 @@ import com.axway.ats.core.utils.IoUtils;
 @PublicAtsApi
 public class UiEngineConfigurator extends AbstractConfigurator {
 
-    private static Logger               log                                   = Logger.getLogger(UiEngineConfigurator.class);
+    private static Logger                  log                                   = Logger.getLogger(UiEngineConfigurator.class);
     // the configuration file this class reads
-    private static final String         PROPERTIES_FILE_NAME                  = "/ats.uiengine.properties";
+    private static final String            PROPERTIES_FILE_NAME                  = "/ats.uiengine.properties";
 
     // the property keys in the configuration file
-    private static final String         PROPERTY_MAP_FILES_BASE_DIRECTORY     = "uiengine.mapFilesBaseDir";
-    private static final String         PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
-    private static final String         PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
-    private static final String         PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
-    private static final String         PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
+    private static final String            PROPERTY_MAP_FILES_BASE_DIRECTORY     = "uiengine.mapFilesBaseDir";
+    private static final String            PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
+    private static final String            PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
+    private static final String            PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
+    private static final String            PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
 
-    private static final String         PROPERTY_BROWSER_ACTION_TIMEOUT       = "uiengine.browser.action.timeout";
-    private static final String         PROPERTY_BROWSER_DOWNLOAD_DIR         = "browser.download.dir";
-    private static final String         PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES  = "browser.download.mimeTypes";
+    private static final String            PROPERTY_BROWSER_ACTION_TIMEOUT       = "uiengine.browser.action.timeout";
+    private static final String            PROPERTY_BROWSER_DOWNLOAD_DIR         = "browser.download.dir";
+    private static final String            PROPERTY_BROWSER_DOWNLOAD_MIME_TYPES  = "browser.download.mimeTypes";
 
-    private static final String         PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT    = "uiengine.wait.page.to.load.timeout";
+    private static final String            PROPERTY_WAIT_PAGE_TO_LOAD_TIMEOUT    = "uiengine.wait.page.to.load.timeout";
 
     /**
      * Options for starting Chrome Selenium driver.
      * These are not kept in the regular key-value map as it can be a complex object.
      */
-    private static ChromeOptions        chromeOptions;
+    private static ChromeOptions           chromeOptions;
 
     /**
      * Options for starting Firefox Selenium driver.
      * These are not kept in the regular key-value map as it can be a complex object.
      */
-    private static FirefoxOptions       firefoxOptions;
+    private static FirefoxOptions          firefoxOptions;
+
+    /**
+     * Options for starting Internet Explorer Selenium driver.
+     * These are not kept in the regular key-value map as it can be a complex object.
+     */
+    private static InternetExplorerOptions internetExplorerOptions;
+
+    /**
+     * Options for starting Edge Selenium driver.
+     * These are not kept in the regular key-value map as it can be a complex object.
+     */
+    private static EdgeOptions             edgeOptions;
 
     /**
      * The singleton instance for this configurator
      */
-    private static UiEngineConfigurator instance;
+    private static UiEngineConfigurator    instance;
 
     private UiEngineConfigurator( String configurationSource ) {
 
@@ -170,7 +184,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
         try {
             return getIntegerProperty(PROPERTY_BROWSER_ACTION_TIMEOUT);
         } catch (NoSuchPropertyException nspe) {
-            log.info( "Setting default page load time to 60 seconds." );
+            log.info("Setting default page load time to 60 seconds.");
             return 60;
         }
     }
@@ -312,7 +326,7 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     }
 
     /**
-     * Pass options which will be applied when starting a Chrome broswer through Selenium
+     * Pass options which will be applied when starting a Chrome browser through Selenium
      * @param options Chrome options
      */
     @PublicAtsApi
@@ -331,12 +345,49 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     }
 
     /**
-     * Pass options which will be applied when starting a Firefox broswer through Selenium
+     * Pass options which will be applied when starting a Firefox browser through Selenium
      * @param options Firefox options
      */
     @PublicAtsApi
     public void setFirefoxDriverOptions( FirefoxOptions options ) {
 
         firefoxOptions = options;
+    }
+
+    /**
+     * Pass options which will be applied when starting a Internet Explorer browser through Selenium
+     * @param options Internet Explorer options
+     */
+    @PublicAtsApi
+    public void setInternetExplorerDriverOptions( InternetExplorerOptions options ) {
+
+        internetExplorerOptions = options;
+    }
+
+    /**
+     * @return the InternetExplorer options
+     */
+    @PublicAtsApi
+    public InternetExplorerOptions getInternetExplorerDriverOptions() {
+
+        return internetExplorerOptions;
+    }
+
+    /**
+     * Pass options which will be applied when starting a Edge browser through Selenium
+     * @param options Internet Explorer options
+     */
+    @PublicAtsApi
+    public void setEdgeDriverOptions( EdgeOptions options ) {
+
+        edgeOptions = options;
+    }
+
+    /**
+     * @return the Edge options
+     */
+    public EdgeOptions getEdgeDriverOptions() {
+
+        return edgeOptions;
     }
 }
