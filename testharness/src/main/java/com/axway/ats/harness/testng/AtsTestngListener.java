@@ -445,10 +445,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // start a new run
         String hostNameIp = "";
         try {
-            InetAddress addr = InetAddress.getLocalHost();
-            hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
+            hostNameIp = HostUtils.getLocalHostName() + "/" + HostUtils.getLocalHostIP();
 
-        } catch (UnknownHostException uhe) {
+        } catch (Throwable t) {
             hostNameIp = null;
         }
 
