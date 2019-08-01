@@ -19,6 +19,7 @@ package com.axway.ats.action.http;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -400,6 +401,20 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     }
 
     @Override
+    public String executeCommand( String command, InputStream payload ) throws FileTransferException {
+
+        // not applicable
+        return null;
+    }
+    
+    @Override
+    public Object executeCommand( String command, Object[] arguments ) throws FileTransferException {
+
+        // not applicable
+        return null;
+    }
+
+    @Override
     public void startUploadAndPause( String localFile, String remoteDir,
                                      String remoteFile ) throws FileTransferException {
 
@@ -657,4 +672,5 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
         setTrustedServerSSLCertificate(new File(certificateFile));
 
     }
+
 }
