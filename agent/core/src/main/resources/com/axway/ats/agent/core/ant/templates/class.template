@@ -27,7 +27,7 @@ $MEMBER_CLASS_NO_ARG_INIT$
     }
 
     @PublicAtsApi
-    public $CLASS_NAME$( String host ) throws AgentException {
+    public $CLASS_NAME$( String host ) {
 
         super( host, COMPONENT_NAME, INITIALIZE_REQUEST_URL );
         

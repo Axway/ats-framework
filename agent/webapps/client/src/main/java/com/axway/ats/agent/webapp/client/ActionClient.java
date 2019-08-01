@@ -65,11 +65,10 @@ public abstract class ActionClient extends AbstractAgentClient {
      *            the name of the component for which to execute an action
      * @param initializeRequestUrl 
      *            the URL that will be used to tell the ATS Agent to initialize actions that will be executed via this class
-     * @throws AgentException 
      */
     public ActionClient( String atsAgent,
                          String component,
-                         String initializeRequestUrl ) throws AgentException {
+                         String initializeRequestUrl ) {
 
         super(atsAgent, component);
 

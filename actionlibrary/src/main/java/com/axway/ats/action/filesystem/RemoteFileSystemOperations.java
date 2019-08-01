@@ -43,28 +43,33 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     private LocalFileSystemOperations    localFileSystemOperations;
 
     
-    /*
-     * This constructor is used only for by the unit/mock tests
-     * */
-    @SuppressWarnings("unused")
-    private RemoteFileSystemOperations() throws AgentException {
-        this.atsAgent = "local.host";
-        this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
-        this.localFileSystemOperations = new LocalFileSystemOperations();
-    }
-    
-    /**
-     * Constructor
-     *
-     * @param atsAgent
-     */
-    public RemoteFileSystemOperations( String atsAgent ) throws AgentException {
+    	/*
+	 * This constructor is used only for by the unit/mock tests
+	 */
+	@SuppressWarnings("unused")
+	private RemoteFileSystemOperations() {
+		this.atsAgent = "local.host";
+		this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+		this.localFileSystemOperations = new LocalFileSystemOperations();
+	}
 
-        this.atsAgent = atsAgent;
-        this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
-        this.remoteFileSystemOperations.initialize();
-        this.localFileSystemOperations = new LocalFileSystemOperations();
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param atsAgent
+	 */
+	public RemoteFileSystemOperations(String atsAgent) {
+
+		this.atsAgent = atsAgent;
+		this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+		try {
+			this.remoteFileSystemOperations.initialize();
+		} catch (Exception e) {
+			throw new FileSystemOperationException(
+					"Could not initialize FileSystemOperations on agent '" + atsAgent + "'", e);
+		}
+		this.localFileSystemOperations = new LocalFileSystemOperations();
+	}
 
     @Override
     public void createBinaryFile( String fileName, long size, boolean isRandomContent ) {
