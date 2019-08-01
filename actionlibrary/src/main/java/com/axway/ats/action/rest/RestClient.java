@@ -1432,7 +1432,8 @@ public class RestClient {
             builder.useProtocol(this.supportedProtocols[0]);
 
             if (!StringUtils.isNullOrEmpty(clientConfigurator.getCertificateFileName())) {
-                builder.loadKeyMaterial(convertToKeyStore(clientConfigurator.getCertificateFileName()),
+                builder.loadKeyMaterial(SslUtils.loadKeystore(clientConfigurator.getCertificateFileName(),
+                                                              clientConfigurator.getCertificateFilePassword()),
                                         clientConfigurator.getCertificateFilePassword().toCharArray());
             }
 
