@@ -15,6 +15,7 @@
  */
 package com.axway.ats.action.rest;
 
+import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,7 +75,7 @@ public class RestClientConfigurator {
     /**
      * Set certificate file
      * 
-     * @param certFileName certificate file path
+     * @param certFileName certificate file path. It must be a {@link KeyStore} file (.jks or .p12)
      * @param certPassword certificate file password
      */
     @PublicAtsApi
