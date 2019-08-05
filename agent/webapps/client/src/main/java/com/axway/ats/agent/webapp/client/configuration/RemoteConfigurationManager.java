@@ -57,7 +57,7 @@ public class RemoteConfigurationManager {
         String callerId = ExecutorUtils.createCallerId();
 
         // get the ATS Agent version
-        String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/properties", "GET",
+        String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/properties", "POST",
                                                                  "{\"callerId\":\"" + callerId + "\",\"operation\":\""
                                                                                                       + AgentPropertiesRestEntryPoint.GET_ATS_VERSION_OPERATION
                                                                                                       + "\"}",
