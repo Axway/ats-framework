@@ -165,7 +165,7 @@ public class AgentPropertiesRestEntryPoint {
                     boolean loaded = ActionHandler.isComponentLoaded(ComponentRepository.DEFAULT_CALLER, value);
                     return Response.ok("{\"loaded\":" + loaded + "}").build();
                 case GET_ATS_VERSION_OPERATION:
-                    return Response.ok("{\"ats_version\":" + AtsVersion.getAtsVersion() + "\"}").build();
+                    return Response.ok("{\"ats_version\":" + AtsVersion.getAtsVersion() + "}").build();
                 case GET_NUMBER_PENDING_LOG_EVENTS:
                     int pendingLogEvents = -1;
                     PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance();
