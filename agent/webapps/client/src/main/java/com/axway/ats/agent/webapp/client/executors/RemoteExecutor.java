@@ -620,7 +620,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
                 try {
                     sb.append(key)
                       .append("=")
-                      .append(URLEncoder.encode(value.toString().replace("\"", ""), "UTF-8"))
+                      .append(URLEncoder.encode(value.toString(), "UTF-8"))
                       .append("&");
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException("Unable to encode query parameter '" + key + "'", e);
