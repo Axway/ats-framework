@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.tools.ant.BuildException;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.utils.StringUtils;
 
 /**
  * This class is used for processing a template file and replacing
@@ -67,10 +68,34 @@ class TemplateProcessor {
 
             String placeHolder = placeHolderEntry.getKey();
             String value = placeHolderEntry.getValue();
+            if (StringUtils.isNullOrEmpty(value) && shouldAddCommanPrefix(placeHolder)) {
+                value = "null";
+            }
+            if (shouldAddCommanPrefix(placeHolder)) {
+                value = "," + value;
+            }
 
             processedTemplate = processedTemplate.replace(placeHolder, value);
         }
 
+        System.out.println(processedTemplate);
+
         return processedTemplate;
+    }
+
+    private boolean shouldAddCommanPrefix( String placeHolderKey ) {
+
+        switch (placeHolderKey) {
+            case "$META_KEYS$":
+            case "$META_VALUES$":
+            case "$REQUEST_URL$":
+            case "$REQUEST_METHOD$":
+            case "$ARGUMENTS_NAMES$":
+            case "$ARGUMENT_TYPES$":
+            case "$RETURN_TYPE_CLASS$":
+                return true;
+            default:
+                return false;
+        }
     }
 }

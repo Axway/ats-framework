@@ -84,11 +84,11 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeActionWithoutRegister( String actionName,
+    /*protected Object executeActionWithoutRegister( String actionName,
                                                    Object[] arguments ) throws AgentException {
-
+    
         return getActionResult(actionName, arguments, new String[]{}, new String[]{}, false, null, null, null, null);
-    }
+    }*/
 
     /**
      * Execute the given action. The action will not be registered in the database
@@ -100,14 +100,14 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeActionWithoutRegister( String actionName,
+    /*protected Object executeActionWithoutRegister( String actionName,
                                                    Object[] arguments,
                                                    String[] metaKeys,
                                                    String[] metaValues ) throws AgentException {
-
-        return getActionResult(actionName, arguments, metaKeys, metaValues, false, null, null, null, null);
-    }
     
+        return getActionResult(actionName, arguments, metaKeys, metaValues, false, null, null, null, null);
+    }*/
+
     /**
      * Execute the given action. The action will not be registered in the database
      *
@@ -129,11 +129,13 @@ public abstract class ActionClient extends AbstractAgentClient {
                                                    String requestUrl,
                                                    String httpMethod,
                                                    String[] argumentsNames,
+                                                   Class<?>[] argumentsTypes,
                                                    Class<?> returnType ) throws AgentException {
 
-        return getActionResult(actionName, arguments, metaKeys, metaValues, false, requestUrl, httpMethod, argumentsNames, returnType);
+        return getActionResult(actionName, arguments, metaKeys, metaValues, false, requestUrl, httpMethod,
+                               argumentsTypes, argumentsNames, returnType);
     }
-    
+
     /**
      * Execute the given action. The action will not be registered in the database
      *
@@ -146,15 +148,16 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeActionWithoutRegister( String actionName,
+    /*protected Object executeActionWithoutRegister( String actionName,
                                                    Object[] arguments,
                                                    String requestUrl,
                                                    String httpMethod,
                                                    String[] argumentsNames,
                                                    Class<?> returnType ) throws AgentException {
-
-        return getActionResult(actionName, arguments, null, null, false, requestUrl, httpMethod, argumentsNames, returnType);
-    }
+    
+        return getActionResult(actionName, arguments, null, null, false, requestUrl, httpMethod, argumentsNames,
+                               returnType);
+    }*/
 
     /**
      * Execute the given action. The action will be registered in the database
@@ -164,12 +167,12 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeAction(
+    /*protected Object executeAction(
                                     String actionName,
                                     Object[] arguments ) throws AgentException {
-
+    
         return getActionResult(actionName, arguments, new String[]{}, new String[]{}, true, null, null, null, null);
-    }
+    }*/
 
     /**
      * Execute the given action. The action will be registered in the database
@@ -181,14 +184,14 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeAction(
+    /*protected Object executeAction(
                                     String actionName,
                                     Object[] arguments,
                                     String[] metaKeys,
                                     String[] metaValues ) throws AgentException {
-
+    
         return getActionResult(actionName, arguments, metaKeys, metaValues, true, null, null, null, null);
-    }
+    }*/
 
     /**
      * Execute the given action. The action will be registered in the database
@@ -202,17 +205,17 @@ public abstract class ActionClient extends AbstractAgentClient {
      * @return result of the action execution
      * @throws AgentException if exception occurs during action execution
      */
-    protected Object executeAction(
+    /*protected Object executeAction(
                                     String actionName,
                                     Object[] arguments,
                                     String requestUrl,
                                     String httpMethod,
                                     String[] argumentsNames,
                                     Class<?> returnType ) throws AgentException {
-
+    
         return getActionResult(actionName, arguments, null, null, true, requestUrl, httpMethod, argumentsNames,
                                returnType);
-    }
+    }*/
 
     /**
      * Execute the given action. The action will be registered in the database
@@ -229,7 +232,7 @@ public abstract class ActionClient extends AbstractAgentClient {
      *        These names, along with the arguments values will construct the HTTP request JSON body
      * @param returnType the class object of this request's response result
      */
-    protected Object executeAction(
+    /*protected Object executeAction(
                                     String actionName,
                                     Object[] arguments,
                                     String[] metaKeys,
@@ -238,9 +241,40 @@ public abstract class ActionClient extends AbstractAgentClient {
                                     String httpMethod,
                                     String[] argumentsNames,
                                     Class<?> returnType ) throws AgentException {
-
+    
         return getActionResult(actionName, arguments, metaKeys, metaValues, true, requestUrl, httpMethod,
                                argumentsNames, returnType);
+    }*/
+
+    /**
+     * Execute the given action. The action will be registered in the database
+     * 
+     * @param componentName name of the component
+     * @param actionName name of the action
+     * @param args arguments
+     * @param metaKeys some meta info key
+     * @param metaValues some meta info value
+     * @param requestUrl the URL that will be used to communicate with the agent
+     * @param requestMethod the HTTP method that will be used to communicate with the agent
+     * @param requestBody the request body that will be send to the Agent
+     * @param argumentsNames the names of each argument
+     *        These names, along with the arguments values will construct the HTTP request JSON body
+     * @param returnType the class object of this request's response result
+     * @param registerAction whether to register/log the action in the database
+     */
+    protected Object executeAction(
+                                    String actionName,
+                                    Object[] arguments,
+                                    String[] metaKeys,
+                                    String[] metaValues,
+                                    String requestUrl,
+                                    String httpMethod,
+                                    String[] argumentsNames,
+                                    Class<?>[] argumentsTypes,
+                                    Class<?> returnType ) throws AgentException {
+
+        return getActionResult(actionName, arguments, metaKeys, metaValues, true, requestUrl, httpMethod,
+                               argumentsTypes, argumentsNames, returnType);
     }
 
     /**
@@ -267,11 +301,12 @@ public abstract class ActionClient extends AbstractAgentClient {
                                     String requestUrl,
                                     String httpMethod,
                                     String[] argumentsNames,
+                                    Class<?>[] argumentsTypes,
                                     Class<?> returnType,
                                     boolean registerAction ) throws AgentException {
 
         return getActionResult(actionName, arguments, metaKeys, metaValues, registerAction, requestUrl, httpMethod,
-                               argumentsNames, returnType);
+                               argumentsTypes, argumentsNames, returnType);
     }
 
     private Object getActionResult(
@@ -282,11 +317,13 @@ public abstract class ActionClient extends AbstractAgentClient {
                                     boolean registerAction,
                                     String requestUrl,
                                     String httpMethod,
+                                    Class<?>[] argumentsTypes,
                                     String[] argumentsNames,
                                     Class<?> returnType ) throws AgentException {
 
         // construct an action request
         ActionRequest actionRequest = new ActionRequest(component, actionName, arguments, requestUrl, httpMethod,
+                                                        argumentsTypes,
                                                         argumentsNames, returnType);
         actionRequest.setRegisterActionExecution(registerAction);
         if (metaKeys != null && metaKeys.length > 0) {
@@ -305,9 +342,10 @@ public abstract class ActionClient extends AbstractAgentClient {
                 LocalExecutor localExecutor = new LocalExecutor();
                 result = localExecutor.executeAction(actionRequest);
             } else {
-            	if (remoteExecutor == null) {
-            		remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent), this.initializeRequestUrl);
-            	}
+                if (remoteExecutor == null) {
+                    remoteExecutor = new RemoteExecutor(HostUtils.getAtsAgentIpAndPort(atsAgent),
+                                                        this.initializeRequestUrl);
+                }
                 result = remoteExecutor.executeAction(actionRequest);
             }
         } else {

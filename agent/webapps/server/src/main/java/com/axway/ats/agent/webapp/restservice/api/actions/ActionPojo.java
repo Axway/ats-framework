@@ -63,9 +63,15 @@ public class ActionPojo {
             this.argumentsTypes = new String[actionRequest.getArguments().length];
             this.argumentsValues = new String[actionRequest.getArguments().length];
             for (int i = 0; i < actionRequest.getArguments().length; i++) {
-                Class<?> argClass = actionRequest.getArguments()[i].getClass();
+                Object argument = actionRequest.getArguments()[i];
+                Class<?> argClass = actionRequest.getArgumentsTypes()[i];
                 this.argumentsTypes[i] = argClass.getName();
-                this.argumentsValues[i] = gson.toJson(actionRequest.getArguments()[i], argClass);
+                if (argument != null) {
+                    this.argumentsValues[i] = gson.toJson(argument, argClass);
+                } else {
+                    this.argumentsValues[i] = null;
+                }
+
             }
         }
     }

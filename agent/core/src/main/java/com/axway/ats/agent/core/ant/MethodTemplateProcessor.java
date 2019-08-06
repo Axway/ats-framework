@@ -102,10 +102,28 @@ class MethodTemplateProcessor extends TemplateProcessor {
             StringBuilder paramDefinition = new StringBuilder();
             StringBuilder argumentArray = new StringBuilder();
 
+            StringBuilder argumentTypes = new StringBuilder();
+            argumentTypes.append("new java.lang.Class<?>[]{");
+
             for (int i = 0; i < paramNames.length; i++) {
                 paramDefinition.append(paramTypes[i] + " " + paramNames[i] + ", ");
                 argumentArray.append(paramNames[i] + ", ");
+                if (paramTypes[i].contains("<")) {
+                    argumentTypes.append(paramTypes[i].split("<")[0] + ".class").append(",");
+                } else {
+                    argumentTypes.append(paramTypes[i] + ".class").append(",");
+                }
+
             }
+
+            if (argumentTypes.toString().contains(",")) {
+                argumentTypes.setLength(argumentTypes.length() - 1); // remote trailing comma
+            }
+
+            argumentTypes.append("}");
+
+            placeHolderValues.put("$ARGUMENT_TYPES$", argumentTypes.toString());
+
             String paramDefinitionStr = paramDefinition.toString();
             String argumentArrayStr = argumentArray.toString();
 
@@ -125,26 +143,31 @@ class MethodTemplateProcessor extends TemplateProcessor {
                 placeHolderValues.put("$META_KEYS$", "");
                 placeHolderValues.put("$META_VALUES$", "");
             } else {
-                placeHolderValues.put("$META_KEYS$", ", " + arrayToString(new String[]{ "transferUnit" }));
-                placeHolderValues.put("$META_VALUES$", ", " + arrayToString(new String[]{ transferUnit }));
+                placeHolderValues.put("$META_KEYS$", arrayToString(new String[]{ "transferUnit" }));
+                placeHolderValues.put("$META_VALUES$", arrayToString(new String[]{ transferUnit }));
             }
 
             if (StringUtils.isNullOrEmpty(requestUrl)) {
-                placeHolderValues.put("$REQUEST_URL$", ", \"\"");
+                placeHolderValues.put("$REQUEST_URL$", "\"\"");
             } else {
-                placeHolderValues.put("$REQUEST_URL$", ", \"" + requestUrl + "\", ");
+                placeHolderValues.put("$REQUEST_URL$", "\"" + requestUrl + "\"");
             }
 
             if (StringUtils.isNullOrEmpty(requestMethod)) {
-                placeHolderValues.put("$REQUEST_METHOD$", ", \"\", ");
+                placeHolderValues.put("$REQUEST_METHOD$", "\"\"");
             } else {
-                placeHolderValues.put("$REQUEST_METHOD$", "\"" + requestMethod + "\", ");
+                placeHolderValues.put("$REQUEST_METHOD$", "\"" + requestMethod + "\"");
             }
 
             if (!returnTypeName.equalsIgnoreCase("void")) {
-                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", " + returnTypeName + ".class");
+                if (returnTypeName.contains("<")) {
+                    placeHolderValues.put("$RETURN_TYPE_CLASS$", returnTypeName.split("<")[0] + ".class");
+                } else {
+                    placeHolderValues.put("$RETURN_TYPE_CLASS$", returnTypeName + ".class");
+                }
+
             } else {
-                placeHolderValues.put("$RETURN_TYPE_CLASS$", ", null");
+                placeHolderValues.put("$RETURN_TYPE_CLASS$", "null");
             }
 
             if (isDeprecated) {

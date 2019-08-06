@@ -31,19 +31,20 @@ import io.netty.util.internal.StringUtil;
  */
 public class ActionRequest {
 
-    private String   componentName;
-    private String   actionName;
-    private Object[] args;
-    private boolean  registerAction;
-    private String   transferUnit;
-    private String   requestUrl;
-    private String   requestMethod;
-    private String   requestBody;
-    private String[] argumentsNames;
+    private String     componentName;
+    private String     actionName;
+    private Object[]   args;
+    private boolean    registerAction;
+    private String     transferUnit;
+    private String     requestUrl;
+    private String     requestMethod;
+    private String     requestBody;
+    private String[]   argumentsNames;
+    private Class<?>[] argumentsTypes;
     /**
      * the Java class that this request's response result will be
      * */
-    private Class<?> returnType;
+    private Class<?>   returnType;
 
     /**
      * @param componentName name of the component
@@ -75,6 +76,7 @@ public class ActionRequest {
                           Object[] args,
                           String requestUrl,
                           String requestMethod,
+                          Class<?>[] argumentsTypes,
                           String[] argumentsNames,
                           Class<?> returnType ) {
 
@@ -83,6 +85,7 @@ public class ActionRequest {
         this.args = args;
         this.requestUrl = requestUrl;
         this.requestMethod = requestMethod;
+        this.argumentsTypes = argumentsTypes;
         this.argumentsNames = argumentsNames;
         this.returnType = returnType;
         this.requestBody = createRequestBody();
@@ -181,6 +184,11 @@ public class ActionRequest {
     public String[] getArgumentsNames() {
 
         return argumentsNames;
+    }
+    
+    public Class<?>[] getArgumentsTypes() {
+
+        return argumentsTypes;
     }
 
     public void setArgumentsNames( String[] argumentsNames ) {
