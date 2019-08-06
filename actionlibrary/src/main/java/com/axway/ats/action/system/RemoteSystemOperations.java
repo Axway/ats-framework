@@ -40,6 +40,7 @@ public class RemoteSystemOperations implements ISystemOperations {
 
         this.atsAgent = atsAgent;
         this.remoteSystemOperations = new InternalSystemOperations(atsAgent);
+        this.remoteSystemOperations.initialize();
     }
 
     @Override
