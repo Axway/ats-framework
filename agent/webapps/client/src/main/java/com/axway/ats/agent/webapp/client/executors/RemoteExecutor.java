@@ -47,6 +47,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 
 /**
  * This executor will execute an action or a set of actions on
@@ -618,10 +619,17 @@ public class RemoteExecutor extends AbstractClientExecutor {
                 String key = (String) it.next();
                 JsonElement value = json.get(key);
                 try {
-                    sb.append(key)
-                      .append("=")
-                      .append(URLEncoder.encode(value.toString(), "UTF-8"))
-                      .append("&");
+                    if (value instanceof JsonPrimitive) {
+                        sb.append(key)
+                          .append("=")
+                          .append(URLEncoder.encode( ((JsonPrimitive) value).getAsString(), "UTF-8")) // JsonElement.toString() quotes the value additionaly, which is not what the user had provided
+                          .append("&");
+                    } else {
+                        sb.append(key)
+                          .append("=")
+                          .append(URLEncoder.encode(value.toString(), "UTF-8"))
+                          .append("&");
+                    }
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException("Unable to encode query parameter '" + key + "'", e);
                 }
