@@ -198,19 +198,35 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                     TestCaseState testCaseState = null;
                     try {
                         testCaseState = getCurrentTestCaseState();
-                        RestHelper helper = new RestHelper();
-                        helper.executeRequest(ai.address, "/testcases",
-                                              "PUT",
-                                              "{\"callerId\":\"" + callerId
-                                                     + "\",\"testCaseState\":"
-                                                     + helper.serializeJavaObject(testCaseState) + "}",
-                                              null, null);
-                        ai.testConfigured = true;
+                        if (testCaseState != null) {
+                            if (testCaseState.getTestcaseId() != -1
+                                || testCaseState.getLastExecutedTestcaseId() != -1) {
+                                RestHelper helper = new RestHelper();
+                                helper.executeRequest(ai.address, "/testcases",
+                                                      "PUT",
+                                                      "{\"callerId\":\"" + callerId
+                                                             + "\",\"testCaseState\":"
+                                                             + helper.serializeJavaObject(testCaseState) + "}",
+                                                      null, null);
+                                ai.testConfigured = true;
+                            } else {
+                                //log.info("Agent at '" + ai.address + "' used outside of a TESTCASE");
+                            }
+                        } else {
+                            //log.info("Agent at '" + ai.address + "' used outside of both TESTCASE and RUN");
+                        }
+
                     } catch (Exception e) {
-                        String message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
-                                         + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
-                                         + ai.address
-                                         + "'";
+                        String message = null;
+                        if(testCaseState != null) {
+                            message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
+                            + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
+                            + ai.address
+                            + "'";
+                        } else {
+                            message = "Unable to start testcase, because ATS could not obtain testcase state information";
+                        }
+                        
                         log.error(message);
                         throw new AgentException(message, e);
                     }
