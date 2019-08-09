@@ -78,7 +78,7 @@ class TemplateProcessor {
             processedTemplate = processedTemplate.replace(placeHolder, value);
         }
 
-        System.out.println(processedTemplate);
+        //System.out.println(processedTemplate); -- for debugging only
 
         return processedTemplate;
     }
