@@ -44,6 +44,7 @@ public class Test_EvenLoadDistributingUtils {
         assertEquals( "[1, 2, 1, 2, 1, 2, 2, 2, 2]", Arrays.toString( distributedVALUES ) );
     }
 
+      
     @Test
     public void TEN_CHANNELS_10_VALUES() {
 
@@ -52,10 +53,17 @@ public class Test_EvenLoadDistributingUtils {
     }
 
     @Test
-    public void TEN_CHANNELS_5_VALUES() {
+    public void TEN_CHANNELS_3_VALUES() {
 
         int[] distributedVALUES = new EvenLoadDistributingUtils().getEvenLoad( 3, 10 );
         assertEquals( "[0, 1, 0, 1, 0, 1, 0, 0, 0, 0]", Arrays.toString( distributedVALUES ) );
+    }
+
+    @Test
+    public void TEN_CHANNELS_2_VALUES() {
+
+        int[] distributedVALUES = new EvenLoadDistributingUtils().getEvenLoad( 2, 10 );
+        assertEquals( "[0, 1, 0, 1, 0, 0, 0, 0, 0, 0]", Arrays.toString( distributedVALUES ) );
     }
 
 }
