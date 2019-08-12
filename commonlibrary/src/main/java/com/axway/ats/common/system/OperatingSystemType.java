@@ -19,7 +19,9 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
- * Enumeration representing the operating system type
+ * Enumeration representing the operating system type.
+ * Includes method for checking current OS type. 
+ * <p>Alternatively you may use SystemUtils from Apache Commons Lang</p> 
  */
 @PublicAtsApi
 public enum OperatingSystemType {
@@ -40,16 +42,20 @@ public enum OperatingSystemType {
     HP_UX,
 
     @PublicAtsApi
+    MAC_OS,
+
+    @PublicAtsApi
     UNKNOWN;
 
     private static OperatingSystemType currentOs;
 
-    private static final String        OS_WINDOWS_PREFIX = "Windows";
-    private static final String        OS_LINUX          = "Linux";
-    private static final String        OS_SOLARIS        = "Solaris";
-    private static final String        OS_SUNOS          = "SunOS";
-    private static final String        OS_HP_UX          = "HP-UX";
-    private static final String        OS_AIX            = "AIX";
+    private static final String        OS_WINDOWS_PREFIX           = "Windows";
+    private static final String        OS_LINUX                    = "Linux";
+    private static final String        OS_SOLARIS                  = "Solaris";
+    private static final String        OS_SUNOS                    = "SunOS";
+    private static final String        OS_HP_UX                    = "HP-UX";
+    private static final String        OS_AIX                      = "AIX";
+    private static final String        OS_MAC_OS_LOWER_CASE_PREFIX = "mac os"; // generally seen as "Mac OS"
 
     static {
         //static section to initialize the current OS type
@@ -57,7 +63,7 @@ public enum OperatingSystemType {
     }
 
     /**
-     * Check if this {@link OperatingSystemType} instance is a Unix-type
+     * Check if this {@link OperatingSystemType} instance is a UNIX-type
      * system
      *
      * @return true if this instance is a Unix-type system
@@ -65,7 +71,8 @@ public enum OperatingSystemType {
     @PublicAtsApi
     public boolean isUnix() {
 
-        if (this == LINUX || this == SOLARIS || this == AIX || this == HP_UX) {
+        if (this == LINUX || this == SOLARIS || this == AIX || this == HP_UX || this == MAC_OS) {
+            // Mac Os is UNIX / UNIX 03 certified since 10.5 - https://en.wikipedia.org/wiki/MacOS#cite_note-leopard_unix_cert-13
             return true;
         }
 
@@ -81,6 +88,17 @@ public enum OperatingSystemType {
     public boolean isWindows() {
 
         return this == WINDOWS;
+    }
+
+    /**
+     * Check if this {@link OperatingSystemType} instance is a Mac OS / macOS system
+     *
+     * @return true if this instance is a Mac OS system like macOS 10.x
+     */
+    @PublicAtsApi
+    public boolean isMacOs() {
+
+        return this == MAC_OS;
     }
 
     /**
@@ -111,14 +129,16 @@ public enum OperatingSystemType {
 
         if (osName.startsWith(OS_WINDOWS_PREFIX)) {
             return OperatingSystemType.WINDOWS;
+        } else if (osName.equalsIgnoreCase(OS_LINUX)) {
+            return OperatingSystemType.LINUX;
         } else if (osName.equalsIgnoreCase(OS_SOLARIS) || osName.equalsIgnoreCase(OS_SUNOS)) {
             return OperatingSystemType.SOLARIS;
         } else if (osName.equalsIgnoreCase(OS_AIX)) {
             return OperatingSystemType.AIX;
         } else if (osName.equalsIgnoreCase(OS_HP_UX)) {
             return OperatingSystemType.HP_UX;
-        } else if (osName.equalsIgnoreCase(OS_LINUX)) {
-            return OperatingSystemType.LINUX;
+        } else if (osName.toLowerCase().startsWith(OS_MAC_OS_LOWER_CASE_PREFIX)) {
+            return OperatingSystemType.MAC_OS;
         } else {
             return OperatingSystemType.UNKNOWN;
         }
