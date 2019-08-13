@@ -14,11 +14,9 @@
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <selenium-java.version>3.8.1</selenium-java.version>
-        <selelnium-htmlunit-driver.version>2.26</selelnium-htmlunit-driver.version>
-        <selenium-supported.browser.versions>Firefox 59, IE 11, Safari 5.1+, Chrome 66, Edge(limited) </selenium-supported.browser.versions>
-
-        <!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
+        <selenium-java.version>3.8.1</selenium-java.version> <!-- might be overwritten with more recent version 3.141.59 -->
+        <selelnium-htmlunit-driver.version>2.26</selelnium-htmlunit-driver.version> <!-- might be overwritten with more recent version 2.35.1 -->
+        <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)</selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <com.github.detro.ghostdriver.phantomjsdriver>1.2.1</com.github.detro.ghostdriver.phantomjsdriver>
