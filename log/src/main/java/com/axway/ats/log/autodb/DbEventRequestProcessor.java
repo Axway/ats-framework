@@ -82,7 +82,14 @@ import com.axway.ats.log.model.SystemLogLevel;
 
 public class DbEventRequestProcessor implements EventRequestProcessor {
 
-    private static final AtsConsoleLogger log                        = new AtsConsoleLogger(DbEventRequestProcessor.class);
+    private static final String           EVENT_PROCESSING_ERROR_MESSAGE = "Could not process 'EVENT_CLASS_PLACEHOLDER'\n"
+                                                                           + "MESSAGE_CONTENT_PLACEHOLDER\nSender location:\n\tS"
+                                                                           + "ENDER_LOCATION_PLACEHOLDER\nCurrent event processor state: \n\t"
+                                                                           + "RUN ID: RUN_ID_PLACEHOLDER,\n\t"
+                                                                           + "SUITE ID: SUITE_ID_PLACEHOLDER,\n\t"
+                                                                           + "TESTCASE ID: TESTCASE_ID_PLACEHOLDER";
+
+    private static final AtsConsoleLogger log                            = new AtsConsoleLogger(DbEventRequestProcessor.class);
 
     /**
      * The configuration for this appender
@@ -124,7 +131,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      *
      * key = <suite name>; value = <suite ID>
      */
-    private static Map<String, Integer>   suiteIdsCache              = new HashMap<String, Integer>();
+    private static Map<String, Integer>   suiteIdsCache                  = new HashMap<String, Integer>();
 
     private boolean                       isBatchMode;
 
@@ -132,49 +139,49 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
      * When rerunning a testcase, we have to delete the faulty one.
      * The main thread passes here the id of the test to be deleted.
      */
-    private int                           testcaseToDelete           = -1;
+    private int                           testcaseToDelete               = -1;
     /*
      * This is a list with all deleted tests.
      * We use it in order to skip going to the DB as we know the operation will fail.
      */
-    private List<Integer>                 deletedTestcases           = new ArrayList<Integer>();
+    private List<Integer>                 deletedTestcases               = new ArrayList<Integer>();
 
     /*
      * If the current state of the DbEventProcessor could not process UpdateSuiteEvent,
      * preserve this event and fire it right after StartSuiteEvent is received
      * */
-    private UpdateSuiteEvent              pendingUpdateSuiteEvent    = null;
+    private UpdateSuiteEvent              pendingUpdateSuiteEvent        = null;
 
     /*
      * The UpdateRunEvent, fired from the user.
      * */
-    private UpdateRunEvent                userProvidedUpdateRunEvent = null;
+    private UpdateRunEvent                userProvidedUpdateRunEvent     = null;
 
     /*
      * The actual UpdateRunEvent that will be processed and executed
      * */
-    private UpdateRunEvent                actualUpdateRunEvent       = null;
+    private UpdateRunEvent                actualUpdateRunEvent           = null;
 
     /*
      * While these flag is true, all messages are logged as run messages
      * */
-    private boolean                       afterSuiteMode             = false;
+    private boolean                       afterSuiteMode                 = false;
 
     /*
      * While these flag is true, all messages are logged as suite messages
      * */
-    private boolean                       afterClassMode             = false;
+    private boolean                       afterClassMode                 = false;
 
     /*
      * While these flag is true, all messages, statistics and checkpoints
      * are logged as they have been logged from the testcase, that was ended most recently
      * */
-    private boolean                       afterMethodMode            = false;
+    private boolean                       afterMethodMode                = false;
 
     /*
      * Keeps the ID of the last ended suite
      * */
-    private int                           lastEndedSuiteId           = -1;
+    private int                           lastEndedSuiteId               = -1;
 
     /**
      * Do not use this constructor.
@@ -364,12 +371,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                     }
 
                     if (throwException) {
-
-                        log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
-                                  + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
-                                  "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
-                                  + this.getSuiteId() + ",\n\tTESTCASE ID: "
-                                  + this.getTestCaseId());
+                        String errorMessage = constructEventProcessingErrorMessage(dbAppenderEvent);
+                        log.error(errorMessage);
 
                         throw e;
 
@@ -380,12 +383,8 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 try {
                     dbAppenderEvent.checkIfCanBeProcessed(eventProcessorState);
                 } catch (LoggingException e) {
-
-                    log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
-                              + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo +
-                              "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
-                              + this.getSuiteId() + ",\n\tTESTCASE ID: "
-                              + this.getTestCaseId());
+                    String errorMessage = constructEventProcessingErrorMessage(dbAppenderEvent);
+                    log.error(errorMessage);
 
                     throw e;
                 }
@@ -514,6 +513,35 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         } else {
             insertMessage(eventRequest, false, false);
         }
+    }
+
+    private String constructEventProcessingErrorMessage( AbstractLoggingEvent dbAppenderEvent ) {
+
+        if (dbAppenderEvent instanceof InsertMessageEvent) {
+            return EVENT_PROCESSING_ERROR_MESSAGE.replace("EVENT_CLASS_PLACEHOLDER",
+                                                          dbAppenderEvent.getClass().getName())
+                                                 .replace("MESSAGE_CONTENT_PLACEHOLDER",
+                                                          "with message:\n\t" + (String) ((InsertMessageEvent) dbAppenderEvent).getMessage())
+                                                 .replace("SENDER_LOCATION_PLACEHOLDER",
+                                                          (dbAppenderEvent.getLocationInformation().fullInfo != null)
+                                                                                                                      ? dbAppenderEvent.getLocationInformation().fullInfo
+                                                                                                                      : "null")
+                                                 .replace("RUN_ID_PLACEHOLDER", this.getRunId() + "")
+                                                 .replace("SUITE_ID_PLACEHOLDER", this.getSuiteId() + "")
+                                                 .replace("TESTCASE_ID_PLACEHOLDER", this.getTestCaseId() + "");
+        } else {
+            return EVENT_PROCESSING_ERROR_MESSAGE.replace("EVENT_CLASS_PLACEHOLDER",
+                                                          dbAppenderEvent.getClass().getName())
+                                                 .replace("MESSAGE_CONTENT_PLACEHOLDER", "")
+                                                 .replace("SENDER_LOCATION_PLACEHOLDER",
+                                                          (dbAppenderEvent.getLocationInformation().fullInfo != null)
+                                                                                                                      ? dbAppenderEvent.getLocationInformation().fullInfo
+                                                                                                                      : "null")
+                                                 .replace("RUN_ID_PLACEHOLDER", this.getRunId() + "")
+                                                 .replace("SUITE_ID_PLACEHOLDER", this.getSuiteId() + "")
+                                                 .replace("TESTCASE_ID_PLACEHOLDER", this.getTestCaseId() + "");
+        }
+
     }
 
     private void startRun( StartRunEvent startRunEvent, long timeStamp ) throws DatabaseAccessException {
