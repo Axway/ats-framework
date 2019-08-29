@@ -8,7 +8,7 @@
         <property name="fileExtensions" value="java"/>
         <property name="headerFile" value="${checkstyle.header.file}"/>
     </module>
-    <module name="SuppressionFilter">
+    <!-- module name="SuppressionFilter">
         <property name="file" value="./suppressions.xml"/>
-    </module>
+    </module- -->
 </module>

@@ -24,6 +24,7 @@
         <module>uiengine</module>
         <module>rbv</module>
         <module>utilities</module>
+        <module>examples</module>
     </modules>
 
     <properties>
@@ -186,7 +187,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.19</version><!-- 6.19 is max version to support Java 7 -->
+                        <version>8.19</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -426,32 +427,14 @@
 
     <developers>
         <developer>
-            <name>Angel Todorov</name>
-            <email>atodorov@axway.com</email>
-            <organization>Axway</organization>
-            <organizationUrl>http://www.axway.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Nikolay Gogovski</name>
-            <email>ngogovski@axway.com</email>
+            <name>Dragoslav Slaveykov</name>
+            <email>dslaveykov@axway.com</email>
             <organization>Axway</organization>
             <organizationUrl>http://www.axway.com</organizationUrl>
         </developer>
         <developer>
             <name>Svilen Dikov</name>
             <email>sdikov@axway.com</email>
-            <organization>Axway</organization>
-            <organizationUrl>http://www.axway.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Radoslav Kostadinov</name>
-            <email>rkostadinov@axway.com</email>
-            <organization>Axway</organization>
-            <organizationUrl>http://www.axway.com</organizationUrl>
-        </developer>
-        <developer>
-            <name>Dragoslav Slaveykov</name>
-            <email>dslaveykov@axway.com</email>
             <organization>Axway</organization>
             <organizationUrl>http://www.axway.com</organizationUrl>
         </developer>

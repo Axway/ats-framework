@@ -1,0 +1,88 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-examples</artifactId>
+        <version>4.0.6-SNAPSHOT</version>
+    </parent>
+    <groupId>com.axway.ats.framework.examples</groupId>
+    <artifactId>ats-examples-vm-tests</artifactId>
+
+    <name>ats-demo-tests</name>
+    <description>Former ats-demo-tests project</description> <!-- as shown in ATS videos in YouTube -->
+    <url>https://axway.github.io/ats-framework/Ready-for-use-test-project.html</url>
+
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <skipTestsExec>true</skipTestsExec> <!-- By default skip test execution becauses they need special environment.
+          To force tests execution (after env. is configured) you may pass -DskipTestsExec=false -->
+    </properties>
+
+    <profiles>
+        <profile>
+            <id>forceTestsExec</id>
+            <activation>
+                <property>
+                    <name>env.skipTestsExec</name>
+                </property>
+            </activation>
+            <properties>
+                <skipTestsExec>${env.skipTestsExec}</skipTestsExec>
+            </properties>
+        </profile>
+    </profiles>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <argLine>-Ddbcp.logAbandoned=true</argLine>
+                    <includes>
+                        <include>**/**Tests</include>
+                    </includes>
+                    <skipTests>${skipTestsExec}</skipTests>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-actionlibrary</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-rbv</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-monitoringlibrary</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework.utilities</groupId>
+            <artifactId>ats-s3-utilities</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-uiengine</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework.examples</groupId>
+            <artifactId>ats-examples-vm-actions</artifactId>
+            <version>${project.version}</version>
+            <classifier>client</classifier>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+</project>

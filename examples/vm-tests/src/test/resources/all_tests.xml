@@ -1,0 +1,23 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="All Tests Run" verbose="1">
+    <!--
+    <test name="Some selected tests">
+        <classes>
+            <class name="com.axway.ats.examples.basic.FileSystemOperationTests" />
+            <class name="com.axway.ats.examples.basic.FileTransferTests" />
+            <class name="com.axway.ats.examples.performance.DifferentLoadPatternTests" />
+        </classes>
+    </test>
+    -->
+
+    <test name="More Tests">
+        <packages>
+            <package name="com.axway.ats.examples.basic"/>
+            <package name="com.axway.ats.examples.basic.http"/>
+            <package name="com.axway.ats.examples.basic.verifications"/>
+            <package name="com.axway.ats.examples.monitoring"/>
+            <package name="com.axway.ats.examples.performance"/>
+        </packages>
+    </test>
+</suite>

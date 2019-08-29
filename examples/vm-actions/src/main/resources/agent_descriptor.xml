@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component name="ats-examples-vm-actions" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:noNamespaceSchemaLocation="agent_descriptor.xsd">
+
+    <actionClass name="com.axway.ats.framework.examples.vm.actions.SimpleActions"/>
+    <actionClass name="com.axway.ats.framework.examples.vm.actions.FileTransferActions"/>
+
+    <cleanupHandler name="com.axway.ats.framework.examples.vm.actions.SimpleCleanupHandler"/>
+
+</component>
