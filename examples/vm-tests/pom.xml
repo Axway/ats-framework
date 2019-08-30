@@ -12,9 +12,8 @@
     <artifactId>ats-examples-vm-tests</artifactId>
 
     <name>ats-demo-tests</name>
-    <description>Former ats-demo-tests project</description> <!-- as shown in ATS videos in YouTube -->
+    <description>Project with tests which demonstrate ATS usage with external servers which are available in ATS Examples VM. This is former ats-demo-tests project</description> <!-- as shown in ATS videos in YouTube -->
     <url>https://axway.github.io/ats-framework/Ready-for-use-test-project.html</url>
-
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -46,6 +45,13 @@
                         <include>**/**Tests</include>
                     </includes>
                     <skipTests>${skipTestsExec}</skipTests>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip> <!-- skip try to deploy remotely artifact -->
                 </configuration>
             </plugin>
         </plugins>
