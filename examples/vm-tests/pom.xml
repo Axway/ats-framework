@@ -12,7 +12,9 @@
     <artifactId>ats-examples-vm-tests</artifactId>
 
     <name>ats-demo-tests</name>
-    <description>Project with tests which demonstrate ATS usage with external servers which are available in ATS Examples VM. This is former ats-demo-tests project</description> <!-- as shown in ATS videos in YouTube -->
+    <description>Project with tests which demonstrate ATS usage with external servers which are available in ATS
+        Examples VM. This is former ats-demo-tests project
+    </description> <!-- as shown in ATS videos in YouTube -->
     <url>https://axway.github.io/ats-framework/Ready-for-use-test-project.html</url>
 
     <properties>
@@ -36,6 +38,29 @@
     </profiles>
     <build>
         <plugins>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <echo>
+                         -
+                         ***
+                         WARNING: Functional tests for the examples are skipped by default.
+                         Most of these tests need proper environment (servers) so
+                         the fastest way is to run them in ATS Examples VM.
+                         ***
+                                </echo>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
