@@ -89,7 +89,6 @@
         <!-- Used in ActionLibrary -->
         <!-- Bouncycastle provider JDK6. Used in AactionLibrary -->
         <org.bouncycastle.version>1.57</org.bouncycastle.version>
-        <net.sourceforge.javamail-crypto.version>0.5.3.5</net.sourceforge.javamail-crypto.version>
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
         <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
