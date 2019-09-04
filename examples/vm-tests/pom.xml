@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.axway.ats.framework</groupId>
         <artifactId>ats-examples</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.7-SNAPSHOT</version>
     </parent>
     <groupId>com.axway.ats.framework.examples</groupId>
     <artifactId>ats-examples-vm-tests</artifactId>
