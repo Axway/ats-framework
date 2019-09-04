@@ -31,32 +31,32 @@
             <dependency>
                 <groupId>com.axway.ats.framework</groupId>
                 <artifactId>ats-actionlibrary</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.axway.ats.framework</groupId>
                 <artifactId>ats-rbv</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.axway.ats.framework</groupId>
                 <artifactId>ats-monitoringlibrary</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.axway.ats.framework.utilities</groupId>
                 <artifactId>ats-s3-utilities</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.axway.ats.framework</groupId>
                 <artifactId>ats-uiengine</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.axway.ats.framework.agent</groupId>
                 <artifactId>ats-agent-core</artifactId>
-                <version>${ats.version}</version>
+                <version>${project.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
