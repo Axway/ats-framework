@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.axway.ats.framework</groupId>
         <artifactId>ats-examples</artifactId>
-        <version>4.0.6</version>
+        <version>4.0.7-SNAPSHOT</version>
     </parent>
     <groupId>com.axway.ats.framework.examples</groupId>
     <artifactId>ats-examples-vm-actions</artifactId>
@@ -33,7 +33,7 @@
                                 <echo message="compile classpath: ${compile_classpath}" />
                                 <echo message="runtime classpath: ${runtime_classpath}" />
                                 --&gt;
-                                <echo message="test classpath - - - - - -:    ${test_classpath}" />
+                                <echo message="test classpath - - - - - -: ${test_classpath}" />
                                 <ant antfile="build.xml" target="all" />
                             </target>
                         </configuration>
