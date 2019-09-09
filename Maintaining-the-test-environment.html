@@ -1,0 +1,72 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Maintaining the test environment</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Maintaining the test environment </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Maintainingthetestenvironment-Introduction">Introduction</h1> 
+      <hr> 
+      <p>Most of the times the automated tests code can be divided in 3 phases: <em>Configuration</em>, <em>Action</em> and <em>Verification</em>.</p> 
+      <p>This page shows how to prepare the environment of the Application Under Test and this falls in the <strong> <em>Configuration</em> phase</strong>.</p> 
+      <p>By preparing the environment we mean taking care of the file system, database and more.</p> 
+      <p><br></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-information"> 
+       <p class="title">How important is it?</p> 
+       <div class="confluence-information-macro-body"> 
+        <p>Almost always it is very important to know the state of the environment.</p> 
+        <p>Dirty environment will probably cause your Application Under Test(AUT) to behave not as expected and of course this will compromise the test results.</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <p class="title">Sequencial tests</p> 
+       <div class="confluence-information-macro-body"> 
+        <p>It is considered as bad practice to expect that your tests will run in some predefined order.</p> 
+        <p>When creating a test, you should not worry about any other tests. The current test must produce same results no matter if run alone or in a sequence with some other tests.</p> 
+        <p>In order to make this possible, you need to maintain same initial environment which is appropriate for running any test.</p> 
+       </div> 
+      </div> 
+      <h2 id="Maintainingthetestenvironment-Environmentbackupandrestore"><strong>Environment backup and restore</strong></h2> 
+      <hr> 
+      <p><strong> <em>Environment backup</em> </strong> is the process of making an image of the initial environment. So imagine you have installed, configure and started your AUT, now as it is in a good initial state and you need to make an image. For example this might mean to remember some content on the file system and database.</p> 
+      <p><strong> <em>Environment restore</em> </strong> is the process of bringing the environment back to its initial state, so the next test can start safely. This means you need to restore some content of the local files system or database, or you need to restart some system process etc.</p> 
+      <h2 id="Maintainingthetestenvironment-Whenistheenvironmentbackedup?"><strong>When is the environment backed up?</strong></h2> 
+      <hr> 
+      <p>Usually right after installing and configuring your AUT.</p> 
+      <p>It is possible to describe your environment in XML format and let ATS make an image of it.</p> 
+      <h2 id="Maintainingthetestenvironment-Whenistheenvironmentrestored?"><strong>When is the environment restored?</strong></h2> 
+      <hr> 
+      <p>Usually right before calling your next test method.</p> 
+      <h2 id="Maintainingthetestenvironment-EnvironmentmaintenanceusingATSAgent"><strong>Environment maintenance using ATS Agent<br> </strong></h2> 
+      <hr> 
+      <p>ATS comes with a library called <em>Environment Cleanup</em> which takes care of environment backups and restores, but usually the preferred way is to use this library silently i.e. without writing java code but rather just describe the environment in some XML file.</p> 
+      <p><a href="Environment-maintenance-using-ATS-Agent.html">Here</a> are the details.</p> 
+      <h2 id="Maintainingthetestenvironment-EnvironmentmaintenanceusingATSEnvironmentcleanuplibrary"><strong>Environment maintenance using ATS Environment cleanup library</strong></h2> 
+      <hr> 
+      <p><a href="Environment-maintenance-using-Environment-cleanup-library.html">Here</a> we show how to maintain the environment using java code only.</p> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

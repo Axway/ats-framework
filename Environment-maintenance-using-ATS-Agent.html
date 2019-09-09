@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Environment maintenance using ATS Agent</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Maintaining-the-test-environment.html">Maintaining the test environment</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Environment maintenance using ATS Agent </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="EnvironmentmaintenanceusingATSAgent-Introduction">Introduction</h1> 
+      <hr> 
+      <p>ATS comes with a library called <em>Environment Cleanup</em> which takes care of environment backups and restores, but usually the preferred way is to use this library silently i.e. without writing Java code but rather just describe it in some XML file. And this page shows how to achieve it.</p> 
+      <h1 id="EnvironmentmaintenanceusingATSAgent-Describingtheenvironment">Describing the environment</h1> 
+      <hr> 
+      <p>We have explained how to deal with creating, deploying and running Agent components <a href="Creating-ATS-actions.html">here</a>. As ATS Agent is component based, it is recommended that each Agent component describes its own environment.</p> 
+      <p>For example, if you have one Agent component which is used for <em>user management</em> and you have another used for <em>file transfers</em>, you will probably want to describe different database tables for both Agent components.</p> 
+      <p>Now we will jump directly into a somewhat complex environment description. If you remember, each Agent component has one file called <em>agent_descriptor.xml</em> like the following file:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;!DOCTYPE component SYSTEM "agent_descriptor.xsd"&gt;
+&lt;component name="myproduct_actions"&gt;
+
+    &lt;actionClass name="com.myproduct.actions.SimpleActions"/&gt;
+    &lt;actionClass name="com.myproduct.actions.FileTransferActions"/&gt;
+
+    &lt;cleanupHandler name="com.myproduct.actions.SimpleCleanupHandler"/&gt;
+
+&lt;/component&gt;
+</pre> 
+       </div> 
+      </div> 
+      <p>Now lets extend this file to the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;?xml version='1.0' encoding='utf-8'?&gt;
+&lt;!DOCTYPE component SYSTEM "agent_descriptor.xsd"&gt;
+&lt;component name="myproduct_actions"&gt;
+
+    &lt;actionClass name="com.myproduct.actions.SimpleActions"/&gt;
+    &lt;actionClass name="com.myproduct.actions.FileTransferActions"/&gt;
+
+    &lt;cleanupHandler name="com.myproduct.actions.SimpleCleanupHandler"/&gt;
+
+    &lt;!--Environment description--&gt;
+    &lt;environment backupFolder="/tmp/component_environment_backup" windowsBackupFolder="C:/component_environment_backup" &gt;
+
+        &lt;!-- important DB tables --&gt;
+        &lt;database host="10.10.10.10" port="33060" name="myproduct_db" user="root" password="123" type="mysql"&gt;
+	    	&lt;table name="Banks"/&gt;
+	    	&lt;table name="Users" autoIncrementResetValue="0"/&gt;
+	    	&lt;table name="Partners" dropTable="true"/&gt;
+	    	&lt;table name="PartnerCerts" lock="false"/&gt;
+	    	&lt;table name="BusinessUnit" columnsToExclude="data"/&gt;
+        &lt;/database&gt;
+
+	    &lt;!-- important files --&gt;
+        &lt;file path="../../../file1"/&gt;
+        &lt;file path="../../file2" backupName="file2_backup"&gt;
+	    	&lt;action command="/etc/init.d/cmd1" sleep="2"/&gt;
+        &lt;/file&gt;
+        &lt;file path="/tmp/file3" backupName="file3_backup"/&gt;
+        &lt;file path="/tmp/file4"&gt;
+	    	&lt;action command="/etc/init.d/cmd1" sleep="3"/&gt;
+	    	&lt;action command="/etc/init.d/cmd2" sleep="1"/&gt;
+	    &lt;/file&gt;
+
+	    &lt;!-- important directories --&gt;
+        &lt;directory path="/usr/dir1/" backupName="dir1_backup"/&gt;
+        &lt;directory path="/tmp/dir2/"/&gt;
+        &lt;directory path="/tmp/dir3/"&gt;
+	    	&lt;action command="/etc/init.d/cmd3" sleep="2"/&gt;
+	    &lt;/directory&gt;
+    &lt;/environment&gt;
+
+&lt;/component&gt;
+</pre> 
+       </div> 
+      </div> 
+      <p>This example is somewhat complex, but it shows a lot. Here are the important details:</p> 
+      <ul> 
+       <li><em>environment node</em> - It describes the environment of our Agent component.<br> It has 2 backup folders for Unix and Windows which define the folder where we will backup the environment into.<br> If both folder attributes are not defined - the system temporary folder will be used instead.<br> This folder will be read later when doing environment restore.</li> 
+       <li><em>database node</em> - it describes the database we want to maintain. You have to specify all the DB connection parameters and the DB type.</li> 
+      </ul> 
+      <ul> 
+       <li>database <em>table node</em>s - the tables listed here will be the ones to backup/restore. Some options are possible here: 
+        <ul> 
+         <li><em>columnToExclude</em> specifies to skip some table columns. This is handy if some columns have too much but not important content</li> 
+         <li><em>lock</em> specifies whether we will lock the table while working with it</li> 
+         <li><em>dropTable</em> specifies whether table will be dropped and recreated after that. This might be used when the table size is very big and the "delete" query is slow.</li> 
+         <li><em>autoIncrementResetValue</em> requests to reset the auto-increment value. You should not use it unless needed</li> 
+        </ul></li> 
+       <li><em>file nodes</em> and <em>directory nodes</em> - specify files or whole directories that are to be backed up/restored. You can use full or relative paths.<br> If for some reason you want to specify the name of the backup file/directory - use the <em>backupName</em> attribute. For example you will need to use it when backing up files with same names coming from different locations.</li> 
+       <li><em>actions</em> assigned to some file or directory node. Sometimes after the restoration of some file or directory you will need to execute some shell command(this is usually used to restart some system process). This option gives you the chance to execute the needed shell command. The <em>sleep</em> attribute specifies how long time to wait after the execution of your shell command. For example if you have to restart a JBoss application server you may need to wait 60 seconds and then go on.</li> 
+      </ul> 
+      <h3 id="EnvironmentmaintenanceusingATSAgent-Importantconsiderations">Important considerations</h3> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Oracledatabase">Oracle database</h5> 
+      <p>The foreign keys constraints should be configured with DEFERRABLE in order to allow database restore.</p> 
+      <p>This does not break the database security. It is used to allow temporally disabling of foreign keys checks till the end of the database restore transaction. More information is available at this <a class="external-link" href="http://www.oracle-base.com/articles/8i/ConstraintCheckingUpdates.php" rel="nofollow">resource</a>.</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Filesbackup">Files backup</h5> 
+      <p>If a backup file already exists - we skip the backup;</p> 
+      <p>If the file to backup does not exist - no backup is made.</p> 
+      <p>While backing up, the <em>last modification date</em> from the original file is set to the backup file as well.</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Filesrestore">Files restore</h5> 
+      <p>Original file will be restored if the file to restore is missing or it exists and its <em>last modification date</em> is different than the one of the backup file.</p> 
+      <p>If the file to restore exists but there is no backup file, we will actually delete this file.</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Directorybackup">Directory backup</h5> 
+      <p>This directory is backed up recursively including all its files and sub-directories including the empty ones.</p> 
+      <p>If the backup directory does not exist, it will be created. When the backup operation is done, we will have a backup copy identical to the original directory.</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Directoryrestore">Directory restore</h5> 
+      <p>The directory restore operation brings the directory of interest back to its original state including all its sub-directories and empty directories</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-Additionalactionsonfileanddirectoryrestore">Additional actions on file and directory restore</h5> 
+      <p>You can have many additional actions on same file/directory restore. This is the case when more than one process is affected by same file/directory.<br> You can have the same shell command on more than one file/directory. This is the case when same process is affected by more than one restore file/directory.</p> 
+      <p>In order to shorten the time it takes to run all additional actions, we follow the next sequence:</p> 
+      <ol> 
+       <li>Restore all files and directories one by one</li> 
+       <li>Execute all shell commands one by one. If a shell command is specified more than once - it is executed just once.</li> 
+       <li>Sleep as long as the longest sleep interval is specified</li> 
+      </ol> 
+      <p>So In the given example will execute just once <em>/etc/init.d/cmd1</em>, <em>/etc/init.d/cmd2</em> and <em>etc/init.d/cmd3</em>. Then we will sleep for 3 seconds.</p> 
+      <h3 id="EnvironmentmaintenanceusingATSAgent-Morethanonedatabaseinsameenvironment">More than one database in same environment</h3> 
+      <p>We support the maintenance of more than one database.<br> Just add another <em>database node</em> to use this feature.</p> 
+      <h3 id="EnvironmentmaintenanceusingATSAgent-Morethanoneenvironment">More than one environment</h3> 
+      <p>Sometimes it is useful to have described more than one environment. Here is an example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">    &lt;environment name="environment1"  backupFolder="/tmp/component_environment_backup" windowsBackupFolder="C:/component_environment_backup" &gt;
+        &lt;!-- list all the items of this environment --&gt;
+    &lt;/environment&gt;
+
+    &lt;environment name="environment2"  backupFolder="/tmp/component_environment_backup2" windowsBackupFolder="C:/component_environment_backup2" &gt;
+        &lt;!-- list all the items of this environment --&gt;
+    &lt;/environment&gt;
+</pre> 
+       </div> 
+      </div> 
+      <p>Note the usage of the <em>name</em> attribute of each environment, it is needed so can distinguish them on restore. It is also needed to specify different backup folders of all environments.</p> 
+      <p>By default we will create a backуп of all described environments, but you will have to specify which one to restore later.</p> 
+      <h3 id="EnvironmentmaintenanceusingATSAgent-Customrestoresteps">Custom restore steps</h3> 
+      <p>There is a way to define some custom steps which will be automatically called after environment restore. These steps you need to define into a so called <em>cleanup handler</em>.</p> 
+      <p>If interested, see the "Creating a cleanup handler" section <a href="Creating-an-Agent-Component.html">here</a></p> 
+      <h1 id="EnvironmentmaintenanceusingATSAgent-Backinguptheenvironment">Backing up the environment</h1> 
+      <hr> 
+      <p>This is really easy. As you have described your environment(s) in the <em>agent_descriptor.xml</em>, all you need to do is to simply package and deploy it with your Agent component.</p> 
+      <p>When the Agent is started, it will read the <em>agent_descriptor.xml</em> file, extract all the environment related information and create the backups as described. If you have many environments - they are all backed-up in their backup folders.</p> 
+      <p><br></p> 
+      <p>But in case you want to create a backup at some specific moment or if you want to specify which exact environment to be backed up, then make an instance of EnvironmentCleanupClient and use some of its methods. Here is one example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// create an instance of this client, by providing the ATS Agent address
+EnvironmentCleanupClient cleanupClient = new EnvironmentCleanupClient( "10.10.10.10" );
+
+// backup the specified environment of the specified component
+cleanupClient.backup( "myproduct_actions", "environment1" );
+</pre> 
+       </div> 
+      </div> 
+      <h1 id="EnvironmentmaintenanceusingATSAgent-Restoringtheenvironment">Restoring the environment</h1> 
+      <hr> 
+      <p>You need to run Java code like the following:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// create an instance of this client, by providing the ATS Agent address
+EnvironmentCleanupClient cleanupClient = new EnvironmentCleanupClient( "10.10.10.10" );
+
+// run a restore command for the specified component and environment name
+cleanupClient.restore( "myproduct_actions", "environment1" );
+</pre> 
+       </div> 
+      </div> 
+      <p>Right at this moment your environment will be restored as described in the <em>agent_descriptor.xml</em> file.</p> 
+      <p>Check the other methods in this class for more options.</p> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Maintaining-the-test-environment.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

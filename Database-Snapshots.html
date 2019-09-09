@@ -41,6 +41,23 @@ testBox1.set...
 
 // make a snapshot from the database pointed in the test box
 DatabaseSnapshot snapshot1 = new DatabaseSnapshot( "snap1", testBox1 );
+
+/*
+ Sometimes a table index name can contain random auto-generated String(s)
+ If you do not have a way to handle them properly, you can specify a REGEX or a custom implementation of the Interface IndexNameMatcher to check if two indexes are the same
+*/
+// via Java REGEX
+snapshot1.setIndexNameMatcher(SOME_REGEX);
+
+/*snapshot1.setIndexNameMatcher(new IndexNameMatcher() {
+    @Override
+    public boolean isSame( String table, String firstName, String secondName ) {
+        // some custom name to compare the names of the two indexes.
+        // firstName -&gt; the name of the first table index (from the first snapshot), secondName -&gt; the name of the second table index (from the second snapshot)
+        return false;
+    }
+});*/
+
 // take first snapshot
 snapshot1.takeSnapshot();
 
@@ -187,6 +204,6 @@ try {
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

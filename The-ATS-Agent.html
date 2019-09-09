@@ -21,15 +21,17 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="TheATSAgent-Introduction">Introduction</h1> 
-      <p>The ATS Agent is a java application which is used by some ATS framework classes to do their job.</p> 
-      <p>As soon as the Agent is up and running it is ready to be used. You do not usually see an evidence of the existence of the ATS Agent in your test code, but when you use some known framework classes they might internally us the Agent.</p> 
+      <pre>Introduction</pre> 
+      <p>The ATS Agent is a Java application which is used by some ATS framework classes to do their job.</p> 
+      <p>As soon as the Agent is up and running it is ready to be used. You do not usually see an evidence of the existence of the ATS Agent in your test code, but when you use some known framework classes they might internally use the Agent.</p> 
       <p>The ATS Agent is mainly used for:</p> 
-      <ul> 
-       <li>Execute a command on a remote host. For example when the Test Executor needs to work on a remote host file system<br>In such case we call it <strong> <em>the Agent</em> </strong></li> 
-       <li>Monitoring the state of a remote host<br>In such case we call it <strong> <em>the Monitoring Service</em> </strong></li> 
-       <li>Loading the Application Under Test with a number of actions from a number of threads(users)<br>In such case we call it <strong> <em>the Loader</em> </strong></li> 
-      </ul> 
+      <ol> 
+       <li>Executing a command on a remote host. For example when the Test Executor needs to work on a remote host file system.<br>In such case we call it <strong> <em>the Agent</em> </strong></li> 
+       <li>Monitoring the state of a remote host.<br>In such case we call it <strong> <em>the Monitoring Service</em> </strong></li> 
+       <li>Loading the Application Under Test with a number of actions from a number of threads( users).<br>In such case we call it <strong> <em>the Loader</em></strong></li> 
+      </ol> 
+      <p>Below is example with landscape with (possible) use of agents. The agent role is put in blue. <br><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image confluence-content-image-border" height="400" width="665" src="attachments/119485890/179761666.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="LandscapeATS_new.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="10"></span></p> 
+      <p>Note that on every place agent could be flexible and serve several roles at once. For example monitoring could be started on every Loader or Agent.</p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="TheATSAgent-InstallingandstartingtheATSagent">Installing and starting the ATS agent</h1> 
@@ -37,37 +39,37 @@
       <ol> 
        <li>Download the ATS Agent zip archive from <a class="external-link" href="https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/agent/standalone/ats-agent-standalone-all/" rel="nofollow">here</a>. Open the folder with the same version you are already using for other ATS artifacts.</li> 
        <li>Unzip it on the host where you want to run it</li> 
-       <li>Start it by using <strong> <em>agent.bat</em> </strong> on Windows or <strong> <em>agent.sh</em> </strong> on non windows platforms</li> 
+       <li>Start it by using <strong> <em>agent.bat</em> </strong> on Windows or <strong> <em>agent.sh</em> </strong> on Unix-based platforms</li> 
       </ol> 
       <p>Now you can use it from your tests</p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="TheATSAgent-Agentfilestructure">Agent file structure</h1> 
-      <p>Following are the folders and files you will find after unzipping the Agent archive</p> 
+      <p>Following are the folders and files you will find after unzipping the agent archive</p> 
       <ul> 
        <li>ats-agent 
         <ul> 
-         <li><em> <strong>actions</strong> </em> <br> <em> <strong>the Agent component jars containing classes with actions that can be run remotely</strong> </em></li> 
-         <li><em> <strong>actions_dependencies</strong> </em> <br> <em> <strong>jars with classes needed by the actions</strong> </em></li> 
+         <li><em> <strong>actions</strong> </em> <br> <em> the Agent component jars containing classes with actions that can be run remotely </em></li> 
+         <li><em> <strong>actions_dependencies</strong> </em> <br> <em> jars with classes needed by the actions </em></li> 
          <li>container<br>libraries used to start the Agent web container</li> 
-         <li>endorsed<br>libraries used instead the ones from your java distribution</li> 
+         <li>endorsed<br>libraries used instead the ones from your Java distribution</li> 
          <li>webapp<br>the Agent web application</li> 
         </ul></li> 
-       <li><em> <strong>logs</strong> </em> <br> <em> <strong>Agent log files</strong> </em></li> 
+       <li><p><strong>logs</strong></p><p>Agent log files</p></li> 
       </ul> 
-      <p>In the list above the folders important to you are made bold and italic</p> 
+      <p>The folders in bold from the list above are the ones you may need to deal with.</p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="TheATSAgent-Verifyitrunsproperly">Verify it runs properly</h1> 
       <p>Following you can see some common problems and ways to investigate them</p> 
-      <h3 id="TheATSAgent-Makesuretherearenoerrorsinitsconsole.">Make sure there are no errors in its <em> <strong>console</strong> </em>.</h3> 
-      <p>The usual error is to use a too old java version. <br>The other one is to see its port is already taken by another application.</p> 
+      <h3 id="TheATSAgent-Makesuretherearenoerrorsinitsconsole">Make sure there are no errors in its <em> <strong>console</strong></em></h3> 
+      <p>The usual error is to be unable to find a Java executable. Or maybe you are using a too old Java version.</p> 
+      <p>Another usual error is to complain the port is already taken by another application. Or maybe you've already started the Agent.</p> 
       <h3 id="TheATSAgent-Makesuretherearenoerrorsinitslogfile">Make sure there are no errors in its log file</h3> 
-      <p>The Agent log file is called <strong> <em>ATSAgentAudit.log</em> </strong> and placed in the <em> <strong>logs</strong> </em> sub-folder.</p> 
-      <p>Hopefully the errors are easy to understand.</p> 
-      <p>In most cases this file will also tell you what the Agent is doing when user has called some remote action.</p> 
+      <p>The Agent log file is called <strong> <em>ATSAgentAudit.log</em> </strong> and is placed in the <em> <strong>logs</strong> </em> sub-folder.</p> 
+      <p>In most cases this file will tell you what the Agent is doing when user has called some remote action.</p> 
       <h3 id="TheATSAgent-NoerrorsbutcannotcommunicatewiththeAgent">No errors but cannot communicate with the Agent</h3> 
-      <p>If see no errors, but cannot communicate with the Agent then you either cannot reach this host(ping command can help you) or you should suspect a firewall prevent communication on the Agent port.<br>You can easily check if the communication is possible between Test Executor and Agent by trying to open the following URL in a web browser on Test Executor: <br>"<em>http://&lt;The Agent IP or host name&gt;:&lt;The Agent port&gt;/agentapp/agentservice?wsdl</em>". <br>On success you will see a list with all support web commands.</p> 
+      <p>If see no errors, but cannot communicate with the Agent then you either cannot reach this host( ping command can help you) or you should suspect a firewall preventing the communication on the Agent port.<br>You can easily check if the communication is possible between Test Executor and Agent by trying to open the following URL in a web browser on Test Executor: <br>"<em>http://&lt;The Agent IP or host name&gt;:&lt;The Agent port&gt;/agentapp</em>". <br>On success you will see a message informing the application is running.</p> 
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="TheATSAgent-ConfiguringtheATSagent">Configuring the ATS agent</h1> 
@@ -75,7 +77,7 @@
       <p>You can specify:</p> 
       <ul> 
        <li>port to use</li> 
-       <li>java executable</li> 
+       <li>Java VM executable</li> 
        <li>max memory size</li> 
       </ul> 
       <p>More options will be found if read the <em> <strong>agent.bat</strong> </em> and <em> <strong>agent.sh</strong> </em> files</p> 
@@ -84,9 +86,9 @@
       <p>If in your tests you do not provide a port, we will try to use 8089</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>You can change the default port by setting a java system variable.</p> 
-        <p>For example, this can be done by calling this:</p> 
-        <p><em>System.setProperty( "ats.agent.default.port", "8888" );</em></p> 
+        <p>Within the test executor you can change the default agent port to be used by setting a Java system variable.</p> 
+        <p>For example, this can be done by calling:</p> 
+        <pre>System.setProperty( "ats.agent.default.port", "8888" );</pre> 
        </div> 
       </div> 
       <p>&nbsp;</p> 
@@ -109,6 +111,6 @@
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

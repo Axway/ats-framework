@@ -1,0 +1,166 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Environment maintenance using Environment cleanup library</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Maintaining-the-test-environment.html">Maintaining the test environment</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Environment maintenance using Environment cleanup library </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Introduction">Introduction</h1> 
+      <hr> 
+      <p>This page shows how to backup and restore the test environment using Java code only. This is done by using the API of the ATS <em>Environment Cleanup library </em>which is part of the ATS framework.<em> <br></em></p> 
+      <h1 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Describingtheenvironment">Describing the environment</h1> 
+      <hr> 
+      <p>First we create a list containing all the units to work with - databases, files and directories</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">List&lt;EnvironmentUnit&gt; environmentUnits = new ArrayList&lt;EnvironmentUnit&gt;();
+</pre> 
+       </div> 
+      </div> 
+      <h3 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Databaseenvironmentunit">Database environment unit</h3> 
+      <p>Here is an XML structure describing some database info:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;database host="10.10.10.10" port="33060" name="myproduct_db" user="root" password="123" type="mysql"&gt;
+     &lt;table name="Banks"/&gt;
+     &lt;table name="Users" autoIncrementResetValue="0"/&gt;
+     &lt;table name="PartnerCerts" lock="false"/&gt;
+     &lt;table name="BusinessUnit" dropTable="true" columnsToExclude="data"/&gt;
+&lt;/database&gt;
+</pre> 
+       </div> 
+      </div> 
+      <p>But now we are not using XML, instead here is the alternative using Java code. It is surely longer than the XML:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// create a list with all tables
+List&lt;DbTable&gt; dbTables = new ArrayList&lt;DbTable&gt;();
+
+// create a simple table
+DbTable banksTable = new DbTable( "Banks" );
+dbTables.add( banksTable );
+
+// this table requests to reset the auto-increment value
+DbTable usersTable = new DbTable( "Users" ); // additionally you can provide table schema as second argument. If you do not, ATS will use the default schema for the user
+usersTable.setAutoIncrementResetValue( "0" );
+dbTables.add( usersTable );
+
+// this table requests to not be locked on restore. Generally it is not recommended to disable locking
+DbTable partnerCertsTable = new DbTable( "PartnerCerts" );
+partnerCertsTable.setLockTable( false );
+dbTables.add( partnerCertsTable );
+
+// a column of this table will not be processed
+List&lt;String&gt; columnsToExclude = new ArrayList&lt;String&gt;();
+columnsToExclude.add( "data" );
+DbTable businessUnitTable = new DbTable( "BusinessUnit", columnsToExclude );
+businessUnitTable.setDropTable( true ); // drop table and recreate it from scratch instead of deleting existing records. This is better as performance for very big tables
+dbTables.add( businessUnitTable );
+
+// create the database connection object
+DbConnection dbConnection = new DbConnMySQL( "10.10.10.10", "myproduct_db", "root", "123" );
+
+// create the database environment unit
+EnvironmentUnit myProductDbEnvUnit = new DatabaseEnvironmentUnit( "/tmp/agent_component_environment_backup", dbConnection, dbTables );
+
+// If you want to drop and recreate the tables instead of just deleting all of their content - uncomment the next line
+// Note that if you set this to true and drop table is set by either EnvironmentUnit.setDropTables(true) or DbTable.setDropTable(true) 
+//   is invoked - All of the table(s) data will be lost if an error occurs while performing backup action
+// myProductDbEnvUnit.setSkipTablesContent(true)
+// add this EnvironmentUnit to the list of all units
+environmentUnits.add( myProductDbEnvUnit );
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><strong>Drop table</strong> note: By default tables are <em>not dropped and recreated</em> before restore. Instead just DELETE records operation is performed, i.e. default is&nbsp;<code>myProductDbEnvUnit.setSkipTablesContent(false)</code>&nbsp; and respectively per table - <code>businessUnitTable.setDropTable(false)</code>. This delete is not effective when test (mostly a performance one) had created hundreds of thousands or even millions of records and they should be cleaned up. Now it is added option to specify for a table to be dropped first and then recreated with all its previous metadata - columns and indexes. We recommend <code>setDropTable(true)</code> to be used only for very large tables.</p> 
+      <h3 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Fileenvironmentunits">File environment units</h3> 
+      <p>Here is Java code which describes some important files. You can see the relative XML structure in the comments</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// &lt;file path="../../../file1"/&gt;
+EnvironmentUnit file1EnvUnit = new FileEnvironmentUnit( "../../../file1", "../../../file1" );
+environmentUnits.add( file1EnvUnit );
+
+// &lt;file path="../../file2" backupName="file2_backup"&gt;
+//     &lt;action command="/etc/init.d/cmd1" sleep="2"/&gt;
+// &lt;/file&gt;
+EnvironmentUnit file2EnvUnit = new FileEnvironmentUnit( "../../file2", "file2_backup" );
+List&lt;AdditionalAction&gt; file1AdditionalActions = new ArrayList&lt;AdditionalAction&gt;();
+AdditionalAction file1AdditionalAction = new SystemProcessAction( "/etc/init.d/cmd1", 2 );
+file1AdditionalActions.add( file1AdditionalAction );
+file2EnvUnit.addAdditionalActions( file1AdditionalActions );
+environmentUnits.add( file2EnvUnit );
+</pre> 
+       </div> 
+      </div> 
+      <h3 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Directoryenvironmentunits">Directory environment units</h3> 
+      <p>Here is some Java code which describes some important directories. You can see the relative XML structure in the comments</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// &lt;directory path="/usr/dir1/" backupName="dir1_backup"/&gt;
+EnvironmentUnit dir1EnvUnit = new DirectoryEnvironmentUnit( "/usr/dir1/", "dir1_backup" );
+environmentUnits.add( dir1EnvUnit );
+
+// &lt;directory path="/tmp/dir3/"&gt;
+//     &lt;action command="/etc/init.d/cmd3" sleep="2"/&gt;
+// &lt;/directory&gt;
+EnvironmentUnit dir3EnvUnit = new DirectoryEnvironmentUnit( "dir3", "dir3" );
+List&lt;AdditionalAction&gt; dir3AdditionalActions = new ArrayList&lt;AdditionalAction&gt;();
+AdditionalAction dir3AdditionalAction = new SystemProcessAction( "/etc/init.d/cmd3", 2 );
+dir3AdditionalActions.add( dir3AdditionalAction );
+dir3EnvUnit.addAdditionalActions( dir3AdditionalActions );
+environmentUnits.add( dir3EnvUnit );
+</pre> 
+       </div> 
+      </div> 
+      <h1 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Backing-uptheenvironment">Backing-up the environment</h1> 
+      <hr> 
+      <p>The following code will backup the environment:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">for( EnvironmentUnit environmentUnit : environmentUnits ) {
+    environmentUnit.backup();
+}
+</pre> 
+       </div> 
+      </div> 
+      <h1 id="EnvironmentmaintenanceusingEnvironmentcleanuplibrary-Restoringtheenvironment">Restoring the environment</h1> 
+      <hr> 
+      <p>The following code will restore the environment:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">for( EnvironmentUnit environmentUnit : environmentUnits ) {
+    environmentUnit.restore();
+}
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Maintaining-the-test-environment.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

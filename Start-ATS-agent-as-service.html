@@ -24,21 +24,21 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="StartATSagentasservice-Introduction">Introduction</h1> 
       <p>Read this page if you want to have the Agent up and running as soon as the system starts.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="StartATSagentasservice-InWindows">In Windows</h1> 
       <p>Can be done it two ways</p> 
       <h3 id="StartATSagentasservice-ByusingScheduledTask">By using Scheduled Task</h3> 
       <ol> 
        <li>Open <em>Control Panel -&gt; Scheduled Tasks</em> and click <em>Add Scheduled Task</em></li> 
-       <li>Fill the Task tab like this one:<br> <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486096.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="6"></span> <br> Make sure you are using local user as you might have problems with domain users.</li> 
-       <li>On the Schedule tab select "At System Startup"<br> <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486097.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="6"></span></li> 
-       <li>On the Settings tab is important to cleanup/uncheck underlined checkbox as by default it is checked to stop process after 72 Hours.<br> <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486098.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic3.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="6"></span></li> 
+       <li>Fill the Task tab like this one:<br><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486096.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="8"></span> <br>Make sure you are using local user as you might have problems with domain users.</li> 
+       <li>On the Schedule tab select "At System Startup"<br><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486097.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="8"></span></li> 
+       <li>On the Settings tab is important to cleanup/uncheck underlined checkbox as by default it is checked to stop process after 72 Hours.<br><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119486084/119486098.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic3.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="8"></span></li> 
       </ol> 
       <h4 id="StartATSagentasservice-BycreatingaWindowsservice">By creating a Windows service</h4> 
       <p>The following steps describe how to start the ATS Agent as a service. They are written for Windows 2008 Server. For other versions there may be some differences.</p> 
       <ol> 
-       <li><p>Open CMD and execute the folloowing command:<br> &lt;path&gt;\INSTSRV.EXE 'My Service Name' &lt;path&gt;\SRVANY.EXE<br> For example:</p> 
+       <li><p>Open CMD and execute the folloowing command:<br>&lt;path&gt;\INSTSRV.EXE 'My Service Name' &lt;path&gt;\SRVANY.EXE<br>For example:</p> 
         <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
           <pre class="syntaxhighlighter-pre" data-theme="Confluence">C:\Program Files (x86)\Windows Resource Kit\Tools\instsrv.exe ATSAgent C:\Program Files (x86)\Windows Resource Kit\Tools\Srvany.exe
@@ -61,16 +61,23 @@
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
        <div class="confluence-information-macro-body"> 
-        <p>You can also refer to the following Microsoft KB article for running a script as a service on Windows:<br> <a class="external-link" href="https://support.microsoft.com/en-us/help/137890/how-to-create-a-user-defined-service" rel="nofollow">https://support.microsoft.com/en-us/help/137890/how-to-create-a-user-defined-service</a></p> 
+        <p>You can also refer to the following Microsoft KB article for running a script as a service on Windows:<br><a class="external-link" href="https://support.microsoft.com/en-us/help/137890/how-to-create-a-user-defined-service" rel="nofollow">https://support.microsoft.com/en-us/help/137890/how-to-create-a-user-defined-service</a></p> 
        </div> 
       </div> 
       <h3 id="StartATSagentasservice-Alternatives">Alternatives</h3> 
-      <p><a class="external-link" href="http://nssm.cc/usage" rel="nofollow">NSSM - the Non-Sucking Service Manager</a> <br> <a class="external-link" href="http://runasservice.sourceforge.net/Manual.html" rel="nofollow">RunAsService</a></p> 
-      <p>&nbsp;</p> 
+      <p><a class="external-link" href="http://nssm.cc/usage" rel="nofollow">NSSM - the Non-Sucking Service Manager</a> <br><a class="external-link" href="http://runasservice.sourceforge.net/Manual.html" rel="nofollow">RunAsService</a></p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="StartATSagentasservice-In*nix(withinitsystemmanager)">In *nix (with <em>init</em> system manager)</h1> 
+      <h1 id="StartATSagentasservice-InLinuxandotherUNIX-basedOSes">In Linux and other UNIX-based OSes</h1> 
       <hr> 
-      <h3 id="StartATSagentasservice-RedHat,SUSE,Solaris,(K|U)buntu,Mint">Red Hat, SUSE, Solaris, (K|U)buntu, Mint</h3> 
+      <h3 id="StartATSagentasservice-Createserviceusingsystemdunitfile">Create service using <em>systemd </em>unit file</h3> 
+      <p>Recent versions of all major Linux distributions (like RedHat, CentOS, Ubuntu, Mint, SUSE) use newer service manager called <em>systemd</em>. You may refer to these pages in order to create service for you.</p> 
+      <ul> 
+       <li><a class="external-link" href="https://linuxconfig.org/how-to-create-systemd-service-unit-in-linux" rel="nofollow">https://linuxconfig.org/how-to-create-systemd-service-unit-in-linux</a></li> 
+       <li><a class="external-link" href="https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/sect-managing_services_with_systemd-unit_files" rel="nofollow">https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/sect-managing_services_with_systemd-unit_files</a></li> 
+      </ul> 
+      <h3 id="StartATSagentasservice-Createserviceusinginitscript">Create service using <em>init</em> script<em><br></em></h3> 
+      <p>Older Linux/UNIX systems use <em>init</em> manager. Even some new ones have backward compatibility mode and support it too. Here are instructions how to create <em>init</em> service.</p> 
       <ol> 
        <li><p>Create init script in <strong>/etc/init.d</strong>, eg. atsAgent with the absolute path to the agent.sh file:</p> 
         <div class="code panel pdl" style="border-width: 1px;"> 
@@ -99,9 +106,16 @@
        <li>Add the script for automatic startup</li> 
       </ol> 
       <ul class="alternate"> 
-       <li><p>1-st define the correct run level. You can check the your current run level by executing <strong>runlevel</strong> command.<br> In short the run levels are separated in this way:</p> 
+       <li><p>1-st define the correct run level. You can check the your current run level by executing <strong>runlevel</strong> command.<br>In short the run levels are separated in this way:</p> 
         <div class="table-wrap"> 
          <table class="wrapped confluenceTable"> 
+          <colgroup> 
+           <col> 
+           <col> 
+           <col> 
+           <col> 
+           <col> 
+          </colgroup> 
           <tbody> 
            <tr> 
             <th class="confluenceTh"><p>Run Level</p></th> 
@@ -136,7 +150,7 @@
             <td class="confluenceTd"><p>Full (text based) multi-user mode</p></td> 
             <td class="confluenceTd"><p>Multi-user mode</p></td> 
             <td class="confluenceTd"><p>Multi-user mode - default Slackware runlevel</p></td> 
-            <td class="confluenceTd">&nbsp;</td> 
+            <td class="confluenceTd"><br></td> 
            </tr> 
            <tr> 
             <td class="confluenceTd"><p>4</p></td> 
@@ -164,7 +178,7 @@
         </div></li> 
       </ul> 
       <ul class="alternate"> 
-       <li><p>Now create a symbolic link to the init script in the <strong>/etc/rc&lt;runlevel_number&gt;.d/</strong> (in SUSE Linux it is /etc/rc.d/rc&lt;runlevel_number&gt;.d/).<br> The link name must start with <strong>S</strong> (means that the script is called with "start" argument) followed by a two-digit number (startup order - from the lowest to the highest) and the script name.<br> For example if you want to add it in runlevel 2, type the following command:</p> 
+       <li><p>Now create a symbolic link to the init script in the <strong>/etc/rc&lt;runlevel_number&gt;.d/</strong> (in SUSE Linux it is /etc/rc.d/rc&lt;runlevel_number&gt;.d/).<br>The link name must start with <strong>S</strong> (means that the script is called with "start" argument) followed by a two-digit number (startup order - from the lowest to the highest) and the script name.<br>For example if you want to add it in runlevel 2, type the following command:</p> 
         <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
           <pre class="syntaxhighlighter-pre" data-theme="Confluence">ln -s /etc/init.d/atsAgent /etc/rc2.d/S20atsAgent
@@ -189,13 +203,13 @@ export JAVA_HOME=/usr/java/jre
          </div> 
         </div></li> 
       </ul> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="The-ATS-Agent.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

@@ -94,9 +94,9 @@ S3Operations s3OperationsClient = new S3Operations( endpoint, accessKey, secretK
 import com.axway.ats.action.s3.S3ObjectInfo;
 ...
 
-// Make an instance of this class
+// Make an instance of this class to work with bucket named "my-ats-example"
 S3Operations s3Ops =  new S3Operations( "s3.eu-west-1.amazonaws.com", accessKey, secretKey, 
-                                       "eu-west-1", "mycompany-ats-example");
+                                       "eu-west-1", "my-ats-example");
 
 // use clean bucket
 if (s3Ops.doesBucketExist()) {
@@ -118,16 +118,17 @@ long fileSize = summary.getSize(); // in bytes
 String remoteMd5 = summary.getMd5(); 
 Date fileDate = summary.getLastModified(); // get last modification time of this object
 
-
+// delete all objects in bucket. Effective even for large set of objects to be deleted. 
+s3Ops.deleteObjects("" /* or null, no prefix path to be matched */, ".*" /* match all names */, true /* search recursively in nested paths */);
 </pre> 
        </div> 
       </div> 
-      <p>Note that Amazon emulates folders by accepting separator character. ATS considers it to be the UNIX folder separator ("/", forward slash). However root directory prefix is just empty string.</p> 
+      <p>Note that Amazon emulates folders by accepting separator character. ATS considers it to be the default, UNIX folder separator ("/", forward slash). However in order to root directory, the path prefix should be just empty string.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="RemoteStorageOperations-Specialconsiderations">Special considerations</h1> 
       <p><br></p> 
-      <p>Working with remote files is tricky and you should consider optional concurrency cases. This could be true especially if you use ATS to verify that other system had already uploaded some file. In such case it is recommended to use polling and particularly our RBV client <em>named S3Verification</em>. More details are described in <a href="140917035.html">Remote Storage (S3) Verifications</a>.</p> 
+      <p>Working with remote files is tricky and you should consider optional concurrency cases. This could be true especially if you use ATS to verify that other system had already uploaded some file. In such case it is recommended to use polling and particularly our RBV client <em>named S3Verification</em>. More details are described in <a href="Remote-Storage-(S3)-Verifications.html">Remote Storage (S3) Verifications</a>.</p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
@@ -135,6 +136,6 @@ Date fileDate = summary.getLastModified(); // get last modification time of this
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

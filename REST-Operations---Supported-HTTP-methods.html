@@ -35,7 +35,7 @@ RestResponse response = client.get();
 // now examine the response</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod">POST method</h1> 
       <p>POST is used to create a new resource on the server</p> 
@@ -70,7 +70,7 @@ RestResponse response = client.postObject( person );
        </div> 
       </div> 
       <p>In the example above, Person is some particular class provided by you, not the ATS framework.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod">PUT method</h1> 
       <p>PUT is used to update an already existing resource on the server</p> 
@@ -78,7 +78,7 @@ RestResponse response = client.postObject( person );
       <p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p> 
       <h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3> 
       <p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod">DELETE method</h1> 
       <p>DELETE is used to delete an already existing resource on the server.</p> 
@@ -97,7 +97,7 @@ String responseBody = response.getBodyAsString();
       </div> 
       <p>In this example we delete a person with id 123 which is specified as part of the URI.</p> 
       <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-SupportedHTTPmethods-Anymethod">Any method</h1> 
       <p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p> 
@@ -114,14 +114,51 @@ String responseBody = response.getBodyAsString();
 </pre> 
        </div> 
       </div> 
-      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.png" alt="(smile)"></p> 
-      <p>&nbsp;</p> 
+      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" title="(smile)" src="http://techweb.axway.com/confluence/s/en_US/8100/a516614738a0811691ee4368be900fdd7a640552/_/images/icons/emoticons/smile.svg" alt="(smile)" border="0"></p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-SupportedHTTPmethods-Non-compliantmethodexecution">Non-compliant method execution</h1> 
+      <p>There are cases, where some method invocations are not compliant. Example of such method invocations are:</p> 
+      <ul style="list-style-type: square;"> 
+       <li><strong>PUT</strong> with null body 
+        <ul style="list-style-type: square;"> 
+         <li>Exception - java.lang.IllegalStateException: Entity must not be null for http method PUT</li> 
+        </ul></li> 
+       <li><strong>DELETE</strong> with body 
+        <ul style="list-style-type: square;"> 
+         <li>Exception - java.lang.IllegalStateException: Entity must be null for http method DELETE.</li> 
+        </ul></li> 
+      </ul> 
+      <p>To suppress such errors (make then log a warning message instead),&nbsp; use the following snippet:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
+RestClient client = new RestClient( &lt;target URI&gt; );
+
+// make instance of REST client configurator
+RestClientCondigurator restClientConfigurator = new RestClientConfigurator();
+// suppress non-compliant method invocation exceptions
+restClientConfigurator.setProperty(org.glassfish.jersey.client.ClientProperties.SUPPRESS_HTTP_COMPLIANCE_VALIDATION, true);
+
+// set configurator to the client, BEFORE executing any REST/HTTP method
+client.setClientConfigurator(restClientConfigurator);
+
+// execute some non-compliant HTTP method
+// now the next line will not throw any exceptions, but will gracefully log a warning instead
+RestResponse response = client.execute( "DELETE", "{\"id\":1}" );
+
+// read the body of the response
+String responseBody = response.getBodyAsString();
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

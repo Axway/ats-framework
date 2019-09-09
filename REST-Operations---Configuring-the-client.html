@@ -28,7 +28,7 @@
       <p>The <em>ActionLibraryConfigurator</em> can be used(as the REST client API is part of the ATS Action Library) to get and set some default values for the rest client:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">ActionLibraryConfigurator.getInstance().setRestDefaultResponseMediaType( RESTMediaType.APPLICATION_XML );
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">ActionLibraryConfigurator.getInstance().setRestDefaultResponseMediaType( RESTMediaType.APPLICATION_XML );
 </pre> 
        </div> 
       </div> 
@@ -39,13 +39,13 @@
         <p>Use the different methods of the ActionLibraryConfigurator which start with <strong> <em>getRest...</em> </strong> or <strong> <em>setRest...</em> </strong> to see all the supported configuration values.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-Configuringtheclient-Loggingbysettingverbosemode">Logging by setting verbose mode</h1> 
       <p><span style="color: rgb(61,61,61);">In verbose mode you can trace all HTTP requests and responses.You can select what to log - just headers, bodies or both.</span></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClient client = new RestClient( &lt;target URI&gt; );
 client.setVerboseMode( RestClient.RestDebugLevel.HEADERS );
 </pre> 
        </div> 
@@ -65,30 +65,31 @@ INFO  17:52:36 rest.RestClient: Receiving the following responses:
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p>In case you have registered to be used Apache HTTP Connector, then verbose logging has a side effect. In that case Apache HTTP Client is used beneath.&nbsp; And changing log level via RestClient.setVerboseMode() applies change globally to the Apache HTTP Client. So any other HTTP operations&nbsp; client will use the last severity set. It is recommended to reset back verbosity level at the end of a test (for example in @AfterMethod ot @AfterClass).</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-Configuringtheclient-Loggingbyusingaproxy">Logging by using a proxy</h1> 
       <p><a href="Trace-HTTP-communication-by-using-a-proxy.html">Here</a> are the details. Same for both HttpClient and RestClient.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-Configuringtheclient-Setcertificatefile">Set certificate file</h1> 
       <p>This is how you can set some SSL certificate</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClientConfigurator configurator = new RestClientConfigurator();
 configurator.setSSLCertificate( pemCertificate, pemPassword );
 client.setClientConfigurator( configurator );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-Configuringtheclient-Settransportencryptionprotocol">Set transport encryption protocol</h1> 
       <p>Here is example how to set encryption protocol (TLS) to use for HTTPS connections.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestClient client = new RestClient( &lt;target URI&gt; );
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClient client = new RestClient( &lt;target URI&gt; );
 
 // set TLS protocol to use like TLSv1, TLSv1.1, TLSv1.2
 client.setSupportedProtocols(new String[]{"TLSv1.2"});
@@ -103,7 +104,7 @@ RestResponse response = client.get();
         <p>The default TLS version is 1.2</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RESTOperations-Configuringtheclient-RegistersomeJerseyprovider">Register some Jersey provider</h1> 
       <p>Currently ATS REST client is using <a class="external-link" href="https://jersey.java.net/" rel="nofollow">Jersey</a> as underlying third party library. Jersey is giving you an option to register different <em>providers</em> which will affect its behavior.</p> 
@@ -119,7 +120,7 @@ RestResponse response = client.get();
       <p>Then you can use code like the following to instruct Jersey to use Jackson provider for processing JSON objects:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClientConfigurator configurator = new RestClientConfigurator();
 
 configurator.registerProvider( new JacksonFeature() );
 configurator.registerProviderClass( JacksonJsonProvider.class );
@@ -134,7 +135,7 @@ client.setClientConfigurator( configurator );
       <p>Then you can use code like the following to make Jersey capable of processing multi-part entities:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">RestClientConfigurator configurator = new RestClientConfigurator();
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClientConfigurator configurator = new RestClientConfigurator();
 
 configurator.registerProvider( new MultiPartFeature() );
 configurator.registerProvider( MultiPartWriter.class );
@@ -143,13 +144,109 @@ configurator.registerProvider( MultiPartReaderClientSide.class );
 client.setClientConfigurator( configurator );</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-Configuringtheclient-Registerthird-partyconnectorprovider">Register third-party connector provider</h1> 
+      <p><br></p> 
+      <p>Since 4.0.6, a custom connector provider can be used, instead of the default one (<span class="blob-code-inner blob-code-marker"><span class="pl-c">org.glassfish.jersey.client.HttpUrlConnectorProvider</span></span>)</p> 
+      <p>Here is an example for the verified Apache connector case (using Apache HTTP Components HttpClient under the hood) :</p> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Java code</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">RestClientConfigurator configurator = new RestClientConfigurator();
+
+Map&lt;String, Object&gt; properties = new HashMap&lt;String, Object&gt;();
+// put some Apache properties (optional)
+configurator.registerApacheConnectorProvider();
+// or this one -&gt; configurator.registerConnectorProvider( new ApacheConnectorProvider(), properties ); // or null for properties
+
+client.setClientConfigurator( configurator );
+</pre> 
+       </div> 
+      </div> 
+      <p>This also requires specific dependency to be added in your project. For the above example the Maven dependency is:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Maven POM dependency</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;dependency&gt; 
+    &lt;groupId&gt;org.glassfish.jersey.connectors&lt;/groupId&gt;
+    &lt;artifactId&gt;jersey-apache-connector&lt;/artifactId&gt;
+    &lt;version&gt;${org.glassfish.jersey.jersey-client.version}&lt;/version&gt; &lt;!-- This version should match Jersey client version like 2.25.1 for ATS 4.0.6 --&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-Configuringtheclient-Useconnectionpoolforconnectionmanagement">Use connection pool for connection management</h1> 
+      <p>Since 4.0.6, a connection pool can be used to manage connections.</p> 
+      <p>Note that the default connector provider (HttpUrlConnector ) does not support pooling at all, but instead creates a new connection each time a REST method is invoked.</p> 
+      <p>So an Apache connector must be registered, in order to use this feature.</p> 
+      <p>Here is an example how to use this feature:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Java code</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">...
+// boilerplate code
+RestClientConfigurator configurator = new RestClientConfigurator();
+configurator.registerApacheConnectorProvider();
+RestClient client = new RestClient(SERVER_URL);
+client.setClientConfigurator( configurator );
+// the important line
+client.setUsePooling(true);
+...
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="RESTOperations-Configuringtheclient-Automaticallybuffertheresponse'sbody">Automatically buffer the response's body</h1> 
+      <p>Using connection pool is useful, but one caveat is that user always has to be sure that connections are released to the pool. This requires that the response's body is properly consumed (either fully read or explicitly buffered)</p> 
+      <p>But if you are interested only in the response's status code/message and not the body, you can enable automatic buffering of the body.</p> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Response's body buffering restrictions</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>This feature will not work if the response's body is larger than 10MB. Also if the body is chunked, by enabling this feature,&nbsp; you can be presented with OutOfMemoryError.</p> 
+        <p>So be careful when you are using this feature</p> 
+       </div> 
+      </div> 
+      <p>Here is an example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Java code</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Eclipse">...
+// boilerplate code
+RestClientConfigurator configurator = new RestClientConfigurator();
+configurator.registerApacheConnectorProvider();
+RestClient client = new RestClient(SERVER_URL);
+client.setClientConfigurator( configurator );
+
+// the important line
+client.setUsePooling(true);
+client.setBufferResponse(true);
+RestResponse response = client.post();
+assertEquals(response.getStatusCode(), 200); // here we are interested only in the status code's value and nothing else
+...
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

@@ -1,0 +1,186 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Troubleshooting</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Troubleshooting </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p><style type="text/css">/*<![CDATA[*/
+div.rbtoc1568038877575 {padding: 0px;}
+div.rbtoc1568038877575 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1568038877575 li {margin-left: 0px;padding-left: 0px;}
+
+/*]]>*/</style></p> 
+      <div class="toc-macro rbtoc1568038877575"> 
+       <ul class="toc-indentation"> 
+        <li><a href="#Troubleshooting-Introduction">Introduction</a></li> 
+        <li><a href="#Troubleshooting-Reportingissues">Reporting issues</a></li> 
+        <li><a href="#Troubleshooting-Listwithknownpossibleerrorsandtroubleshootinginstructions">List with known possible errors and troubleshooting instructions</a> 
+         <ul class="toc-indentation"> 
+          <li><a href="#Troubleshooting-Exceptionwheninvokingactiononremoteagent,ClassNotFoundorNoSuchMethoderrorsinATSpackages">Exception when invoking action on remote agent, ClassNotFound or NoSuchMethod errors in ATS packages</a></li> 
+          <li><a href="#Troubleshooting-Someactionscomponentisnotregistered">Some actions component is not registered</a></li> 
+          <li><a href="#Troubleshooting-InternalerrorrunninganAgentaction">Internal error running an Agent action</a></li> 
+          <li><a href="#Troubleshooting-Queuefull">Queue full</a></li> 
+          <li><a href="#Troubleshooting-CannotconnecttoanATSAgentinstance">Cannot connect to an ATS Agent instance</a></li> 
+          <li><a href="#Troubleshooting-Unabletoencrypt|decryptmessage">Unable to encrypt|decrypt message</a></li> 
+          <li><a href="#Troubleshooting-Unsupportedmajor.minorversionnn.n">Unsupported major.minor version nn.n</a></li> 
+          <li><a href="#Troubleshooting-UnabletostartTestNGtestviaMavensurefireplugin">Unable to start TestNG test via Maven surefire plugin</a></li> 
+          <li><a href="#Troubleshooting-Log4jdeadlockoccurringbetweenLoggerandAppender">Log4j deadlock occurring between Logger and Appender</a></li> 
+          <li><a href="#Troubleshooting-Foreignkeyconstraintexceptiononagentwhenexecutingmonitoringoperations">Foreign key constraint exception on agent when executing monitoring operations</a></li> 
+          <li><a href="#Troubleshooting-CyclicdependencieswhenexecutingTestNGtests(6.14.2+)">Cyclic dependencies when executing TestNG tests (6.14.2+)</a></li> 
+          <li><a href="#Troubleshooting-Couldnotprocessmessageevent">Could not process message event</a></li> 
+         </ul> </li> 
+       </ul> 
+      </div> 
+      <p></p> 
+      <h2 id="Troubleshooting-Introduction"><strong>Introduction</strong></h2> 
+      <hr> 
+      <p>Here you can find explanations of various error messages or issues that may occur.</p> 
+      <h2 id="Troubleshooting-Reportingissues"><strong>Reporting issues<br></strong></h2> 
+      <hr> 
+      <p>Before reporting possible issue please check the section below with possible causes and their resolution. For connection-related issues you test connectivity with external tool like ping and telnet to the remote machine.</p> 
+      <p>If error is still not localized there you may start by adding this info as issue in GitHub issues :</p> 
+      <ol> 
+       <li><strong>Version</strong> of the ATS Framework used. Example: <em>4.0.5</em>;</li> 
+       <li><strong>Short scenario</strong> of the case; Example: <em>Could not successfully log into TestExplorer database.</em></li> 
+       <li><strong>Detailed info</strong> how to reproduce or better an isolated code snippet.&nbsp;Archived simple Maven project would be one of the best options. Example: <em>Paste simple test with any setup/prerequisites if needed like log4j.xml. </em></li> 
+       <li>Other <strong>environment details</strong>: 
+        <ol> 
+         <li>OS used and its version;</li> 
+         <li>JavaSE version used for test executor and optionally for involved ATS agents;</li> 
+         <li>DB name (and version) used for TestExplorer DB logging. Version of the DB scripts; Fresh install or upgraded version;</li> 
+         <li>Other involved products like HTTP/FTP servers;</li> 
+        </ol></li> 
+      </ol> 
+      <h2 id="Troubleshooting-Listwithknownpossibleerrorsandtroubleshootinginstructions"><strong>List with known possible errors and troubleshooting instructions</strong></h2> 
+      <hr> 
+      <h3 id="Troubleshooting-Exceptionwheninvokingactiononremoteagent,ClassNotFoundorNoSuchMethoderrorsinATSpackages">Exception when invoking action on remote agent, <em>ClassNotFound</em> or <em>NoSuchMethod</em> errors in ATS packages</h3> 
+      <p><strong>Message sample:</strong> <code> Exception during execution of action 'Get Product Version' for component 'my_agent_actions_component' at myhost.mydomain:8089: <span style="text-decoration: underline;">NoClassDefFoundError com/axway/ats/action/system/SystemOperations</span> </code> <br><strong>Reason:</strong> If ClassNotFound or NoSuchMethodError exception contains errors from packages starting with com/axway/ats then ATS setup seems incomplete (missing required libraries) or there are differences between library( JAR) versions on test executor or ATS agents.<br><strong>Solution:</strong> Upgrade all ATS dependencies to the same version and add any missing ones. For ATS artifact names you may refer to the table in <a href="Retrieving-ATS-artifacts.html">Retrieving ATS libraries</a></p> 
+      <ul> 
+       <li>For Maven: Check pom.xml dependencies of test project. Use either <em>Dependency Hierarchy</em> tab in Eclipse or in console via: <em>mvn dependency:tree &gt; myList.txt</em> to check for expected dependencies.</li> 
+       <li>Make sure that any agents needed also have the same version installed as the one on Test Executor.</li> 
+       <li>If exception comes from some ATS agent then check that all additional libraries are in <em>ats-agent/actions_dependencies</em> directory. If some of them are from ATS then their version should match the agent version itself. One such library needed is Action library when process execution or file transfers are needed. If agent custom packages are produced with Maven assembly plugins then you should check and add such dependencies in corresponding assembly.xml file.</li> 
+      </ul> 
+      <h3 id="Troubleshooting-Someactionscomponentisnotregistered">Some actions component is not registered</h3> 
+      <p><strong>Message:</strong> <code>com.axway.ats.agent.core.exceptions.NoSuchComponentException: Component 'ABC' is not registered</code> <br><strong>Reason:</strong> The actions module by the name of 'ABC' is not deployed on the ATS agent;<br><strong>Solution</strong>: There are many reasons for a module not to load, but the most common are:</p> 
+      <ul> 
+       <li>see whether you are trying to run tests on a different machine that does not have such a component deployed;</li> 
+       <li>check the&nbsp;<em>ats-agent/actions</em> directory for the component's jar archive;</li> 
+       <li>check the agent log (./<em>logs/</em> subdir) or Web server container's log for any deployment errors;</li> 
+      </ul> 
+      <h3 id="Troubleshooting-InternalerrorrunninganAgentaction">Internal error running an Agent action</h3> 
+      <p><strong>Message:</strong> <code>com.axway.ats.agent.core.exceptions.InternalComponentException</code> <br><strong>Reason:</strong> The Agent's action has been halted due to an exception thrown by the tested component;<br><strong>Solution:</strong> Most probably this is an issue with the custom actions' jar/component itself - in such a case it is best to check the issue with the development team, responsible for the component under test;</p> 
+      <h3 id="Troubleshooting-Queuefull">Queue full</h3> 
+      <p><strong>Message:</strong> <code> java.lang.IllegalStateException: Queue full</code> <br><strong>Reason:</strong> There are too many requests for logging into TestExplorer logging database. This reason is in case that Java stack trace includes classes from <code>com.axway.ats.log</code> package. It could be either because logging is too verbose or that connection to the database is very slow like DB server resides in another geographical location.<br><strong>Solution:</strong></p> 
+      <ul> 
+       <li>if you are using DEBUG level in log4j.properties/.xml file decrease severity to INFO or WARN for the root logger. On demand, you may increase logging severity just of specific Java package/class. For reference you may check examples <a class="external-link" href="http://wiki.apache.org/logging-log4j/Log4jXmlFormat" rel="nofollow">here</a></li> 
+       <li>use TestExplorer DB in your local network if you think logging severity could not be decreased anymore;</li> 
+       <li>Check this <a href="Increasing-the-speed-we-send-some-events-to-the-log-DB.html">page</a> for more details</li> 
+      </ul> 
+      <h3 id="Troubleshooting-CannotconnecttoanATSAgentinstance">Cannot connect to an ATS Agent instance</h3> 
+      <p><strong>Message:</strong> <code> <code>com.axway.ats.agent.core.exceptions</code>.AgentException: HTTP transport error: java.net.ConnectException: Connection refused: connect. Check server logs for more details.</code> <br><strong>Reason:</strong> There is no connection to the Agent.<br><strong>Solution:</strong> Adjust correct host and port of the agent to be contacted or check agent logs whether it starts successfully. Check for firewall rules too. You may also get details in the "Verify it runs properly" section in page: <a href="The-ATS-Agent.html">The ATS Agent</a></p> 
+      <h3 id="Troubleshooting-Unabletoencrypt|decryptmessage">Unable to encrypt|decrypt message</h3> 
+      <p><strong>Message:</strong> <code>java.security.InvalidKeyException: Illegal key size</code> <br><strong>Reason:</strong> You do not have set full encryption support, i.e. Java Cryptography Extension (JCE) Unlimited Strength Jurisdiction Policy Files. <br>Note that in most recent JRE/JDKs&nbsp; (like JavaSE 8u162 and newer) those policy files are automatically enabled.<br><strong>Solution:</strong> Download package from <a class="external-link" href="http://www.oracle.com/technetwork/java/javase/downloads/" rel="nofollow">http://www.oracle.com/technetwork/java/javase/downloads/</a> and replace the two jars in</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">[JRE]/lib/security</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <h3 id="Troubleshooting-Unsupportedmajor.minorversionnn.n">Unsupported major.minor version nn.n</h3> 
+      <p><strong>Sample message:</strong> <code>java.lang.<u>UnsupportedClassVersionError</u>: com/some/package/SomeClassName : Unsupported major.minor version 52.0</code> <br><code>at java.lang.ClassLoader.defineClass1(Native Method)</code> <br><code>at java.lang.ClassLoader.defineClassCond(Unknown Source)</code> <br>...</p> 
+      <p>Version number may vary like 51.0 and 52.0. Version 51.0 means Java SE 7 byte-code and 52.0 - Java SE 8. Other versions: 53 - Java 9, 55 - Java 11. For reference check link <a class="external-link" href="https://en.wikipedia.org/wiki/Java_class_file#General_layout" rel="nofollow">here</a>.<br><strong>Reason:</strong> You are running class file /JAR compiled to be used only with newer JREs. For example JAR compiled with Java 8 JRE and tried to be run with Java 7 JRE.<br><strong>Solution:</strong> Either run your code with newer JRE or communicate with the author of the library containing "com.some.package.SomeClassName" whether there is a version for the older JRE you want to use.</p> 
+      <p><br></p> 
+      <h3 id="Troubleshooting-UnabletostartTestNGtestviaMavensurefireplugin">Unable to start TestNG test via Maven surefire plugin</h3> 
+      <p><strong>Sample message: </strong></p> 
+      <p><code>org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:75)</code></p> 
+      <p><code>Caused by: org.apache.maven.surefire.testset.TestSetFailedException: Unknown TestNG version 6.9.13.6</code> <br><code> at org.apache.maven.surefire.testng.TestNGExecutor.getConfigurator(TestNGExecutor.java:207)</code></p> 
+      <p><br></p> 
+      <p><strong>Reason:</strong> Maven Surefire plugin must be at least version 2.19.1 in order to work with TestNG, which version is composed of more than three version tokens (example: 6.9.13.6)<br><strong> Solution:</strong> Change the version of maven-surefire-plugin to latest like 2.22.0 or newer in your pom.xml</p> 
+      <pre>...<br>&lt;plugin&gt;<br> &nbsp; &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;<br> &nbsp; &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;<br> &nbsp; &lt;version&gt;2.22.0&lt;/version&gt;<br>   ...<br>&lt;/plugin&gt;<br>...</pre> 
+      <h3 class="grid--cell fs-headline1 fl1" id="Troubleshooting-Log4jdeadlockoccurringbetweenLoggerandAppender">Log4j deadlock occurring between Logger and Appender</h3> 
+      <p><strong> Symptom:</strong> The execution hangs and could not complete.</p> 
+      <p><strong>Reason: </strong>A deadlock happens when the Log4J Logger and the Appender try to log messages at the same time. Concrete reason might be DEBUG severity for ATS DB logging.</p> 
+      <p><strong>Solution:&nbsp;</strong> <strong> </strong>Stop the logging with DEBUG level from the "org.apache.commons.dbcp2" package, so no deadlocks could happen.<br><strong>Technical details</strong>: This is because of Log4J implementation details when Appender tries to emit another log message.<br>Example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;logger name="org.apache.commons.dbcp2"&gt;
+  &lt;priority value="error" /&gt;
+&lt;/logger&gt;
+</pre> 
+       </div> 
+      </div> 
+      <h3 class="grid--cell fs-headline1 fl1" id="Troubleshooting-Foreignkeyconstraintexceptiononagentwhenexecutingmonitoringoperations">Foreign key constraint exception on agent when executing monitoring operations</h3> 
+      <p><strong>Sample message:</strong></p> 
+      <pre>java.sql.SQLException: The INSERT statement conflicted with the FOREIGN KEY constraint "FK_tSystemStats_tStatsTypes". <br>  The conflict occurred in database "SOME_DATABASE", table "dbo.tStatsTypes", column 'statsTypeId'.
+</pre> 
+      <p><strong>Reason:</strong>&nbsp; Agent works with old (non-existing anymore) monitoring statistics information.</p> 
+      <p><strong>Solution:</strong> Restart agent in order to clear statistic IDs cache.</p> 
+      <p><strong>Technical details</strong>: The first execution of monitoring operation on any agent caches statistic IDs in order to speed up inserting of system statistics. Those IDs are unique for each database.</p> 
+      <p>If you change the ATS log database or recreate it and do not restart the agent, it will assume that the already cached IDs are still valid.</p> 
+      <h3 id="Troubleshooting-CyclicdependencieswhenexecutingTestNGtests(6.14.2+)">Cyclic dependencies when executing TestNG tests (6.14.2+)</h3> 
+      <p><strong>Sample message:</strong></p> 
+      <pre>The following methods have cyclic dependencies:<br>  FunctionalTest_TestNGEvents2.beforeSuite()[pri:0, instance:com.axway.ats.examples.FunctionalTest_TestNGEvents2@42538425]<br>
+</pre> 
+      <p><strong>Reason:</strong> [@Before/@After][Suite/Class] annotated method in base( parent) and child class have the same name.</p> 
+      <p><strong>Solution:</strong> Use different names for such methods in each class in the inheritance chain<br><br></p> 
+      <h3 id="Troubleshooting-Couldnotprocessmessageevent">Could not process message event</h3> 
+      <p><strong>Sample message:</strong></p> 
+      <pre>*** ATS ***  2019-08-09 12:34:56.789 ERROR [QueueLoggerThread-Thread-1] autodb.DbEventRequestProcessor: Could not process 'com.axway.ats.log.autodb.events.InsertMessageEvent'
+with message:
+My message
+Sender location:
+null
+Current event processor state:
+RUN ID: 0,
+SUITE ID: 0,
+TESTCASE ID: -1
+</pre> 
+      <p>Or similar like</p> 
+      <pre>*** ATS ***  2019-08-09 12:34:38.668 ERROR [QueueLoggerThread-Thread-1] autodb.QueueLoggerThread: EXCEPTION
+USER message:
+Error running ADD_TESTCASE_METAINFO event
+Message:
+Cannot execute event AddTestcaseMetainfoEvent at this time expected state TEST_CASE_STARTED, actual state INITIALIZED
+
+TYPE:
+class com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException
+CALL STACK:
+com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException: Cannot execute event AddTestcaseMetainfoEvent at this time expected state TEST_CASE_STARTED, actual state INITIALIZED
+at com.axway.ats.log.autodb.model.AbstractLoggingEvent.checkIfCanBeProcessed(AbstractLoggingEvent.java:156)
+at com.axway.ats.log.autodb.DbEventRequestProcessor.processEventRequest(DbEventRequestProcessor.java:353)
+at com.axway.ats.log.autodb.QueueLoggerThread.run(QueueLoggerThread.java:90)
+</pre> 
+      <p><strong>Reason: </strong></p> 
+      <p style="margin-left: 30.0px;">This indicates error state with ATS DB logging and usually does not affect test execution. The case is that message is trying to be logged into ATS DB but test state is not currently configured. This could happen when&nbsp;&nbsp; <em>AtsDbLogger.getLogger(name).info(message)</em> ( or another DB logging statement) is used within a static block or when ATS agent is not configured yet for the current test.</p> 
+      <p><strong>Solution:</strong></p> 
+      <ul> 
+       <li>Do not use DB logging calls from static blocks: static { ... }. At that moment ATS does not know the test state yet. This is because testing runner (TestNG) had not notified ATS yet.</li> 
+       <li>If such error appears in Agent usually setting default Log4J severity higher than DEBUG (like INFO or WARN) could also help. Also it is preferred to use Log4J Logger.getLogger(class).info(message) instead of directly using AtsDbLogger.</li> 
+      </ul> 
+      <p><br></p> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+  <hr>
+  <p>Go to <a href="./ATS-Documentation.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
+</html>

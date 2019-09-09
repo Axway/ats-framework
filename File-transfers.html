@@ -25,7 +25,7 @@
       <h1 id="Filetransfers-Introduction">Introduction</h1> 
       <p>This page shows how to do simple uploads and downloads over different standard protocols.</p> 
       <p>Following are examples for all supported protocols</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filetransfers-Provideparametersspecificforsomeprotocol">Provide parameters specific for some protocol</h1> 
       <p>Each protocol sometimes needs more configuration options besides the regular host, port and user credentials.</p> 
@@ -113,7 +113,7 @@ transferClient.disconnect();
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>FTPS_CONNNECTION_TYPE</p></td> 
-          <td class="confluenceTd"><p>FTPS_CONNNECTION_TYPE__IMPLICIT <br class="atl-forced-newline"> FTPS_CONNNECTION_TYPE__AUTH_SSL <br class="atl-forced-newline"> FTPS_CONNNECTION_TYPE__AUTH_TLS</p></td> 
+          <td class="confluenceTd"><p>FTPS_CONNNECTION_TYPE__IMPLICIT <br class="atl-forced-newline">FTPS_CONNNECTION_TYPE__AUTH_SSL <br class="atl-forced-newline">FTPS_CONNNECTION_TYPE__AUTH_TLS</p></td> 
           <td class="confluenceTd"><p>FTPS_CONNNECTION_TYPE__IMPLICIT</p></td> 
          </tr> 
          <tr> 
@@ -124,7 +124,7 @@ transferClient.disconnect();
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h3 id="Filetransfers-RunninganyFTPcommand">Running any FTP command</h3> 
       <p>This is rarely used, but it is possible to run any FTP/FTPS command with code like the following</p> 
@@ -146,7 +146,7 @@ String commandReturnCode = ftpClient.executeCommand( "mdir some_remote_directory
         <p>It is important to know that the list of supported commands is specific to the remote FTP server</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filetransfers-HTTP/HTTPSclient">HTTP/HTTPS client</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -154,8 +154,8 @@ String commandReturnCode = ftpClient.executeCommand( "mdir some_remote_directory
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">FileTransferClient httpClient = new FileTransferClient( TransferProtocol.HTTP );
 
 // example how to set custom property supported for HTTP or HTTPS transfers
-httpClient.addCustomProperty( GenericTransferClient.HTTP_HTTPS_UPLOAD_CONTENT_TYPE, "text/plain");
-httpClient.addCustomProperty( GenericTransferClient.HTTP_HTTPS_SOCKET_READ_TIMEOUT, "10000");
+httpClient.addCustomProperty( FileTransferClient.HTTP_HTTPS_UPLOAD_CONTENT_TYPE, "text/plain");
+httpClient.addCustomProperty( FileTransferClient.HTTP_HTTPS_SOCKET_READ_TIMEOUT, "10000");
 
 
 // set key-pair (e.g. enable multi-factor authentication)
@@ -183,7 +183,7 @@ httpClient.disconnect();
         <p>In order to use FTP you need to provide TransferProtocol.FTP argument in the FileTransferClient constructor</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <p>Here is the list of options specific for this protocol only:</p> 
       <div class="table-wrap"> 
        <table class="wrapped confluenceTable"> 
@@ -204,13 +204,13 @@ httpClient.disconnect();
           <td class="confluenceTd"><p>HTTP_HTTPS_SOCKET_BUFFER_SIZE</p></td> 
           <td class="confluenceTd"><p>number of bytes</p></td> 
           <td class="confluenceTd"><p>8196</p></td> 
-          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><br></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>HTTP_HTTPS_UPLOAD_METHOD</p></td> 
-          <td class="confluenceTd"><p>HTTP_HTTPS_UPLOAD_METHOD__PUT <br class="atl-forced-newline"> HTTP_HTTPS_UPLOAD_METHOD__POST</p></td> 
+          <td class="confluenceTd"><p>HTTP_HTTPS_UPLOAD_METHOD__PUT <br class="atl-forced-newline">HTTP_HTTPS_UPLOAD_METHOD__POST</p></td> 
           <td class="confluenceTd"><p>HTTP_HTTPS_UPLOAD_METHOD__<br>PUT</p></td> 
-          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><br></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>HTTP_HTTPS_<br>PREEMPTIVE_BASIC_AUTHENTICATION</p></td> 
@@ -222,7 +222,7 @@ httpClient.disconnect();
           <td class="confluenceTd"><p>HTTP_HTTPS_UPLOAD_CONTENT_TYPE</p></td> 
           <td class="confluenceTd"><p>Any valid value for the content type header</p></td> 
           <td class="confluenceTd"><p>application/octet-stream</p></td> 
-          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><br></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>HTTP_HTTPS_SOCKET_READ_TIMEOUT</p></td> 
@@ -230,10 +230,15 @@ httpClient.disconnect();
           <td class="confluenceTd"><p>0 (wait indefinitely)</p></td> 
           <td class="confluenceTd"><p>Specify socket read timeout. This is the maximum time the client waits to read new data from server.</p></td> 
          </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd"><span class="blob-code-inner blob-code-marker"><span class="pl-c1">HTTP_HTTPS_TRANSFER_ENCODING_MODE</span></span></td> 
+          <td colspan="1" class="confluenceTd"><span class="blob-code-inner blob-code-marker"><span class="pl-c1">HTTP_HTTPS_TRANSFER_ENCODING_MODE__CHUNKED</span></span></td> 
+          <td colspan="1" class="confluenceTd">chunked request mode not used by default</td> 
+          <td colspan="1" class="confluenceTd">Specify whether the file upload will be performed in chunks (Transfer-Encoding: chunked) or in one part. <br>Currently chunk size is hardcoded in underlying library to 4096 bytes and could not be changed.</td> 
+         </tr> 
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
       <hr> 
       <h1 id="Filetransfers-SFTPclient">SFTP client</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -278,25 +283,25 @@ sftpClient.disconnect();
          <tr> 
           <td class="confluenceTd">SFTP_USERNAME</td> 
           <td class="confluenceTd">some user name</td> 
-          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><br></td> 
           <td class="confluenceTd"><p>Username when authenticating over SFTP.</p><p>If not specified, the public key alias name is used instead of a user name</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd">SFTP_CIPHERS</td> 
           <td class="confluenceTd"><p>One or many(as array) constants of</p><p>com.axway.ats.common.filetransfer.SshCipher</p><p>For example AES128_CBC, BLOWFISH_CBC etc.</p></td> 
-          <td class="confluenceTd">&nbsp;</td> 
+          <td class="confluenceTd"><br></td> 
           <td class="confluenceTd">A cipher suite</td> 
          </tr> 
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

@@ -29,10 +29,10 @@
        <li>Configure the log4 system - this way we know where to send the log messages</li> 
        <li>Subscribe to TestNG so we will get informed when a test is starting or ending</li> 
       </ol> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="ConfigureATSDatabaseLogging-Configurethelog4jsystem">Configure the log4j system</h1> 
-      <p>ATS uses <a class="external-link" href="http://en.wikipedia.org/wiki/Log4j" rel="nofollow"> <span style="color: rgb(0,0,238);"> <span style="text-decoration: underline;">log4j</span> </span> </a> for its logging purpose.</p> 
+      <h1 id="ConfigureATSDatabaseLogging-ConfiguretheLog4jsystem">Configure the Log4j system</h1> 
+      <p>ATS uses <a class="external-link" href="http://en.wikipedia.org/wiki/Log4j" rel="nofollow"> <span style="color: rgb(0,0,238);"> <span style="text-decoration: underline;">Log4j</span> </span> </a> for its logging purpose.</p> 
       <p>Log4j is configured by a file called <em> <strong>log4j.xml</strong> </em> placed in the root of the classpath.</p> 
       <p>Here is an example of such file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -123,24 +123,34 @@
         <p>If you want you can also add even more (for example a FILE appender) - consult with the Log4j documentation on this.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="ConfigureATSDatabaseLogging-SubscribetoTestNGtestexecutionevents">Subscribe to TestNG test execution events</h1> 
-      <p>You need to attach our TestNG event listeners to TestNG, so we get informed when some important event has happened.</p> 
+      <p>You need to attach our TestNG event listener to TestNG, so we get informed when some important event has happened.</p> 
       <p>These are events telling us when a test is starting or ending. We use this information to automatically start and end RUN, SUITE and TESTCASE in the Test Explorer DB.</p> 
-      <p>There are a few ways to attach these listeners. In most cases the recommended one is to have one parent class of all your test classes. If we assume this class is called <em>BaseTest</em>, then here is all needed to do subscription.</p> 
+      <p>There are a few ways to attach this listener. In most cases the recommended one is to have one parent class of all your test classes. If we assume this class is called <em>BaseTest</em>, then here is all needed to do subscription.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.harness.testng.AtsTestngSuiteListener;
-import com.axway.ats.harness.testng.AtsTestngTestListener;
-// import com.axway.ats.harness.testng.AtsTestngListener;
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.harness.testng.AtsTestngListener;
 
-@Listeners ( { AtsTestngSuiteListener.class, AtsTestngTestListener.class } ) // old listeners, that are going to be deprecated in the future versions
-//@Listeners ( { AtsTestngListener.class } ) // new experimental listener, adding new functionality 
-//   for logging messages from @BeforeXXX and @AfterXXX annotated methods. Requires at least TestNG v6.9.8 
+@Listeners ( { AtsTestngListener.class } )
 public class BaseTest {
 
 }</pre> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Supported TestNG Version</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>ATS recommends using <strong>TestNG</strong> version <strong>6.10</strong> . Newer versions have <strong>known issue</strong> when logging from <strong>@Before/After Method/Suite/etc</strong> annotated methods.</p> 
+       </div> 
+      </div> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Deprecated TestNG listeners</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Older TestNG listeners ( <strong>com.axway.ats.harness.testng.AtsTestngSuiteListener</strong> and <strong>com.axway.ats.harness.testng.AtsTestngTestListener</strong> ) are <strong>deprecated</strong> and will be removed in the next official release</p> 
        </div> 
       </div> 
       <p>Now running your test, in the very beginning you will see in the console</p> 
@@ -154,13 +164,13 @@ Successfully attached listener "com.axway.ats.harness.testng.AtsTestngTestListen
       </div> 
       <p>This tells us ATS was able to attach to the TestNG listeners system and then it also created a new RUN in the database.</p> 
       <p>Now you can go to the Test Explorer UI and see the test result.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

@@ -118,19 +118,20 @@ public class FileTransferActions {
       <p><br></p> 
       <hr> 
       <h1 id="CreatinganAgentComponent-Creatingacleanuphandler">Creating a cleanup handler</h1> 
-      <p>Each <em>Agent component</em> must contain one (and only one)<em> cleanup handler</em>.</p> 
-      <p>We discuss this more here(TODO: provide a link) <br> Here we will create a default cleanup handler:</p> 
+      <p>Each <em>Agent component</em> <strong>must</strong> contain one (and only one)<em> cleanup handler</em>. It is invoked at the end of restore operation (after restore DB tables and files) to complete&nbsp; restore logic common for the whole component.</p> 
+      <p>Here we will create a default cleanup handler:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">package com.myproduct.actions;
 
 import com.axway.ats.agent.core.model.EnvironmentCleanupHandler;
 
+// Invoked at the end of restore, after individual DB tables and files are already restored
 public class SimpleCleanupHandler implements EnvironmentCleanupHandler {
 
     public void clean() {
 
-        // just write your own java code that will do something useful in your case
+        // just write your own Java code that will do something useful in your case
     }
 }&nbsp;  </pre> 
        </div> 
@@ -172,6 +173,6 @@ public class SimpleCleanupHandler implements EnvironmentCleanupHandler {
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

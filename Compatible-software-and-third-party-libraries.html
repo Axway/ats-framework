@@ -1,0 +1,163 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Compatible software and third-party libraries</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="Retrieving-ATS-artifacts.html">Retrieving ATS artifacts</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Compatible software and third-party libraries </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="Compatiblesoftwareandthird-partylibraries-Introduction">Introduction</h1> 
+      <p>Here you may see some of the software/dependencies which are compatible with latest ATS.</p> 
+      <p>All <strong>current dependencies</strong> could be checked from the Maven descriptors (pom.xml) of different ATS modules.</p> 
+      <p>Please note that not all possible version combinations are noted or validated.This is due to the resource limitation to test the whole matrix&nbsp; (combinations of all possible product versions).</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Compatiblesoftwareandthird-partylibraries-Detailedlist">Detailed list</h1> 
+      <p>Here is incomplete list of related software and libraries. There are notes for released and tested versions as of the latest ATS release.</p> 
+      <div class="table-wrap"> 
+       <table class="wrapped confluenceTable"> 
+        <colgroup> 
+         <col> 
+         <col> 
+         <col> 
+         <col> 
+        </colgroup> 
+        <tbody> 
+         <tr> 
+          <th class="confluenceTh">Name</th> 
+          <th class="confluenceTh">Version(s)</th> 
+          <th class="confluenceTh">Notes</th> 
+          <th class="confluenceTh">Additional details</th> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>Java</strong> Standard Edition (Java SE)</td> 
+          <td class="confluenceTd">&gt;= 7</td> 
+          <td class="confluenceTd">Java execution environment.<br>Java 8 is the recommended minimum. Java 11 could be used but not for ATS project compilation. </td> 
+          <td class="confluenceTd"><p>Java 7 works with most non-UI ATS libraries but is deprecated and support for it will be dropped soon. This is because more and more third-party libraries require minimum Java 8.</p><p>Different JDK builds should work like OpenJDK and Oracle JDK.<br>Standalone ATS Agents with Java 11 work after removing java.endorsed.dirs property from the script.</p></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>TestNG</strong></td> 
+          <td class="confluenceTd">&gt;= 6.8</td> 
+          <td class="confluenceTd">The test runner framework.<br><p>Currently 6.10 is recommended version for <em>Java dependency</em>. Newer versions may work, but you should check&nbsp; "Details" section.</p><p>For <em>TestNG Eclipse plugin</em> versions up to 6.14.3 are verified.</p></td> 
+          <td class="confluenceTd">There are some known issues with 6.14.3 and 6.14.2 versions. For more details you may check <a href="Troubleshooting.html">Troubleshooting</a> page.<br class="confluenceTd"><p>Current <em>TestNG Eclipse plugin</em> notes:</p> 
+           <ul> 
+            <li>TestNG framework should be in sync/supported by other related modules like TestNG Eclipse plugin or Surefire Maven plugin.</li> 
+            <li>Old Eclipses may not work with latest TestNG plugins and vice versa.</li> 
+            <li>For Eclipse 2019-03 TestNG plugin could not be installed from <a class="external-link" href="https://marketplace.eclipse.org/content/testng-eclipse" rel="nofollow">Eclipse Marketplace</a>. Workaround is to install it directly from <a class="external-link" href="https://beust.com/eclipse" rel="nofollow">https://beust.com/eclipse</a></li> 
+            <li>Currently latest Eclipse version (2019-06) does not work with latest available TestNG plugin - 6.14.3. Newer plugin versions might fix this.</li> 
+           </ul></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd">Microsoft <strong>SQL Server</strong></td> 
+          <td class="confluenceTd">&gt;= 2012</td> 
+          <td class="confluenceTd"><p>Database server used for DB access or storing ATS Log DB (aka TestExplorer DB).<br>Version 2014 and 2016 are validated for Windows.</p></td> 
+          <td class="confluenceTd">Docker image for Linux is also supported. <br>For JDBC driver see 1*.</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>PostgreSQL</strong></td> 
+          <td class="confluenceTd">&gt;= 9.4</td> 
+          <td class="confluenceTd"><p>Database server used for DB access or storing ATS Log DB (aka TestExplorer DB).</p></td> 
+          <td class="confluenceTd">Docker image is also supported.<br><a href="Ready-for-use-test-project.html">ATS Examples VM</a> works with PostgreSQL.<br>For JDBC driver see 1*.</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>Oracle</strong> Database</td> 
+          <td class="confluenceTd">&gt;= 12c</td> 
+          <td class="confluenceTd">Database server.</td> 
+          <td class="confluenceTd">Older versions should also work but are not supported by Oracle.<br>For JDBC driver see 1*.</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>MySQL</strong> Database</td> 
+          <td class="confluenceTd">&gt;= 5.5</td> 
+          <td class="confluenceTd">Database server.</td> 
+          <td class="confluenceTd">For JDBC driver see 1*.</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>Cassandra</strong> Database</td> 
+          <td class="confluenceTd">&gt;= 3.11</td> 
+          <td class="confluenceTd">NoSQL database server.</td> 
+          <td class="confluenceTd">For JDBC driver see 1*. <br>Java 8 is the minimum version supported for recent driver versions.</td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>JUnit</strong></td> 
+          <td class="confluenceTd">&gt;= 4.10</td> 
+          <td class="confluenceTd">Test runner framework. Version 4.12 is default one.</td> 
+          <td class="confluenceTd">More recent versions (5.x) are not validated for ATS DB logging integration.</td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd">Apache <strong>HTTP Client</strong></td> 
+          <td colspan="1" class="confluenceTd">&gt;=4.4</td> 
+          <td colspan="1" class="confluenceTd">HTTP client library. Version 4.5.2 is currently used as default dependency.</td> 
+          <td colspan="1" class="confluenceTd"><br></td> 
+         </tr> 
+         <tr> 
+          <td class="confluenceTd"><strong>BouncyCastle</strong></td> 
+          <td class="confluenceTd">1.57</td> 
+          <td class="confluenceTd">Security provider library.</td> 
+          <td class="confluenceTd">Used for secure transfers and mails. Due to API changes newer versions might not work yet.</td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd"><strong>Jersey</strong> client</td> 
+          <td colspan="1" class="confluenceTd">&gt;=2.25.1</td> 
+          <td colspan="1" class="confluenceTd">RESTful Web services client library. <br>Version 2.25.1 is used as the last one with Java 7 support.</td> 
+          <td colspan="1" class="confluenceTd">Older versions might also work depending on the case.</td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd"><strong>Selenium</strong> Webdriver Java client</td> 
+          <td colspan="1" class="confluenceTd">&gt;=3.8.1</td> 
+          <td colspan="1" class="confluenceTd">UI testing library used for communication with browsers and mobile framework agents. Current version used is 3.8.1. Version <a class="external-link" href="https://search.maven.org/artifact/org.seleniumhq.selenium/selenium-java/3.141.59/jar" rel="nofollow">3.141.59</a> seems also to be working but is not extensively tested yet.</td> 
+          <td colspan="1" class="confluenceTd"><p>Newer versions also work but mutual dependencies like <em>guava</em> should be checked.</p><p>For v3.8.1 validated browsers are: Firefox 68, IE 11, Safari 5.1+, Chrome 76, Edge (limited support). <br>Please also check corresponding&nbsp; specific native drivers (Gecko driver, Chrome driver, etc.).</p></td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd">Selenium <strong>HtmlUnit</strong></td> 
+          <td colspan="1" class="confluenceTd">&gt;= 2.26</td> 
+          <td colspan="1" class="confluenceTd">Selenium HtmlUnit headless (no-GUI) browser driver. Default used version currently is 2.26.</td> 
+          <td colspan="1" class="confluenceTd">Newest versions should only work as long as it is synchronized with Selenium Java client version regarding their dependencies.</td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd"><strong>Firefox</strong> browser</td> 
+          <td colspan="1" class="confluenceTd"><br></td> 
+          <td colspan="1" class="confluenceTd">Versions that use the Gecko driver (up to 68) are verified to work.</td> 
+          <td colspan="1" class="confluenceTd"><p>Note that there are older versions that are using Marionette driver ( &lt;=52 ), instead of Gecko driver. ATS is tested using the Gecko driver, so older Firefox releases may work poorly or not work at all.</p></td> 
+         </tr> 
+         <tr> 
+          <td colspan="1" class="confluenceTd">Chrome/Chromium browsers</td> 
+          <td colspan="1" class="confluenceTd"><br></td> 
+          <td colspan="1" class="confluenceTd">Versions up to 76 are verified to work.</td> 
+          <td colspan="1" class="confluenceTd"><br></td> 
+         </tr> 
+        </tbody> 
+       </table> 
+      </div> 
+      <p>1* - For JDBC driver version please check compatibility with selected DB server version.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="Compatiblesoftwareandthird-partylibraries-Othernotes">Other notes</h1> 
+      <ol> 
+       <li>Due to the note in introduction some recent versions may not have been validated. If you have related issues please <strong>contact ATS team</strong> - use contact in the README of the GitHub repository.</li> 
+       <li>Support for Java 7 is deprecated and will be removed in future versions.</li> 
+      </ol> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Retrieving-ATS-artifacts.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

@@ -21,32 +21,33 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <p>There is a way to quickly put your hands on running ATS test examples</p> 
-      <p>See how to do it by watching a short <a class="external-link" href="https://www.youtube.com/watch?v=JfSYcwU2h8c&index=3&list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I" rel="nofollow">video</a> or follow the next steps.</p> 
+      <p>See how to do it by watching a short <a class="external-link" href="https://www.youtube.com/watch?v=JfSYcwU2h8c&amp;index=3&amp;list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I" rel="nofollow">video</a> or follow the next steps.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="Ready-for-usetestproject-Preparation">Preparation</h1> 
-      <p>We've created a VM image with ready-for-use ATS test project. It runs on top of Oracle VirtualBox.</p> 
+      <p>We have created a VM image with ready-to-use ATS test project. It runs on top of Oracle VirtualBox. Requirements are minimum 3-4GB RAM and 10GB disk space.</p> 
       <ol> 
        <li>Download the ATS test project <a class="external-link" href="https://sourceforge.net/projects/axway-ats-examples/files/" rel="nofollow">VM image</a></li> 
-       <li>Download the appropriate <a class="external-link" href="https://www.virtualbox.org/wiki/Downloads" rel="nofollow">VirtualBox</a> version for your operating system. It's been tested to work well with version 5.2.x</li> 
-       <li>Install it</li> 
-       <li>Start it</li> 
-       <li>Go to File -&gt; Import Applicance</li> 
-       <li>Select the downloaded ATS test project image file</li> 
+       <li>Download the appropriate <a class="external-link" href="https://www.virtualbox.org/wiki/Downloads" rel="nofollow">VirtualBox</a> version for your operating system. It's been tested to work well with versions 5.2.x and 6.0.x.</li> 
+       <li>Install VirtualBox.</li> 
+       <li>Start it.</li> 
+       <li>Go to File -&gt; Import Appliance</li> 
+       <li>Select the downloaded ATS test project image file.</li> 
        <li>You can allow more resources in order to get better performance by right clicking the imported image, go to Settings → System. For instance you can allocate more CPUs and RAM.</li> 
-       <li>Right click the imported image and click Start</li> 
-       <li>When prompted, login as 'atsuser' with password 'atspassword'</li> 
+       <li>Right click the imported image and click Start.</li> 
+       <li>When prompted, login as 'atsuser' with password 'atspassword'.</li> 
+       <li>Optionally if there are issues you may need to update Guest Additions in the VM which provide better UI and mouse integration.</li> 
       </ol> 
       <p>Now you have a running OS at your service.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="Ready-for-usetestproject-Startsomeoftheavailabletests">Start some of the available tests</h1> 
       <ol> 
-       <li>You need to start some applications used by the tests. So from the command terminal go to<strong> /home/atsuser/Desktop/AtsDemoTests</strong> and execute the <strong>start_ats_test_applications</strong>.</li> 
+       <li>You need to start some applications used by the tests. So from the command terminal go to<strong> /home/atsuser/Desktop/AtsDemoTests</strong> and execute the <strong>start_ats_test_applications</strong> script.</li> 
        <li>Now open the AtsDemoTests folder located on the desktop and go to <strong>eclipse</strong> subfolder in order to start Eclipse.</li> 
        <li>You will see a number of classes with tests in the <strong>ats-demo-tests</strong> project. Right-click some class and run it as TestNG test.</li> 
-       <li>Test results are available in suitable format if start Firefox browser and visit <strong>http://localhost:8080/TestExplorer</strong></li> 
-       <li>Enjoy it. If something does not work as expected - contact the ATS dev team at <i>ats.team @axway.com</i> </li> 
+       <li>Test results are available in suitable format if start Firefox browser and visit <a class="external-link" href="http://localhost:8080/TestExplorer" rel="nofollow"><strong>http://localhost:8080/TestExplorer</strong></a></li> 
+       <li>Enjoy it. If you have questions, feedback or something does not work as expected - contact us: ats.team&nbsp; [at] axway.com.</li> 
       </ol> 
       <p><br></p> 
       <hr> 
@@ -55,6 +56,6 @@
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

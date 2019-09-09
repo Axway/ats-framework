@@ -25,7 +25,7 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Supportedbrowsersandsettings-Introduction">Introduction</h1> 
       <p>This pages gives a list of the supported browsers and some comments some special considerations when using some browsers on some operating systems</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Supportedbrowsersandsettings-Supportedbrowsers">Supported browsers</h1> 
       <p>Here is the list of the supported browsers by the <em>latest</em> ATS version:</p> 
@@ -46,9 +46,9 @@
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Firefox</p></td> 
-          <td class="confluenceTd"><p>3.5.0 - 57;</p><p>47*</p></td> 
+          <td class="confluenceTd"><p>52-68</p></td> 
           <td class="confluenceTd"><p><strong> <em>FirefoxDriver</em> </strong></p></td> 
-          <td class="confluenceTd"><p>Runs a real Firefox browser on top of Selenium.<br> <strong>Note</strong> Firefox 47 is not supported at all.</p><p>Current official supported versions are 57 and 52 ESR. You may install them from here: <a class="external-link" href="https://ftp.mozilla.org/pub/firefox/releases/" rel="nofollow">Firefox releases</a></p><p><strong>Note</strong> Firefox 46+, with the upper exception, is supported in ATS version 4.0.3. If you are using older ATS version, install Firefox 46 or lower ( 45.6.0 is recommended ).</p></td> 
+          <td class="confluenceTd"><p>Runs a real Firefox browser on top of Selenium. You may install older versions from here: <a class="external-link" href="https://ftp.mozilla.org/pub/firefox/releases/" rel="nofollow">Firefox releases</a></p><p><strong>Note</strong> To use latest browsers always use latest available ATS version.</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>InternetExplorer</p></td> 
@@ -64,7 +64,7 @@
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Chrome</p></td> 
-          <td class="confluenceTd"><p>27 - 63</p></td> 
+          <td class="confluenceTd"><p>27 - 76</p></td> 
           <td class="confluenceTd"><p><strong> <em>ChromeDriver</em> </strong></p></td> 
           <td class="confluenceTd"><p>Runs a real Chrome browser on top of Selenium</p></td> 
          </tr> 
@@ -78,30 +78,30 @@
           <td class="confluenceTd"><p>PhantomJS</p></td> 
           <td class="confluenceTd"><p>-</p></td> 
           <td class="confluenceTd"><p><strong> <em>PhantomJSDriver</em> </strong></p></td> 
-          <td class="confluenceTd"><p>Appropriate for systems without GUI support. PhantomJS is a headless WebKit scriptable with JavaScript.</p></td> 
+          <td class="confluenceTd"><p><strong>Deprecated</strong>. Appropriate for systems without GUI support. PhantomJS is a headless WebKit scriptable with JavaScript.<br>As alternative you may use real browser in headless mode or HtmlUnit.</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Browser without a visual UI</p></td> 
-          <td class="confluenceTd"><p>Firefox 24</p></td> 
+          <td class="confluenceTd"><p>Firefox 45</p></td> 
           <td class="confluenceTd"><p><strong> <em>HiddenBrowserDriver</em> </strong></p></td> 
-          <td class="confluenceTd"><p>Appropriate for systems without GUI support. Runs much faster as its using an internal Java browser.</p></td> 
+          <td class="confluenceTd"><p>Appropriate for systems without GUI support. Runs much faster as its using an internal Java browser. <br>This also means that in some cases it will not behave exactly as a real browser.</p></td> 
          </tr> 
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Supportedbrowsersandsettings-Setupstepsforusingsomebrowsers">Setup steps for using some browsers</h1> 
-      <p>There is a mandatory step before using InternetExplorer, Chrome and newer Firefox (&gt;= 47) drivers.</p> 
+      <p>There is a mandatory step before using InternetExplorer, Chrome and newer Firefox drivers.</p> 
       <h3 id="Supportedbrowsersandsettings-Firefox">Firefox</h3> 
-      <p>Firefox driver for newer Firefox installations (47 and up) is named Marionette driver but this is deprecated now and the perspective is to be named again Firefox driver.</p> 
+      <p>For newer Firefox installations Selenium should use Gecko WebDriver. Older versions used "Marionette" driver.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <pre>System.setProperty( "webdriver.gecko.driver", "D:\\bin\\geckodriver_xxx.xx.xx.exe" );  // for Firefox 47 or newer. ATS automatically switches to Marionette driver, if this property is set.</pre> 
+        <pre>System.setProperty( "webdriver.gecko.driver", "D:\\bin\\geckodriver_xxx.xx.xx.exe" );</pre> 
        </div> 
       </div> 
       <h3 id="Supportedbrowsersandsettings-Chrome">Chrome</h3> 
-      <p>Download the Chrome driver from <a class="external-link" href="http://chromedriver.storage.googleapis.com/index.html" rel="nofollow">here</a> according to the system you are using (32 or 64 bit Windows/Linux/Mac) and then set the absolute path to your chromedriver.exe</p> 
+      <p>Download the Chrome driver from <a class="external-link" href="http://chromedriver.storage.googleapis.com/index.html" rel="nofollow">here</a> according to the system you are using (32 or 64 bit Windows/Linux/Mac) and then set the absolute path to your chromedriver binary file.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">System.setProperty( "webdriver.chrome.driver", "D:\\bin\\chromedriver_xxx.xx.xx.exe" );</pre> 
@@ -134,7 +134,7 @@ System.setProperty( "webdriver.edge.driver", "D:\\bin\\MicrosoftWebDriver.exe" )
       <h3 id="Supportedbrowsersandsettings-PhantomJS">PhantomJS</h3> 
       <p>If your system does not have GUI support, you can use this <em>headless driver</em>. First you need to download <a class="external-link" href="http://phantomjs.org/download.html" rel="nofollow">PhantomJS</a> server (a binary file) depending on the OS type and architecture.</p> 
       <p>The PhantomJS browser can run locally and remotely.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <p>Here is how to start a PhantomJS server from a remote machine</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -148,20 +148,20 @@ $ ./phantomjs --webdriver=5678
 </pre> 
        </div> 
       </div> 
-      <p>There are additional command line options described <a class="external-link" href="https://github.com/ariya/phantomjs/wiki/API-Reference#command-line-options" rel="nofollow">here</a>. For example if want to support HTTPS:</p> 
+      <p>There are additional command line options described <a class="external-link" href="https://phantomjs.org/api/command-line.html" rel="nofollow">here</a>. For example if want to support HTTPS:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">$ ./phantomjs  --ignore-ssl-errors=yes --ssl-protocol=any --web-security=false --webdriver=5678
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Automated-testing-of-HTML-and-Javascript-application.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

@@ -1,0 +1,123 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Release Notes 4.0.6</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="Release-Notes.html">Release Notes</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Release Notes 4.0.6 </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p><strong>05 September 2019<br></strong></p> 
+      <h3 id="ReleaseNotes4.0.6-Note-Updateinprogress">Note - Update in progress</h3> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <p class="title">Deprecation of Java SE 7 support</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Currently minimum supported Java SE version is 7. However many ATS dependencies have already moved to Java 8 and up. That's why in next version ATS framework should also raise the minimum needed Java version to 8.</p> 
+       </div> 
+      </div> 
+      <h3 id="ReleaseNotes4.0.6-NewFeaturesandImprovement">New Features and Improvement</h3> 
+      <p><em><strong>Environment Cleanup<br></strong></em></p> 
+      <p style="margin-left: 30.0px;"><em><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> </em>Add possibility to <strong><em>drop and recreate</em> tables</strong> during restore of DB backups. This is useful for intense DB data tests like performance tests.<br>So far DB restore first did delete of all existing records and then inserted some records&nbsp; to restore to a well known state. This delete is not effective when last test (mostly a performance one) had created hundreds of thousands or even millions of records. Now it is added option to specify for a table to be dropped and then recreate it with all its previous metadata - columns and indexes. <br><a href="Environment-maintenance-using-Environment-cleanup-library.html">Here</a> you may find example and notes.</p> 
+      <p style="margin-left: 30.0px;"><em><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></em>Add option to specify whether <strong>DB tables' content</strong> will be backed-up or not.</p> 
+      <p style="margin-left: 30.0px;"><em><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></em>Improve <strong>sequence of SQL statements</strong> in regular DB backup files. Now it is <em>Lock table,&nbsp; Delete data, Insert data, Unlock table</em>. This will provide better consistency when there is parallel access during restore. Although such parallel access is not recommend.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Optimize memory usage</strong> when creating backups of big DB tables.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Improvements in DB logging. Before and after execution of restore and backup action there are added clear messages with info severity. Also print each of the SQL statements that will be performed during restore.</p> 
+      <p><em><strong>&nbsp;DB Logging<br></strong></em></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Ability to <strong>set or get testcase meta information</strong>. In addition to run and scenario level, now there is possibility to attach arbitrary key-value data to a testcase. Usually to the current testcase. <span>New methods are <code>AtsDbLogger.addTestcaseMetainfo(key,value)</code> and <code>AtsDbLogger.getTestcaseMetainfo(...)</code>.</span></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Improve customization for Microsoft SQL Server connectivity. It is possible to <strong>select another JDBC driver to be used</strong> for such SQL Server DB connections. Info <a href="Database-Operations.html">here</a>, section for Microsoft SQL Server specifics.</p> 
+      <p><em>&nbsp;<strong>Agent<br></strong></em></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Use ${AGENT_HOME}/<strong>work</strong> sub-folder as a temporal folder to unpack agent WAR file. Before it was extracted into <strong>/tmp</strong> (for Linux) and in some configurations it doesn't had much space free.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>&nbsp;Remember all configurations passed to ATS agents to ease the debugging</p> 
+      <p><strong><em>Action library</em></strong></p> 
+      <p style="margin-left: 30.0px;"><em><strong>REST Client</strong></em></p> 
+      <p style="margin-left: 60.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Add possibility to register custom connector provider like more advanced Apache Connector instead of default java.net.URLConnection implementation. It also provides better tracing of HTTP traffic. Details are here in <a href="REST-Operations---Configuring-the-client.html">REST Operations Configuration</a>, section "<em>Register third-party connector provider</em>"</p> 
+      <p style="margin-left: 60.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Log a WARN message for user to expect Jersey to complain when executing PUT/POST HTTP operation with empty or null body.</p> 
+      <p style="margin-left: 30.0px;"><strong>D</strong><strong>atabase</strong><strong> Snapshots</strong><em><strong><br></strong></em></p> 
+      <p style="margin-left: 60.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Change SQL queries for obtaining Database data and remove start and end delimiters (_|) for DbRecordValuesList.</p> 
+      <p style="margin-left: 30.0px;"><strong>SSH Operations</strong></p> 
+      <p style="margin-left: 60.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>Provide way to specify global and session config properties when working with <code>SshClient</code> and SFTP instance of <code>FileTransferClient</code>.</p> 
+      <p style="margin-left: 30.0px;"><strong>FileTransferClient</strong></p> 
+      <p style="margin-left: 60.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>For HTTP(S) client file upload now could be set to chunked mode (affecting and <em>Transfer-Encoding</em> header). Property details are mentioned <a href="File-transfers.html">here</a> in <em>HTTP/HTTPS client</em> section.</p> 
+      <p><em><strong>Test Harness (Test lifecycle integration)</strong></em></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>AtsTestngListener - Log message when the test sources directory could not be found</p> 
+      <p><em>&nbsp;<strong>UI Engine<br></strong></em></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>&nbsp;Add method to switch to another window with the same title as current one. Note that if there are many the order is not guaranteed.</p> 
+      <p><em><strong>S3 Client<br></strong></em></p> 
+      <p style="margin-left: 30.0px;">&nbsp;<span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>&nbsp;Added new method for efficient delete of large set of objects/files. This method also solves case when deleting the whole bucket with large number of objects. Sample code could be found <a href="Remote-Storage-Operations.html">here</a>, in Examples section.</p> 
+      <p><em><strong>Common library<br></strong></em></p> 
+      <p style="margin-left: 30.0px;">&nbsp;<span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279738.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> Added constant and method to detect <strong>macOS</strong> type. New method is com.axway.ats.common.system.OperatingSystemType.isMacOs() and enum value OperatingSystemType.MAC_OS. It can be primarily used via SystemOperations.getOperatingSystemType() method.</p> 
+      <p><br></p> 
+      <h3 id="ReleaseNotes4.0.6-BugFixes">Bug Fixes</h3> 
+      <p><strong>Action Library </strong></p> 
+      <p style="margin-left: 30.0px;"><strong>REST Client</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong>File upload was failing for files larger than 2GB<br>The problem is located in Jersey client and now it is upgraded to version 2.25.1.&nbsp; Note that this is the last one build with Java 7 byte-code compatibility.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span>When response length was not known (chunked), the entity was not buffered for reuse. This is backward-compatible behavior.</p> 
+      <p style="margin-left: 30.0px;"><strong>Filesystem Operations</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong>Do not log the whole file, but file size when invoking createFile().</p> 
+      <p style="margin-left: 30.0px;">File Transfer Operations</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong>Fix NullPointerException when trying to upload/download file over not connected SFTP client.</p> 
+      <p style="margin-left: 30.0px;"><strong>Secure mail operations</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong>Fix mail signing in SMimePackageEncryptor. Whole certificate chain for chained (not self-signed) certificates was not included in the signed mail.</p> 
+      <p style="margin-left: 30.0px;"><strong>Database snapshots</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong>Fix logic when custom IndexNameMatcher is provided.</p> 
+      <p><strong>Logging </strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> Log single warning message instead of throwing an Exception when ATS DB appender is tried to be used in code and the&nbsp; appender is not not attached to the Log4J root logger.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> Non-printable characters are now escaped also for PostrgreSQL DBs before insert.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> Update run event now updates runs from PostgreSQL database.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span> Prevent second emit of EndTestCaseEvent.</p> 
+      <p><strong>Test Harness</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong> Various fixes in test lifecycle states regarding integration with TestNG listeners.</p> 
+      <p><strong>Agent, Monitoring</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong> Fix when monitoring is stopped in the middle of a test. If there are other test messages to log on the agent side then messages were not logged.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong> Fix in System monitoring. Now DB port used for reporting is set prior to initializing system monitoring on agent side.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong> Prevent NullPointerException when de-serializing message from agent, that has no detailed message filed set.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/159279737/159279739.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="31"></span></strong> Do not allow adding same action more than once in same queue. This was breaking actions reporting logic.</p> 
+      <p><br></p> 
+      <h3 id="ReleaseNotes4.0.6-Changesinthirdpartydependencies">Changes in third party dependencies</h3> 
+      <ul> 
+       <li><strong>Jersey</strong> client is updated to version 2.25.1. This is the latest one supporting Java 7.</li> 
+       <li><strong>Jsch </strong>SSH library is updated to version 0.1.54.</li> 
+       <li>Apache <strong>Commons Compress </strong>changed to version 1.18.</li> 
+       <li>Build tools 
+        <ul> 
+         <li><strong>Checkstyle</strong> plugin updated to version to 3.0.0</li> 
+         <li><strong>Puppycrawl</strong> tools plugin. Change version to 6.19. Again the latest one that supports Java 7.</li> 
+        </ul></li> 
+      </ul> 
+      <h3 id="ReleaseNotes4.0.6-Deprecatedcodeandpendingupdates">Deprecated code and pending updates</h3> 
+      <ul> 
+       <li><strong>Java 7</strong> support will be dropped in next recent versions because many dependencies now provide fixes and new features with minimum Java 8 class level support</li> 
+       <li>Deprecated old <strong>TestNG listeners</strong>. There is new easy way for ATS to listen for test lifecycle events. Deprecated listeners are <em>AtsTestngClassListener</em>,&nbsp;<em>AtsTestngSuiteListener</em> and AtsTestngTestListener.<br>Instead of them use only <em>AtsTestngListener</em>. For painless work, currently we recommend TestNG 6.10 because newer versions have some identified issues.</li> 
+       <li>Logging library - <strong>AutoLogger</strong> class is now deprecated. Use AtsDbLogger instead.</li> 
+       <li>UiEngine - <strong>PhantomJS</strong> driver is now deprecated because the third-party library used is outdated, without recent support.</li> 
+      </ul> 
+      <h2 id="ReleaseNotes4.0.6-TestExplorer"><strong>Test Explorer</strong></h2> 
+      <p>Release notes for Test Explorer are located <a href="https://axway.github.io/ats-testexplorer/Test-Explorer-Release-Notes.html">here</a></p> 
+      <h2 id="ReleaseNotes4.0.6-HTTPDBLogger"><strong>HTTP DB Logger<br></strong></h2> 
+      <p>Release notes for HTTP DB Logger are located <a href="https://axway.github.io/ats-httpdblogger/HTTP-DB-Logger-Release-Notes.html">here</a></p> 
+      <p><br></p> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+  <hr>
+  <p>Go to <a href="./Release-Notes.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
+</html>

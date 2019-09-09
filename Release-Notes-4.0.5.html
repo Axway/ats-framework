@@ -23,27 +23,27 @@
      <div id="main-content" class="wiki-content group"> 
       <p><strong>23 April 2018</strong></p> 
       <h3 id="ReleaseNotes4.0.5-NewFeatures">New Features</h3> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="4"></span>&nbsp;<em> <strong>RBV </strong></em>Support database verifications on PostgreSQL databases</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="5"></span>&nbsp;<em> <strong>RBV </strong></em>Support database verifications on PostgreSQL databases</p> 
       <p>Rule Based Verifications is an ATS feature which allows doing some common check on file system, IMAP folders and databases.</p> 
       <p>Now we can work with PostgreSQL database as well.</p> 
       <p><a class="external-link" href="https://axway.github.io/ats-framework/Database-verifications.html" rel="nofollow">Here</a> is more about database verifications.</p> 
       <p><br></p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="4"></span>&nbsp;<em> <strong>Framework </strong></em>Optimized checks whether some address belongs to a local or remote host</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="5"></span>&nbsp;<em> <strong>Framework </strong></em>Optimized checks whether some address belongs to a local or remote host</p> 
       <p>On different occasions we need to make such checks and in some configurations it tends to be very slow. Now we do it faster.</p> 
       <p><br></p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="4"></span>&nbsp;<em> <strong>Logging </strong></em>It is now possible to specify the database port a Test Explorer database is working at</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834725.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="5"></span>&nbsp;<em> <strong>Logging </strong></em>It is now possible to specify the database port a Test Explorer database is working at</p> 
       <p>ATS is usually used with in cooperation with a logging database which can currently run on top of MS SQL Server or PostgreSQL.</p> 
       <p>If you start your database on a non-default port, then you have to specify this port. This is done from the database appender found in your log4.xml file.&nbsp;<a class="external-link" href="https://axway.github.io/ats-framework/Configure-ATS-Database-Logging.html" rel="nofollow">Here</a> you can see more about configuring ATS database logging.</p> 
       <p>And <a class="external-link" href="https://axway.github.io/ats-testexplorer/ATS-Test-Explorer-Guide.html" rel="nofollow">here</a> is the basic user guide for Test Explorer itself.</p> 
       <h3 id="ReleaseNotes4.0.5-BugFixes">Bug Fixes</h3> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834724.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="4"></span>&nbsp;<em> <strong>Test Harness</strong></em> Last Suite and the Run are not closed</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/150834723/150834724.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="5"></span>&nbsp;<em> <strong>Test Harness</strong></em> Last Suite and the Run are not closed</p> 
       <p>For some reason TestNG creates two instances of our <em>com.axway.ats.harness.testng.AtsTestngListener</em>. This was causing a problem if the last class with tests does not have an @AfterClass method.</p> 
       <h3 id="ReleaseNotes4.0.5-Changesinthirdpartydependencies">Changes in third party dependencies</h3> 
       <p>none</p> 
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
   <hr>
   <p>Go to <a href="./Release-Notes.html">parent page</a></p>
   <p>Go to <a href="./toc.html">Table of Contents</a></p>

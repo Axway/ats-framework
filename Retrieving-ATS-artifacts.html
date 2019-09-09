@@ -25,9 +25,9 @@
       <p><br></p> 
       <hr> 
       <h1 id="RetrievingATSartifacts-Maven">Maven</h1> 
-      <p><a class="external-link" href="https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/" rel="nofollow">Here</a> is the actual location of all ATS artifacts</p> 
-      <p><a class="external-link" href="https://mvnrepository.com/artifact/com.axway.ats.framework" rel="nofollow">Here</a> is the Maven Repository location</p> 
-      <p>Following is a short pom file you can use to download all ATS artifacts</p> 
+      <p><a class="external-link" href="https://oss.sonatype.org/content/groups/public/com/axway/ats/framework/" rel="nofollow">Here</a> is the actual Maven repository location of all ATS artifacts.</p> 
+      <p><a class="external-link" href="https://mvnrepository.com/artifact/com.axway.ats.framework" rel="nofollow">Here</a> is overview of ATS artifacts indexed in the <a class="external-link" href="https://mvnrepository.com/" rel="nofollow">MVNRepository</a> site.</p> 
+      <p>Following is a short Maven POM file you can use to depend to almost all ATS artifacts (including indirect dependencies).</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;project xmlns="http://maven.apache.org/POM/4.0.0" 
@@ -41,7 +41,7 @@
     &lt;name&gt;Simple Test Artifact&lt;/name&gt;
 
     &lt;properties&gt;
-        &lt;ats.version&gt;4.0.0&lt;/ats.version&gt;
+        &lt;ats.version&gt;4.0.5&lt;/ats.version&gt;
     &lt;/properties&gt;
     
     &lt;dependencies&gt;
@@ -51,24 +51,23 @@
             &lt;version&gt;${ats.version}&lt;/version&gt;
         &lt;/dependency&gt;
         &lt;dependency&gt;
-          &lt;groupId&gt;com.axway.ats.framework&lt;/groupId&gt;
-          &lt;artifactId&gt;ats-uiengine&lt;/artifactId&gt;
-          &lt;version&gt;${ats.version}&lt;/version&gt;
+            &lt;groupId&gt;com.axway.ats.framework&lt;/groupId&gt;
+            &lt;artifactId&gt;ats-uiengine&lt;/artifactId&gt;
+            &lt;version&gt;${ats.version}&lt;/version&gt;
         &lt;/dependency&gt;
         &lt;dependency&gt;
-          &lt;groupId&gt;com.axway.ats.framework&lt;/groupId&gt;
-          &lt;artifactId&gt;ats-monitoringlibrary&lt;/artifactId&gt;
-          &lt;version&gt;${ats.version}&lt;/version&gt;
+            &lt;groupId&gt;com.axway.ats.framework&lt;/groupId&gt;
+            &lt;artifactId&gt;ats-monitoringlibrary&lt;/artifactId&gt;
+            &lt;version&gt;${ats.version}&lt;/version&gt;
         &lt;/dependency&gt;        
-    &lt;/dependencies&gt;
-    
+    &lt;/dependencies&gt;   
 &lt;/project&gt;</pre> 
        </div> 
       </div> 
       <p><br></p> 
       <hr> 
       <h1 id="RetrievingATSartifacts-Wholedistribution">Whole distribution</h1> 
-      <p><a class="external-link" href="https://oss.sonatype.org/content/groups/public/com/axway/ats/distrib/ats-distrib/" rel="nofollow">Here</a> you can download a whole archive with all ATS libraries and their dependencies</p> 
+      <p><a class="external-link" href="https://oss.sonatype.org/content/groups/public/com/axway/ats/distrib/ats-distrib/" rel="nofollow">Here</a> you can download a whole archive with all ATS libraries and their dependencies.</p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="ATS-Documentation.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
@@ -76,6 +75,6 @@
      </div> 
     </div> 
    </div> 
-  </div>   
+  </div>  
  </body>
 </html>

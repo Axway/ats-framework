@@ -305,6 +305,7 @@ h1 {
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 h1.pagetitle {
 	 margin: 10px 0 0;
@@ -317,6 +318,7 @@ h2 {
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 h3 {
     font-size: 16px;
@@ -326,6 +328,7 @@ h3 {
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 h4 {
     font-size: 14px;
@@ -335,6 +338,7 @@ h4 {
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 h5 {
 	color: #3d3d3d;
@@ -345,6 +349,7 @@ h5 {
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 h6{
 	color: #3d3d3d;
@@ -355,6 +360,7 @@ h6{
 	text-transform: none;
 	font-family: Arial,sans-serif;
 	padding: 0;
+	color: #6B0000;
 }
 
 body {
