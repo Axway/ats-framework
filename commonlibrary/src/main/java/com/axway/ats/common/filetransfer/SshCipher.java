@@ -70,11 +70,13 @@ public class SshCipher implements Serializable {
     public static final SshCipher _3DES_CBC        = new SshCipher("3des-cbc",
                                                                    "DESede/CBC/NoPadding",
                                                                    null,
+                                                                   null,
                                                                    8,
                                                                    24);
     @PublicAtsApi
     public static final SshCipher BLOWFISH_CBC     = new SshCipher("blowfish-cbc",
                                                                    "Blowfish/CBC/NoPadding",
+                                                                   null,
                                                                    null,
                                                                    8,
                                                                    16);
@@ -130,6 +132,12 @@ public class SshCipher implements Serializable {
     private int                   keyLength;
 
     /**
+     * The Class that is implementing the current cipher. Can be skipped if the provider can handle that step directly.</br>
+     * Basically if something fails, you can try setting this
+     * */
+    private Class<?>              implClass;
+
+    /**
      *
      * @param sshAlgorithmName the SSH algorithm name
      * @param jceAlgorithmName the JCE algorithm name
@@ -142,7 +150,43 @@ public class SshCipher implements Serializable {
                       int blockLength,
                       int keyLength ) {
 
-        this(sshAlgorithmName, jceAlgorithmName, null, blockLength, keyLength);
+        this(sshAlgorithmName, jceAlgorithmName, null, null, blockLength, keyLength);
+    }
+
+    /**
+    *
+    * @param sshAlgorithmName the SSH algorithm name
+    * @param jceAlgorithmName the JCE algorithm name
+    * @param implClass the Class that implements the cipher
+    * @param blockLength the cipher block length in bytes
+    * @param keyLength the algorithm key length in bytes
+    */
+    @PublicAtsApi
+    public SshCipher( String sshAlgorithmName,
+                      String jceAlgorithmName,
+                      Class<?> implClass,
+                      int blockLength,
+                      int keyLength ) {
+
+        this(sshAlgorithmName, jceAlgorithmName, null, implClass, blockLength, keyLength);
+    }
+
+    /**
+    *
+    * @param sshAlgorithmName the SSH algorithm name
+    * @param jceAlgorithmName the JCE algorithm name
+    * @param provider the JCE provider name
+    * @param blockLength the cipher block length in bytes
+    * @param keyLength the algorithm key length in bytes
+    */
+    @PublicAtsApi
+    public SshCipher( String sshAlgorithmName,
+                      String jceAlgorithmName,
+                      String provider,
+                      int blockLength,
+                      int keyLength ) {
+
+        this(sshAlgorithmName, jceAlgorithmName, provider, null, blockLength, keyLength);
     }
 
     /**
@@ -150,6 +194,7 @@ public class SshCipher implements Serializable {
      * @param sshAlgorithmName the SSH algorithm name
      * @param jceAlgorithmName the JCE algorithm name
      * @param provider the JCE provider name
+     * @param implClass the Class that implements the cipher
      * @param blockLength the cipher block length in bytes
      * @param keyLength the algorithm key length in bytes
      */
@@ -157,6 +202,7 @@ public class SshCipher implements Serializable {
     public SshCipher( String sshAlgorithmName,
                       String jceAlgorithmName,
                       String provider,
+                      Class<?> implClass,
                       int blockLength,
                       int keyLength ) {
 
@@ -215,6 +261,16 @@ public class SshCipher implements Serializable {
     }
 
     /**
+     * 
+     * @return the implementation class
+     */
+    @PublicAtsApi
+    public Class<?> getImplClass() {
+
+        return implClass;
+    }
+
+    /**
      * @param sshAlgorithmName SSH algorithm name
      */
     @PublicAtsApi
@@ -264,6 +320,15 @@ public class SshCipher implements Serializable {
                               int keyLength ) {
 
         this.keyLength = keyLength;
+    }
+
+    /**
+     * @param implClass the implementation class
+     */
+    @PublicAtsApi
+    public void setImplClass( Class<?> implClass ) {
+
+        this.implClass = implClass;
     }
 
     @Override
