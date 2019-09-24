@@ -10,7 +10,7 @@ before_install:
      - cp settings.xml ~/.m2
 script:
        # for fast Travis builds w/o tests: mvn clean install deploy -DskipTests=true or -P fast
-       - mvn clean deploy 2>&1 >> ../build.log
+       - mvn clean deploy -P fast 2>&1 >> ../build.log
        - cat ../build.log | grep -C 100 "WARN\|warn\|ERROR\|error\|FATAL\|fatal\|EXCEPTION\|exception\|Warn\|Error\|Fatal\|Exception"
 cache:
   directories:
