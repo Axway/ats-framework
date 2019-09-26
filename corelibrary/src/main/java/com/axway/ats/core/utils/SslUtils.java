@@ -60,19 +60,19 @@ import com.axway.ats.common.dbaccess.OracleKeys;
 */
 public class SslUtils {
 
-    private static final Logger log                = Logger.getLogger(SslUtils.class);
+    private static final Logger log                                = Logger.getLogger(SslUtils.class);
 
-    private static final String DEFAULT_PROTOCOL   = "TLS";
-    
+    private static final String DEFAULT_PROTOCOL                   = "TLS";
+
     // not lazy but not size consuming
-    private static SslUtils     instance           = new SslUtils();
-    
+    private static SslUtils     instance                           = new SslUtils();
+
     private static boolean      bcProviderAlreadyRegisteredAsFirst = false;
-    
+
     private static SSLContext   trustAllSSlContext;
-    
+
     // in this list are collected all created keystore files during THIS run
-    private static List<String> availableKeyStores = new ArrayList<String>();
+    private static List<String> availableKeyStores                 = new ArrayList<String>();
 
     /**
      * Hostname verifier.
@@ -83,8 +83,6 @@ public class SslUtils {
      * Thrust managers.
      */
     private TrustManager[]      trustManagers;
-
-
 
     private SslUtils() {
 
@@ -287,7 +285,11 @@ public class SslUtils {
         if (StringUtils.isNullOrEmpty(keyStoreType) && StringUtils.isNullOrEmpty(keyStorePassword)
             && StringUtils.isNullOrEmpty(keyStoreFullPath)) {
             // all parameters are empty
-            keyStoreFullPath = System.getProperty("java.io.tmpdir") + "ats_TempKeyStore_" + host + "_"
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            if (!tmpDir.endsWith(File.separator)) {
+                tmpDir += File.separator;
+            }
+            keyStoreFullPath = tmpDir + "ats_TempKeyStore_" + host + "_"
                                + databaseName + ".jks";
             keyStorePassword = "password";
             keyStoreType = "JKS";
@@ -558,6 +560,7 @@ public class SslUtils {
      *   this way could be forcefully set other security provider.  
      */
     public static void registerBCProvider() {
+
         if (bcProviderAlreadyRegisteredAsFirst) {
             return; // do nothing. Provider is already registered as first one.
         }
