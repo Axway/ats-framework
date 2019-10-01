@@ -29,7 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -252,7 +252,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                        + "'].[' + OBJECT_NAME(parent_object_id) + "
                        + "'] DROP CONSTRAINT [' + name + ']' "
                        + " FROM sys.foreign_keys "
-                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+                       + " WHERE referenced_object_id = object_id('" + tableName + "') ORDER BY name";
 
         Statement callableStatementDropForeignKeys = null;
         ResultSet rsDropForeignKeys = null;
@@ -813,7 +813,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                       Connection connection ) throws DbException {
 
         PreparedStatement stmnt = null;
-        Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
+        Map<String, List<String>> tableForeignKey = new LinkedHashMap<String, List<String>>();
         ResultSet rs = null;
         try {
             String simpleTableName = tableName.substring(tableName.indexOf('.') + 1, tableName.length());

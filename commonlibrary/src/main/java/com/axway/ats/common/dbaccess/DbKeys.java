@@ -18,7 +18,6 @@ package com.axway.ats.common.dbaccess;
 
 import com.axway.ats.common.PublicAtsApi;
 
-
 /**
  * <p>Keys for additional DB connection properties</p>
  * <p>For additional Oracle properties, see {@link OracleKeys} class
@@ -51,5 +50,12 @@ public class DbKeys {
 
     @PublicAtsApi
     public static final String KEY_STORE_PASSWORD    = "javax.net.ssl.trustStorePassword";
+
+    /**
+     * Use this property to specify which driver to be used for DB IO.</br>
+     * Currently it is only applicable for SQL Server connections and the available values are "JTDS" (the default one) and "MSSQL"
+     * */
+    @PublicAtsApi
+    public static final String DRIVER                = "DRIVER";
 
 }

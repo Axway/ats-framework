@@ -41,6 +41,7 @@ import com.axway.ats.core.utils.StringUtils;
  * <ul>
  *  <li>"JTDS" - default</li>
  *  <li>"JNetDirect" - to use JNetDirect's JSQLConnect driver</li>
+ *  <li>"MSSQL" - to use Official Microsoft SQL Server driver (Note that additional Maven dependency is needed)</li>
  * </ul>
  * </p>
  *
@@ -50,7 +51,7 @@ public class DbConnSQLServer extends DbConnection {
 
     private static final AtsConsoleLogger      log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
 
-    private static final String                JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
+    public static final String                 JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
     /**
      * The key for configuring JDBC MsSQL URL prefix string
      */
@@ -169,29 +170,29 @@ public class DbConnSQLServer extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
         updateConnectionSettings();
 
-        url.append( jdbcDriverPrefix ).append( host ).append( ":" ).append( this.port );
-        
-        if( !useSSL && db != null ) {
-            url.append( "/" ).append( db );
+        url.append(jdbcDriverPrefix).append(host).append(":").append(this.port);
+
+        if (!useSSL && db != null) {
+            url.append("/").append(db);
         } else {
-            if( DEFAULT_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
-                if( db != null ) {
-                    url.append( "/" ).append( db );
+            if (DEFAULT_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
+                if (db != null) {
+                    url.append("/").append(db);
                 }
-                url.append( ";ssl=require" );
-            } else if( MSSQL_JDBC_DRIVER_PREFIX.equals( jdbcDriverPrefix ) ) {
+                url.append(";ssl=require");
+            } else if (MSSQL_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
                 // url prefix is missing the ':jtds:' part in SSL connection
                 // because the port can be changed after execution of the parent constructor, use this.port, instead of port
-                url.append( MSSQL_JDBC_DRIVER_PREFIX ).append( host ).append( ":" ).append( this.port );
+                url.append(MSSQL_JDBC_DRIVER_PREFIX).append(host).append(":").append(this.port);
 
-                if( db != null ) {
-                    url.append( ";databaseName=" )
-                       .append( db )
-                       .append( ";integratedSecurity=false;encrypt=true;trustServerCertificate=true" );
+                if (db != null) {
+                    url.append(";databaseName=")
+                       .append(db)
+                       .append(";integratedSecurity=false;encrypt=true;trustServerCertificate=true");
                 }
             } else {
-                throw new DbException( "SSL connection is not possible for the provided driver \""
-                                       + System.getProperty( JDBC_DRIVER_CLASS_KEY ) + "\"." );
+                throw new DbException("SSL connection is not possible for the provided driver \""
+                                      + System.getProperty(JDBC_DRIVER_CLASS_KEY) + "\".");
             }
         }
     }
@@ -298,7 +299,7 @@ public class DbConnSQLServer extends DbConnection {
                 Method setDatabase = null;
                 try {
                     setDatabase = jdbcDataSourceClass.getMethod("setDatabase", String.class);
-                }catch (NoSuchMethodException nsme) {
+                } catch (NoSuchMethodException nsme) {
                     // The method name could differ in the different drivers
                     setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 }
@@ -358,13 +359,13 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     public void disconnect() {
 
-        if( ds != null ) {
+        if (ds != null) {
             try {
                 ds.close();
             } catch (Exception e) {
                 throw new DbException("Unable to close database source", e);
             }
-        }    
+        }
     }
 
     /**
@@ -407,8 +408,22 @@ public class DbConnSQLServer extends DbConnection {
     private void updateConnectionSettings() {
 
         String value = System.getProperty(JDBC_DRIVER_VENDOR_KEY);
+        if (this.customProperties != null) {
+            if (this.customProperties.containsKey(DbKeys.DRIVER)) {
+                // even if the value is null/empty, it will be used
+                String driverValueFromCustProps = (String) this.customProperties.get(DbKeys.DRIVER);
+                if (driverValueFromCustProps != null) {
+                    if (!driverValueFromCustProps.equals(value)) {
+                        log.warn("Overriding DB driver for connection '" + this.getDescription() + "' from '" + value
+                                 + "' to '" + driverValueFromCustProps + "'");
+                    }
+                }
+                value = driverValueFromCustProps;
+            }
+        }
         MsSQLJDBCDriverVendor vendor = null;// MsSQLJDBCDriverVendor.JTDS; // default version
         if (!StringUtils.isNullOrEmpty(value)) {
+            log.info("Setting DB driver to '" + value + "' for connection '" + this.getDescription() + "'");
             value = value.trim().toUpperCase();
             try {
                 vendor = MsSQLJDBCDriverVendor.valueOf(value);
@@ -430,13 +445,13 @@ public class DbConnSQLServer extends DbConnection {
                     break;
                 case JNETDIRECT:
                     System.setProperty(JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX);
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, JNETDIRECT_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 case MSSQL:
                     System.setProperty(JDBC_PREFIX_KEY, MSSQL_JDBC_DRIVER_PREFIX);
-                    System.setProperty( JDBC_DRIVER_CLASS_KEY, MSSQL_JDBC_DRIVER_CLASS_NAME );
-                    System.setProperty( JDBC_DATASOURCE_CLASS_KEY, MSSQL_JDBC_DATASOURCE_CLASS_NAME );
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, MSSQL_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, MSSQL_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 default:
                     // not expected. Just in case if enum is updated w/o implementation here

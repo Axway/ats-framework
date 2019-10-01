@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbColumn;
@@ -115,11 +116,23 @@ public class MssqlDbProvider extends AbstractDbProvider {
             // we have an array of primitive data type
             InputStream is = null;
             try {
-                is = resultSet.getAsciiStream(index);
-                value = IoUtils.streamToString(is);
+                boolean isMssqlDriverInUse = checkIsMssqlDriverInUse();
+                if (isMssqlDriverInUse) {
+                    is = resultSet.getBinaryStream(index);
+                    StringBuilder hexString = new StringBuilder();
+
+                    //read the binary data from the stream and convert it to hex according to the sample from
+                    // http://www.herongyang.com/jdbc/Oracle-BLOB-SQL-INSERT.html - see 3 variants for Oracle, MsSQL and MySQL
+                    hexString = addBinDataAsHexAndCloseStream(hexString, is);
+                    value = hexString.toString();
+                } else {
+                    is = resultSet.getAsciiStream(index);
+                    value = IoUtils.streamToString(is);
+                }
             } finally {
                 IoUtils.closeStream(is);
             }
+
         } else if (valueAsObject instanceof Blob) {
             // we have a blob
             log.debug("Blob detected. Will try to dump as hex");
@@ -138,6 +151,17 @@ public class MssqlDbProvider extends AbstractDbProvider {
         }
 
         return value;
+    }
+
+    private boolean checkIsMssqlDriverInUse() {
+
+        String dbDriver = (String) (this.dbConnection).getCustomProperties().get(DbKeys.DRIVER);
+        if ("MSSQL".equalsIgnoreCase(System.getProperty(DbConnSQLServer.JDBC_DRIVER_VENDOR_KEY))
+            || "MSSQL".equalsIgnoreCase(dbDriver)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     @Override

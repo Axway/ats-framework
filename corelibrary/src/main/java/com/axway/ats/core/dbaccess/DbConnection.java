@@ -174,7 +174,9 @@ public abstract class DbConnection {
         connHash.append("_");
         connHash.append(db);
         connHash.append("_");
+        connHash.append(user);
         if (customProperties != null) {
+            connHash.append("_");
             connHash.append(customProperties.hashCode());
         }
 
