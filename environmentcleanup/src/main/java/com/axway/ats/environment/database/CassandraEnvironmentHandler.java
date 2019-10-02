@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.ByteBuffer;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -46,12 +46,9 @@ import com.axway.ats.environment.database.model.DbTable;
  */
 class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger           log            = Logger.getLogger(CassandraEnvironmentHandler.class);
+    private static final Logger log            = Logger.getLogger(CassandraEnvironmentHandler.class);
 
-    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-
-    private static final String           HEX_PREFIX_STR = "0x";
-    private static final String           HEXES          = "0123456789abcdef";
+    private static final String HEX_PREFIX_STR = "0x";
 
     CassandraEnvironmentHandler( DbConnCassandra dbConnection,
                                  CassandraDbProvider dbProvider ) {
@@ -241,9 +238,9 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
     public void createBackup( String backupFileName ) throws DatabaseEnvironmentCleanupException {
 
         try {
-            super.createBackup( backupFileName );
+            super.createBackup(backupFileName);
         } finally {
-            ( ( CassandraDbProvider ) dbProvider ).disconnect();
+            ((CassandraDbProvider) dbProvider).disconnect();
         }
     }
 
@@ -311,21 +308,49 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
             insertStatement.append("}");
         } else if ("Date".equalsIgnoreCase(column.getType()) || "Timestamp".equalsIgnoreCase(column.getType())) {
             insertStatement.append('\'');
-            insertStatement.append(DATE_FORMATTER.format(fieldValue));
+            insertStatement.append( ((java.util.Date) fieldValue).getTime());
             insertStatement.append('\'');
         } else if ("String".equalsIgnoreCase(column.getType())
                    || "varchar".equalsIgnoreCase(column.getType())) {
             insertStatement.append('\'');
             insertStatement.append(fieldValue.toString().replace("'", "''"));
             insertStatement.append('\'');
-        } else if ("ByteBuffer".equalsIgnoreCase(column.getType())) {
+        } else if ("blob".equalsIgnoreCase(column.getType())) {
             insertStatement.append(HEX_PREFIX_STR);
-            insertStatement.append(byteArrayToHex( ((byte[]) fieldValue)));
+            byte[] bytes = null;
+            if (fieldValue instanceof ByteBuffer) {
+                bytes = convertByteBufferToArray((ByteBuffer) fieldValue); // possible OOM if blob is too large
+            } else if (fieldValue instanceof byte[]) {
+                bytes = (byte[]) fieldValue;
+            } else {
+                throw new DbException("Could not process value from column '" + column.toString()
+                                      + "' that is deserialized/mapped to Java class '"
+                                      + fieldValue.getClass().getName() + "'. Only "
+                                      + ByteBuffer.class.getName()
+                                      + " and byte[] are the supported");
+            }
+            insertStatement.append(byteArrayToHex(bytes));
         } else {
             insertStatement.append(fieldValue.toString().replace("'", "''"));
         }
 
         return insertStatement;
+    }
+
+    private byte[] convertByteBufferToArray( ByteBuffer buffer ) {
+
+        if (buffer == null) {
+            return null;
+        }
+
+        byte[] bytes = new byte[buffer.remaining()];
+        /* The ByteBuffer class has method array() that also returns the underlying byte[] array,
+         * but this buffer contains not only the Cassandra column value, 
+         * but also other values, that are needed only to the ByteBuffer class.
+         * So using ByteBuffer.array() is not the same as using ByteBuffer.get(byte[])
+         * */
+        buffer.get(bytes);
+        return bytes;
     }
 
     public void restore(
@@ -385,10 +410,15 @@ class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
         if (bytes == null) {
             return null;
         }
-        final StringBuilder hex = new StringBuilder(2 * bytes.length);
-        for (final byte b : bytes) {
-            hex.append(HEXES.charAt( (b & 0xF0) >> 4)).append(HEXES.charAt( (b & 0x0F)));
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < bytes.length; i++) {
+            String hexString = Integer.toHexString(bytes[i] & 0xFF);
+            if (hexString.length() == 1) {
+                buf.append("0");
+            }
+
+            buf.append(hexString);
         }
-        return hex.toString();
+        return buf.toString();
     }
 }
