@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2019 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,13 +30,13 @@ import com.axway.ats.core.monitoring.MonitoringException;
  */
 public class MonitoringContext {
 
-    private static final Logger      log                               = Logger.getLogger(MonitoringContext.class);
+    private static final Logger log = Logger.getLogger(MonitoringContext.class);
 
     // the singleton instance
     private static MonitoringContext instance;
 
-    private static final String      DEFAULT_PERFORMANCE_CONFIGURATION = "default.performance.configuration.xml";
-    private static final String      CUSTOM_PERFORMANCE_CONFIGURATION  = "custom.performance.configuration.xml";
+    private static final String DEFAULT_PERFORMANCE_CONFIGURATION = "default.performance.configuration.xml";
+    private static final String CUSTOM_PERFORMANCE_CONFIGURATION  = "custom.performance.configuration.xml";
 
     /**
      * Private constructor to prevent instantiation
@@ -59,22 +59,23 @@ public class MonitoringContext {
 
             log.info("Initializing the Monitoring library");
 
-            List<String> configurationFiles = new ArrayList<String>();
+            List<URL> configurationFileUrls = new ArrayList<>();
 
             // 1. Load the configuration files
 
             // find the default configuration
-            String defaultConfigurationFile = null;
+            URL defaultConfigurationFileUrl = null;
             if (this.getClass().getResource(DEFAULT_PERFORMANCE_CONFIGURATION) != null) {
-                defaultConfigurationFile = this.getClass()
-                                               .getResource(DEFAULT_PERFORMANCE_CONFIGURATION)
-                                               .getFile();
+                URL fileURL = this.getClass()
+                                  .getResource(DEFAULT_PERFORMANCE_CONFIGURATION);
+                defaultConfigurationFileUrl = fileURL;
             }
-            if (defaultConfigurationFile != null) {
-                configurationFiles.add(defaultConfigurationFile);
+            if (defaultConfigurationFileUrl != null) {
+                configurationFileUrls.add(defaultConfigurationFileUrl);
             } else {
-                throw new MonitoringException("Unable to initialize the default monitoring service configuration: Unable to find the "
-                                              + DEFAULT_PERFORMANCE_CONFIGURATION + " file.");
+                throw new MonitoringException(
+                        "Unable to initialize the default monitoring service configuration: Unable to find the "
+                        + DEFAULT_PERFORMANCE_CONFIGURATION + " file.");
             }
 
             // find the custom configuration searched in the classpath
@@ -84,7 +85,7 @@ public class MonitoringContext {
             int counter = 0;
             while (customLinuxConfigurationURLs.hasMoreElements()) {
                 counter++;
-                configurationFiles.add(customLinuxConfigurationURLs.nextElement().getPath());
+                configurationFileUrls.add(customLinuxConfigurationURLs.nextElement()); // .getPath()
             }
             if (counter == 0) {
                 log.debug("No custom linux configuration detected. It is searched as a "
@@ -92,7 +93,7 @@ public class MonitoringContext {
             }
 
             // 2. Parse the configuration files
-            ReadingsRepository.getInstance().loadConfigurarions(configurationFiles);
+            ReadingsRepository.getInstance().loadConfigurations(configurationFileUrls);
 
             log.info("Successfully initialized the Monitoring service");
         }

@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2019 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,11 +28,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import com.axway.ats.common.xml.XMLException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
 
 /**
- * 
+ *
  * Utility class with some basic methods working with XML
- *  
+ *
  */
 public final class XmlUtils {
 
@@ -44,22 +46,17 @@ public final class XmlUtils {
      * Loads an XML file from an InputStream.
      * <br>
      * Note: the source stream is closed internally 
-     * 
+     *
      * @param configurationFileStream the source stream
      * @return the loaded XML document
-     * @throws IOException
-     * @throws SAXException
+     * @throws IOException for IO error
+     * @throws SAXException for parsing exception
      */
     public static Document loadXMLFile( InputStream configurationFileStream ) throws IOException,
-                                                                              SAXException {
+                                                                                     SAXException {
 
         try {
-            DOMParser parser = new DOMParser();
-
-            // Required settings from the DomParser
-            parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
-            parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
-            parser.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
+            DOMParser parser = getDomParser();
             parser.parse(new InputSource(configurationFileStream));
 
             return parser.getDocument();
@@ -69,14 +66,33 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     * Loads an XML file from a String.
+     *
+     * @param xmlContentsStr the source file as String
+     * @return the loaded XML document
+     * @throws IOException for IO error
+     * @throws SAXException for parsing exception
+     */
+    public static Document loadXML( String xmlContentsStr ) throws IOException,
+                                                                   SAXException {
+
+        DOMParser parser = getDomParser();
+        parser.parse(xmlContentsStr);
+
+        return parser.getDocument();
+
+    }
+
+
+    /**
+     *
      * @param parent the parent {@link Element}
      * @param name the tag name to search for
      * @return {@link List} with matched {@link Element}s
      */
     public static List<Element> getChildrenByTagName( Element parent, String name ) {
 
-        List<Element> nodeList = new ArrayList<Element>();
+        List<Element> nodeList = new ArrayList<>();
         for (Node child = parent.getFirstChild(); child != null; child = child.getNextSibling()) {
             if (child.getNodeType() == Node.ELEMENT_NODE && name.equals(child.getNodeName())) {
                 nodeList.add((Element) child);
@@ -87,7 +103,7 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     *
      * @param node the node {@link Element}
      * @param attributeName the attribute name
      * @return the attribute value
@@ -106,7 +122,7 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     *
      * @param node the node {@link Element}
      * @param attributeName the attribute name
      * @param defaultValue a default attribute value
@@ -123,7 +139,7 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     *
      * @param node the node {@link Element}
      * @param attributeName the attribute name
      * @param defaultValue a default attribute value
@@ -139,7 +155,7 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     *
      * @param node the node {@link Element}
      * @param attributeName the attribute name
      * @return the attribute value
@@ -155,7 +171,7 @@ public final class XmlUtils {
     }
 
     /**
-     * 
+     *
      * @param node the node {@link Element}
      * @param attributeName the attribute name
      * @param attributeValue the attribute value
@@ -163,5 +179,16 @@ public final class XmlUtils {
     public static void setAttribute( Element node, String attributeName, String attributeValue ) {
 
         node.setAttribute(attributeName, attributeValue);
+    }
+
+    private static DOMParser getDomParser() throws SAXNotRecognizedException, SAXNotSupportedException {
+
+        DOMParser parser = new DOMParser();
+
+        // Required settings from the DomParser
+        parser.setFeature("http://apache.org/xml/features/dom/defer-node-expansion", false);
+        parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error", true);
+        parser.setFeature("http://apache.org/xml/features/allow-java-encodings", true);
+        return parser;
     }
 }
