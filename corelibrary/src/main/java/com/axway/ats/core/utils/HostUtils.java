@@ -96,7 +96,7 @@ public class HostUtils {
 
         String localHostName = "";
         InetAddress inetAddress = null;
-        List<InetAddress> ipList = getIpAddressesList(true);
+        List<InetAddress> ipList = getIpAddressesList(true, false);
         if (ipList.size() > 0) {
             inetAddress = ipList.get(0);
         }
@@ -117,7 +117,28 @@ public class HostUtils {
 
         String localHostIP = "";
         InetAddress inetAddress = null;
-        List<InetAddress> ipList = getIpAddressesList(true);
+        List<InetAddress> ipList = getIpAddressesList(true, false);
+        if (ipList.size() > 0) {
+            inetAddress = ipList.get(0);
+        }
+        if (inetAddress != null) {
+            localHostIP = inetAddress.getHostAddress();
+        }
+        return localHostIP;
+    }
+
+    /**
+     * Get the IP (not the loopback 127.0.0.1) of the local host. Note: it will
+     * return the first valid one, so the result is not clear when have more
+     * than one network card installed.
+     * @param excludeDownOnes - whether to exclude interfaces that are down
+     * @return
+     */
+    public static String getLocalHostIP( boolean excludeDownOnes ) {
+
+        String localHostIP = "";
+        InetAddress inetAddress = null;
+        List<InetAddress> ipList = getIpAddressesList(true, excludeDownOnes);
         if (ipList.size() > 0) {
             inetAddress = ipList.get(0);
         }
@@ -202,7 +223,7 @@ public class HostUtils {
      */
     public static List<InetAddress> getAllIpAddresses() {
 
-        return getIpAddressesList(false);
+        return getIpAddressesList(false, false);
     }
 
     /**
@@ -212,7 +233,7 @@ public class HostUtils {
      *
      * @return
      */
-    private static List<InetAddress> getIpAddressesList( boolean exitOnFirstIPv4 ) {
+    private static List<InetAddress> getIpAddressesList( boolean exitOnFirstIPv4, boolean excludeDownOnes ) {
 
         //list containing all ip addresses
         List<InetAddress> ipList = new ArrayList<InetAddress>();
@@ -221,13 +242,20 @@ public class HostUtils {
             // cycle all net interfaces
             Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
             if (log.isTraceEnabled()) {
-                log.trace( "Start iterating all network interfaces!" );
+                log.trace("Start iterating all network interfaces!");
             }
             while (netInterfaces.hasMoreElements()) {
                 NetworkInterface netInterface = (NetworkInterface) netInterfaces.nextElement();
+                if (!netInterface.isUp()) {
+                    log.trace("Network interface '" + netInterface.toString() + "' is down. Skipping it");
+                    if (excludeDownOnes) {
+                        continue;
+                    }
+
+                }
                 if (!netInterface.isLoopback()) {
                     if (log.isTraceEnabled()) {
-                        log.trace( "    Start iterating interface '" + netInterface.getName() + "'" );
+                        log.trace("    Start iterating interface '" + netInterface.getName() + "'");
                     }
                     // for each net interface cycle all IP addresses
                     Enumeration<InetAddress> ipAddresses = netInterface.getInetAddresses();
@@ -262,7 +290,7 @@ public class HostUtils {
                 }
             }
             if (log.isTraceEnabled()) {
-                log.trace( "Finish iterating all network interfaces!" );
+                log.trace("Finish iterating all network interfaces!");
             }
         } catch (SocketException se) {
             log.error("Error obtaining the local host address", se);
@@ -316,7 +344,7 @@ public class HostUtils {
                                                             + tmpPublicAddress);
                         } else {
                             if (tmpPublicAddress.isLoopbackAddress()) {
-                                List<InetAddress> ipList = getIpAddressesList(true);
+                                List<InetAddress> ipList = getIpAddressesList(true, false);
                                 if (ipList.size() > 0) {
                                     tmpPublicAddress = ipList.get(0);
                                     log.warn("We are unable to reliably retrieve the public IP of the local host which is used to connect to agent at "
@@ -350,7 +378,7 @@ public class HostUtils {
 
             // 2. our last chance is to ask the JVM
             if (localHostPublicAddress == null) {
-                List<InetAddress> ipList = getIpAddressesList(true);
+                List<InetAddress> ipList = getIpAddressesList(true, false);
                 if (ipList.size() > 0) {
                     localHostPublicAddress = ipList.get(0);
                 }
