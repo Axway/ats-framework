@@ -178,6 +178,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                         int runId,
                         boolean closeConnection ) throws DatabaseAccessException {
 
+        if (isBatchMode) {
+            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+        }
+
         final String errMsg = "Unable to end run with id " + runId;
 
         final int indexRowsInserted = 3;
@@ -378,6 +382,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                           long timestamp,
                           int suiteId,
                           boolean closeConnection ) throws DatabaseAccessException {
+
+        if (isBatchMode) {
+            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+        }
 
         final String errMsg = "Unable to end suite with id " + suiteId;
 
@@ -600,6 +608,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                              int testcaseId,
                              boolean closeConnection ) throws DatabaseAccessException {
 
+        if (isBatchMode) {
+            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+        }
+
         final String errMsg = "Unable to end testcase with id " + testcaseId;
 
         timestamp = inUTC(timestamp);
@@ -821,6 +833,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                               long timestamp,
                               int loadQueueId,
                               boolean closeConnection ) throws DatabaseAccessException {
+
+        if (isBatchMode) {
+            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+        }
 
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
 
