@@ -152,7 +152,7 @@ public class RestHelper {
         // id
         String userWorkingDirectory = AtsSystemProperties.SYSTEM_USER_HOME_DIR;
         String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
-                                 + "\\ats_uid.txt";
+                                 + "ats_uid.txt";
         File uuiFile = new File(uuiFileLocation);
 
         // check if the file exist and if exist check if the data we need is in,
