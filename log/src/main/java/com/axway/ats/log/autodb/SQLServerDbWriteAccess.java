@@ -179,7 +179,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                         boolean closeConnection ) throws DatabaseAccessException {
 
         if (isBatchMode) {
-            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+            dbEventsCache.flushCache();
         }
 
         final String errMsg = "Unable to end run with id " + runId;
@@ -382,10 +382,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                           long timestamp,
                           int suiteId,
                           boolean closeConnection ) throws DatabaseAccessException {
-
-        if (isBatchMode) {
-            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
-        }
 
         final String errMsg = "Unable to end suite with id " + suiteId;
 
@@ -607,10 +603,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                              long timestamp,
                              int testcaseId,
                              boolean closeConnection ) throws DatabaseAccessException {
-
-        if (isBatchMode) {
-            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
-        }
 
         final String errMsg = "Unable to end testcase with id " + testcaseId;
 
