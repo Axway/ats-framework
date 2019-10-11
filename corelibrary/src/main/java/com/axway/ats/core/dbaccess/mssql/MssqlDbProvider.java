@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -156,11 +156,17 @@ public class MssqlDbProvider extends AbstractDbProvider {
     private boolean checkIsMssqlDriverInUse() {
 
         String dbDriver = (String) (this.dbConnection).getCustomProperties().get(DbKeys.DRIVER);
-        if ("MSSQL".equalsIgnoreCase(System.getProperty(DbConnSQLServer.JDBC_DRIVER_VENDOR_KEY))
-            || "MSSQL".equalsIgnoreCase(dbDriver)) {
-            return true;
+        // TODO: check for empty value. Currently assumed jTDS 
+        if (dbDriver != null && "MSSQL".equalsIgnoreCase(dbDriver)) {
+            // set directly in DB custom properties
+            return true; 
         } else {
-            return false;
+            String sysProperty = System.getProperty(DbConnSQLServer.JDBC_DRIVER_VENDOR_KEY);
+            if ("MSSQL".equalsIgnoreCase(sysProperty)) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 
