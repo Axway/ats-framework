@@ -49,62 +49,62 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnSQLServer extends DbConnection {
 
-    private static final AtsConsoleLogger      log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
+    private static final AtsConsoleLogger log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
 
-    public static final String                 JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
+    public static final String            JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
     /**
      * The key for configuring JDBC MsSQL URL prefix string
      */
-    private static final String                JDBC_PREFIX_KEY                       = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix";
+    private static final String           JDBC_PREFIX_KEY                       = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix";
     /**
      * The key to configure MsSQL JDBC driver class
      */
-    private static final String                JDBC_DRIVER_CLASS_KEY                 = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class";
+    private static final String           JDBC_DRIVER_CLASS_KEY                 = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class";
     /**
      * The key to configure MsSQL JDBC date source class
      */
-    private static final String                JDBC_DATASOURCE_CLASS_KEY             = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class";
+    private static final String           JDBC_DATASOURCE_CLASS_KEY             = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class";
 
     // jTDS driver settings which are used by default
-    private static final String                DEFAULT_JDBC_DRIVER_PREFIX            = "jdbc:jtds:sqlserver://";
-    private static final String                DEFAULT_JDBC_DRIVER_CLASS_NAME        = "net.sourceforge.jtds.jdbc.Driver";                                  // JNetDirect com.jnetdirect.jsql.JSQLDriver
-    private static final String                DEFAULT_JDBC_DATASOURCE_CLASS_NAME    = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+    private static final String           DEFAULT_JDBC_DRIVER_PREFIX            = "jdbc:jtds:sqlserver://";
+    private static final String           DEFAULT_JDBC_DRIVER_CLASS_NAME        = "net.sourceforge.jtds.jdbc.Driver";                                  // JNetDirect com.jnetdirect.jsql.JSQLDriver
+    private static final String           DEFAULT_JDBC_DATASOURCE_CLASS_NAME    = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
     // JNetDirect driver settings which are used by default
-    private static final String                JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
-    private static final String                JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
-    private static final String                JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
+    private static final String           JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
+    private static final String           JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
+    private static final String           JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
     // MSSQL driver settings which are used by default
-    private static final String                MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:sqlserver://";
-    private static final String                MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String                MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
+    private static final String           MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:sqlserver://";
+    private static final String           MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String           MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
 
     /**
      * Default DB port
      */
-    public static final int                    DEFAULT_PORT                          = 1433;
+    public static final int               DEFAULT_PORT                          = 1433;
 
     /**
      * The connection URL
      */
-    private StringBuilder                      url                                   = new StringBuilder();
+    private StringBuilder                 url                                   = new StringBuilder();
 
-    private BasicDataSource                    ds;
+    private BasicDataSource               ds;
 
-    private Boolean                            useSSL;
+    private Boolean                       useSSL;
 
     /**
      * The JDBC driver prefix to construct URL.
      * For example: "jdbc:JSQLConnect://" for JNetDirect or
      * "jdbc:jtds:sqlserver://" for jTDS
      */
-    private static String                      jdbcDriverPrefix                      = null;
+    private String                        jdbcDriverPrefix                      = null;
 
     /**
      * The JDBC driver class as String
      * For example: "com.jnetdirect.jsql.JSQLDriver" for JNetDirect or
      *   "net.sourceforge.jtds.jdbc.Driver" for jTDS
      */
-    private static Class<? extends Driver>     jdbcDriverClass                       = null;
+    private Class<? extends Driver>       jdbcDriverClass                       = null;
 
     /**
      * The JDBC class for DataSource
@@ -114,9 +114,9 @@ public class DbConnSQLServer extends DbConnection {
      *  <li>"com.jnetdirect.jsql.JSQLPoolingDataSource" for JNetDirect</li>
      * </ul>
      */
-    private static Class<? extends DataSource> jdbcDataSourceClass                   = null;
+    private Class<? extends DataSource>   jdbcDataSourceClass                   = null;
 
-    public static final String                 DATABASE_TYPE                         = "MSSQL";
+    public static final String            DATABASE_TYPE                         = "MSSQL";
 
     /**
      * Constructor

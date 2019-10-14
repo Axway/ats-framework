@@ -72,6 +72,7 @@
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
         <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
+        <com.microsoft.sqlserver.version>7.0.0.jre8</com.microsoft.sqlserver.version>
         <!-- PostgreSQL driver dependency version -->
         <org.postgresql.postgresql.version>42.1.3.jre7</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>

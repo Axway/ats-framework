@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ public class ConnectionPool {
     private static Logger                      log;
 
     /**
-     * we keep a static list of connections in order to reuse them when we have multyple calls for creating the same
+     * we keep a static list of connections in order to reuse them when we have multiple calls for creating the same
      * connection
      */
     private static HashMap<String, DataSource> dataSourceMap = new HashMap<String, DataSource>();

@@ -119,6 +119,12 @@
             <version>${net.sourceforge.jtds.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+            <version>${com.microsoft.sqlserver.version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ojdbc7</artifactId>
             <optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com
