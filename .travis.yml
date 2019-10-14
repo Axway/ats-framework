@@ -2,15 +2,15 @@ language: java
 jdk:
     openjdk8
 before_install:
-    #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
-    #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
-    #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=pom -DpomFile=ojdbc7-12.1.0.1.pom
-    #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.1.pom
-     - rm ~/.m2/settings.xml
-     - cp settings.xml ~/.m2
+  #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
+  #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
+  #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=pom -DpomFile=ojdbc7-12.1.0.1.pom
+  #- mvn install:install-file -Dfile=ojdbc7-12.1.0.1.jar -DgroupId=com.oracle.jdbc -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar -DpomFile=ojdbc7-12.1.0.1.pom
+  - rm ~/.m2/settings.xml
+  - cp settings.xml ~/.m2
 script:
-       # for fast Travis builds w/o tests: mvn clean install deploy -DskipTests=true or -P fast
-       - mvn clean deploy -P fast
+  # for fast Travis builds w/o tests: mvn clean install deploy -DskipTests=true or -P fast
+  - mvn clean deploy
 cache:
   directories:
     - $HOME/.m2
