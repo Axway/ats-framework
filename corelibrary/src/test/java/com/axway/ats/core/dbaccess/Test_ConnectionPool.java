@@ -19,6 +19,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -27,6 +28,15 @@ import com.axway.ats.core.BaseTest;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 
 public class Test_ConnectionPool extends BaseTest {
+
+    @After
+    public void after() {
+
+        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix", "");
+        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class", "");
+        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class", "");
+
+    }
 
     @Test
     public void checkDbConnSQLServerWithDifferentDrivers() throws NoSuchFieldException, SecurityException,
