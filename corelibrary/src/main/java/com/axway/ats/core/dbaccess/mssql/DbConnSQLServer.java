@@ -30,6 +30,7 @@ import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 /**
  * <p>Connection descriptor for MSSQL databases.</p>
@@ -195,6 +196,10 @@ public class DbConnSQLServer extends DbConnection {
                                       + System.getProperty(JDBC_DRIVER_CLASS_KEY) + "\".");
             }
         }
+        /*if (MSSQL_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
+            // force usage of TLSv1.2
+            url.append(";sslProtocol=TLSv1.2");
+        }*/
     }
 
     @Override
@@ -309,6 +314,25 @@ public class DbConnSQLServer extends DbConnection {
                                       + "' for use", e);
             }
             return ds;
+        } else if (jdbcDataSourceClass.getName().equals(MSSQL_JDBC_DATASOURCE_CLASS_NAME)) {
+            SQLServerDataSource ds = null;
+            try {
+                ds = new SQLServerDataSource();
+                ds.setServerName(this.host);
+                ds.setPortNumber(this.port);
+                ds.setDatabaseName(this.db);
+                ds.setUser(this.user);
+                ds.setPassword(this.password);
+                ds.setEncrypt(false); // do not encrypt the traffic/connection
+                ds.setSSLProtocol("TLSv1.2"); // force usage of TLSv1.2, even if the connection will not be encrypted
+                ds.setTrustServerCertificate(true); // trust the server certificate
+                ds.setIntegratedSecurity(false);
+                ds.setURL(this.getURL()); // if the previous properties (encrypt, ssl protocol, etc) are specified in the URL, the URL values will be used
+            } catch (Exception e) {
+                throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
+                                      + "' for use", e);
+            }
+            return ds;
         } else {
             DataSource ds = null;
             try {
@@ -321,6 +345,14 @@ public class DbConnSQLServer extends DbConnection {
                 Method setDatabase = null;
                 setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 setDatabase.invoke(ds, this.db);
+                try {
+                    Method setUrl = jdbcDataSourceClass.getMethod("setUrl", String.class);
+                    setUrl.invoke(ds, this.url.toString());
+                } catch (NoSuchMethodException nsme) {
+                    // The method name could differ in the different drivers
+                    Method setURL = jdbcDataSourceClass.getMethod("setURL", String.class);
+                    setURL.invoke(ds, this.url.toString());
+                }
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
                                       + "' for use", e);
