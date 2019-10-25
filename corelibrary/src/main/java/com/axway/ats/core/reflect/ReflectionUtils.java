@@ -16,9 +16,12 @@
 package com.axway.ats.core.reflect;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
-import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.core.validation.Validate;
+import com.axway.ats.core.validation.ValidationType;
+import com.axway.ats.core.validation.Validator;
 
 public class ReflectionUtils {
 
@@ -32,49 +35,74 @@ public class ReflectionUtils {
      * @throws SecurityException 
      * @throws NoSuchFieldException 
      * */
-    public static void setFieldValue( Object instance, String fieldName, Object fieldValue,
-                                      boolean deepSearch ) throws IllegalArgumentException, IllegalAccessException,
-                                                           NoSuchFieldException, SecurityException {
+    public static void
+            setFieldValue( @Validate( name = "instance", type = ValidationType.NOT_NULL) Object instance,
+                           @Validate( name = "fieldName", type = ValidationType.STRING_NOT_EMPTY) String fieldName,
+                           @Validate( name = "fieldValue", type = ValidationType.NOT_NULL) Object fieldValue,
+                           @Validate(
+                                   name = "deepSearch",
+                                   type = ValidationType.NOT_NULL) boolean deepSearch ) throws IllegalArgumentException,
+                                                                                        IllegalAccessException,
+                                                                                        NoSuchFieldException,
+                                                                                        SecurityException {
 
-        Field f = getField(instance, fieldName, deepSearch);
-        f.set(instance, fieldValue);
+        new Validator().validateMethodParameters(new Object[]{ instance, fieldName, fieldValue, deepSearch });
+        Field f = null;
+        boolean isAccessible = false;
+        try {
+            f = getField(instance, fieldName, deepSearch);
+            isAccessible = f.isAccessible();
+            if (!isAccessible) {
+                f.setAccessible(true);
+            }
+            f.set(instance, fieldValue);
+        } finally {
+            if (f != null) {
+                if (f.isAccessible() != isAccessible) {
+                    f.setAccessible(isAccessible);
+                }
+            }
+
+        }
+
     }
 
     /**
-     * Get field value from instance via. First get<field> will be tried and then Class.getDeclaredFiled(<field>)
+     * Get field value
      * @param instance - the object over which the search for this field will be invoked
      * @param field - the field name (case-sensitive)
      * @param deepSearch - whether to try and search for the field in the class and any of its super classes
      * */
-    public static Object getFieldValue( Object instance, String fieldName, boolean deepSearch ) {
+    public static Object
+            getFieldValue( @Validate( name = "instance", type = ValidationType.NOT_NULL) Object instance,
+                           @Validate( name = "fieldName", type = ValidationType.STRING_NOT_EMPTY) String fieldName,
+                           @Validate( name = "deepSearch", type = ValidationType.NOT_NULL) boolean deepSearch ) {
 
+        new Validator().validateMethodParameters(new Object[]{ instance, fieldName, deepSearch });
+        Field f = null;
         Object fieldValue = null;
-        Exception getterException = null;
-        Exception nonGetterException = null;
+        boolean isAccessible = false;
         try {
-            fieldValue = obtainFieldValueViaGetter(instance, fieldName, deepSearch);
+            f = getField(instance, fieldName, deepSearch);
+            isAccessible = f.isAccessible();
+            if (!isAccessible) {
+                f.setAccessible(true);
+            }
+            fieldValue = f.get(instance);
             return fieldValue;
         } catch (Exception e) {
-            getterException = e;
+            throw new RuntimeException("Could not obtain field '" + fieldName + "' from class '"
+                                       + instance.getClass().getName() + "' " + ( (deepSearch)
+                                                                                               ? " or any of its super classes "
+                                                                                               : ""),
+                                       e);
+        } finally {
+            if (f != null) {
+                if (f.isAccessible() != isAccessible) {
+                    f.setAccessible(isAccessible);
+                }
+            }
         }
-
-        try {
-            fieldValue = obtainFieldValueViaNonGetter(instance, fieldName, deepSearch);
-            return fieldValue;
-        } catch (Exception e) {
-            nonGetterException = e;
-        }
-
-        throw new RuntimeException("Could not obtain field '" + fieldName + "' from class '"
-                                   + instance.getClass().getName() + "' " + ( (deepSearch)
-                                                                                           ? " and any of its super classes "
-                                                                                           : "")
-                                   + " via neither "
-                                   + ("get" + String.valueOf(fieldName.charAt(0)).toUpperCase()
-                                      + fieldName.substring(1))
-                                   + " nor via Class.getDeclaredField(). Exceptions are as follows:\n\tVia Getter: "
-                                   + ExceptionUtils.getExceptionMsg(getterException) + "\n\tVia getDeclaredField: "
-                                   + ExceptionUtils.getExceptionMsg(nonGetterException));
 
     }
 
@@ -84,14 +112,16 @@ public class ReflectionUtils {
      * @param field - the field name (case-sensitive)
      * @param deepSearch - whether to try and search for the field in the class and any of its super classes
      * */
-    public static Field getField( Object instance, String fieldName, boolean deepSearch ) {
+    public static Field
+            getField( @Validate( name = "instance", type = ValidationType.NOT_NULL) Object instance,
+                      @Validate( name = "fieldName", type = ValidationType.STRING_NOT_EMPTY) String fieldName,
+                      @Validate( name = "deepSearch", type = ValidationType.NOT_NULL) boolean deepSearch ) {
 
+        new Validator().validateMethodParameters(new Object[]{ instance, fieldName, deepSearch });
         Class<?> currentClass = instance.getClass();
         do {
             try {
-                // try to find it by declared field
                 Field f = currentClass.getDeclaredField(fieldName);
-                f.setAccessible(true);
                 return f;
             } catch (Exception e) {
                 if (!deepSearch) {
@@ -109,37 +139,64 @@ public class ReflectionUtils {
     }
 
     /**
-     * Get method from class and make it accessible, so {@link Method#invoke(Object, Object...)} can be executed later over this object
+     * Invoke method
+     * @param method - the Method instance
+     * @param instance - the instance over which this method will be invoked
+     * @param arguments - the method arguments. If the method has not arguments, pass new Object[]{}
+     * @return the method result as Object
+     * */
+    public static Object
+            invokeMethod( @Validate( name = "method", type = ValidationType.NOT_NULL) Method method,
+                          @Validate( name = "instance", type = ValidationType.NOT_NULL) Object instance,
+                          @Validate(
+                                  name = "arguments",
+                                  type = ValidationType.NOT_NULL) Object[] arguments ) throws IllegalAccessException,
+                                                                                       IllegalArgumentException,
+                                                                                       InvocationTargetException {
+
+        new Validator().validateMethodParameters(new Object[]{ method, instance, arguments });
+        boolean isAccessible = method.isAccessible();
+        try {
+            if (!isAccessible) {
+                method.setAccessible(true);
+            }
+            return method.invoke(instance, arguments);
+        } finally {
+            if (method.isAccessible() != isAccessible) {
+                method.setAccessible(true);
+            }
+        }
+    }
+
+    /**
+     * Get method from class and make it accessible, so {@link Method#invoke(Object, Object...)} can be executed later over this object</br>
+     * Note that the method may not be accessible, so before invoking it, you may have to call Method.setAccessible(true) and then after you are done using the method, revert that accessible flag to the original one
      * @param clazz - the Class (Someclass.class or someObject.getClass())
      * @param methodName - the methodName
      * @param paramTypes - the method parameter class types or an empty Class array (new Class[]{}) if the method does not have any parameters
+     * @param deepSearch - whether to try and search for the field in the class and any of its super classes
      * @return the {@link Method} object
      * @throws SecurityException 
      * @throws NoSuchMethodException 
      * */
-    public static Method getMethod( Class<?> clazz, String methodName,
-                                    Class<?>[] paramTypes ) throws NoSuchMethodException, SecurityException {
+    public static Method
+            getMethod( @Validate( name = "clazz", type = ValidationType.NOT_NULL) Class<?> clazz,
+                       @Validate( name = "paramTypes", type = ValidationType.STRING_NOT_EMPTY) String methodName,
+                       @Validate( name = "paramTypes", type = ValidationType.NOT_NULL) Class<?>[] paramTypes,
+                       @Validate(
+                               name = "deepSearch",
+                               type = ValidationType.NOT_NULL) boolean deepSearch ) throws NoSuchMethodException,
+                                                                                    SecurityException {
 
-        if (paramTypes == null) {
-            paramTypes = new Class<?>[]{};
-        }
-        Method m = clazz.getDeclaredMethod(methodName, paramTypes);
-        m.setAccessible(true);
-        return m;
-    }
-
-    private static Object obtainFieldValueViaNonGetter( Object object, String fieldName, boolean deepSearch ) {
-
-        Class<?> currentClass = object.getClass();
+        new Validator().validateMethodParameters(new Object[]{ clazz, methodName, paramTypes, deepSearch });
+        Class<?> currentClass = clazz;
         do {
             try {
-                // try to find it by declared field
-                Field f = currentClass.getDeclaredField(fieldName);
-                f.setAccessible(true);
-                return f.get(object);
+                Method m = currentClass.getDeclaredMethod(methodName, paramTypes);
+                return m;
             } catch (Exception e) {
                 if (!deepSearch) {
-                    throw new RuntimeException("Error getting field '" + fieldName + "' from class '"
+                    throw new RuntimeException("Error getting method '" + methodName + "' from class '"
                                                + currentClass.getName() + "'", e);
                 }
 
@@ -147,40 +204,8 @@ public class ReflectionUtils {
 
         } while ( (currentClass = currentClass.getSuperclass()) != null && deepSearch);
 
-        throw new RuntimeException("Could not obtain field '" + fieldName + "' from neither class '"
+        throw new RuntimeException("Could not get method '" + methodName + "' from neither class '"
                                    + currentClass.getName() + "' nor any of its super classes");
-
-    }
-
-    private static Object obtainFieldValueViaGetter( Object object, String fieldName, boolean deepSearch ) {
-
-        Class<?> currentClass = object.getClass();
-        String getFieldMethodName = "get" + String.valueOf(fieldName.charAt(0)).toUpperCase() + fieldName.substring(1);
-        do {
-            // try to find it by get method
-
-            Method m = null;
-            try {
-                m = getMethod(currentClass, getFieldMethodName, null);
-                Object fieldValue = m.invoke(object, (Object[]) null);
-                return fieldValue;
-            } catch (Exception e) {
-                if (!deepSearch) {
-                    throw new RuntimeException("Error getting field '" + fieldName + "' via method '"
-                                               + getFieldMethodName
-                                               + "' from class '"
-                                               + currentClass.getName() + "'", e);
-                }
-
-            }
-
-            // try to find it by declared field
-        } while ( (currentClass = currentClass.getSuperclass()) != null && deepSearch);
-
-        throw new RuntimeException("Could not obtain field '" + fieldName + "' from neither class '"
-                                   + currentClass.getName() + "' nor any of its super classes via " + getFieldMethodName
-                                   + "()");
-
     }
 
 }

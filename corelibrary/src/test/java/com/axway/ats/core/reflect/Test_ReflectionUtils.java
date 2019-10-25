@@ -16,6 +16,7 @@
 package com.axway.ats.core.reflect;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -27,14 +28,15 @@ public class Test_ReflectionUtils {
                        NoSuchMethodException, SecurityException, NoSuchFieldException {
 
         TestClassReflectionUtils srcInstance = new TestClassReflectionUtils(0, false, (byte) 0, (char) 0);
-        TestClassReflectionUtils dstInstance = (TestClassReflectionUtils) ReflectionUtils.getMethod(TestClassReflectionUtils.class,
-                                                                                                    "copy", null)
-                                                                                         .invoke(srcInstance,
-                                                                                                 new Object[]{});
+        Method m_copy = ReflectionUtils.getMethod(TestClassReflectionUtils.class,
+                                                  "copy", new Class[]{}, true);
+        TestClassReflectionUtils dstInstance = (TestClassReflectionUtils) ReflectionUtils.invokeMethod(m_copy,
+                                                                                                       srcInstance,
+                                                                                                       new Object[]{});
 
-        Assert.assertTrue((boolean) ReflectionUtils.getMethod(TestClassReflectionUtils.class, "isEqual",
-                                                              new Class[]{ TestClassReflectionUtils.class })
-                                                   .invoke(srcInstance, new Object[]{ dstInstance }));
+        Method m_isEqual = ReflectionUtils.getMethod(TestClassReflectionUtils.class, "isEqual",
+                                                     new Class[]{ TestClassReflectionUtils.class }, true);
+        Assert.assertTrue((boolean) ReflectionUtils.invokeMethod(m_isEqual, srcInstance, new Object[]{ dstInstance }));
 
         Assert.assertEquals("You cannot change me!",
                             ReflectionUtils.getFieldValue(srcInstance, "FINAL_STATIC_FIELD", false));
@@ -52,9 +54,10 @@ public class Test_ReflectionUtils {
                             ReflectionUtils.getFieldValue(srcInstance, "staticField", false));
 
         ReflectionUtils.setFieldValue(dstInstance, "booleanField", true, true);
-        Assert.assertFalse((boolean) ReflectionUtils.getMethod(TestClassReflectionUtils.class, "isEqual",
-                                                               new Class[]{ TestClassReflectionUtils.class })
-                                                    .invoke(srcInstance, new Object[]{ dstInstance }));
+
+        m_isEqual = ReflectionUtils.getMethod(TestClassReflectionUtils.class, "isEqual",
+                                              new Class[]{ TestClassReflectionUtils.class }, false);
+        Assert.assertFalse((boolean) ReflectionUtils.invokeMethod(m_isEqual, srcInstance, new Object[]{ dstInstance }));
 
     }
 
