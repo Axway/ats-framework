@@ -80,7 +80,7 @@ public class AtsDbLogger {
     /**
      * Flag that is used to log WARN for not attached ATS DB logger only once
      */
-    private static boolean      isWarningMessageLogged = false;
+    private static boolean      isWarningMessageLogged   = false;
 
     protected Logger            logger;
 
@@ -151,14 +151,9 @@ public class AtsDbLogger {
     public void debug(
                        Object message,
                        Throwable t ) {
-
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.DEBUG,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        
+        
+        logger.debug(message, t);
     }
 
     /**
@@ -168,14 +163,8 @@ public class AtsDbLogger {
      */
     public void debug(
                        Object message ) {
-
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.DEBUG,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        
+        logger.debug(message);
     }
 
     /**
@@ -188,13 +177,7 @@ public class AtsDbLogger {
                        Object message,
                        Throwable t ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.ERROR,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        logger.error(message, t);
     }
 
     /**
@@ -205,13 +188,7 @@ public class AtsDbLogger {
     public void error(
                        Object message ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.ERROR,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        logger.error(message);
     }
 
     /**
@@ -224,13 +201,7 @@ public class AtsDbLogger {
                        Object message,
                        Throwable t ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.FATAL,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        logger.fatal(message, t);
     }
 
     /**
@@ -241,13 +212,7 @@ public class AtsDbLogger {
     public void fatal(
                        Object message ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.FATAL,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        logger.fatal(message);
     }
 
     /**
@@ -260,26 +225,25 @@ public class AtsDbLogger {
                       Object message,
                       Throwable t ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.INFO,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        logger.info(message, t);
     }
 
     public void info(
                       Object message,
                       boolean sendRunMessage ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.INFO,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         sendRunMessage));
+        if (sendRunMessage) {
+            sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
+                                             logger,
+                                             SystemLogLevel.INFO,
+                                             getNonNullToString(message),
+                                             null,
+                                             false,
+                                             sendRunMessage));
+        } else {
+            logger.info(message);
+        }
+
     }
 
     /**
@@ -290,13 +254,7 @@ public class AtsDbLogger {
     public void info(
                       Object message ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.INFO,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        logger.info(message);
     }
 
     /**
@@ -309,13 +267,7 @@ public class AtsDbLogger {
                        Object message,
                        Throwable t ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.TRACE,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        logger.trace(message, t);
     }
 
     /**
@@ -326,13 +278,7 @@ public class AtsDbLogger {
     public void trace(
                        Object message ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.TRACE,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        logger.trace(message);
     }
 
     /**
@@ -345,13 +291,7 @@ public class AtsDbLogger {
                       Object message,
                       Throwable t ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.WARN,
-                                         getNonNullToString(message),
-                                         t,
-                                         false,
-                                         false));
+        logger.warn(message, t);
     }
 
     /**
@@ -362,13 +302,7 @@ public class AtsDbLogger {
     public void warn(
                       Object message ) {
 
-        sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
-                                         logger,
-                                         SystemLogLevel.WARN,
-                                         getNonNullToString(message),
-                                         null,
-                                         false,
-                                         false));
+        logger.warn(message);
     }
 
     /**
@@ -987,7 +921,7 @@ public class AtsDbLogger {
         int testcaseId = ActiveDbAppender.getCurrentInstance().getTestCaseId();
         return getTestcaseMetainfo(testcaseId);
     }
-    
+
     /**
      * Retrieve {@link TestcaseMetainfo} for a particular testcase. Works on the Test Executor only.
      * @param testcaseId - the testcase ID. For current testcase ID, you may use 
@@ -998,7 +932,7 @@ public class AtsDbLogger {
      * @throws DatabaseAccessException in case of a DB error
      */
     @PublicAtsApi
-    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId) throws DatabaseAccessException {
+    public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId ) throws DatabaseAccessException {
 
         IDbReadAccess dbReadAccess = ActiveDbAppender.getCurrentInstance().obtainDbReadAccessObject();
         List<TestcaseMetainfo> metainfo = dbReadAccess.getTestcaseMetainfo(testcaseId);
@@ -1012,12 +946,12 @@ public class AtsDbLogger {
      */
     private void sendEvent(
                             LoggingEvent event ) {
-
+    
         // check if this level is allowed for the repository at all
         if (LogManager.getLoggerRepository().isDisabled(event.getLevel().toInt())) {
             return;
         }
-
+    
         // check if the event level is allowed for this logger
         if (event.getLevel().isGreaterOrEqual(logger.getEffectiveLevel())) {
             logger.callAppenders(event);
