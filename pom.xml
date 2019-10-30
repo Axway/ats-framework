@@ -66,7 +66,7 @@
         <apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
 
         <!-- Needed for jTDS -->
-        <apache.commons-dbcp.version>2.11</apache.commons-dbcp.version>
+        <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
         <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
         <commons-io.version>2.4</commons-io.version>
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
@@ -443,14 +443,16 @@
 
     <developers>
         <developer>
+            <id>dslaveykov</id>
             <name>Dragoslav Slaveykov</name>
-            <email>dslaveykov@axway.com</email>
+            <email>dslaveykov_at_axway.com</email>
             <organization>Axway</organization>
             <organizationUrl>http://www.axway.com</organizationUrl>
         </developer>
         <developer>
+            <id>svilen-d</id>
             <name>Svilen Dikov</name>
-            <email>sdikov@axway.com</email>
+            <email>sdikov_at_axway.com</email>
             <organization>Axway</organization>
             <organizationUrl>http://www.axway.com</organizationUrl>
         </developer>

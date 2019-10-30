@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -80,7 +80,6 @@ public class ContainerStarter {
 
     /**
      * Method for starting the Jetty server with the ATS Agent webapp.
-     * @param port the port on which to start the server.
      * @return the started server.
      * @throws IOException
      */
@@ -187,7 +186,7 @@ public class ContainerStarter {
     }
 
     /**
-     * @param jettyHome 
+     * @param jettyHome
      * @return the folder where our web application will be deployed
      */
     private static String getJettyWorkDir( String jettyHome ) {
@@ -196,7 +195,7 @@ public class ContainerStarter {
         final String jettyWorkDir = jettyHome + "/work";
 
         /* Make the folder if does not exist.
-         * If cannot make this folder for some reason, no error will be reported. 
+         * If cannot make this folder for some reason, no error will be reported.
          * Then Jetty will see this folder does not exist and will use the folder
          * pointed by the java.io.tmpdir system property
          */
@@ -444,12 +443,12 @@ public class ContainerStarter {
         try {
             appendMessage(systemInformation, "ATS version: '",
                           AtsVersionExtractor.getATSVersion(jettyHome + "/webapp/agentapp.war"));
-        } catch (Exception e) {}
-        appendMessage(systemInformation, " os.name: '", (String) System.getProperty("os.name"));
-        appendMessage(systemInformation, " os.arch: '", (String) System.getProperty("os.arch"));
-        appendMessage(systemInformation, " java.version: '",
-                      (String) System.getProperty("java.version"));
-        appendMessage(systemInformation, " java.home: '", (String) System.getProperty("java.home"));
+        } catch (Exception e) {
+        }
+        appendMessage(systemInformation, " os.name: '", System.getProperty("os.name"));
+        appendMessage(systemInformation, " os.arch: '", System.getProperty("os.arch"));
+        appendMessage(systemInformation, " java.version: '", System.getProperty("java.version"));
+        appendMessage(systemInformation, " java.home: '", System.getProperty("java.home"));
 
         List<String> ipList = new ArrayList<String>();
         for (InetAddress ip : getAllIPAddresses()) {
