@@ -31,7 +31,7 @@
 
         <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces
           Java 8 class level artifacts -->
-        <java.classlevel.version>1.7</java.classlevel.version> <!-- Output classpath compliance level -->
+        <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
 
@@ -175,9 +175,8 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <message>At least Java 8 is required for ATS framework compilation. Most of the
-                                        target modules (excluding UI Engine) should also run with Java 7 after
-                                        compilation. The limitations come from third-party dependencies.
+                                    <message>At least Java 8 is required for ATS framework compilation. The limitations
+                                        come from third-party dependencies.
                                     </message>
                                     <version>${java.version}</version>
                                 </requireJavaVersion>

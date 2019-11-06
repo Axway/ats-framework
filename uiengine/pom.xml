@@ -32,7 +32,8 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>8</source> <!-- On Maven import, at least Java 8 required by Selenium code -->
+                    <source>${java.classlevel.version}
+                    </source> <!-- On Maven import, at least Java 8 required by Selenium code -->
                     <target>${java.classlevel.version}</target>
                 </configuration>
             </plugin>
