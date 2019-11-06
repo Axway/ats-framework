@@ -66,14 +66,14 @@ public class MobileDriver extends UiDriver {
     private static final int         MAX_ADB_RELATED_RETRIES = 2;
     private static final int         DEFAULT_APPIUM_PORT     = 4723;
 
-    private AppiumDriver<WebElement> driver;
-    private String                   deviceName              = null;
-    private String                   platformVersion         = null;
-    private String                   udid                    = null;
-    private String                   host                    = null;
-    private int                      port                    = -1;
-    private MobileEngine             mobileEngine;
-    private boolean                  isWorkingRemotely       = false;
+    private AppiumDriver<? extends WebElement> driver;
+    private String                             deviceName        = null;
+    private String                             platformVersion   = null;
+    private String                             udid              = null;
+    private String                             host              = null;
+    private int                                port              = -1;
+    private MobileEngine                       mobileEngine;
+    private boolean                            isWorkingRemotely = false;
 
     private boolean                  isAndroidAgent          = false;
     private String                   androidHome             = null;
@@ -163,7 +163,7 @@ public class MobileDriver extends UiDriver {
 
     /**
      * Start session to device and load the application <br/>
-     * @param appPath the absolute path to the application:
+     * @param appPath filesystem path to the application - absolute or relative to the Appium server current dir
      * <pre>
      *       <b>iOS</b>: absolute path to simulator-compiled .app file or the bundle_id of the desired target on device
      *       <b>Android</b>: absolute path to .apk file
@@ -307,8 +307,9 @@ public class MobileDriver extends UiDriver {
             }
         } else {
 
-            //TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
-            throw new NotSupportedOperationException("Currently clear application cache operation for iOS is not implemented");
+            // TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
+            throw new NotSupportedOperationException(
+                    "Currently clear application cache operation for iOS is not implemented. Hint: check with resetApp");
         }
     }
 
@@ -383,126 +384,6 @@ public class MobileDriver extends UiDriver {
         } catch (SecurityException se) {
             log.warn("No access to the process environment. Unable to read environment variable '"
                      + ANDROID_HOME_ENV_VAR + "'");
-        }
-    }
-
-    /**
-     * Start application using ADB command: ./adb shell am start -W -S -n &lt;ACTIVITY&gt;<br/>
-     * for example: ./adb shell am start -W -S -n com.axway.st.mobile/.MobileAccessPlus
-     *
-     * @param activity application activity name
-     */
-    private void startAndroidApplication( String activity ) {
-
-        log.info("Starting application with activity '" + activity + "' on device: "
-                 + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "shell", "am", "start", "-W", "-S", "-n", activity };
-        int numRetries = 0;
-        IProcessExecutor pe = null;
-        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
-            if (numRetries > 0) {
-                log.info("Retrying to start application action as previous try failed");
-            }
-            try {
-                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
-            } catch (Exception e) {
-                throw new MobileOperationException("Unable to start Android application with activity '"
-                                                   + activity + "'", e);
-            }
-            numRetries++;
-            if (pe.getExitCode() == 0) {
-                break;
-            } else {
-                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
-                    log.error("Unable to start Android application with activity '" + activity
-                              + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
-                    //try to kill ADB and issue start again
-                    killAdbServer();
-                } else {
-                    throw new MobileOperationException("Unable to start Android application with activity '"
-                                                       + activity + "'. Start command failed (STDOUT: '"
-                                                       + pe.getStandardOutput() + "', STDERR: '"
-                                                       + pe.getErrorOutput() + "')");
-                }
-            }
-        }
-    }
-
-    /**
-     * Stop application using ADB command: ./adb shell am force-stop  &lt;PACKAGE&gt;<br/>
-     * for example: ./adb shell am force-stop com.axway.st.mobile
-     *
-     * @param applicationPackage application package
-     */
-    private void stopAndroidApplication( String applicationPackage ) {
-
-        log.info("Stopping application '" + applicationPackage + "' on device: " + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "shell", "am", "force-stop", applicationPackage };
-        IProcessExecutor pe = null;
-        int numRetries = 0;
-        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
-            if (numRetries > 0) {
-                log.warn("Retrying to start application action as previous try failed");
-            }
-            try {
-                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
-            } catch (Exception e) {
-                throw new MobileOperationException("Unable to stop Android application with package '"
-                                                   + applicationPackage + "'", e);
-            }
-            numRetries++;
-            if (pe.getExitCode() == 0) {
-                break;
-            } else {
-                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
-                    log.error("Unable to stop Android application with package '" + applicationPackage
-                              + "'. Stop command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
-                    // try to kill ADB and issue stop again
-                    killAdbServer();
-                } else {
-                    throw new MobileOperationException("Unable to stop Android application with package '"
-                                                       + applicationPackage
-                                                       + "'. Stop command failed (Exit code: "
-                                                       + pe.getExitCode() + ", STDOUT: '"
-                                                       + pe.getStandardOutput() + "', STDERR: '"
-                                                       + pe.getErrorOutput() + "')");
-                }
-            }
-        } // while
-    }
-
-    /**
-     * <pre>
-     * Start iOS application using <b>ios-sim</b> command: ios-sim launch &lt;PATH TO APPLICATION.APP&gt; --timeout 60 --exit<br/>
-     * for example: <i>ios-sim launch /tmp/test/MobileAccessPlus.app --timeout 60 --exit</i>
-     * <br/>
-     * This command also starts the iOS Simulator if it's not already started.
-     * <br/>
-     * Check here how to install <b>ios-sim</b>: <a href="https://github.com/phonegap/ios-sim#installation">https://github.com/phonegap/ios-sim#installation</a>
-     * </pre>
-     * @param appPath path to the application .app file
-     */
-    private void startIOSApplication( String appPath ) {
-
-        log.info("Starting application '" + appPath + "' on device: " + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "launch", appPath, "--timeout", "60", "--exit" };
-        IProcessExecutor pe = null;
-        try {
-            pe = getProcessExecutorImpl("ios-sim", commandArguments);
-            pe.execute();
-        } catch (Exception e) {
-            throw new MobileOperationException("Unable to start iOS application '" + appPath + "'", e);
-        }
-        if (pe.getExitCode() != 0) {
-            throw new MobileOperationException("Unable to start iOS application '" + appPath
-                                               + "'. Start command failed (STDOUT: '"
-                                               + pe.getStandardOutput() + "', STDERR: '"
-                                               + pe.getErrorOutput() + "')");
         }
     }
 

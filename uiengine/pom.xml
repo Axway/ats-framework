@@ -10,12 +10,15 @@
 
     <artifactId>ats-uiengine</artifactId>
     <name>ATS-UIEngine</name>
-    <description>ATS UI Engine library for performing tests over applications in HTML/JS/ and Swing</description>
+    <description>ATS UI Engine library for performing tests over Web applications (HTML/JavaScript), mobile (Android and
+        iOS) and Swing
+    </description>
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <selenium-java.version>3.8.1</selenium-java.version> <!-- might be overwritten with more recent version 3.141.59 -->
-        <selelnium-htmlunit-driver.version>2.26</selelnium-htmlunit-driver.version> <!-- might be overwritten with more recent version 2.35.1 -->
+        <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
+        <selelnium-htmlunit-driver.version>2.36.0
+        </selelnium-htmlunit-driver.version> <!-- might be overwritten with more recent version 2.35.1 -->
         <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)</selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
@@ -25,6 +28,14 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>8</source> <!-- On Maven import, at least Java 8 required by Selenium code -->
+                    <target>${java.classlevel.version}</target>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -127,18 +138,13 @@
             <artifactId>ats-actionlibrary</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>com.axway.ats.framework</groupId> -->
-        <!-- <artifactId>ats-testharness</artifactId> -->
-        <!-- <version>${project.version}</version> -->
-        <!-- <scope>test</scope> -->
-        <!-- </dependency> -->
-        <!--<dependency>
+
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -157,12 +163,12 @@
             <version>${selelnium-htmlunit-driver.version}</version>
         </dependency>
 
-        <dependency>
-            <!-- Runtime dependant at least for HtmlUnit tests -->
+        <!-- <dependency>
+            Seems not needed anymore by HtmlUnit. Before:  Runtime dependant at least for HtmlUnit tests
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
             <version>${xml-apis.version}</version>
-        </dependency>
+        </dependency> -->
 
         <dependency> <!-- Selenium WebDriver for PhantomJS -->
             <groupId>com.codeborne</groupId>
@@ -209,25 +215,22 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>3.0.0</version>
-            <exclusions>
-                <exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2
-                        (tested) -->
+            <version>6.1.0</version>
+            <exclusions> <!-- Rely on versions referenced by selenium-java -->
+                <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
                     <artifactId>selenium-java</artifactId>
                 </exclusion>
-                <exclusion> <!-- Currently depending on gson-2.2.4, but working fine with 2.3.1 (tested) -->
+                <exclusion>
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
                 </exclusion>
-                <!-- Excluding guava version from io.appium because it is too old -->
                 <exclusion>
                 	<groupId>com.google.guava</groupId>
                 	<artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
 
 </project>

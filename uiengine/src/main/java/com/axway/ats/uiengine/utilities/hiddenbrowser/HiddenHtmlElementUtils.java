@@ -24,7 +24,7 @@ import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitKeyboard;
 import org.openqa.selenium.htmlunit.HtmlUnitMouse;
 import org.openqa.selenium.htmlunit.HtmlUnitWebElement;
-import org.openqa.selenium.interactions.internal.Coordinates;
+import org.openqa.selenium.interactions.Coordinates;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.gargoylesoftware.htmlunit.ScriptException;
@@ -48,6 +48,8 @@ public class HiddenHtmlElementUtils {
         Method updateActiveElementMethod = null;
         boolean updateActiveElementMethodAccessible = false;
         try {
+            // Allow invoking click on non-visible elements. Prevents HtmlUnit check for currently visible element
+            // TODO: remove this possibility by removing UiEngineConfigurator#workWithInvisibleElements()
             // change access modifiers of some methods
             getElementForOperationMethod = HtmlUnitMouse.class.getDeclaredMethod("getElementForOperation",
                                                                                  Coordinates.class);
@@ -102,10 +104,9 @@ public class HiddenHtmlElementUtils {
             // (HtmlUnitMouse.click(coordinates)) the exception is even skipped
             log.warn("Script error while clicking web element. " + webElement.toString(), e);
         } catch (Exception e) {
-
             throw new RuntimeException(e);
         } finally {
-
+            // Restore accessibility modifier
             if (getElementForOperationMethod != null) {
                 getElementForOperationMethod.setAccessible(getElementForOperationMethodAccessible);
             }

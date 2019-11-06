@@ -34,6 +34,8 @@ import com.axway.ats.uiengine.utilities.UiEngineUtilities;
 import com.axway.ats.uiengine.utilities.mobile.MobileElementState;
 
 import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.MobileBy;
+import io.appium.java_client.android.AndroidDriver;
 
 /**
  * An Mobile element.
@@ -75,7 +77,12 @@ public class MobileElement<T> extends UiElement {
         new MobileElementState(this).waitToBecomeExisting();
 
         try {
-            return MobileElementFinder.findElement(appiumDriver, this).getAttribute(attribute);
+            WebElement webElement = MobileElementFinder.findElement(appiumDriver, this);
+            if (webElement == null) {
+                return null;
+            } else {
+                return MobileElementFinder.findElement(appiumDriver, this).getAttribute(attribute);
+            }
         } catch (Exception e) {
             throw new MobileOperationException(this, "getAttributeValue", e);
         }
@@ -215,9 +222,21 @@ public class MobileElement<T> extends UiElement {
                 ((JavascriptExecutor) appiumDriver).executeScript("window.scrollTo(0," + scrollToY + ")");
             } else {
 
+                WebElement element = MobileElementFinder.findElement(appiumDriver, this);
                 if (getElementProperty("name") != null) {
-                    appiumDriver.scrollTo(getElementProperty("name")); // only works for NATIVE context
+                    // only works for NATIVE context
+                    if (appiumDriver instanceof AndroidDriver) {
+                        throw new Exception("scrollTo() not supported yet for Android elements");
+                    } else {
+                        // iOS case
+                        // https://discuss.appium.io/t/scroll-to-swipe-action-in-ios-8/4220/29 May not work to scroll to specific cell in table view
+                        element.findElement(MobileBy.IosUIAutomation(".scrollToElementWithPredicate(\"name CONTAINS '" +
+                                                                     getElementProperty("name") + "'\")"));
+                    }
+                } else {
+                    throw new Exception("scrollTo() not supported yet for element without name property");
                 }
+                // TODO Check alternative proposed: https://discuss.appium.io/t/click-non-visible-element-by-scroll-swipe/17227/3
             }
 
             return (T) this;

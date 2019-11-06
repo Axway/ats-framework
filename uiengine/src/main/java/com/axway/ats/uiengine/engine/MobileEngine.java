@@ -15,6 +15,10 @@
  */
 package com.axway.ats.uiengine.engine;
 
+import java.time.Duration;
+
+import org.openqa.selenium.WebElement;
+
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.uiengine.MobileDriver;
 import com.axway.ats.uiengine.UiDriver;
@@ -29,7 +33,6 @@ import com.axway.ats.uiengine.elements.mobile.MobileElementsFactory;
 import com.axway.ats.uiengine.elements.mobile.MobileLabel;
 import com.axway.ats.uiengine.elements.mobile.MobileLink;
 import com.axway.ats.uiengine.elements.mobile.MobileTextBox;
-import com.axway.ats.uiengine.exceptions.NotSupportedOperationException;
 import com.axway.ats.uiengine.internal.driver.InternalObjectsEnum;
 import com.axway.ats.uiengine.internal.engine.AbstractEngine;
 import com.axway.ats.uiengine.utilities.UiEngineUtilities;
@@ -39,7 +42,8 @@ import com.axway.ats.uiengine.utilities.mobile.MobileElementState;
 
 import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
-import io.appium.java_client.android.AndroidKeyCode;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 
 /**
  * Engine operating with mobile application/device
@@ -47,7 +51,7 @@ import io.appium.java_client.android.AndroidKeyCode;
 @PublicAtsApi
 public class MobileEngine extends AbstractEngine {
 
-    private AppiumDriver<?>       appiumDriver;
+    private AppiumDriver<? extends WebElement> appiumDriver;
 
     private MobileElementsFactory mobileElementsFactory;
 
@@ -70,7 +74,8 @@ public class MobileEngine extends AbstractEngine {
         super(uiDriver, elementsFactory);
 
         MobileDriver mobileDriver = (MobileDriver) uiDriver;
-        appiumDriver = (AppiumDriver<?>) mobileDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
+        appiumDriver = (AppiumDriver<? extends WebElement>) mobileDriver.getInternalObject(
+                InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -353,10 +358,13 @@ public class MobileEngine extends AbstractEngine {
 
             if (appiumDriver instanceof AndroidDriver) {
 
-                ((AndroidDriver<?>) appiumDriver).sendKeyEvent(AndroidKeyCode.HOME);
+                // old: ((AndroidDriver<?>) appiumDriver).sendKeyEvent(AndroidKeyCode.HOME);
+                // https://stackoverflow.com/questions/51854004/how-to-automate-home-back-up-down-menu-button-at-bottom-of-android-phone-using-a
+                ((AndroidDriver<?>) appiumDriver).pressKey(new KeyEvent(AndroidKey.HOME));
             } else {
-                // The automation API that Appium uses (Apple's UIAutomation JS library) limits to only automating a single application at a time
-                throw new NotSupportedOperationException("Currently, Appium cannot press the home button for iOS");
+                // Special workaround - put in background with special duration of -1 to not return it back in foreground 
+                // https://discuss.appium.io/t/how-to-press-home-key-button-with-appium-on-ios-real-device/14826
+                appiumDriver.runAppInBackground(Duration.ofSeconds(-1));
             }
         }
 
@@ -371,7 +379,7 @@ public class MobileEngine extends AbstractEngine {
         public void runAppInBackground(
                                         int seconds ) {
 
-            appiumDriver.runAppInBackground(seconds);
+            appiumDriver.runAppInBackground(Duration.ofSeconds(seconds));
         }
 
         /**
@@ -390,6 +398,7 @@ public class MobileEngine extends AbstractEngine {
                                         String appName ) {
 
             if (appiumDriver instanceof AndroidDriver) {
+                // TODO: check behavior with latest impl.: runInBackground
 
                 // we can get the current activity, but not its package
                 //String currentActivity = ( ( AndroidDriver<?> ) appiumDriver ).currentActivity();
@@ -400,7 +409,8 @@ public class MobileEngine extends AbstractEngine {
                 mobileDeviceUtils.executeAdbCommand(new String[]{ "shell", "am", "start", "-n", appName },
                                                     true);
             } else {
-                appiumDriver.runAppInBackground(seconds);
+                // TODO: alternative is to start app if not started and then bring it in background 
+                appiumDriver.runAppInBackground(Duration.ofSeconds(seconds));
             }
         }
 

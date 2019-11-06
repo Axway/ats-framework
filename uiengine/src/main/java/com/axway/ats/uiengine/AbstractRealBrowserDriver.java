@@ -40,7 +40,7 @@ import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.firefox.FirefoxOptions;
 import org.openqa.selenium.firefox.FirefoxProfile;
-import org.openqa.selenium.firefox.internal.ProfilesIni;
+import org.openqa.selenium.firefox.ProfilesIni;
 import org.openqa.selenium.ie.InternetExplorerOptions;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.CapabilityType;
@@ -119,8 +119,9 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
     }
 
     /**
+     * @param browserType The Browser kind. Check {@link BrowserType}
      * @param url the target application URL
-     * @param browserStartCommand command for starting a real UI browser or the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
+     * @param browserPath full path to a real UI browser or the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      */
     public AbstractRealBrowserDriver( BrowserType browserType,
                                       String url,
@@ -136,8 +137,9 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
     }
 
     /**
+     * @param browserType The Browser kind. Check {@link BrowserType}
      * @param url the target application URL
-     * @param browserStartCommand command for starting a real UI browser
+     * @param browserPath full path to a real UI browser
      * @param remoteSeleniumURL the remote selenium hub URL (eg. http://10.11.12.13:4444/wd/hub/)
      */
     public AbstractRealBrowserDriver( BrowserType browserType,

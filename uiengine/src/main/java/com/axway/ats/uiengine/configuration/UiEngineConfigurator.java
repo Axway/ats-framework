@@ -41,11 +41,15 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     private static final String            PROPERTIES_FILE_NAME                  = "/ats.uiengine.properties";
 
     // the property keys in the configuration file
-    private static final String            PROPERTY_MAP_FILES_BASE_DIRECTORY     = "uiengine.mapFilesBaseDir";
-    private static final String            PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
-    private static final String            PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
-    private static final String            PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
-    private static final String            PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
+    private static final String PROPERTY_MAP_FILES_BASE_DIRECTORY     = "uiengine.mapFilesBaseDir";
+    private static final String PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
+    private static final String PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
+    private static final String PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
+    /**
+     * Property to be removed
+     */
+    @Deprecated
+    private static final String PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
 
     private static final String            PROPERTY_BROWSER_ACTION_TIMEOUT       = "uiengine.browser.action.timeout";
     private static final String            PROPERTY_BROWSER_DOWNLOAD_DIR         = "browser.download.dir";
@@ -294,7 +298,9 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     /**
      *
      * @return <code>true</code> if we will work with the invisible elements too
+     * @deprecated To be removed as clicking on invisible elements is not recommended
      */
+    @Deprecated
     @PublicAtsApi
     public boolean isWorkWithInvisibleElements() {
 
@@ -308,7 +314,9 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     /**
      *
      * @param workWithInvisibleElements whether to work with the invisible elements too
+     * @deprecated To be removed as clicking on invisible elements is not recommended
      */
+    @Deprecated
     @PublicAtsApi
     public void setWorkWithInvisibleElements( boolean workWithInvisibleElements ) {
 
