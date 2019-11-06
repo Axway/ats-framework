@@ -92,14 +92,14 @@ public class AtsSystemProperties {
      * Following are system properties which are not supposed to be changed
      * during the VM lifetime, so we do not need to read them more than once.
      */
-    public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
-    public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
-    public static final String  SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
-    public static final String  SYSTEM_USER_HOME_DIR                                              = System.getProperty("user.dir");
-    public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
-    public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
-    public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");
-    public static final String  SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty("http.proxyPort");
+    public static final String SYSTEM_LINE_SEPARATOR  = System.getProperty("line.separator");
+    public static final String SYSTEM_FILE_SEPARATOR  = System.getProperty("file.separator");
+    public static final String SYSTEM_OS_NAME         = System.getProperty("os.name");
+    public static final String USER_CURRENT_DIR       = System.getProperty("user.dir");
+    public static final String SYSTEM_USER_TEMP_DIR   = System.getProperty("java.io.tmpdir");
+    public static final String SYSTEM_JAVA_HOME_DIR   = System.getProperty("java.home");
+    public static final String SYSTEM_HTTP_PROXY_HOST = System.getProperty("http.proxyHost");
+    public static final String SYSTEM_HTTP_PROXY_PORT = System.getProperty("http.proxyPort");
 
     /**
      * @return the default ATS agent port number
@@ -279,7 +279,7 @@ public class AtsSystemProperties {
      * Return a system property as a String. Return null if not present.
      *
      * @param key the name of the searched system property
-     * @return
+     * @return the property value trimmed or null if it does not exist
      */
     @PublicAtsApi
     public static String getPropertyAsString( String key ) {
@@ -298,7 +298,7 @@ public class AtsSystemProperties {
      *
      * @param key the name of the searched system property
      * @param defaultValue default value to return if property not defined
-     * @return
+     * @return the property value trimmed or defaultValue if there is no value set yet
      */
     @PublicAtsApi
     public static String getPropertyAsString( String key, String defaultValue ) {
