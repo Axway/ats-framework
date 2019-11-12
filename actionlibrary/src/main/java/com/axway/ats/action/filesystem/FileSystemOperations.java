@@ -20,6 +20,7 @@ import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.axway.ats.core.utils.StringUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -365,7 +366,6 @@ public class FileSystemOperations {
      * Get the last modification time for a specified file
      *
      * @param filePath the file to work with
-     * @param modificationTime the modification time to set as a timestamp in milliseconds
      */
     @PublicAtsApi
     public long
@@ -1246,7 +1246,7 @@ public class FileSystemOperations {
      * Reads the file content<br/>
      * <b>NOTE:</b> This method should be used for relatively small files as it loads the whole file in the memory
      *
-     * @param filePathh the file to work with
+     * @param filePath the file to work with
      * @param fileEncoding the file encoding. If null the default encoding will be used
      * @return the file content
      */
@@ -1377,7 +1377,7 @@ public class FileSystemOperations {
      *
      * @param dirPath the target directory path
      * @return <code>true</code> if the directory exists and <code>false</code> if it doesn't
-     * @throws IllegalArgumentExeption if the file exists, but it is not a directory
+     * @throws IllegalArgumentException if the file exists, but it is not a directory
      */
     @PublicAtsApi
     public boolean doesDirectoryExist(
@@ -1498,7 +1498,9 @@ public class FileSystemOperations {
 
     /**
      * Extract archive to local or remote machine.
-     * If the machine is UNIX-like it will preserve the permissions
+     * If the machine is UNIX-like it will preserve the permissions.
+     * Note that only specific file extensions (formats) are supported. Currently extensions ZIP, GZ, TAR, TAR.GZ and
+     * Java archives (JAR, WAR, EAR, SAR) are supported.
      *
      * @param archiveFilePath the archive file path
      * @param outputDirPath output directory which is used as base directory for extracted files
@@ -1520,7 +1522,14 @@ public class FileSystemOperations {
 
     private void checkIfArchiveFormatIsSupported( String archiveFilePath ) {
 
-        if (archiveFilePath.endsWith(".zip")) {
+        if (StringUtils.isNullOrEmpty(archiveFilePath)) {
+            throw new FileSystemOperationException("Extract operation error. Empty filename provided.");
+        }
+        archiveFilePath = archiveFilePath.toLowerCase();
+        if (archiveFilePath.endsWith(".zip") || archiveFilePath.endsWith(".jar")
+            || archiveFilePath.endsWith(".war") || archiveFilePath.endsWith(".ear")
+            || archiveFilePath.endsWith(".sar") || archiveFilePath.endsWith(".apk")) {
+            // https://en.wikipedia.org/wiki/JAR_(file_format)
             return;
         } else if (archiveFilePath.endsWith(".gz") && !archiveFilePath.endsWith(".tar.gz")) {
             return;
@@ -1531,11 +1540,11 @@ public class FileSystemOperations {
         } else {
             String[] filenameTokens = IoUtils.getFileName(archiveFilePath).split("\\.");
             if (filenameTokens.length <= 1) {
-                throw new FileSystemOperationException("Archive format was not provided.");
+                throw new FileSystemOperationException("Archive format was not provided as file extension.");
             } else {
                 throw new FileSystemOperationException("Archive with format '"
                                                        + filenameTokens[filenameTokens.length - 1]
-                                                       + "' is not supported. Available once are 'zip', 'gz', 'tar' and 'tar.gz' .");
+                                                       + "' is not supported. Available once are 'zip', 'jar', 'gz', 'tar' and 'tar.gz' .");
             }
         }
 

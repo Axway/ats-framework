@@ -95,11 +95,15 @@ public class AtsSystemProperties {
     public static final String SYSTEM_LINE_SEPARATOR  = System.getProperty("line.separator");
     public static final String SYSTEM_FILE_SEPARATOR  = System.getProperty("file.separator");
     public static final String SYSTEM_OS_NAME         = System.getProperty("os.name");
-    public static final String USER_CURRENT_DIR       = System.getProperty("user.dir");
     public static final String SYSTEM_USER_TEMP_DIR   = System.getProperty("java.io.tmpdir");
     public static final String SYSTEM_JAVA_HOME_DIR   = System.getProperty("java.home");
     public static final String SYSTEM_HTTP_PROXY_HOST = System.getProperty("http.proxyHost");
     public static final String SYSTEM_HTTP_PROXY_PORT = System.getProperty("http.proxyPort");
+    /**
+     * User directory as of initial call of this class. Note that actual value of this system property could be changed later.
+     * And it seems that currently there is no easy Java-only reliable way to change actual current directory.
+     */
+    public static final String USER_CURRENT_DIR       = System.getProperty("user.dir");
 
     /**
      * @return the default ATS agent port number
