@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,35 +15,26 @@
  */
 package com.axway.ats.agent.webapp.client;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.MessageContext;
 
-import org.apache.log4j.Logger;
-
 import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.agentservice.AgentWsDefinitions;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.core.filesystem.LocalFileSystemOperations;
-import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.BackwardCompatibility;
 import com.axway.ats.core.utils.SslUtils;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
 public class AgentServicePool {
-
-    private static Logger                 log        = Logger.getLogger(AgentServicePool.class);
 
     //singleton instance
     private static AgentServicePool       instance;
@@ -54,8 +45,10 @@ public class AgentServicePool {
     // A universe wide ;) unique ID used for maintaining session between Agent and its caller.
     // We use one instance per Test Executor JVM.
     // It is used by the Agent to recognize the caller. 
+    @BackwardCompatibility
     private String                        uniqueId;
 
+    @BackwardCompatibility
     private static boolean                useNewUuId = false;
 
     private AgentServicePool() {
@@ -83,6 +76,11 @@ public class AgentServicePool {
         useNewUuId = true;
     }
 
+    public static void useCachedUniqueId() {
+
+        useNewUuId = false;
+    }
+
     public AgentService getClient( String atsAgent ) throws AgentException {
 
         // we assume the ATS Agent address here comes with IP and PORT
@@ -99,7 +97,7 @@ public class AgentServicePool {
     private AgentService createServicePort( String host ) throws AgentException {
 
         try {
-            String protocol = AgentConfigurationLandscape.getInstance( host ).getConnectionProtocol();
+            String protocol = AgentConfigurationLandscape.getInstance(host).getConnectionProtocol();
             if (protocol == null) {
                 protocol = "http";
             } else {
@@ -128,44 +126,7 @@ public class AgentServicePool {
             // setting timeouts
             ctxt.put(BindingProviderProperties.CONNECT_TIMEOUT, 10000); // timeout in milliseconds
 
-            // check if new unique id must be generated each time
-            if (!useNewUuId) {
-                // create temp file containing caller working directory and the unique id
-                String userWorkingDirectory = AtsSystemProperties.USER_CURRENT_DIR;
-                String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR
-                                         + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "ats_uid.txt";
-                File uuiFile = new File(uuiFileLocation);
-
-                // check if the file exist and if exist check if the data we need is in, 
-                // otherwise add it to the file 
-                if (uuiFile.exists()) {
-                    String uuiFileContent = IoUtils.streamToString(IoUtils.readFile(uuiFileLocation));
-                    if (uuiFileContent.contains(userWorkingDirectory)) {
-                        for (String line : uuiFileContent.split("\n")) {
-                            if (line.contains(userWorkingDirectory)) {
-                                uniqueId = line.substring(userWorkingDirectory.length()).trim();
-                            }
-                        }
-                    } else {
-                        generateNewUUID();
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + uniqueId + "\n");
-                    }
-                } else {
-                    generateNewUUID();
-                    try {
-                        uuiFile.createNewFile();
-                    } catch (IOException e) {
-                        log.warn("Unable to create file '" + uuiFile.getAbsolutePath() + "'");
-                    }
-                    if (uuiFile.exists()) {
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + uniqueId + "\n");
-                    }
-                }
-            } else {
-                generateNewUUID();
-            }
+            uniqueId = ExecutorUtils.getUUID(useNewUuId);
 
             // add header with unique session ID
             Map<String, List<String>> requestHeaders = new HashMap<>();
@@ -180,8 +141,4 @@ public class AgentServicePool {
         }
     }
 
-    private void generateNewUUID() {
-
-        uniqueId = UUID.randomUUID().toString().trim();
-    }
 }

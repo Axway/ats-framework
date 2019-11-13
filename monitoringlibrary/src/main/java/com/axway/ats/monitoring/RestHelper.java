@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,13 @@
  */
 package com.axway.ats.monitoring;
 
-import java.io.File;
-import java.io.IOException;
-
 import com.axway.ats.action.rest.RestClient;
 import com.axway.ats.action.rest.RestClient.RESTDebugLevel;
 import com.axway.ats.action.rest.RestMediaType;
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.core.context.ApplicationContext;
+import com.axway.ats.agent.webapp.client.ExecutorUtils;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.core.filesystem.LocalFileSystemOperations;
-import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
@@ -120,82 +116,8 @@ public class RestHelper {
 
         response = this.restClient.postObject(jsonBody);
 
-        if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
-            if (response.getStatusCode() == 200) {
-                this.uid = response.getBodyAsJson().getString(ApplicationContext.ATS_UID_SESSION_TOKEN);
-                this.agentVersion = response.getBodyAsJson().getString("agent_version");
-                synchronizeUidWithLocalOne();
-            } else {
-                String errorMessage = "Exception occured on agent '" + atsAgentIp + "'\nAgent Exception:\n"
-                                      + response.getBodyAsString();
-                throw new RuntimeException(errorMessage);
-            }
-
-        }
-
         return response;
 
-    }
-
-    /**
-     * Since we want both AgentService and RestService (both are located on the
-     * agent) to share the same ATS UID, we save the returned uid to the file,
-     * so when any future connection is executed. regardless via REST or Web
-     * Service, the same uid will be used for both, as long as the user and the
-     * Java project's directory are the same
-     * 
-     * @throws IOException
-     */
-    private void synchronizeUidWithLocalOne() {
-
-        // create temp file containing caller working directory and the unique
-        // id
-        String userWorkingDirectory = AtsSystemProperties.USER_CURRENT_DIR;
-        String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
-                                 + "ats_uid.txt";
-        File uuiFile = new File(uuiFileLocation);
-
-        // check if the file exist and if exist check if the data we need is in,
-        // otherwise add it to the file
-        try {
-            if (uuiFile.exists()) {
-                // the file already exists
-                String uuiFileContent = IoUtils.streamToString(IoUtils.readFile(uuiFileLocation));
-                if (uuiFileContent.contains(userWorkingDirectory)) {
-                    // there is already saved UID in the file for the current IP
-                    // and java project's directory
-                    for (String line : uuiFileContent.split("\n")) {
-                        if (line.contains(userWorkingDirectory)) {
-                            this.uid = line.substring(userWorkingDirectory.length()).trim();
-                        }
-                    }
-                } else {
-                    /*
-                     * the file does not contains UID for the current IP and
-                     * Java project's directory, so save the received one, if it
-                     * is not null
-                     */
-                    if (this.uid != null) {
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + this.uid + "\n");
-                    }
-                }
-            } else {
-                /*
-                 * the file does NOT exists, so create and save the received
-                 * UID, if it is not null
-                 */
-                if (this.uid != null) {
-                    uuiFile.createNewFile();
-                    if (uuiFile.exists()) {
-                        new LocalFileSystemOperations().appendToFile(uuiFileLocation,
-                                                                     userWorkingDirectory + "\t" + this.uid + "\n");
-                    }
-                }
-            }
-        } catch (Exception e) {
-            // log a warning
-        }
     }
 
     /**
@@ -221,7 +143,7 @@ public class RestHelper {
         this.restClient.setRequestMediaType(RestMediaType.APPLICATION_JSON);
         this.restClient.setResponseMediaType(RestMediaType.APPLICATION_JSON);
         // set ATS_UID header
-        synchronizeUidWithLocalOne();
+        this.uid = ExecutorUtils.getUUID();
         this.restClient.addRequestHeader(ApplicationContext.ATS_UID_SESSION_TOKEN, this.uid);
     }
 
