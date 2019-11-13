@@ -38,7 +38,7 @@ public class BaseRestServiceImpl {
     private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
                                                                                true);
 
-    protected static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());
+    public static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());
 
     protected String getCaller(
                                 HttpServletRequest request,
@@ -66,7 +66,15 @@ public class BaseRestServiceImpl {
         uid = getUid(request, basePojo, false);
         sd = sessions.get(uid);
         if (sd == null) {
-            if (request.getRequestURI().contains("initializeDbConnection")) {
+            /*
+             * new Session (SessionData) is created when:
+             * <ul>
+             * <li>initializeDbConnection is called - this is done, when monitoring is requested by REST API</li>
+             * <li>initializeMonitoring is called - this is done when the ATS Framework is sending a system monitoring operation</li> 
+             * </ul>
+             *  
+             * */
+            if (request.getRequestURI().contains("initializeDbConnection") || request.getRequestURI().contains("initializeMonitoring")) {
                 // create new session
                 sd = new SessionData();
                 sessions.put(uid, sd);
