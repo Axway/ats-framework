@@ -15,17 +15,26 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
+import com.axway.ats.core.dbaccess.DbConnection;
+import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.DbAccessFactory;
+import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
@@ -37,10 +46,10 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class DatabaseReadingsRepository {
 
-    private static SQLServerDbWriteAccess dbAccess          = null;
+    private static SQLServerDbWriteAccess            dbAccess          = null;
 
-    //this map keeps track of the ReadingBean(s) that already have a dbId assigned
-    private static Map<String, Integer>   knownReadingBeans = new HashMap<>();
+    //this map keeps track of the ReadingBean(s) that already have a dbId assigned per database
+    private static Map<String, Map<String, Integer>> knownReadingBeans = Collections.synchronizedMap(new HashMap<String, Map<String, Integer>>());
 
     public DatabaseReadingsRepository() {}
 
@@ -58,13 +67,23 @@ public class DatabaseReadingsRepository {
 
         Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
 
+        String caller = ThreadsPerCaller.getCaller();
+
         if (dbAccess == null) {
-            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender(ThreadsPerCaller.getCaller());
+            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender(caller);
+        }
+
+        String dbConnectionHash = obtainDbConnectionHash(caller);
+
+        Map<String, Integer> knownReadingBeansForCurrentDbConn = knownReadingBeans.get(dbConnectionHash);
+        if (knownReadingBeansForCurrentDbConn == null) {
+            knownReadingBeansForCurrentDbConn = new HashMap<String, Integer>();
+            knownReadingBeans.put(dbConnectionHash, knownReadingBeansForCurrentDbConn);
         }
 
         for (ReadingBean reading : readings) {
             // check if the current reading already was flagged as known
-            int dbId = getDbIdForReading(reading);
+            int dbId = getDbIdForReading(reading, knownReadingBeansForCurrentDbConn);
             reading.setDbId(dbId);
             if (reading.getDbId() == -1) {
                 StringBuilder newReadingParameters = new StringBuilder();
@@ -115,16 +134,33 @@ public class DatabaseReadingsRepository {
 
                 // remember the DB ID of this reading
                 reading.setDbId(newReadingDatabaseId);
-                knownReadingBeans.put(reading.getDescription(), reading.getDbId());
+                knownReadingBeansForCurrentDbConn.put(reading.getDescription(), reading.getDbId());
             }
         }
     }
 
+    private String obtainDbConnectionHash( String caller ) {
+
+        DbAppenderConfiguration dbAppenderConfiguration = PassiveDbAppender.getCurrentInstance(caller)
+                                                                           .getAppenderConfig();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(dbAppenderConfiguration.getHost() + "|__|" + dbAppenderConfiguration.getPort() + "|__|"
+                  + dbAppenderConfiguration.getDatabase());
+
+        return sb.toString();
+
+    }
+
     private int getDbIdForReading(
-                                   ReadingBean reading ) {
+                                   ReadingBean reading, Map<String, Integer> knownReadingBeans ) {
 
         String mapKey = reading.getDescription();
         Integer dbId = knownReadingBeans.get(mapKey);
+        /*FIXME: ATS is caching readings for each database, that was created on the Agent, but if one of those databases is recreated, and the agent is not restarted,
+         * the cached reading is NOT invalidated
+         */
         return (dbId != null)
                               ? dbId
                               : -1;
