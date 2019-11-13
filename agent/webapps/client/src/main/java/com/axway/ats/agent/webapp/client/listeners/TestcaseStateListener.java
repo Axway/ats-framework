@@ -31,7 +31,9 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.TestCaseState;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
+import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.ITestcaseStateListener;
+import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
 
 public class TestcaseStateListener implements ITestcaseStateListener {
@@ -123,30 +125,33 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                         log.info("Pushing configuration to ATS Agent at '" + atsAgent + "'");
 
-                        /*String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
-                        String atsVersion = AtsVersion.getAtsVersion();
-                        if (agentVersion != null) {
-                            if (!AtsVersion.getAtsVersion().equals(agentVersion)) {
-                                log.warn("*** ATS WARNING *** You are using ATS version '" + atsVersion
-                                         + "' with ATS Agent version '" + agentVersion + "' located at '"
-                                         + HostUtils.getAtsAgentIpAndPort(atsAgent)
-                                         + "'. This might cause incompatibility problems!");
-                            }
-                        }*/
-
-                        // Pass the logging configuration to the remote agent
-                        RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
-                                                                                                                                       .getDbLogLevel());
-                        new RemoteConfigurationManager().pushConfiguration(atsAgent,
-                                                                           remoteLoggingConfigurator);
-
                         try {
+
+                            String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
+                            String atsVersion = AtsVersion.getAtsVersion();
+                            if (agentVersion != null) {
+                                if (!AtsVersion.getAtsVersion().equals(agentVersion)) {
+                                    log.warn("*** ATS WARNING *** You are using ATS version '" + atsVersion
+                                             + "' with ATS Agent version '" + agentVersion + "' located at '"
+                                             + HostUtils.getAtsAgentIpAndPort(atsAgent)
+                                             + "'. This might cause incompatibility problems!");
+                                }
+                            }
+
+                            // Pass the logging configuration to the remote agent
+                            RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
+                                                                                                                                           .getDbLogLevel());
+                            new RemoteConfigurationManager().pushConfiguration(atsAgent,
+                                                                               remoteLoggingConfigurator);
+
                             AgentService agentServicePort = AgentServicePool.getInstance()
                                                                             .getClient(atsAgent);
                             agentServicePort.onTestStart(getCurrentTestCaseState());
                         } catch (AgentException_Exception ae) {
 
                             throw new AgentException(ae.getMessage());
+                        } catch (Exception e) {
+                            throw new AgentException(e.getMessage(), e);
                         }
 
                         configuredAgents.add(atsAgent);
