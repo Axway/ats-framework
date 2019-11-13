@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,20 +27,13 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
-import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.monitoring.MonitoringException;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.utils.StringUtils;
-import com.axway.ats.log.AtsDbLogger;
-import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.appenders.ActiveDbAppender;
-import com.axway.ats.log.autodb.DbAppenderConfiguration;
-import com.axway.ats.log.autodb.TestCaseState;
 
 /**
  * The public interface for interacting with the System Monitor.
@@ -252,17 +245,9 @@ public class SystemMonitor {
 
     private Set<String>             monitoredHosts;
 
-    private Set<String>             monitoredAgents;
-
     private Map<String, RestHelper> restHelpers;
 
-    private boolean                 isStarted      = false;
-    private boolean                 alreadyStopped = false;
-
-    /* keeps track if which agents are already configured 
-     * (e.g. DB connection and join testcase has been executed on the agent 
-    */
-    private Set<String>             configuredAgents;
+    private boolean                 isStarted = false;
 
     /**
      * Create the system monitor instance. <br>
@@ -275,10 +260,8 @@ public class SystemMonitor {
     @PublicAtsApi
     public SystemMonitor() {
 
-        this.monitoredAgents = new HashSet<String>();
         this.monitoredHosts = new HashSet<String>();
         this.restHelpers = new HashMap<String, RestHelper>();
-        this.configuredAgents = new HashSet<String>();
 
     }
 
@@ -575,7 +558,6 @@ public class SystemMonitor {
                                                 String atsAgent ) {
 
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
-        monitoredAgents.add(atsAgent);
 
         performSetup(atsAgent);
         scheduleUserActivity(atsAgent);
@@ -625,9 +607,6 @@ public class SystemMonitor {
     @PublicAtsApi
     public void stopMonitoring() {
 
-        boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
-                                                                                     true);
-
         Iterator<String> it = this.monitoredHosts.iterator();
         while (it.hasNext()) {
             String monitoredHost = it.next();
@@ -640,14 +619,9 @@ public class SystemMonitor {
                 throw new MonitoringException(errorMsg);
             }
 
-            // use old logic/behavior if FALSE
-            if (!configureAgentExplicitely) {
-                leaveTestcase(monitoredHost);
-            }
         }
 
         isStarted = false;
-        alreadyStopped = true;
 
     }
 
@@ -669,70 +643,34 @@ public class SystemMonitor {
     private void performSetup(
                                String monitoredHost ) {
 
-        if (!this.configuredAgents.contains(monitoredHost)) {
+        if (ActiveDbAppender.getCurrentInstance().getTestCaseId() <= -1) {
+            throw new MonitoringException("Monitoring cannot be started, since testcase is not started yet!");
+        }
+
+        if (!this.monitoredHosts.contains(monitoredHost)) {
             // the agent was not configured, so configure it
-            this.configuredAgents.add(monitoredHost);
-            initializeDbConnection(monitoredHost);
-            checkAgentVersion(monitoredHost);
-            joinTestcase(monitoredHost);
+            configureMonitoredHost(monitoredHost);
+
+            // assign new Rest helper for the newly configured host
+            this.restHelpers.put(monitoredHost, new RestHelper());
+
             initializeMonitoring(monitoredHost);
+
+            this.monitoredHosts.add(monitoredHost);
         }
     }
 
-    private void checkAgentVersion( String monitoredHost ) {
+    private void configureMonitoredHost( String monitoredHost ) {
 
-        String agentVersion = this.restHelpers.get(monitoredHost).getAgentVersion();
-        String atsVersion = AtsVersion.getAtsVersion();
-        if (!atsVersion.equals(agentVersion)) {
-            log.warn("*** ATS WARNING *** You are using ATS version " + atsVersion
-                     + " with ATS agent version " + agentVersion + " located at '"
-                     + HostUtils.getAtsAgentIpAndPort(monitoredHost)
-                     + "'. This might cause incompatibility problems!");
+        List<String> hosts = new ArrayList<>();
+        hosts.add(monitoredHost);
+        try {
+            TestcaseStateListener.getInstance().onConfigureAtsAgents(hosts);
+        } catch (Exception e) {
+            throw new MonitoringException("Could not configure ATS monitoring host(s)/agent(s) at "
+                                          + Arrays.toString(hosts.toArray(new String[hosts.size()])),
+                                          e);
         }
-
-    }
-
-    private void initializeDbConnection(
-                                         String monitoredHost ) {
-
-        if (!ActiveDbAppender.isAttached) {
-            throw new MonitoringException("Db appender is not presented in log4j.xml");
-        }
-
-        DbAppenderConfiguration appenderConfiguration = ActiveDbAppender.getCurrentInstance()
-                                                                        .getAppenderConfig();
-
-        monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
-        this.monitoredHosts.add(monitoredHost);
-
-        /* see if log level was already set for this monitored host */
-        LogLevel userLogLevel = AgentConfigurationLandscape.getInstance(monitoredHost).getDbLogLevel();
-        int logLevel = (userLogLevel == null)
-                                              ? Logger.getRootLogger().getEffectiveLevel().toInt()
-                                              : userLogLevel.toInt();
-
-        /*
-         * create RestHelper instance, ready to connect with the specified
-         * monitoredHost
-         */
-        RestHelper helper = new RestHelper();
-        helper.post(monitoredHost,
-                    RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                    RestHelper.INITIALIZE_DB_CONNECTION_RELATIVE_URI,
-                    new Object[]{ null,
-                                  appenderConfiguration.getHost(),
-                                  appenderConfiguration.getPort(),
-                                  appenderConfiguration.getDatabase(),
-                                  appenderConfiguration.getUser(),
-                                  appenderConfiguration.getPassword(),
-                                  (appenderConfiguration.isBatchMode())
-                                                                        ? "batch"
-                                                                        : "",
-                                  logLevel,
-                                  appenderConfiguration.getMaxNumberLogEvents(),
-                                  System.currentTimeMillis() });
-
-        this.restHelpers.put(monitoredHost, helper);
 
     }
 
@@ -743,66 +681,6 @@ public class SystemMonitor {
                                                      RestHelper.BASE_MONITORING_REST_SERVICE_URI,
                                                      RestHelper.INITIALIZE_MONITORING_RELATIVE_URI,
                                                      "There were errors while initializing monitoring",
-                                                     new Object[]{ null });
-        if (!StringUtils.isNullOrEmpty(errorMsg)) {
-            throw new MonitoringException(errorMsg);
-        }
-    }
-
-    private void joinTestcase(
-                               String monitoredHost ) {
-
-        TestCaseState testCaseState = AtsDbLogger.getLogger(SystemMonitor.class.getName())
-                                                 .getCurrentTestCaseState();
-
-        if (testCaseState.getRunId() < 1 || testCaseState.getTestcaseId() < 1) {
-
-            String message = "Could not join testcase on ATS Agent at '" + monitoredHost + "'. "
-                             + "Either you did not attach AtsTestngListener listener to your test class hierarchy or "
-                             + "you are invoking System monitoring operation outside of @Test, @BeforeMethod or @AfterMethod annotated methods.";
-
-            throw new MonitoringException(message);
-
-        }
-
-        String errorMsg = performMonitoringOperation(monitoredHost,
-                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                                     RestHelper.JOIN_TESTCASE_RELATIVE_URI,
-                                                     "There were errors while joining testcase",
-                                                     new Object[]{ null,
-                                                                   testCaseState.getRunId(),
-                                                                   testCaseState.getTestcaseId(),
-                                                                   testCaseState.getLastExecutedTestcaseId() });
-
-        boolean configureAgentExplicitely = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.MONITORING_CONFIG_AGENT_EXPLICITELY,
-                                                                                     true);
-        if (configureAgentExplicitely) {
-            try {
-                TestcaseStateListener.getInstance().onConfigureAtsAgents(Arrays.asList(monitoredHost));
-            } catch (Exception e) {
-                throw new MonitoringException("There were errors while joining testcase on ATS Agent at '"
-                                              + monitoredHost
-                                              + "'", e);
-            }
-        }
-
-        if (!StringUtils.isNullOrEmpty(errorMsg)) {
-            throw new MonitoringException(errorMsg);
-        }
-
-    }
-
-    /**
-     * Temporal method to preserve old (pre 4.0.6) behavior
-     * */
-    @Deprecated
-    private void leaveTestcase(
-                                String monitoredHost ) {
-
-        String errorMsg = performMonitoringOperation(monitoredHost,
-                                                     RestHelper.BASE_CONFIGURATION_REST_SERVICE_URI,
-                                                     RestHelper.LEAVE_TESTCASE_RELATIVE_URI,
-                                                     "There were errors while leaving testcase",
                                                      new Object[]{ null });
         if (!StringUtils.isNullOrEmpty(errorMsg)) {
             throw new MonitoringException(errorMsg);
@@ -885,11 +763,6 @@ public class SystemMonitor {
                                                String relativeUri,
                                                String errorMessage,
                                                Object[] values ) {
-
-        if (alreadyStopped) {
-            throw new MonitoringException("SystemMonitor.stopMonitoring() has already been invoked on this instance. "
-                                          + "This instance of SystemMonitor could not be used anymore");
-        }
 
         RestHelper helper = null;
         RestResponse response = null;
