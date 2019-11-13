@@ -51,6 +51,9 @@ import com.axway.ats.agent.core.exceptions.NoSuchComponentException;
 import com.axway.ats.agent.core.monitoring.queue.QueueExecutionStatistics;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
+import com.axway.ats.agent.webapp.restservice.BaseRestServiceImpl;
+import com.axway.ats.agent.webapp.restservice.RestSystemMonitor;
+import com.axway.ats.agent.webapp.restservice.model.SessionData;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
@@ -108,6 +111,16 @@ public class AgentWsImpl {
             // cancel all action tasks, that are started on an agent, locate on the current caller host.
             // current caller and the agent must have the same IP, in order for queue to be cancelled
             MultiThreadedActionHandler.cancellAllQueuesFromAgent(caller);
+            
+            // cancel all monitoring, started previously by the current caller
+            SessionData sd = BaseRestServiceImpl.sessions.get(caller);
+            if(sd != null) {
+                RestSystemMonitor sysMon = sd.getSystemMonitor();
+                if(sysMon != null) {
+                    log.info("Stopping previously started monitoring from caller '" + caller + "' ...");
+                    sysMon.stopMonitoring(getAgentHostAddress());
+                }
+            }
 
             // get the current state on the remote machine
             TestCaseState currentState = log.getCurrentTestCaseState();
@@ -823,6 +836,17 @@ public class AgentWsImpl {
         }
 
         return "<Caller: " + request.getRemoteAddr() + "; ATS UID: " + uid + ">";
+    }
+    
+    private String getAgentHostAddress() {
+        
+        MessageContext msgx = wsContext.getMessageContext();
+
+        HttpServletRequest request = ((HttpServletRequest) msgx.get(MessageContext.SERVLET_REQUEST));
+
+
+        return request.getLocalAddr() + ":" + request.getLocalPort();
+        
     }
 
     private void handleExceptions(
