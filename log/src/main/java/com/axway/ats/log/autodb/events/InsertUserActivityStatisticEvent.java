@@ -48,7 +48,7 @@ public class InsertUserActivityStatisticEvent extends TestCaseLoggingEvent {
                                              String statisticValues,
                                              long timestamp ) {
 
-        super(loggerFQCN, logger, "Insert system statistic", LoggingEventType.INSERT_USER_ACTIVITY_STAT);
+        super(loggerFQCN, logger, "Insert user activity statistic " + statisticIds +"|"+ statisticValues, LoggingEventType.INSERT_USER_ACTIVITY_STAT);
 
         this.monitoredMachine = monitoredMachine;
         this.statisticIds = statisticIds;
