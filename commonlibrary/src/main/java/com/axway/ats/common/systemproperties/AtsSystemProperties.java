@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,12 +76,6 @@ public class AtsSystemProperties {
     // Java secure channel verbose mode
     @PublicAtsApi
     public static final String  CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
-
-    /**
-     * Toggle whether ATS Agent will be configured and flag as configured by both SystemMonitor and TestcaseStateListener.
-     * This fix is when user wants to stop monitoring and continue using the same agent (executing actions).
-     * */
-    public static final String  MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
 
     /**
      * Toggle whether to log all of the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
