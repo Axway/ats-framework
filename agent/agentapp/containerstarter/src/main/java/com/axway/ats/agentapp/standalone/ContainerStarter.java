@@ -37,6 +37,7 @@ import org.apache.log4j.FileAppender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
@@ -334,6 +335,15 @@ public class ContainerStarter {
         String pattern = (String) variables.get("logging.pattern");
         String agentPort = (String) variables.get("ats.agent.default.port");
         String agentSeverity = (String) variables.get("logging.severity");
+        
+        /*
+         * If the log4j.xml file has user-defined/thirdparty filters, they must be in the classpath (inside container directory)
+         * */
+        boolean enableLog4jConfigFile = Boolean.valueOf((String) variables.get("logging.enable.log4j.file"));
+        
+        if (enableLog4jConfigFile) {
+            DOMConfigurator.configure("log4j.xml"); // on the same level as agent.sh/.bat
+        }
 
         // check agent logging severity and set the appropriate level
         if ("INFO".equalsIgnoreCase(agentSeverity)) {
