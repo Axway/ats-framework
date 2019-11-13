@@ -18,12 +18,31 @@ package com.axway.ats.core.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.List;
 
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
 public class ReflectionUtils {
+
+    public static List<Field>
+            getAllFields( @Validate( name = "instance", type = ValidationType.NOT_NULL) Object instance,
+                          @Validate( name = "deepSearch", type = ValidationType.NOT_NULL) boolean deepSearch ) {
+
+        new Validator().validateMethodParameters(new Object[]{ instance, deepSearch });
+
+        Field[] fieldsArr = null;
+
+        if (deepSearch) {
+            fieldsArr = instance.getClass().getFields();
+        } else {
+            fieldsArr = instance.getClass().getDeclaredFields();
+        }
+
+        return Arrays.asList(fieldsArr);
+    }
 
     /**
      * Set field value from instance.</br>
