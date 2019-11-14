@@ -215,7 +215,7 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>6.1.0</version>
+            <version>7.0.0</version>
             <exclusions> <!-- Rely on versions referenced by selenium-java -->
                 <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
@@ -226,6 +226,7 @@
                     <artifactId>gson</artifactId>
                 </exclusion>
                 <exclusion>
+                    <!-- Excluding guava version from io.appium because if it is too old compared to Selenium -->
                 	<groupId>com.google.guava</groupId>
                 	<artifactId>guava</artifactId>
                 </exclusion>

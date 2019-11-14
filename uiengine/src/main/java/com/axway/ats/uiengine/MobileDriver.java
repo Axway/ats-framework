@@ -21,6 +21,9 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import io.appium.java_client.remote.AutomationName;
+import io.appium.java_client.remote.IOSMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
@@ -179,7 +182,7 @@ public class MobileDriver extends UiDriver {
             url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
             // http://appium.io/slate/en/master/?java#appium-server-capabilities
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-            desiredCapabilities.setCapability("automationName", "Appium");
+            desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "Appium");
             if (isAndroidAgent) {
 
                 // start emulator:          .../sdk/tools/emulator -avd vmname
@@ -196,6 +199,7 @@ public class MobileDriver extends UiDriver {
                 }
                 platformName = "Android";
             } else {
+                desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AutomationName.IOS_XCUI_TEST);
                 platformName = "iOS";
             }
             desiredCapabilities.setCapability("platformName", platformName);
@@ -204,11 +208,13 @@ public class MobileDriver extends UiDriver {
             if (!StringUtils.isNullOrEmpty(this.udid)) {
                 desiredCapabilities.setCapability("udid", this.udid);
             }
-            desiredCapabilities.setCapability("app", appPath);
+            desiredCapabilities.setCapability(MobileCapabilityType.APP /*"app" */, appPath);
             desiredCapabilities.setCapability("autoLaunch", true);
             desiredCapabilities.setCapability("newCommandTimeout", 30 * 60);
             desiredCapabilities.setCapability("noReset",
                                               true); // don’t reset settings and app state before this session
+            // sometimes environment has performance problems
+            desiredCapabilities.setCapability(IOSMobileCapabilityType.LAUNCH_TIMEOUT, 500_000); // in ms
             // desiredCapabilities.setCapability( "fullReset", true ); // clean all Android/iOS settings (iCloud settings), close and uninstall the app
 
             if (isAndroidAgent) {
@@ -229,6 +235,7 @@ public class MobileDriver extends UiDriver {
             this.screenDimensions = driver.manage().window().getSize(); // must be called in NATIVE context
 
             mobileEngine = new MobileEngine(this, this.mobileDeviceUtils);
+            // log.info("Application file at " +  appPath + " is started and initialized");
         } catch (Exception e) {
             throw new MobileOperationException(
                     "Error starting connection to " + platformName + " device and application "
@@ -259,6 +266,17 @@ public class MobileDriver extends UiDriver {
     public void terminateApp( String applicationPackage ) {
 
         driver.terminateApp(applicationPackage); // bundleID
+    }
+
+    /**
+     * Remove application by name
+     *
+     * @param applicationPackage - bundle identifier or application ID of the application to be removed
+     */
+    @PublicAtsApi
+    public void removeApp( String applicationPackage ) {
+
+        driver.removeApp(applicationPackage);
     }
 
     /**

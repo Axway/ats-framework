@@ -48,6 +48,9 @@ public class UiEngineAspect {
         }
 
         String methodName = point.getSignature().getName();
+        if (log.isTraceEnabled()) {
+            log.trace("--> Invoked aspect for method " + methodName);
+        }
 
         String propertiesString = " ";
         if (point.getThis() != null) { // not a static method

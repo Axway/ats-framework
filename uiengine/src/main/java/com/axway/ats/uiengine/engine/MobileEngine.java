@@ -17,6 +17,8 @@ package com.axway.ats.uiengine.engine;
 
 import java.time.Duration;
 
+import io.appium.java_client.ios.IOSDriver;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.WebElement;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -50,6 +52,7 @@ import io.appium.java_client.android.nativekey.KeyEvent;
  */
 @PublicAtsApi
 public class MobileEngine extends AbstractEngine {
+    private static final Logger LOG = Logger.getLogger(MobileEngine.class);
 
     private AppiumDriver<? extends WebElement> appiumDriver;
 
@@ -304,10 +307,12 @@ public class MobileEngine extends AbstractEngine {
     public class Device {
 
         /**
-         * @param appPath application absolute path
-         *
-         * NOTE: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br/>
-         *  Example:  export PATH=/opt/android/android-sdk_r24.0.2/platform-tools/:$PATH
+         *  <p>Install application.</p>
+         *  <p>
+         *      <em>NOTE</em>: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br/>
+         *      Example:  export PATH=/opt/android/android-sdk_r24.0.2/platform-tools/:$PATH
+         *  </p>
+         *  @param appPath application absolute path or relative to the started Appium server
          */
         @PublicAtsApi
         public void installApp(
@@ -534,6 +539,23 @@ public class MobileEngine extends AbstractEngine {
                                   String localFilePath ) {
 
             mobileDeviceUtils.copyFileFrom(deviceFilePath, localFilePath);
+        }
+
+        /**
+         * Get clipboard contents with text assumed
+         * @return text contents
+         */
+        @PublicAtsApi
+        public String getClipboardText() {
+
+            if (appiumDriver instanceof IOSDriver<?>) {
+                return ((IOSDriver<? extends WebElement>) appiumDriver).getClipboardText();
+            } else if (appiumDriver instanceof AndroidDriver<?>) {
+                return ((AndroidDriver<? extends WebElement>) appiumDriver).getClipboardText();
+            } else {
+                throw new IllegalStateException("Mobile driver instance not detected as Android or iOS one. "
+                                                + "Report an issue. Instance: " + appiumDriver);
+            }
         }
     }
 }
