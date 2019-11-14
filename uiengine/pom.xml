@@ -17,8 +17,7 @@
 
     <properties>
         <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
-        <selelnium-htmlunit-driver.version>2.36.0
-        </selelnium-htmlunit-driver.version> <!-- might be overwritten with more recent version 2.35.1 -->
+        <selelnium-htmlunit-driver.version>2.36.0</selelnium-htmlunit-driver.version>
         <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)</selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
@@ -32,9 +31,9 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>${java.classlevel.version}
-                    </source> <!-- On Maven import, at least Java 8 required by Selenium code -->
+                    <source>${java.classlevel.version}</source> <!-- On Maven import, at least Java 8 required by Selenium code -->
                     <target>${java.classlevel.version}</target>
+                    <encoding>UTF-8</encoding>
                 </configuration>
             </plugin>
             <plugin>

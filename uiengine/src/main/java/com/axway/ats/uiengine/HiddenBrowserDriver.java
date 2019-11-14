@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import com.gargoylesoftware.htmlunit.util.Cookie;
 import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 
 /**
- * A driver operating over
+ * A non-visual Web driver operating over
  * <a href="http://htmlunit.sourceforge.net/">HTML Unit</a> browser.
  * Using Selenium <a href="https://github.com/SeleniumHQ/htmlunit-driver">htmlunit-driver</a> WebDriver.
  *

@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2019 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,22 +49,22 @@ import io.appium.java_client.ios.IOSDriver;
 @PublicAtsApi
 public class MobileDriver extends UiDriver {
 
-    private static final Logger      log                     = Logger.getLogger(MobileDriver.class);
+    private static final Logger log = Logger.getLogger(MobileDriver.class);
 
     @PublicAtsApi
-    public static final String       DEVICE_ANDROID_EMULATOR = "Android Emulator";
+    public static final String DEVICE_ANDROID_EMULATOR = "Android Emulator";
     @PublicAtsApi
-    public static final String       DEVICE_ANDROID          = "Android";
+    public static final String DEVICE_ANDROID          = "Android";
     @PublicAtsApi
-    public static final String       DEVICE_IPHONE_SIMULATOR = "iPhone Simulator";
+    public static final String DEVICE_IPHONE_SIMULATOR = "iPhone Simulator";
     @PublicAtsApi
-    public static final String       DEVICE_IPAD_SIMULATOR   = "iPad Simulator";
+    public static final String DEVICE_IPAD_SIMULATOR   = "iPad Simulator";
     @PublicAtsApi
-    public static final String       NATIVE_CONTEXT          = "NATIVE_APP";
+    public static final String NATIVE_CONTEXT          = "NATIVE_APP";
 
-    private static final String      ANDROID_HOME_ENV_VAR    = "ANDROID_HOME";
-    private static final int         MAX_ADB_RELATED_RETRIES = 2;
-    private static final int         DEFAULT_APPIUM_PORT     = 4723;
+    private static final String ANDROID_HOME_ENV_VAR    = "ANDROID_HOME";
+    private static final int    MAX_ADB_RELATED_RETRIES = 2;
+    private static final int    DEFAULT_APPIUM_PORT     = 4723;
 
     private AppiumDriver<? extends WebElement> driver;
     private String                             deviceName        = null;
@@ -75,12 +75,12 @@ public class MobileDriver extends UiDriver {
     private MobileEngine                       mobileEngine;
     private boolean                            isWorkingRemotely = false;
 
-    private boolean                  isAndroidAgent          = false;
-    private String                   androidHome             = null;
-    private String                   adbLocation             = null;
-    private Dimension                screenDimensions;
+    private boolean   isAndroidAgent = false;
+    private String    androidHome    = null;
+    private String    adbLocation    = null;
+    private Dimension screenDimensions;
 
-    private MobileDeviceUtils        mobileDeviceUtils;
+    private MobileDeviceUtils mobileDeviceUtils;
 
     public MobileDriver( String deviceName, String platformVersion, String udid ) {
 
@@ -173,7 +173,10 @@ public class MobileDriver extends UiDriver {
     public void start( String appPath ) {
 
         log.info("Starting mobile testing session to device: " + getDeviceDescription());
+        URL url = null;
+        String platformName = null;
         try {
+            url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
             // http://appium.io/slate/en/master/?java#appium-server-capabilities
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
             desiredCapabilities.setCapability("automationName", "Appium");
@@ -187,15 +190,15 @@ public class MobileDriver extends UiDriver {
                     readAndroidHomeFromEnvironment();
                     if (this.adbLocation == null) {
                         throw new MobileOperationException("You must specify a valid Android home location or define "
-                                                           + ANDROID_HOME_ENV_VAR
-                                                           + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder");
+                                                           + ANDROID_HOME_ENV_VAR + " environment variable."
+                                                           + " The ADB executable must be located in a 'platform-tools/' subfolder");
                     }
                 }
-                desiredCapabilities.setCapability("platformName", "Android");
+                platformName = "Android";
             } else {
-
-                desiredCapabilities.setCapability("platformName", "iOS");
+                platformName = "iOS";
             }
+            desiredCapabilities.setCapability("platformName", platformName);
             desiredCapabilities.setCapability("deviceName", deviceName);
             desiredCapabilities.setCapability("platformVersion", this.platformVersion);
             if (!StringUtils.isNullOrEmpty(this.udid)) {
@@ -204,10 +207,10 @@ public class MobileDriver extends UiDriver {
             desiredCapabilities.setCapability("app", appPath);
             desiredCapabilities.setCapability("autoLaunch", true);
             desiredCapabilities.setCapability("newCommandTimeout", 30 * 60);
-            desiredCapabilities.setCapability("noReset", true); // don’t reset settings and app state before this session
+            desiredCapabilities.setCapability("noReset",
+                                              true); // don’t reset settings and app state before this session
             // desiredCapabilities.setCapability( "fullReset", true ); // clean all Android/iOS settings (iCloud settings), close and uninstall the app
 
-            URL url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
             if (isAndroidAgent) {
                 driver = new AndroidDriver<WebElement>(url, desiredCapabilities);
             } else {
@@ -227,9 +230,11 @@ public class MobileDriver extends UiDriver {
 
             mobileEngine = new MobileEngine(this, this.mobileDeviceUtils);
         } catch (Exception e) {
-            throw new MobileOperationException("Error starting connection to device and application under test."
-                                               + " Check if there is connection to device and the Appium server is running.",
-                                               e);
+            throw new MobileOperationException(
+                    "Error starting connection to " + platformName + " device and application "
+                    + "under test. Check if there is connection to the device and the Appium "
+                    + "server at " + url + " is running.",
+                    e);
         }
     }
 
@@ -237,21 +242,23 @@ public class MobileDriver extends UiDriver {
     public void stop() {
 
         log.info("Stopping mobile testing session to device: " + getDeviceDescription());
-
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        } else {
+            log.warn(this.getClass().getSimpleName() + " seems not started. Check that you have invoked start(appName) "
+                     + "before stop()");
+        }
     }
 
     /**
-     * Stop application by package name and the session to device
-     * @deprecated Use {@link #stop()} method instead
+     * Stop application by name
      *
      * @param applicationPackage application package name
      */
     @PublicAtsApi
-    @Deprecated
-    public void stop( String applicationPackage ) {
+    public void terminateApp( String applicationPackage ) {
 
-        stop();
+        driver.terminateApp(applicationPackage); // bundleID
     }
 
     /**
@@ -441,11 +448,11 @@ public class MobileDriver extends UiDriver {
     private String getDeviceDescription() {
 
         return deviceName + (host != null
-                                          ? ", host: " + host
-                                          : "")
+                             ? ", host: " + host
+                             : "")
                + (port > 0
-                           ? ", port: " + port
-                           : "");
+                  ? ", port: " + port
+                  : "");
     }
 
     /**

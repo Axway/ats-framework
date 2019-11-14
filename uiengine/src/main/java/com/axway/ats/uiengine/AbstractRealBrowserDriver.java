@@ -351,7 +351,7 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
                 }
             }
 
-            log.info("Openning URL: " + url);
+            log.info("Opening URL: " + url);
             webDriver.get(url);
             if (this instanceof com.axway.ats.uiengine.PhantomJsDriver) {
                 webDriver.manage().window().setSize(new Dimension(1280, 1024));
