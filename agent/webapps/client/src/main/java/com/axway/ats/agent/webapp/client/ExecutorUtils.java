@@ -45,7 +45,7 @@ public class ExecutorUtils {
             // check if new unique id must be generated each time
             if (!useNewUuId) {
                 // create temp file containing caller working directory and the unique id
-                String userWorkingDirectory = AtsSystemProperties.SYSTEM_USER_HOME_DIR;
+                String userWorkingDirectory = AtsSystemProperties.USER_CURRENT_DIR;
                 String uuiFileLocation = AtsSystemProperties.SYSTEM_USER_TEMP_DIR
                                          + AtsSystemProperties.SYSTEM_FILE_SEPARATOR + "ats_uid.txt";
                 File uuiFile = new File(uuiFileLocation);
