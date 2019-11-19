@@ -349,6 +349,11 @@
                 <artifactId>commons-compress</artifactId>
                 <version>${commons-compress.version}</version>
             </dependency>
+            <dependency> <!-- Used in FileSystemOperations.getLastLinesFromFile() -->
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>${commons-io.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>com.oracle.jdbc</groupId>
