@@ -183,7 +183,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     Level level = Logger.getRootLogger().getLevel();
                     Logger.getRootLogger().setLevel(Level.OFF);
 
-                    AtsConsoleLogger.level = level;
+                    AtsConsoleLogger.setLevel(level);
 
                     // create the queue logging thread and the DbEventRequestProcessor
                     if (queueLogger == null) {
@@ -195,7 +195,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel(level);
-                    AtsConsoleLogger.level = null;
+                    AtsConsoleLogger.setLevel(level);
 
                     return;
                 case END_RUN: {
@@ -212,13 +212,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     level = Logger.getRootLogger().getLevel();
                     Logger.getRootLogger().setLevel(Level.OFF);
 
-                    AtsConsoleLogger.level = level;
+                    AtsConsoleLogger.setLevel(level);
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel(level);
-                    AtsConsoleLogger.level = null;
+                    AtsConsoleLogger.setLevel(level);
 
                     //this event has already been through the queue
                     return;
@@ -250,7 +250,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     /**
      * Get {@link IDbReadAccess} using the appender's db configuration
-     * @throws DatabaseAccessException 
+     * @throws DatabaseAccessException In case of DB error
      * */
     public IDbReadAccess obtainDbReadAccessObject() throws DatabaseAccessException {
 
@@ -344,7 +344,6 @@ public class ActiveDbAppender extends AbstractDbAppender {
         checkForExceptions();
 
         //this event has already been through the queue
-        return;
     }
 
     public String getHost() {

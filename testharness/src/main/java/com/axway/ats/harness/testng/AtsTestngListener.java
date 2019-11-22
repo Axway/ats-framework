@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener2;
 import org.testng.ISuite;
@@ -54,49 +55,70 @@ import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.model.TestCaseResult;
+import org.testng.xml.XmlSuite;
 
 public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener2 {
 
     /** Skip checking whether ActiveDbAppender is attached. 
      *  This is done in order to enable execution of tests when that appender is not attached/presented
      * */
-    private static final AtsDbLogger logger                                = AtsDbLogger.getLogger("com.axway.ats", true);
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
 
-    private static final String      MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
+    private static final String MSG__TEST_PASSED = "[TestNG]: TEST PASSED";
 
-    private static final String      MSG__TEST_FAILED                      = "[TestNG]: TEST FAILED";
+    private static final String MSG__TEST_FAILED = "[TestNG]: TEST FAILED";
 
-    private static final String      MSG__TEST_SKIPPED_DEPENDENCY          = "[TestNG]: TEST SKIPPED due to dependency failure";
+    private static final String MSG__TEST_SKIPPED_DEPENDENCY = "[TestNG]: TEST SKIPPED due to dependency failure";
 
-    private static final String      MSG__TEST_SKIPPED_CONFIGURATION       = "[TestNG]: TEST SKIPPED due to configuration failure";
+    private static final String MSG__TEST_SKIPPED_CONFIGURATION = "[TestNG]: TEST SKIPPED due to configuration failure";
 
-    private static final String      MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
+    private static final String MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
 
-    private final String             JAVA_FILE_EXTENSION                   = ".java";
+    private final String JAVA_FILE_EXTENSION = ".java";
 
-    private String                   javaFileContent;
-    private String                   projectSourcesFolder;
+    private String javaFileContent;
+    private String projectSourcesFolder;
 
     /* keeps track if the current testcase name */
-    private String                   currentTestcaseName                   = null;
-    /* keeps track if the current suite name */
-    private static String            currentSuiteName                      = null;
+    private        String currentTestcaseName = null;
+    /* keeps track if the current suite name. Not parallel mode safe */
+    private static String currentSuiteName    = null;
 
     /* keeps track of the test result for the last ended testcase */
-    private int                      lastTestcaseResult                    = -1;
-    
-    private static boolean           testDescAvailable                     = false;
+    private int lastTestcaseResult = -1;
+
+    private static boolean testDescAvailable = false;
+
+    /**
+     * Whether traces for listener's run events are enabled. Enabled via {@link AtsSystemProperties#LOG__CACHE_EVENTS_SOURCE_LOCATION}
+     */
+    private final static boolean          IS_TRACE_ENABLED;
+    private final static AtsConsoleLogger ATS_LOGGER;
+
+    static {
+        IS_TRACE_ENABLED = AtsSystemProperties.getPropertyAsBoolean(
+                AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION, false);
+        ATS_LOGGER = new AtsConsoleLogger(AtsTestngListener.class);
+    }
 
     public AtsTestngListener() {
 
         ActiveDbAppender.isBeforeAndAfterMessagesLoggingSupported = true;
+        if (IS_TRACE_ENABLED) {
+            ATS_LOGGER.log(this.hashCode() + ": New ATS TestNG listener instance is created. Exception will follow",
+                           new Exception("ATS TestNG listener initialization trace"));
+        }
     }
 
     @Override
-    public void beforeInvocation( IInvokedMethod method, ITestResult testResult ) {}
+    public void beforeInvocation( IInvokedMethod method, ITestResult testResult ) {
+
+    }
 
     @Override
-    public void afterInvocation( IInvokedMethod method, ITestResult testResult ) {}
+    public void afterInvocation( IInvokedMethod method, ITestResult testResult ) {
+
+    }
 
     @Override
     public void beforeInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
@@ -104,7 +126,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         if (!ActiveDbAppender.isAttached) {
             return;
         }
-        
+
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
 
             if (method.getTestMethod().isBeforeClassConfiguration()) { // check if method is @BeforeClass
@@ -201,7 +223,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void afterInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
-        
+
         if (!ActiveDbAppender.isAttached) {
             return;
         }
@@ -263,8 +285,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 } else {
                     // should not happen, as before reaching this part of the code, a testcase has to be ended
                     // but, just in case, throw an Exception
-                    throw new RuntimeException("It seems that there is no previously ended testcase. Last testcase result is '"
-                                               + -1 + "', which is not a valid TestcaseResult value");
+                    throw new RuntimeException(
+                            "It seems that there is no previously ended testcase. Last testcase result is '"
+                            + -1 + "', which is not a valid TestcaseResult value");
                 }
 
                 if (testResult.getStatus() == ITestResult.FAILURE) {
@@ -323,7 +346,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void onStart( ISuite suite ) {
-        
+
+        if (IS_TRACE_ENABLED) {
+            ATS_LOGGER.log(this.hashCode() + ": TestNG start run (suite) event received. Run name: " + suite.getName());
+            if (suite instanceof XmlSuite) {
+                XmlSuite xmlSuite = (XmlSuite) suite;
+                ATS_LOGGER.log(this.hashCode() + ": Suite file: " + xmlSuite.getFileName()
+                               + ": Suite files: " + xmlSuite.getSuiteFiles().toString());
+            }
+        }
+
         if (!ActiveDbAppender.isAttached) {
             return;
         }
@@ -336,7 +368,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
 
         // start a new run
-        String hostNameIp = "";
+        String hostNameIp;
         try {
             InetAddress addr = InetAddress.getLocalHost();
             hostNameIp = addr.getHostName() + "/" + addr.getHostAddress();
@@ -357,7 +389,11 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     @Override
     public void onFinish( ISuite suite ) {
-        
+
+        if (IS_TRACE_ENABLED) {
+            ATS_LOGGER.log(this.hashCode() + ": End run event received", new Exception("Debugging trace"));
+        }
+
         if (!ActiveDbAppender.isAttached) {
             return;
         }
@@ -377,11 +413,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         StringBuilder systemInformation = new StringBuilder();
 
         appendMessage(systemInformation, "ATS version: '", AtsVersion.getAtsVersion());
-        appendMessage(systemInformation, " os.name: '", (String) System.getProperty("os.name"));
-        appendMessage(systemInformation, " os.arch: '", (String) System.getProperty("os.arch"));
-        appendMessage(systemInformation, " java.version: '",
-                      (String) System.getProperty("java.version"));
-        appendMessage(systemInformation, " java.home: '", (String) System.getProperty("java.home"));
+        appendMessage(systemInformation, " os.name: '", System.getProperty("os.name"));
+        appendMessage(systemInformation, " os.arch: '", System.getProperty("os.arch"));
+        appendMessage(systemInformation, " java.version: '", System.getProperty("java.version"));
+        appendMessage(systemInformation, " java.home: '", System.getProperty("java.home"));
 
         List<String> ipList = new ArrayList<String>();
         for (InetAddress ip : HostUtils.getAllIpAddresses()) {
@@ -429,8 +464,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * set the package name to 'default'
          */
         String packageName = (testClass.getPackage() != null)
-                                                              ? testClass.getPackage().getName()
-                                                              : "default";
+                             ? testClass.getPackage().getName()
+                             : "default";
 
         // clear the previously saved java file content, since a new suite is about to start
         javaFileContent = null;
@@ -523,17 +558,17 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
 
         // 2. TestNG @Test annotation
-        Test testngDescription = testCaseMethod.getAnnotation( Test.class );
-        if( testngDescription != null ) {
-            if( testngDescription.description().length() > 0 ) {
+        Test testngDescription = testCaseMethod.getAnnotation(Test.class);
+        if (testngDescription != null) {
+            if (testngDescription.description().length() > 0) {
                 return testngDescription.description();
             }
             // 3. Javadoc for this test method
-            if( javaFileContent == null ) {
-                saveJavaFileContent( testClass );
+            if (javaFileContent == null) {
+                saveJavaFileContent(testClass);
             }
-            if( javaFileContent != null ) {
-                return parseFileForJavadoc( javaFileContent, testName );
+            if (javaFileContent != null) {
+                return parseFileForJavadoc(javaFileContent, testName);
             }
         }
 
@@ -553,59 +588,65 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         InputStream fileStream;
 
         try {
-            fileStream = testClass.getClassLoader().getResourceAsStream(javaFileName); // if source is also copied in classpath (i.e. next to class file)
+            fileStream = testClass.getClassLoader()
+                                  .getResourceAsStream(
+                                          javaFileName); // if source is also copied in classpath (i.e. next to class file)
             if (fileStream != null) {
                 javaFileContent = IoUtils.streamToString(fileStream);
 
                 return;
             } else {
-                sourceFolderLocation = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
+                sourceFolderLocation = AtsSystemProperties.getPropertyAsString(
+                        AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
                 if (sourceFolderLocation == null) {
                     Map<String, String> envMap = System.getenv();
                     sourceFolderLocation = envMap.get(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
                 }
-                if( sourceFolderLocation == null ) {
-                    if( projectSourcesFolder != null ) {
+                if (sourceFolderLocation == null) {
+                    if (projectSourcesFolder != null) {
                         sourceFolderLocation = projectSourcesFolder;
                     } else {
 
-                        if( !testDescAvailable ) {
-                            URL testClassPath = testClass.getClassLoader().getResource( "." ); // this could be null when failsafe maven plugin is used
-                            if( testClassPath == null ) {
+                        if (!testDescAvailable) {
+                            URL testClassPath = testClass.getClassLoader()
+                                                         .getResource(
+                                                                 "."); // this could be null when failsafe maven plugin is used
+                            if (testClassPath == null) {
                                 testDescAvailable = true;
-                                logger.info( "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. " );
+                                logger.info(
+                                        "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. ");
 
                                 return;
                             }
-                            URI uri = new URI( testClassPath.getPath() );
+                            URI uri = new URI(testClassPath.getPath());
                             URI parentUri = uri;
                             String pathToMainFolder = "src/main/java";
                             String pathToTestFolder = "src/test/java";
 
-                            for( int i = 3; i > 0; i-- ) {//we try maximum 3 level up in the directory
+                            for (int i = 3; i > 0; i--) {//we try maximum 3 level up in the directory
 
-                                parentUri = parentUri.resolve( ".." );
-                                if( new File( parentUri + "src/" ).exists() ) {
+                                parentUri = parentUri.resolve("..");
+                                if (new File(parentUri + "src/").exists()) {
                                     break;
                                 }
                             }
 
                             String filePath = parentUri.toString() + pathToTestFolder + "/" + javaFileName;
-                            File javaFile = new File( filePath );
+                            File javaFile = new File(filePath);
 
-                            if( javaFile.exists() ) {
+                            if (javaFile.exists()) {
                                 sourceFolderLocation = parentUri + pathToTestFolder;
                                 projectSourcesFolder = pathToTestFolder;
                             } else {
                                 filePath = parentUri.toString() + pathToMainFolder + "/" + javaFileName;
-                                javaFile = new File( filePath );
+                                javaFile = new File(filePath);
 
-                                if( javaFile.exists() ) {
+                                if (javaFile.exists()) {
                                     sourceFolderLocation = parentUri + pathToMainFolder;
                                     projectSourcesFolder = sourceFolderLocation;
                                 }
                             }
-                            logger.debug( "Source location is set to : " + projectSourcesFolder );
+                            logger.debug("Source location is set to : " + projectSourcesFolder);
                         }
                     }
                 }
@@ -641,7 +682,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         try {
             reader = new BufferedReader(new StringReader(javaFileContent));
             String line;
-            while ( (line = reader.readLine()) != null) {
+            while ((line = reader.readLine()) != null) {
                 m = p.matcher(line);
                 if (m.matches()) {
                     // method found
@@ -663,11 +704,11 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     }
 
     /**
-    * Search for javadoc in the pointed selection from the java file
-    *
-    * @param fileChunk pointed selection from the java file
-    * @return the test javadoc
-    */
+     * Search for javadoc in the pointed selection from the java file
+     *
+     * @param fileChunk pointed selection from the java file
+     * @return the test javadoc
+     */
     private static String getJavadoc( Deque<String> fileChunk ) {
 
         try {
@@ -722,7 +763,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /**
      * Add some meta info about this scenario.
      * This info is supposed to come from the method's java annotations
-     * 
+     *
      * @param testResult
      */
     private void addScenarioMetainfo( ITestResult testResult ) {
@@ -862,9 +903,10 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // check if this is a configuration issue
         List<ITestResult> failedConfigurations = Arrays.asList(context.getFailedConfigurations()
                                                                       .getAllResults()
-                                                                      .toArray(new ITestResult[context.getFailedConfigurations()
-                                                                                                      .getAllResults()
-                                                                                                      .size()]));
+                                                                      .toArray(
+                                                                              new ITestResult[context.getFailedConfigurations()
+                                                                                                     .getAllResults()
+                                                                                                     .size()]));
         for (ITestResult failedResult : failedConfigurations) {
             if (failedResult.getThrowable() != null) {
                 logger.fatal("Configuration failed!", failedResult.getThrowable());
