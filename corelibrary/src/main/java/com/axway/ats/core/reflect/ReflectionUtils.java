@@ -112,7 +112,7 @@ public class ReflectionUtils {
         } catch (Exception e) {
             throw new RuntimeException("Could not obtain field '" + fieldName + "' from class '"
                                        + instance.getClass().getName() + "' " + ( (deepSearch)
-                                                                                               ? " or any of its super classes "
+                                                                                               ? "or any of its super classes "
                                                                                                : ""),
                                        e);
         } finally {

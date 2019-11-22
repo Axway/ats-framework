@@ -650,7 +650,7 @@ public class FileSystemOperations {
     /**
      * Creates a directory
      *
-     * @param directoryName the name of the new directory
+     * @param directoryName the name of the new directory.<br/>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
      */
     @PublicAtsApi
     public void
@@ -671,9 +671,10 @@ public class FileSystemOperations {
     /**
      * Creates a directory on with a specific user and group id
      *
-     * @param directoryName the name of the new directory
+     * @param directoryName the name of the new directory<br/>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
      * @param userId the identification number of the user this file should belong to
      * @param groupId the identification number of the group this file should belong to
+     * Note group and user ID are applied only to the last directory
      */
     @PublicAtsApi
     public void
