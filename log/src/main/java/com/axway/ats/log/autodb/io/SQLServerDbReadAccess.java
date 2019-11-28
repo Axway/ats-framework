@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.io;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -31,6 +31,7 @@ import java.util.Set;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.BackwardCompatibility;
+import com.axway.ats.log.autodb.SqlRequestFormatter;
 import com.axway.ats.log.autodb.entities.Checkpoint;
 import com.axway.ats.log.autodb.entities.CheckpointSummary;
 import com.axway.ats.log.autodb.entities.LoadQueue;

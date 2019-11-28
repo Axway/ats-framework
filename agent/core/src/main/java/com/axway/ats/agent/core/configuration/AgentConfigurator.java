@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@ package com.axway.ats.agent.core.configuration;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;

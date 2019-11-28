@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
-import com.axway.ats.log.autodb.SQLServerDbReadAccess;
 import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.io.SQLServerDbReadAccess;
 import com.axway.ats.log.report.exceptions.ReportExtractorException;
 
 /**

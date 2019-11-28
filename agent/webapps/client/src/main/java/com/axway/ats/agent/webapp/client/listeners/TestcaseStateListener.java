@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,7 +140,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                             // Pass the logging configuration to the remote agent
                             RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
-                                                                                                                                           .getDbLogLevel());
+                                                                                                                                           .getDbLogLevel(),
+                                                                                                                AgentConfigurationLandscape.getInstance(atsAgent)
+                                                                                                                                           .getChunkSize());
                             new RemoteConfigurationManager().pushConfiguration(atsAgent,
                                                                                remoteLoggingConfigurator);
 

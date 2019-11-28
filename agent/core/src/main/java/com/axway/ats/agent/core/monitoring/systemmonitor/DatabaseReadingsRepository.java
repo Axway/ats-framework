@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,21 +22,15 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
-import com.axway.ats.core.dbaccess.DbConnection;
-import com.axway.ats.core.dbaccess.DbUtils;
-import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
-import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.core.threads.ThreadsPerCaller;
-import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.log.appenders.PassiveDbAppender;
-import com.axway.ats.log.autodb.DbAccessFactory;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
-import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.io.DbAccessFactory;
+import com.axway.ats.log.autodb.io.SQLServerDbWriteAccess;
 
 /**
  * Keeps info about all readings that are already populated to the DB.

@@ -157,12 +157,12 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
         String dbDriver = (String) (this.dbConnection).getCustomProperties().get(DbKeys.DRIVER);
         // TODO: check for empty value. Currently assumed jTDS 
-        if (dbDriver != null && "MSSQL".equalsIgnoreCase(dbDriver)) {
+        if (dbDriver != null && DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(dbDriver)) {
             // set directly in DB custom properties
-            return true; 
+            return true;
         } else {
             String sysProperty = System.getProperty(DbConnSQLServer.JDBC_DRIVER_VENDOR_KEY);
-            if ("MSSQL".equalsIgnoreCase(sysProperty)) {
+            if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(sysProperty)) {
                 return true;
             } else {
                 return false;

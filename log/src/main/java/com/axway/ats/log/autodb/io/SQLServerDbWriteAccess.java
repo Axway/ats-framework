@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.io;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -25,12 +25,14 @@ import java.sql.Types;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.concurrent.TimeUnit;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.log.autodb.CheckpointInfo;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbWriteAccess;
@@ -41,33 +43,33 @@ import com.axway.ats.log.model.LoadQueueResult;
 public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
     // the checkpoint log level
-    protected static CheckpointLogLevel  checkpointLogLevel = CheckpointLogLevel.SHORT;
+    protected static CheckpointLogLevel    checkpointLogLevel = CheckpointLogLevel.SHORT;
 
     // when we start we do a quick sanity check
-    boolean                              sanityRun          = false;
+    boolean                                sanityRun          = false;
 
     // the events cache
-    protected DbEventsCache              dbEventsCache;
+    protected DbEventsCache                dbEventsCache;
 
     // the DB statements provider
-    private InsertEventStatementsFactory insertFactory;
+    protected InsertEventStatementsFactory insertFactory;
 
     // if we are using batch mode
-    protected boolean                    isBatchMode;
+    protected boolean                      isBatchMode;
 
     /**
      * When true - we dump info about the usage of the events queue. It is
      * targeted as a debug tool when cannot sent the events to the DB fast
      * enough.
      */
-    private boolean                      isMonitorEventsQueue;
+    protected boolean                      isMonitorEventsQueue;
 
     /**
      * When copying runs/suites/etc, the timestamps are already in UTC.
      * Due to that any further conversion to UTC, will just strip additional hours from the already processed timestamp,
      * leading to incorrect time stamp
      * */
-    protected boolean                    skipUTCConversion  = false;
+    protected boolean                      skipUTCConversion  = false;
 
     public SQLServerDbWriteAccess( DbConnection dbConnection,
                                    boolean isBatchMode ) throws DatabaseAccessException {
@@ -82,13 +84,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             isMonitorEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
                                                                             false);
+
+            setMaxNumberOfCachedEvents(this.chunkSize);
         }
     }
 
     @Override
     public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
 
-        dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
+        if (dbEventsCache != null) {
+            dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
+        }
+
     }
 
     /**
@@ -179,7 +186,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                         boolean closeConnection ) throws DatabaseAccessException {
 
         if (isBatchMode) {
-            dbEventsCache.flushCache();
+            flushCache();
         }
 
         final String errMsg = "Unable to end run with id " + runId;
@@ -827,7 +834,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                               boolean closeConnection ) throws DatabaseAccessException {
 
         if (isBatchMode) {
-            dbEventsCache.flushCache(); // or flushCacheIfNeeded()
+            flushCache();
         }
 
         final String errMsg = "Unable to end load queue with id " + loadQueueId;
@@ -896,11 +903,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         } else {
             // execute this event now
             final String errMsg = "Unable to insert testcase message '" + message + "'";
-            final int indexRowsInserted = 8;
 
             try {
                 insertMessageStatement.execute();
-                if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+
+                if (insertMessageStatement.getUpdateCount() < 1) {
                     throw new DatabaseAccessException(errMsg);
                 }
             } catch (SQLException e) {
@@ -959,11 +966,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             } else {
                 // execute this event now
                 final String errMsg = "Unable to insert run message '" + message + "'";
-                final int indexRowsInserted = 8;
 
                 try {
                     insertMessageStatement.execute();
-                    if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+                    if (insertMessageStatement.getUpdateCount() < 1) {
                         throw new DatabaseAccessException(errMsg);
                     }
                 } catch (SQLException e) {
@@ -1023,11 +1029,10 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             } else {
                 // execute this event now
                 final String errMsg = "Unable to insert suite message '" + message + "'";
-                final int indexRowsInserted = 8;
 
                 try {
                     insertMessageStatement.execute();
-                    if (insertMessageStatement.getInt(indexRowsInserted) < 1) {
+                    if (insertMessageStatement.getUpdateCount() < 1) {
                         throw new DatabaseAccessException(errMsg);
                     }
                 } catch (SQLException e) {
@@ -1627,7 +1632,29 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                  timestamp,
                                  SANITY_HOSTNAME,
                                  false);
+
+            // insert a run message
+            insertRunMessage(SANITY_MESSAGE,
+                             5,
+                             false,
+                             "machine0",
+                             "group1-thread2",
+                             timestamp,
+                             runId,
+                             false);
+
             int suiteId = startSuite("SANITY_PACKAGE", SANITY_SUITE, timestamp, runId, false);
+
+            // insert a run message
+            insertSuiteMessage(SANITY_MESSAGE,
+                               5,
+                               false,
+                               "machine0",
+                               "group1-thread2",
+                               timestamp,
+                               suiteId,
+                               false);
+
             int testcaseId = startTestCase(SANITY_SUITE,
                                            SANITY_SCENARIO,
                                            SANITY_DESCRIPTION,
@@ -1790,11 +1817,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private static final int       MAX_CACHE_EVENTS_DEFAULT_VALUE = 2000;                          // max events to be cached in batch mode
-        private static final long      MAX_CACHE_AGE                  = 10 * 1000;                     // 10 seconds
+        private  long            maxCacheWaitTime                  = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
+                                                                                                                                          10));
 
         private long                   cacheBirthTime;
-        private int                    maxNumberOfCachedEvents        = MAX_CACHE_EVENTS_DEFAULT_VALUE;
+        private int                    maxNumberOfCachedEvents        = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
 
         protected Connection           connection;
 
@@ -1973,7 +2000,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             if (numberEvents > 0) {
                 if (numberEvents >= maxNumberOfCachedEvents) {
                     isTimeToFlush = true;
-                } else if (System.currentTimeMillis() - cacheBirthTime >= MAX_CACHE_AGE) {
+                } else if (System.currentTimeMillis() - cacheBirthTime >= maxCacheWaitTime) {
                     isTimeToFlush = true;
                 }
             }
@@ -2265,9 +2292,9 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         private CallableStatement   insertTestcaseMessageStatement;
         private CallableStatement   insertCheckpointStatement;
 
-        private static final String SP_INSERT_RUN_MESSAGE      = "{ call sp_insert_run_message(?, ?, ?, ?, ?, ?, ?, ?) }";
-        private static final String SP_INSERT_SUITE_MESSAGE    = "{ call sp_insert_suite_message(?, ?, ?, ?, ?, ?, ?, ?) }";
-        private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_RUN_MESSAGE      = "{ call sp_insert_run_message(?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_SUITE_MESSAGE    = "{ call sp_insert_suite_message(?, ?, ?, ?, ?, ?, ?) }";
+        private static final String SP_INSERT_TESTCASE_MESSAGE = "{ call sp_insert_message(?, ?, ?, ?, ?, ?, ?) }";
         private static final String SP_INSERT_CHECKPOINT       = "{ call sp_insert_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }";
 
         public InsertEventStatementsFactory( boolean isBatchMode ) {
@@ -2301,10 +2328,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                   e);
             }
 
-            // apply statement parameters
-            final int indexRowsInserted = 8;
-
             try {
+                // apply statement parameters
                 theStatement.setInt(1, testCaseId);
                 theStatement.setInt(2, level);
                 theStatement.setString(3, message);
@@ -2312,7 +2337,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 theStatement.setString(5, machineName);
                 theStatement.setString(6, threadName);
                 theStatement.setTimestamp(7, new Timestamp(timestamp));
-                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
             } catch (Exception e) {
@@ -2347,10 +2371,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                   e);
             }
 
-            // apply statement parameters
-            final int indexRowsInserted = 8;
-
             try {
+                // apply statement parameters
                 theStatement.setInt(1, runId);
                 theStatement.setInt(2, level);
                 theStatement.setString(3, message);
@@ -2358,7 +2380,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 theStatement.setString(5, machineName);
                 theStatement.setString(6, threadName);
                 theStatement.setTimestamp(7, new Timestamp(timestamp));
-                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
             } catch (Exception e) {
@@ -2393,10 +2414,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                   e);
             }
 
-            // apply statement parameters
-            final int indexRowsInserted = 8;
-
             try {
+                // apply statement parameters
                 theStatement.setInt(1, suiteId);
                 theStatement.setInt(2, level);
                 theStatement.setString(3, message);
@@ -2404,7 +2423,6 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 theStatement.setString(5, machineName);
                 theStatement.setString(6, threadName);
                 theStatement.setTimestamp(7, new Timestamp(timestamp));
-                theStatement.registerOutParameter(indexRowsInserted, Types.INTEGER);
 
                 return theStatement;
             } catch (Exception e) {

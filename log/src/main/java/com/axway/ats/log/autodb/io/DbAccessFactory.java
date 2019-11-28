@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.io;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
@@ -51,17 +55,40 @@ public class DbAccessFactory {
                                                                     loggingAppender.getDatabase(),
                                                                     loggingAppender.getUser(),
                                                                     loggingAppender.getPassword());
+        SQLServerDbWriteAccess writeAccess = null;
         if (mssqlException == null) {
 
-            // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
-                                               Integer.parseInt(loggingAppender.getPort()),
-                                               loggingAppender.getDatabase(),
-                                               loggingAppender.getUser(),
-                                               loggingAppender.getPassword(), null);
-
             // Create the database access layer
-            return new SQLServerDbWriteAccess(dbConnection, false);
+            if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(loggingAppender.getAppenderConfig().getDriver())) {
+                // Create DB connection based on the log4j system settings
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
+                dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
+                                                   Integer.parseInt(loggingAppender.getPort()),
+                                                   loggingAppender.getDatabase(),
+                                                   loggingAppender.getUser(),
+                                                   loggingAppender.getPassword(), props);
+                writeAccess = new SQLServerDbWriteAccessMSSQL(dbConnection, false);
+                writeAccess.setMaxNumberOfCachedEvents(Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                       .getChunkSize()));
+                return writeAccess;
+            } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
+                                                                                     .getDriver())) {
+                // Create DB connection based on the log4j system settings
+                dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
+                                                   Integer.parseInt(loggingAppender.getPort()),
+                                                   loggingAppender.getDatabase(),
+                                                   loggingAppender.getUser(),
+                                                   loggingAppender.getPassword(), null);
+                writeAccess = new SQLServerDbWriteAccess(dbConnection, false);
+                writeAccess.setMaxNumberOfCachedEvents(Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                       .getChunkSize()));
+                return writeAccess;
+            } else {
+                throw new IllegalArgumentException("Appender configuration specified SQL Server driver to be '"
+                                                   + loggingAppender.getAppenderConfig().getDriver()
+                                                   + "' which is not supported");
+            }
 
         } else {
             Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getHost(),
@@ -78,7 +105,10 @@ public class DbAccessFactory {
                                                     loggingAppender.getPassword(), null);
 
                 // Create the database access layer
-                return new PGDbWriteAccess(dbConnection, false);
+                writeAccess = new PGDbWriteAccess(dbConnection, false);
+                writeAccess.setMaxNumberOfCachedEvents(Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                       .getChunkSize()));
+                return writeAccess;
             } else {
                 String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + loggingAppender.getHost() + ":"
                                 + loggingAppender.getPort() +
@@ -119,17 +149,34 @@ public class DbAccessFactory {
                                                                     loggingAppender.getAppenderConfig().getDatabase(),
                                                                     loggingAppender.getAppenderConfig().getUser(),
                                                                     loggingAppender.getAppenderConfig().getPassword());
+        SQLServerDbWriteAccess writeAccess = null;
         if (mssqlException == null) {
 
-            // Create DB connection based on the log4j system settings
-            dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
-                                               Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
-                                               loggingAppender.getAppenderConfig().getDatabase(),
-                                               loggingAppender.getAppenderConfig().getUser(),
-                                               loggingAppender.getAppenderConfig().getPassword(), null);
-
             // Create the database access layer
-            return new SQLServerDbWriteAccess(dbConnection, false);
+            if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(loggingAppender.getAppenderConfig().getDriver())) {
+                // Create DB connection based on the log4j system settings
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
+                dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
+                                                   Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
+                                                   loggingAppender.getAppenderConfig().getDatabase(),
+                                                   loggingAppender.getAppenderConfig().getUser(),
+                                                   loggingAppender.getAppenderConfig().getPassword(), null);
+                writeAccess = new SQLServerDbWriteAccessMSSQL(dbConnection, false);
+            } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
+                                                                                     .getDriver())) {
+                // Create DB connection based on the log4j system settings
+                dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
+                                                   Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
+                                                   loggingAppender.getAppenderConfig().getDatabase(),
+                                                   loggingAppender.getAppenderConfig().getUser(),
+                                                   loggingAppender.getAppenderConfig().getPassword(), null);
+                writeAccess = new SQLServerDbWriteAccess(dbConnection, false);
+            } else {
+                throw new IllegalArgumentException("Appender configuration specified SQL Server driver to be '"
+                                                   + loggingAppender.getAppenderConfig().getDriver()
+                                                   + "' which is not supported");
+            }
 
         } else {
             Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(loggingAppender.getAppenderConfig()
@@ -151,7 +198,7 @@ public class DbAccessFactory {
                                                     loggingAppender.getAppenderConfig().getPassword(), null);
 
                 // Create the database access layer
-                return new PGDbWriteAccess(dbConnection, false);
+                writeAccess = new PGDbWriteAccess(dbConnection, false);
             } else {
                 String errMsg = "Neither MSSQL, nor PostgreSQL server at '"
                                 + loggingAppender.getAppenderConfig().getHost() +
@@ -162,7 +209,13 @@ public class DbAccessFactory {
                                 + pgsqlException;
                 throw new DatabaseAccessException(errMsg);
             }
+
         }
+        if (writeAccess != null) {
+            writeAccess.setMaxNumberOfCachedEvents(Integer.parseInt(loggingAppender.getAppenderConfig()
+                                                                                   .getChunkSize()));
+        }
+        return writeAccess;
 
     }
 

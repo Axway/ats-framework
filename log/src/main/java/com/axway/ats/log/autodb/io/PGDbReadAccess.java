@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.io;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.log.autodb.SqlRequestFormatter;
 import com.axway.ats.log.autodb.entities.Checkpoint;
 import com.axway.ats.log.autodb.entities.Machine;
 import com.axway.ats.log.autodb.entities.RunMetaInfo;

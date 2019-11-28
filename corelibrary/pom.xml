@@ -120,8 +120,6 @@
         <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
-            <version>${com.microsoft.sqlserver.version}</version>
-            <optional>true</optional>
         </dependency>
         <dependency>
             <groupId>com.oracle.jdbc</groupId>

@@ -21,6 +21,7 @@ public class CheckpointSummary extends DbEntity {
 
     public int                checkpointSummaryId;
     public String             name;
+    public int                loadQueueId;
 
     public int                numTotal;
     public int                numRunning;

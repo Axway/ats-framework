@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.log.autodb.EventProcessorState;
-import com.axway.ats.log.autodb.LifeCycleState;
 import com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException;
 import com.axway.ats.log.autodb.exceptions.IncorrectScenarioTypeException;
+import com.axway.ats.log.autodb.logqueue.EventProcessorState;
+import com.axway.ats.log.autodb.logqueue.LifeCycleState;
 import com.axway.ats.log.model.SystemLogLevel;
 
 /**

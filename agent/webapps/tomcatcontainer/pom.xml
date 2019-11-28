@@ -212,6 +212,10 @@
 			<artifactId>jersey-media-moxy</artifactId>
 			<version>${org.glassfish.jersey.jersey-server.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
 		<!-- this dependency is required after jersey 2.26 -->
 		<!-- <dependency>
 			<groupId>org.glassfish.jersey.inject</groupId>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,6 @@ import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 /**
  * This configurator is used for configuring logging on remote systems
  */
-@SuppressWarnings( "serial")
 public class RemoteLoggingConfigurator implements Configurator {
 
     private static final long       serialVersionUID  = 1L;
@@ -57,10 +56,11 @@ public class RemoteLoggingConfigurator implements Configurator {
     /**
      * We will try to find if a DB appender has been configured on the local system
      * 
-     * @param customLogLevel log level specified in the test
+     * @param customLogLevel log level specified in the test ( or use AgentConfigurationLandscape.getInstance(atsAgent).getDbLogLevel() )
+     * @param chunkSize chunk size (for batch db logging) specified in the test ( or use AgentConfigurationLandscape.getInstance(atsAgent).getChunkSize() )
      */
     @SuppressWarnings( "unchecked")
-    public RemoteLoggingConfigurator( LogLevel customLogLevel ) {
+    public RemoteLoggingConfigurator( LogLevel customLogLevel, int chunkSize ) {
 
         /*
          * This code is run on:
@@ -84,6 +84,10 @@ public class RemoteLoggingConfigurator implements Configurator {
                 ) {
                     //we found the appender, read all properties
                     appenderConfiguration = ((AbstractDbAppender) appender).getAppenderConfig();
+                    if (chunkSize > 0) {
+                        // should a warning be logged here if the chunk size is not valid?
+                        appenderConfiguration.setChunkSize(chunkSize + "");
+                    }
                     appenderLogger = log.getName();
 
                     int atsDbLogLevel = DEFAULT_LOG_LEVEL;

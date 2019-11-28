@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,11 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
-import com.axway.ats.log.autodb.DbEventRequestProcessor;
-import com.axway.ats.log.autodb.LogEventRequest;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
+import com.axway.ats.log.autodb.logqueue.DbEventRequestProcessor;
+import com.axway.ats.log.autodb.logqueue.LogEventRequest;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 

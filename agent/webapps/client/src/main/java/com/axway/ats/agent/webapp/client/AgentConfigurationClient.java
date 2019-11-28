@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,9 +146,36 @@ public final class AgentConfigurationClient extends ActionClient {
 
         AgentConfigurationLandscape.getInstance(atsAgent).setDbLogLevel(logLevel);
 
-        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(logLevel);
+        RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(logLevel,
+                                                                      AgentConfigurationLandscape.getInstance(atsAgent)
+                                                                                                 .getChunkSize());
 
         applyConfiguration(rlc);
+    }
+
+    /**
+     * Set the chunk size for db operations, when batch mode is enabled
+     * @param chunkSize - the size of the batch. Must be a positive (non-zero) number
+     * @throws AgentException
+     * */
+    @PublicAtsApi
+    public void setChunkSize( int chunkSize ) throws AgentException {
+
+        try {
+            if (chunkSize <= 0) {
+                throw new IllegalArgumentException("Chunk size must be positive number");
+            }
+            AgentConfigurationLandscape.getInstance(atsAgent).setChunkSize(chunkSize);
+            RemoteLoggingConfigurator rlc = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
+                                                                                                     .getDbLogLevel(),
+                                                                          chunkSize);
+
+            applyConfiguration(rlc);
+
+        } catch (Exception e) {
+            throw new AgentException("Could not set chunk size to agent '" + atsAgent + "'", e);
+        }
+
     }
 
     /**

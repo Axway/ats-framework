@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,9 +23,11 @@ import java.io.Serializable;
 import org.apache.log4j.Level;
 import org.apache.log4j.Priority;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
+import com.axway.ats.log.autodb.io.AbstractDbAccess;
 
 /**
  * Hold the configuration data for this db appender
@@ -40,6 +42,8 @@ public class DbAppenderConfiguration implements Serializable {
     private String             user;
     private String             password;
     private String             mode                                  = "";
+    private String             driver                                = DbKeys.SQL_SERVER_DRIVER_JTDS;
+    private String             chunkSize;
 
     // the capacity of our logging queue
     private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
@@ -183,6 +187,26 @@ public class DbAppenderConfiguration implements Serializable {
         this.loggingThreshold = loggingThreshold;
     }
 
+    public String getDriver() {
+
+        return driver;
+    }
+
+    public void setDriver( String driver ) {
+
+        this.driver = driver;
+    }
+
+    public String getChunkSize() {
+
+        return chunkSize;
+    }
+
+    public void setChunkSize( String chunkSize ) {
+
+        this.chunkSize = chunkSize;
+    }
+
     /**
      * Verify that the configuration is valid - the method will throw runtime exception if
      * the configuration is not valid
@@ -211,6 +235,14 @@ public class DbAppenderConfiguration implements Serializable {
 
         if (password == null) {
             throw new InvalidAppenderConfigurationException("password");
+        }
+
+        if (driver == null) {
+            this.driver = DbKeys.SQL_SERVER_DRIVER_JTDS;
+        }
+
+        if (chunkSize == null) {
+            this.chunkSize = AbstractDbAccess.DEFAULT_CHUNK_SIZE + "";
         }
     }
 
@@ -259,6 +291,14 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (!loggingThreshold.equals(otherConfig.loggingThreshold)) {
+            return false;
+        }
+
+        if (!driver.equals(otherConfig.driver)) {
+            return false;
+        }
+
+        if (!chunkSize.equals(otherConfig.chunkSize)) {
             return false;
         }
 

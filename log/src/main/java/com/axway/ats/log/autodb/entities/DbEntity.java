@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.axway.ats.log.autodb.entities;
 import java.io.Serializable;
 import java.util.Date;
 
-import com.axway.ats.log.autodb.AbstractDbAccess;
+import com.axway.ats.log.autodb.io.AbstractDbAccess;
 
 public class DbEntity implements Serializable {
 

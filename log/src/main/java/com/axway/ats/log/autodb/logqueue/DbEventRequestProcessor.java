@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.logqueue;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
@@ -43,6 +44,10 @@ import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
+import com.axway.ats.log.autodb.CheckpointInfo;
+import com.axway.ats.log.autodb.DbAppenderConfiguration;
+import com.axway.ats.log.autodb.LoadQueuesState;
+import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.entities.Run;
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.AddRunMetainfoEvent;
@@ -73,6 +78,9 @@ import com.axway.ats.log.autodb.exceptions.LoggingException;
 import com.axway.ats.log.autodb.exceptions.NoSuchLoadQueueException;
 import com.axway.ats.log.autodb.exceptions.ThreadAlreadyRegisteredWithLoadQueueException;
 import com.axway.ats.log.autodb.exceptions.ThreadNotRegisteredWithLoadQueue;
+import com.axway.ats.log.autodb.io.PGDbWriteAccess;
+import com.axway.ats.log.autodb.io.SQLServerDbWriteAccess;
+import com.axway.ats.log.autodb.io.SQLServerDbWriteAccessMSSQL;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.CacheableEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessor;
@@ -213,13 +221,32 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                                     appenderConfig.getPassword());
         if (mssqlException == null) {
 
-            this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
-                                                    Integer.parseInt(appenderConfig.getPort()),
-                                                    appenderConfig.getDatabase(),
-                                                    appenderConfig.getUser(), appenderConfig.getPassword(), null);
-
             //create the db access layer
-            this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
+            if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(appenderConfig.getDriver())) {
+
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
+                this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
+                                                        Integer.parseInt(appenderConfig.getPort()),
+                                                        appenderConfig.getDatabase(),
+                                                        appenderConfig.getUser(), appenderConfig.getPassword(), props);
+
+                this.dbAccess = new SQLServerDbWriteAccessMSSQL((DbConnSQLServer) dbConnection, isBatchMode);
+                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
+            } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(appenderConfig.getDriver())) {
+
+                this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
+                                                        Integer.parseInt(appenderConfig.getPort()),
+                                                        appenderConfig.getDatabase(),
+                                                        appenderConfig.getUser(), appenderConfig.getPassword(), null);
+
+                this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
+                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
+            } else {
+                throw new IllegalArgumentException("Appender configuration specified SQL Server driver to be '"
+                                                   + appenderConfig.getDriver()
+                                                   + "' which is not supported");
+            }
 
         } else {
             Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
@@ -236,6 +263,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
                 //create the db access layer
                 this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
+                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
             } else {
                 String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
                                 + appenderConfig.getPort() +

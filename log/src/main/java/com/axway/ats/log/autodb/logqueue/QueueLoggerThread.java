@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  *  Copyright (c) 1993-2010 Axway Inc. All Rights Reserved.
  */
 
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.logqueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
@@ -26,6 +26,7 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.log.autodb.exceptions.LoggingException;
+import com.axway.ats.log.autodb.io.AbstractDbAccess;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessor;
 import com.axway.ats.log.autodb.model.LoggingEventType;

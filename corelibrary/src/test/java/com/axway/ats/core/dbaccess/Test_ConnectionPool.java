@@ -49,10 +49,10 @@ public class Test_ConnectionPool extends BaseTest {
         DbConnSQLServer jtdsDbConnSQLServerWithEmptyDriver = createDbConnSQLServer("");
         validateJtdsConnection(jtdsDbConnSQLServerWithEmptyDriver);
 
-        DbConnSQLServer jtdsDbConnSQLServerWithJtdsDriver = createDbConnSQLServer("JTDS");
+        DbConnSQLServer jtdsDbConnSQLServerWithJtdsDriver = createDbConnSQLServer(DbKeys.SQL_SERVER_DRIVER_JTDS);
         validateJtdsConnection(jtdsDbConnSQLServerWithJtdsDriver);
 
-        DbConnSQLServer mssqlDbConnSQLServer = createDbConnSQLServer("MSSQL");
+        DbConnSQLServer mssqlDbConnSQLServer = createDbConnSQLServer(DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
         validateMssqlConnection(mssqlDbConnSQLServer);
 
         obtainConnection(jtdsDbConnSQLServerWithNullDriver); // creates one new connection

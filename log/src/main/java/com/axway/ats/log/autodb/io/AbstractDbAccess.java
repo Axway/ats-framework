@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.axway.ats.log.autodb;
+package com.axway.ats.log.autodb.io;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.TimeZone;
 
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
@@ -43,6 +44,8 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 public abstract class AbstractDbAccess {
 
     protected final AtsConsoleLogger     log;
+    
+    public static final int              DEFAULT_CHUNK_SIZE       = 2000;
 
     public static final String           UNABLE_TO_CONNECT_ERRROR = "Unable to connect to log DB";
 
@@ -59,7 +62,10 @@ public abstract class AbstractDbAccess {
     private static final int             MIN_IN_SECONDS           = 60;
     private static final int             HOUR_IN_SECONDS          = MIN_IN_SECONDS * 60;
     private static final int             DAY_IN_SECONDS           = HOUR_IN_SECONDS * 24;
+
     private String                       dbVersion                = null;
+
+    protected int                        chunkSize                = 2000;
 
     /**
      * dbInternalVersion is introduced in version 3.10.0
@@ -100,6 +106,17 @@ public abstract class AbstractDbAccess {
         this.log = new AtsConsoleLogger(getClass());
 
         this.dbConnectionFactory = dbConnection;
+
+        if (System.getProperties().containsKey(AtsSystemProperties.LOG__MAX_CACHE_EVENTS)) {
+            String propVal = null;
+            try {
+                propVal = System.getProperty(AtsSystemProperties.LOG__MAX_CACHE_EVENTS);
+                this.chunkSize = Integer.parseInt(propVal);
+            } catch (Exception e) {
+                log.warn("Could not set chunk size, due to ATS-related System property '"
+                         + AtsSystemProperties.LOG__MAX_CACHE_EVENTS + "' set to invalid INT value '" + propVal + "'");
+            }
+        }
     }
 
     /**
