@@ -1250,32 +1250,32 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         final String errMsg = "Unable to insert checkpoint summary '" + name + "' for load queue "
                               + loadQueueId;
 
-        PreparedStatement perparedStatement = null;
+        PreparedStatement preparedStatement = null;
         try {
             refreshInternalConnection();
 
-            perparedStatement = connection.prepareStatement("INSERT INTO tCheckpointsSummary"
+            preparedStatement = connection.prepareStatement("INSERT INTO tCheckpointsSummary"
                                                             + " (name,numRunning,numPassed,numFailed,minResponseTime,avgResponseTime,maxResponseTime,minTransferRate,avgTransferRate,maxTransferRate,transferRateUnit,loadQueueId) "
                                                             + " VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-            perparedStatement.setString(1, name);
+            preparedStatement.setString(1, name);
 
-            perparedStatement.setInt(2, numRunning);
-            perparedStatement.setInt(3, numPassed);
-            perparedStatement.setInt(4, numFailed);
+            preparedStatement.setInt(2, numRunning);
+            preparedStatement.setInt(3, numPassed);
+            preparedStatement.setInt(4, numFailed);
 
-            perparedStatement.setInt(5, minResponseTime);
-            perparedStatement.setFloat(6, avgResponseTime);
-            perparedStatement.setInt(7, maxResponseTime);
+            preparedStatement.setInt(5, minResponseTime);
+            preparedStatement.setFloat(6, avgResponseTime);
+            preparedStatement.setInt(7, maxResponseTime);
 
-            perparedStatement.setFloat(8, minTransferRate);
-            perparedStatement.setFloat(9, avgTransferRate);
-            perparedStatement.setFloat(10, maxTransferRate);
+            preparedStatement.setFloat(8, minTransferRate);
+            preparedStatement.setFloat(9, avgTransferRate);
+            preparedStatement.setFloat(10, maxTransferRate);
 
-            perparedStatement.setString(11, transferRateUnit);
+            preparedStatement.setString(11, transferRateUnit);
 
-            perparedStatement.setInt(12, loadQueueId);
+            preparedStatement.setInt(12, loadQueueId);
 
-            int updatedRecords = perparedStatement.executeUpdate();
+            int updatedRecords = preparedStatement.executeUpdate();
             if (updatedRecords != 1) {
                 throw new DatabaseAccessException(errMsg);
             }
@@ -1283,9 +1283,9 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             throw new DatabaseAccessException(errMsg, e);
         } finally {
             if (closeConnection) {
-                DbUtils.close(connection, perparedStatement);
+                DbUtils.close(connection, preparedStatement);
             } else {
-                DbUtils.closeStatement(perparedStatement);
+                DbUtils.closeStatement(preparedStatement);
             }
         }
     }
@@ -1817,7 +1817,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private  long            maxCacheWaitTime                  = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
+        private long                   maxCacheWaitTime               = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
                                                                                                                                           10));
 
         private long                   cacheBirthTime;

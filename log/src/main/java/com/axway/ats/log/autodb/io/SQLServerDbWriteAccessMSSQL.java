@@ -17,8 +17,9 @@ package com.axway.ats.log.autodb.io;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -28,6 +29,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.autodb.entities.CheckpointSummary;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.model.CheckpointLogLevel;
@@ -99,11 +101,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         } catch (Exception e) {
             throw new DatabaseAccessException("Could not insert checkpoint to ATS log DB", e);
         } finally {
-            try {
-                if (closeConnection && !connection.isClosed()) {
-                    DbUtils.closeConnection(connection);
-                }
-            } catch (SQLException e) {}
+            DbUtils.closeConnection(connection);
         }
 
     }
@@ -119,8 +117,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         /**
          * the maximum amount of time that the cache will be held unflushed
          * */
-        private long                                  maxCacheWaitTime              = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
-                                                                                                                                                               30));
+        private long                                         maxCacheWaitTime              = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
+                                                                                                                                                               10));
 
         /*
          * { loadQueueId -> { checkpointName -> checkpoint summary } }
@@ -178,8 +176,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 if (!checkpointSummaries.containsKey(loadQueueId)) {
                     Map<String, CheckpointSummary> map = new HashMap<>();
                     CheckpointSummary checkpointSummary = new CheckpointSummary();
-                    checkpointSummary.checkpointSummaryId = populateCheckpointSummary(loadQueueId, name, transferUnit,
-                                                                                      false);
+                    checkpointSummary.checkpointSummaryId = getCheckpointSummaryId(loadQueueId, name, transferUnit,
+                                                                                   false);
                     checkpointSummary.name = name;
 
                     checkpointSummary.loadQueueId = loadQueueId;
@@ -199,9 +197,9 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     }
                     if (!exists) {
                         CheckpointSummary checkpointSummary = new CheckpointSummary();
-                        checkpointSummary.checkpointSummaryId = populateCheckpointSummary(loadQueueId, name,
-                                                                                          transferUnit,
-                                                                                          false);
+                        checkpointSummary.checkpointSummaryId = getCheckpointSummaryId(loadQueueId, name,
+                                                                                       transferUnit,
+                                                                                       false);
                         checkpointSummary.name = name;
 
                         checkpointSummary.loadQueueId = loadQueueId;
@@ -235,6 +233,33 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
         }
 
+        private int getCheckpointSummaryId( int loadQueueId, String name, String transferUnit,
+                                            boolean closeConnection ) {
+
+            int id = -1;
+            PreparedStatement preparedStatement = null;
+            java.sql.ResultSet rs = null;
+            try {
+                preparedStatement = connection.prepareStatement("SELECT checkpointSummaryId FROM tCheckpointsSummary WHERE name = '"
+                                                                + name + "' AND loadQueueId = " + loadQueueId
+                                                                + " ORDER BY name");
+                rs = preparedStatement.executeQuery();
+                rs.next();
+                id = rs.getInt(1);
+            } catch (Exception e) {
+                throw new DbException("Could not get checkpoint summary ID for '" + name
+                                      + "' checkpoint from load queue '" + loadQueueId + "'", e);
+            } finally {
+                DbUtils.closeResultSet(rs);
+                if (closeConnection) {
+                    DbUtils.close(connection, preparedStatement);
+                } else {
+                    DbUtils.closeStatement(preparedStatement);
+                }
+            }
+            return id;
+        }
+
         private boolean isTimeToFlush() {
 
             return (System.currentTimeMillis() - lastInsertCheckpointTimestamp) >= maxCacheWaitTime;
@@ -259,8 +284,11 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
             }
             long endTime = startTimestamp + responseTime;
 
-            loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + ",'" + name + "'," + responseTime + ","
-                                                  + transferRate + ",'" + transferUnit + "'," + result + ","
+            loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + "," + name + "," + responseTime + ","
+                                                  + transferRate + "," + ( (StringUtils.isNullOrEmpty(transferUnit))
+                                                                                                                      ? " " // ''
+                                                                                                                      : transferUnit)
+                                                  + "," + result + ","
                                                   + new Timestamp(endTime));
             loadQueueCheckpointsInsertData.append("\n");
 
@@ -313,20 +341,50 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     for (CheckpointSummary checkpointSummary : summariesForLoadQueue.values()) {
 
                         calculateAverageValues(checkpointSummary);
-                        insertCheckpointSummary(checkpointSummary.name, checkpointSummary.numRunning,
-                                                checkpointSummary.numPassed, checkpointSummary.numFailed,
-                                                checkpointSummary.minResponseTime,
-                                                checkpointSummary.avgResponseTime,
-                                                checkpointSummary.maxResponseTime, checkpointSummary.minTransferRate,
-                                                checkpointSummary.avgTransferRate, checkpointSummary.maxTransferRate,
-                                                checkpointSummary.transferRateUnit, checkpointSummary.loadQueueId,
-                                                false);
+                        doUpdateCheckpointSummary(checkpointSummary.checkpointSummaryId, checkpointSummary.numRunning,
+                                                  checkpointSummary.numPassed, checkpointSummary.numFailed,
+                                                  checkpointSummary.minResponseTime,
+                                                  checkpointSummary.avgResponseTime,
+                                                  checkpointSummary.maxResponseTime, checkpointSummary.minTransferRate,
+                                                  checkpointSummary.avgTransferRate, checkpointSummary.maxTransferRate,
+                                                  false);
 
                     }
                 }
 
             } catch (Exception e) {
                 throw new DbException("Could not flush checkpoints summaries", e);
+            }
+
+        }
+
+        private void doUpdateCheckpointSummary( int checkpointSummaryId, int numRunning, int numPassed, int numFailed,
+                                                int minResponseTime, float avgResponseTime, int maxResponseTime,
+                                                float minTransferRate, float avgTransferRate, float maxTransferRate,
+                                                boolean closeConnection ) throws DatabaseAccessException {
+
+            CallableStatement statement = null;
+            try {
+                statement = connection.prepareCall("{ call sp_update_checkpoint_summary(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+                statement.setInt(1, checkpointSummaryId);
+                statement.setInt(2, numPassed);
+                statement.setInt(3, numFailed);
+                statement.setInt(4, numRunning);
+                statement.setInt(5, minResponseTime);
+                statement.setInt(6, maxResponseTime);
+                statement.setFloat(7, avgResponseTime);
+                statement.setFloat(8, minTransferRate);
+                statement.setFloat(9, maxTransferRate);
+                statement.setFloat(10, avgTransferRate);
+                statement.execute();
+            } catch (Exception e) {
+                throw new DatabaseAccessException("Could not update checkpoint summary " + checkpointSummaryId, e);
+            } finally {
+                if (closeConnection) {
+                    DbUtils.close(connection, statement);
+                } else {
+                    DbUtils.closeStatement(statement);
+                }
             }
 
         }
@@ -362,7 +420,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
             try {
                 SQLServerBulkCopyOptions copyOptions = new SQLServerBulkCopyOptions();
                 copyOptions.setKeepIdentity(false);
-
+                //copyOptions.isKeepNulls();
                 // Depending on the size of the data being uploaded, and the amount of RAM, an optimum can be found here. Play around with this to improve performance.
                 copyOptions.setBatchSize(this.cacheSize);
 
