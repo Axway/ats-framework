@@ -244,8 +244,14 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                                                                 + name + "' AND loadQueueId = " + loadQueueId
                                                                 + " ORDER BY name");
                 rs = preparedStatement.executeQuery();
-                rs.next();
-                id = rs.getInt(1);
+                if (rs.next()) {
+                    id = rs.getInt(1);
+                } else {
+                    throw new DbException("No ID for checkpoint " + name + " from load queue " + loadQueueId
+                                          + " found in DB. Did you invoke " + this.getClass().getName()
+                                          + "#populateCheckpointSummary() ?");
+                }
+
             } catch (Exception e) {
                 throw new DbException("Could not get checkpoint summary ID for '" + name
                                       + "' checkpoint from load queue '" + loadQueueId + "'", e);
@@ -286,8 +292,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
             loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + "," + name + "," + responseTime + ","
                                                   + transferRate + "," + ( (StringUtils.isNullOrEmpty(transferUnit))
-                                                                                                                      ? " " // ''
-                                                                                                                      : transferUnit)
+                                                                                                                     ? " " // ''
+                                                                                                                     : transferUnit)
                                                   + "," + result + ","
                                                   + new Timestamp(endTime));
             loadQueueCheckpointsInsertData.append("\n");
