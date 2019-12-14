@@ -10,7 +10,7 @@ script:
 notifications:
   email:
     recipients:
-      - group.ats.team@axway.com
+      - ats.team@axway.com
     on_success: change
     on_failure: always
 env:
