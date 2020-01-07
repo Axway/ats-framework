@@ -31,8 +31,9 @@
       <p>&nbsp;</p> 
       <hr> 
       <h1 id="SetRUNinformation-ChangingtheRUNinformation"><strong> </strong>Changing the RUN information</h1> 
-      <h3 id="SetRUNinformation-Usingtheconfig.propertiesfile">Using the config.properties file</h3> 
-      <p>Place the following entries in a file called <em>config.properties</em> which is placed in the root of the classpath</p> 
+      <h3 id="SetRUNinformation-Usingtheconfig.propertiesfile">Using the ats.config.properties file</h3> 
+      <p>Place the following entries in a file called <em>ats.config.properties</em> which is placed in the root of the classpath</p> 
+      <p>For Maven the default directories are either <em>src/main/resources</em> or <em>src/test/resources</em>.</p>
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence"># the name of the Run
@@ -53,7 +54,7 @@ ats.db.logging.run.build=2000</pre>
       </div> 
       <p>ATS will read this file on startup and will use this information to set the RUN info</p> 
       <p>&nbsp;</p> 
-      <hr> 
+      <hr /> 
       <h3 id="SetRUNinformation-Usingjavacode">Using java code</h3> 
       <p>Have a look at the following code:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -61,12 +62,12 @@ ats.db.logging.run.build=2000</pre>
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.AtsDbLogger;
 
 AtsDbLogger atsDbLogger = AtsDbLogger.getLogger( BaseTest.class.getName() );
-atsDbLogger.updateRun( 	"Another Run name", 
-						"Another OS", 
-						"Another Product name", 
-						"Another Product Version number",
-    					"Another Product Build number", 
-						"Some user note about this run" );
+atsDbLogger.updateRun( "Another Run name", 
+                       "Another OS", 
+                       "Another Product name", 
+                       "Another Product Version number",
+                       "Another Product Build number", 
+                       "Some user note about this run" );
 </pre> 
        </div> 
       </div> 
