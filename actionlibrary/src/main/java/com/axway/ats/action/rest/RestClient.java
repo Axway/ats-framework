@@ -920,9 +920,6 @@ public class RestClient {
         logRESTResponse(response);
         initInternalVariables();
 
-        logRESTResponse(response);
-        initInternalVariables();
-
         // return response
         return response;
     }

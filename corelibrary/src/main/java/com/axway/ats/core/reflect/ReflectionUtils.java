@@ -153,7 +153,7 @@ public class ReflectionUtils {
         } while ( (currentClass = currentClass.getSuperclass()) != null && deepSearch);
 
         throw new RuntimeException("Could not get field '" + fieldName + "' from neither class '"
-                                   + currentClass.getName() + "' nor any of its super classes");
+                                   + instance.getClass().getName() + "' nor any of its super classes");
 
     }
 
@@ -218,13 +218,12 @@ public class ReflectionUtils {
                     throw new RuntimeException("Error getting method '" + methodName + "' from class '"
                                                + currentClass.getName() + "'", e);
                 }
-
             }
 
         } while ( (currentClass = currentClass.getSuperclass()) != null && deepSearch);
 
         throw new RuntimeException("Could not get method '" + methodName + "' from neither class '"
-                                   + currentClass.getName() + "' nor any of its super classes");
+                                   + clazz.getName() + "' nor any of its super classes");
     }
 
 }

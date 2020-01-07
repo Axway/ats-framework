@@ -48,6 +48,8 @@ public abstract class AbstractEngine {
         elementsFactory.getElementsMap().setMapSection( mapSection );
     }
 
+    /** Retrieve the current map section or null if no map/section is currently loaded
+     * */
     @PublicAtsApi
     public String getMapSection() {
 

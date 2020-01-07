@@ -20,7 +20,7 @@ import java.io.Serializable;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
- * This class describes an SSH Cipher. Currently used in SFTPClient.<br/>
+ * This class describes an SSH Cipher. Currently used in SftpClient.<br/>
  * It contains some public constants of the frequently used ciphers (predefined {@link SshCipher} instances).
  */
 @PublicAtsApi
@@ -28,7 +28,7 @@ public class SshCipher implements Serializable {
 
     private static final long     serialVersionUID = 1L;
 
-    // a long list of jscape supported ciphers could be found in a JceEncryptions class
+    // a long list of SSH/SFTP supported ciphers could be found in a JceEncryptions class
 
     @PublicAtsApi
     public static final SshCipher AES128_CBC       = new SshCipher("aes128-cbc",

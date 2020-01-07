@@ -62,7 +62,7 @@ public class UiEngineUtilities {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException e) {
-                // swallow this error
+                // ignore this error
             }
         }
     }
