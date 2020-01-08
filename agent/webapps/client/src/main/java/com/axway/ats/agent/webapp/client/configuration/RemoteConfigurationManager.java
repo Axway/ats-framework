@@ -25,11 +25,9 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.core.AtsVersion;
-import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.agent.webapp.client.AgentException_Exception;
 import com.axway.ats.agent.webapp.client.AgentService;
+import com.axway.ats.agent.webapp.client.AgentServicePool;
 
 /**
  * This class is used to send configuration settings to ATS Agent
@@ -60,6 +58,8 @@ public class RemoteConfigurationManager {
         String checkServerLogsStr = ". Check server logs for more details.";
         try {
 
+            log.info("Pushing DB log configuration to ATS Agent " + atsAgent + "");
+            
             // serialize the configurators
             ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
