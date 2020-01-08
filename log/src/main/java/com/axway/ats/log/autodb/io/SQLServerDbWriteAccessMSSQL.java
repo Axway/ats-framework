@@ -128,6 +128,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         /*
          * { loadQueueId -> checkpoint insert data }
          * */
+        // The checkpoint insert data is just a StringBuffer where checkpoint information is stored in CSV format
         private Map<Integer, StringBuilder>                  checkpointsInsertData         = new HashMap<>();
 
         private long                                         batchStartTime;
@@ -176,6 +177,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 if (!checkpointSummaries.containsKey(loadQueueId)) {
                     Map<String, CheckpointSummary> map = new HashMap<>();
                     CheckpointSummary checkpointSummary = new CheckpointSummary();
+                    // obtain summaryID from. It is expected that populateCheckpointSummary() was invoked previously and such entry exists in DB
                     checkpointSummary.checkpointSummaryId = getCheckpointSummaryId(loadQueueId, name, transferUnit,
                                                                                    false);
                     checkpointSummary.name = name;
@@ -197,6 +199,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     }
                     if (!exists) {
                         CheckpointSummary checkpointSummary = new CheckpointSummary();
+                        // obtain summaryID from. It is expected that populateCheckpointSummary() was invoked previously and such entry exists in DB
                         checkpointSummary.checkpointSummaryId = getCheckpointSummaryId(loadQueueId, name,
                                                                                        transferUnit,
                                                                                        false);
@@ -214,8 +217,10 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     checkpointsInsertData.put(loadQueueId, new StringBuilder());
                 }
 
+                // add data for the current checkpoint. This does not perform any DB I/O
                 doAddCheckpoint(name, startTimestamp, responseTime, transferSize, transferUnit, result, loadQueueId);
 
+                // update checkpoint summary for the current checkpoint. This does not perform any DB I/O
                 updateCheckpointSummary(name, startTimestamp, responseTime, transferSize, transferUnit, result,
                                         loadQueueId);
 
@@ -274,29 +279,33 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         private void doAddCheckpoint( String name, long startTimestamp, long responseTime, long transferSize,
                                       String transferUnit, int result, int loadQueueId ) {
 
-            int checkpointSummaryId = checkpointSummaries.get(loadQueueId).get(name).checkpointSummaryId;
-            StringBuilder loadQueueCheckpointsInsertData = checkpointsInsertData.get(loadQueueId);
+            if (SQLServerDbWriteAccess.checkpointLogLevel == CheckpointLogLevel.FULL) {
+                int checkpointSummaryId = checkpointSummaries.get(loadQueueId).get(name).checkpointSummaryId;
+                StringBuilder loadQueueCheckpointsInsertData = checkpointsInsertData.get(loadQueueId);
 
-            double transferRate = 0;
-            if (SQLServerDbWriteAccess.checkpointLogLevel.toInt() == CheckpointLogLevel.SHORT.toInt()) {
-                responseTime = 0;
-                transferSize = 0;
+                double transferRate = 0;
+                if (result == CheckpointResult.FAILED.toInt()) {
+                    responseTime = 0;
+                    transferSize = 0;
+                }
+
+                if (responseTime > 0) {
+                    transferRate = transferSize * 1000.0 / responseTime;
+                } else {
+                    transferRate = 0;
+                }
+                long endTime = startTimestamp + responseTime;
+
+                // since wa want the SQL Server to handle the checkpoint ID, here we pass -1 as the first argument
+                loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + "," + name + "," + responseTime
+                                                      + ","
+                                                      + transferRate + "," + ( (StringUtils.isNullOrEmpty(transferUnit))
+                                                                                                                         ? " " // ''
+                                                                                                                         : transferUnit)
+                                                      + "," + result + ","
+                                                      + new Timestamp(endTime));
+                loadQueueCheckpointsInsertData.append("\n");
             }
-
-            if (responseTime > 0) {
-                transferRate = transferSize * 1000.0 / responseTime;
-            } else {
-                transferRate = 0;
-            }
-            long endTime = startTimestamp + responseTime;
-
-            loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + "," + name + "," + responseTime + ","
-                                                  + transferRate + "," + ( (StringUtils.isNullOrEmpty(transferUnit))
-                                                                                                                     ? " " // ''
-                                                                                                                     : transferUnit)
-                                                  + "," + result + ","
-                                                  + new Timestamp(endTime));
-            loadQueueCheckpointsInsertData.append("\n");
 
             numberOfCachedCheckpoints++;
 
@@ -312,24 +321,22 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 checkpointSummary.numPassed++;
 
                 float transferRate = 0;
-                if (SQLServerDbWriteAccess.checkpointLogLevel.toInt() == CheckpointLogLevel.SHORT.toInt()) {
-                    responseTime = 0;
-                    transferSize = 0;
+                if (responseTime > 0) {
+                    transferRate = (float) (transferSize * 1000.0 / responseTime);
                 } else {
                     transferRate = 0;
-                    if (responseTime > 0) {
-                        transferRate = (float) (transferSize * 1000.0 / responseTime);
-                    } else {
-                        transferRate = 0;
-                    }
                 }
 
                 checkpointSummary.minResponseTime = (int) Math.min(responseTime, checkpointSummary.minResponseTime);
                 checkpointSummary.maxResponseTime = (int) Math.max(responseTime, checkpointSummary.maxResponseTime);
-                checkpointSummary.avgResponseTime += responseTime;
+                // here we use the average response time as a total response time, not the average values.
+                // The average value will be calculated right before flushing to the DB
+                checkpointSummary.avgResponseTime += responseTime; 
 
                 checkpointSummary.minTransferRate = (float) Math.min(transferRate, checkpointSummary.minTransferRate);
                 checkpointSummary.maxTransferRate = (float) Math.max(transferRate, checkpointSummary.maxTransferRate);
+                // here we use the average transfer rate as a total transfer rate, not the average values.
+                // The average value will be calculated right before flushing to the DB 
                 checkpointSummary.avgTransferRate += transferRate;
 
             } else if (result == CheckpointResult.RUNNING.toInt()) {
@@ -347,6 +354,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     for (CheckpointSummary checkpointSummary : summariesForLoadQueue.values()) {
 
                         calculateAverageValues(checkpointSummary);
+                        // actual flushing to the DB
                         doUpdateCheckpointSummary(checkpointSummary.checkpointSummaryId, checkpointSummary.numRunning,
                                                   checkpointSummary.numPassed, checkpointSummary.numFailed,
                                                   checkpointSummary.minResponseTime,
