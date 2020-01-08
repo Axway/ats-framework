@@ -75,11 +75,13 @@ public class DbAccessFactory {
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
                                                                                      .getDriver())) {
                 // Create DB connection based on the log4j system settings
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS);
                 dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
                                                    Integer.parseInt(loggingAppender.getPort()),
                                                    loggingAppender.getDatabase(),
                                                    loggingAppender.getUser(),
-                                                   loggingAppender.getPassword(), null);
+                                                   loggingAppender.getPassword(), props);
                 writeAccess = new SQLServerDbWriteAccess(dbConnection, false);
                 writeAccess.setMaxNumberOfCachedEvents(Integer.parseInt(loggingAppender.getAppenderConfig()
                                                                                        .getChunkSize()));
@@ -166,11 +168,13 @@ public class DbAccessFactory {
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
                                                                                      .getDriver())) {
                 // Create DB connection based on the log4j system settings
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS);
                 dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
                                                    Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                                    loggingAppender.getAppenderConfig().getDatabase(),
                                                    loggingAppender.getAppenderConfig().getUser(),
-                                                   loggingAppender.getAppenderConfig().getPassword(), null);
+                                                   loggingAppender.getAppenderConfig().getPassword(), props);
                 writeAccess = new SQLServerDbWriteAccess(dbConnection, false);
             } else {
                 throw new IllegalArgumentException("Appender configuration specified SQL Server driver to be '"

@@ -17,12 +17,15 @@
 package com.axway.ats.log.appenders;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
@@ -262,11 +265,13 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                                                         appenderConfig.getUser(),
                                                                         appenderConfig.getPassword());
             if (mssqlException == null) {
-
+                
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, appenderConfig.getDriver().toUpperCase());
                 dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
                                                    Integer.parseInt(appenderConfig.getPort()),
                                                    appenderConfig.getDatabase(),
-                                                   appenderConfig.getUser(), appenderConfig.getPassword(), null);
+                                                   appenderConfig.getUser(), appenderConfig.getPassword(), props);
 
                 //create the db access layer
                 dbReadAccess = new SQLServerDbReadAccess((DbConnSQLServer) dbConnection);

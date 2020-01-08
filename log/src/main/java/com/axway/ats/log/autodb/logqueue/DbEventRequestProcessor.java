@@ -235,10 +235,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                 this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(appenderConfig.getDriver())) {
 
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS);
                 this.dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
                                                         Integer.parseInt(appenderConfig.getPort()),
                                                         appenderConfig.getDatabase(),
-                                                        appenderConfig.getUser(), appenderConfig.getPassword(), null);
+                                                        appenderConfig.getUser(), appenderConfig.getPassword(), props);
 
                 this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
                 this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));

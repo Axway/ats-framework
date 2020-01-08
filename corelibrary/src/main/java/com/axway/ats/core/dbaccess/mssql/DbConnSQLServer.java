@@ -18,6 +18,8 @@ package com.axway.ats.core.dbaccess.mssql;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Driver;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
@@ -129,7 +131,9 @@ public class DbConnSQLServer extends DbConnection {
      */
     public DbConnSQLServer( String host, String db, String user, String password ) {
 
-        this(host, db, user, password, null);
+        // since the Collections.singletonMap() returns map that cannot be modified (read-only), we use the single map to create another read-write map
+        this(host, db, user, password,
+             new HashMap<String, Object>(Collections.singletonMap(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS)));
     }
 
     /**
