@@ -42,6 +42,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -59,6 +60,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -1856,11 +1858,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         if (exists) {
             if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File c : files) {
-                        deleteRecursively(c);
+                try {
+                    DirectoryStream<Path> dirStream = Files.newDirectoryStream(file.toPath());
+                    Iterator<Path> it = dirStream.iterator();
+                    while (it.hasNext()) {
+                        Path path = it.next();
+                        deleteRecursively(path.toFile());
                     }
+                } catch (Exception e) {
+                    throw new FileSystemOperationException("Could not purge contents of directory '" + directoryName
+                                                           + "'", e);
                 }
             } else {
                 throw new FileSystemOperationException(directoryName + " is not a directory! ");
@@ -1879,11 +1886,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             File file ) {
 
         if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null) {
-                for (File c : files) {
-                    deleteRecursively(c);
+            try {
+                DirectoryStream<Path> dirStream = Files.newDirectoryStream(file.toPath());
+                Iterator<Path> it = dirStream.iterator();
+                while (it.hasNext()) {
+                    Path path = it.next();
+                    deleteRecursively(path.toFile());
                 }
+            } catch (Exception e) {
+                throw new FileSystemOperationException("Could not purge contents of directory '" + file.getAbsolutePath()
+                                                       + "'", e);
             }
         }
 
