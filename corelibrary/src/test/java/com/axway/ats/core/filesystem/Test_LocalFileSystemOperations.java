@@ -38,6 +38,7 @@ import java.util.Arrays;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
+import org.easymock.EasyMock;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -730,10 +731,11 @@ public class Test_LocalFileSystemOperations extends BaseTest {
         expectNew(File.class, newDirectoryPath).andReturn(mockFile);
         expect(mockFile.exists()).andReturn(true);
         expect(mockFile.isDirectory()).andReturn(true);
-        expect(mockFile.listFiles()).andReturn(new File[]{ innnerFile });
+        expect(mockFile.toPath()).andReturn(null);
         expect(innnerFile.isDirectory()).andReturn(false);
         expect(innnerFile.delete()).andReturn(false);
         replayAll();
+        EasyMock.createNiceControl();
 
         testObject.purgeDirectoryContents(newDirectoryPath);
 
