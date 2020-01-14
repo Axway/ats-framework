@@ -143,7 +143,6 @@
 					</excludes>
 				</configuration>
 			</plugin>
-			<!-- TODO: investigate why HTML report is not generated on test run -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-report-plugin</artifactId>
@@ -331,6 +330,20 @@
 				<artifactId>maven-surefire-report-plugin</artifactId>
 				<version>${maven-surefire-plugin.version}</version>
 			</plugin>
+    <plugin> <!-- dependency licenses report -->
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>license-maven-plugin</artifactId>
+      <configuration>
+        <excludedScopes>test,provided,system</excludedScopes>
+      </configuration>
+      <reportSets>
+        <reportSet>
+          <reports>
+            <report>third-party-report</report>
+          </reports>
+        </reportSet>
+      </reportSets>
+    </plugin>
 		</plugins>
 	</reporting>
 

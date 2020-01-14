@@ -30,9 +30,9 @@
                         <configuration>
                             <target>
                                 <property name="compile_classpath" refid="maven.compile.classpath" />
+                                <property name="project_version" value="${project.version}" />
                                 <echo message="compile classpath: ${compile_classpath}" />
                                 <echo message="runtime classpath: ${runtime_classpath}" />
-                                --&gt;
                                 <echo message="test classpath - - - - - -: ${test_classpath}" />
                                 <ant antfile="build.xml" target="all" />
                             </target>

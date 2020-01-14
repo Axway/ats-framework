@@ -3,6 +3,7 @@
          xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:ant-contrib="antlib:net.sf.antcontrib" default="all">
 
     <echo>Using Ant version: ${ant.version}</echo>
+    <echo>Using project version: ${project_version}</echo>
     <property name="build.compiler" value="extJavac"/>
     <echo>Using Java home: ${java.home}</echo>
     <!-- Next 2 properties set syntax and bytecode compliance level (javac task) -->
@@ -11,7 +12,6 @@
 
     <!-- Imports and Properties -->
     <property name="distribution.dir" value="target/dist"/>
-    <property name="project.version" value="4.0.6-SNAPSHOT"/>
     <property name="component.name" value="ats-examples-vm-actions"/>
 
     <!-- Paths -->
@@ -109,7 +109,7 @@
         <exec command="mvn install:install-file -Dfile=${distribution.dir}/${component.name}-client.jar
                                                 -DgroupId=com.axway.ats.framework.examples
                                                 -DartifactId=ats-examples-vm-actions
-                                                -Dversion=${project.version}
+                                                -Dversion=${project_version}
                                                 -Dclassifier=client
                                                 -Dpackaging=jar" / -->
     </target>

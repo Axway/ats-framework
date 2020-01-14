@@ -561,8 +561,8 @@ public class DbConnSQLServer extends DbConnection {
     }
 
     /**
-     * Tries to load class passed as argument. does  not throw exception if not found.
-     * @return
+     * Tries to load class passed as argument. Does not throw exception if not found.
+     * @return true if class is found and loaded
      */
     private boolean loadClass( String someClass ) {
 

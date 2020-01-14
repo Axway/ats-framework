@@ -294,7 +294,7 @@ public class DbAppenderConfiguration implements Serializable {
             return false;
         }
 
-        if (!driver.equals(otherConfig.driver)) {
+        if (!driver.equalsIgnoreCase(otherConfig.driver)) { // driver value is case-insensitive
             return false;
         }
 
