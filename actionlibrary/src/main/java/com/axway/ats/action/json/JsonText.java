@@ -400,6 +400,33 @@ public class JsonText {
                                     + object.toString());
         }
     }
+    
+    /**
+     * @param keyPath the key path
+     * @return a Long JSON value
+     */
+    @PublicAtsApi
+    public long getLong( String keyPath ) {
+
+        Object object;
+        if (StringUtils.isNullOrEmpty(keyPath)) {
+            // return the root element
+            object = this.javaObject;
+        } else {
+            object = getInternalJson(new ArrayList<>(Arrays.asList(keyPath.split(PATH_DELIMETER)))).javaObject;
+        }
+
+        if (object == null) {
+            throw new JsonException("'" + keyPath + "' is not a valid path");
+        }
+
+        try {
+            return Long.parseLong(object.toString());
+        } catch (NumberFormatException nfe) {
+            throw new JsonException("'" + keyPath + "' does not point to a Long value:\n"
+                                    + object.toString());
+        }
+    }
 
     /**
      * @param keyPath the key path
