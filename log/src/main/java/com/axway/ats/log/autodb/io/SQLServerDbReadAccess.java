@@ -981,7 +981,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                 statisticDescription.setStartTimestamp(startTimestamp);
                 statisticDescription.setTimeOffset(utcTimeOffset);
 
-                statisticDescription.machineId = 0; // Checkpoints will be collected and displayed for testcase
+                statisticDescription.machineId = 0; // Checkpoints will be collected and displayed for testcase, for all machines/agents(loaders)
                 statisticDescription.machineName = MACHINE_NAME_FOR_ATS_AGENTS;
 
                 statisticDescription.queueName = rs.getString("queueName");

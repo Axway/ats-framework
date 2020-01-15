@@ -18,8 +18,11 @@ package com.axway.ats.core.reflect;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
@@ -33,15 +36,18 @@ public class ReflectionUtils {
 
         new Validator().validateMethodParameters(new Object[]{ instance, deepSearch });
 
-        Field[] fieldsArr = null;
+        Set<Field> fields = new HashSet<Field>(Arrays.asList(instance.getClass().getDeclaredFields()));
 
         if (deepSearch) {
-            fieldsArr = instance.getClass().getFields();
-        } else {
-            fieldsArr = instance.getClass().getDeclaredFields();
+            Class<?> clazz = instance.getClass().getSuperclass();
+            while (clazz != null) {
+                Field[] fieldsArr = clazz.getDeclaredFields();
+                fields.addAll(Arrays.asList(fieldsArr));
+                clazz = clazz.getSuperclass();
+            }
         }
 
-        return Arrays.asList(fieldsArr);
+        return new ArrayList<Field>(fields);
     }
 
     /**
