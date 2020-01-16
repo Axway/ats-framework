@@ -73,7 +73,6 @@
             <!-- Run ant on build.xml. Generate client and server libraries -->
             <plugin>
                 <artifactId>maven-antrun-plugin</artifactId>
-                <version>${maven.antrun.plugin.version}</version>
                 <executions>
                     <execution>
                         <phase>compile</phase>
