@@ -606,7 +606,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     /**
-     * Add table for backup.<br/>If the table's schema is not specified, ATS will obtain and use the default schema for the user that will interact with the database during backup/restore
+     * Add table for backup.<br>If the table's schema is not specified, ATS will obtain and use the default schema for the user that will interact with the database during backup/restore
      * */
     @Override
     public void addTable( DbTable table ) {

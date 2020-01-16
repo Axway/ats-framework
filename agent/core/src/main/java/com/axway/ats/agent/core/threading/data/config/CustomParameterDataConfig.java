@@ -39,11 +39,11 @@ public abstract class CustomParameterDataConfig extends AbstractParameterDataCon
     /**
      * Constructs a custom data configuration which is used to instantiate a custom data provider.
      * 
-     * </br><b>NOTE:</b> The implementation classes are expected to be direct children of this class.
+     * <br><b>NOTE:</b> The implementation classes are expected to be direct children of this class.
      * 
      * @param parameterName the name of the parameter to generate data for
      * @param controlTokens control tokens if any
-     * </br><b>NOTE:</b> This must not be a null value as we will not be able to call the constructor with java reflection.
+     * <br><b>NOTE:</b> This must not be a null value as we will not be able to call the constructor with java reflection.
      * It must be a Map with or without elements.
      * @param parameterProviderLevel the level at which to generate values
      */

@@ -41,9 +41,9 @@ import com.axway.ats.core.validation.Validator;
  * Operations on the file system.
  * If an ATS Agent is given (by the appropriate constructor), we are working remotely.
  *
- * <br/><br/>Note: On error all methods in this class are likely to throw FileSystemOperationException
+ * <br><br>Note: On error all methods in this class are likely to throw FileSystemOperationException
  *
- * <br/><br/>
+ * <br><br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/File-System-Operations.html">page</a>
  * related to this class
@@ -94,7 +94,7 @@ public class FileSystemOperations {
      * Creates a binary file. The content of the file is a byte sequence. The bytes
      * themselves are either fixed sequence, or randomly generated, depending on the
      * value of the randomContent parameter.
-     * </br>File's UID and GID will the ones of the system user which started the remote ATS agent.
+     * <br>File's UID and GID will the ones of the system user which started the remote ATS agent.
      *
      * @param filePath the file to work with
      * @param size the size of the generated file
@@ -337,7 +337,7 @@ public class FileSystemOperations {
      * It simply appends the provided bytes to the file.
      * It does not touch the new line characters in the new content.
      *
-     * <br/><b>Note:</b> It will fail if the file does not exist
+     * <br><b>Note:</b> It will fail if the file does not exist
      *
      * @param filePath the file to work with
      * @param contentToAdd the content to add
@@ -427,8 +427,8 @@ public class FileSystemOperations {
     }
 
     /**
-     * Make a file hidden or not hidden. <br/>
-     * On Unix systems a file is made hidden by inserting '.' in front of its name. <br/>
+     * Make a file hidden or not hidden. <br>
+     * On Unix systems a file is made hidden by inserting '.' in front of its name. <br>
      * On Windows a file is made hidden by setting the appropriate file attribute.
      *
      * @param filePath the file to work with
@@ -468,7 +468,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a file from atsAgent host to a new file on the local host. <br/>
+     * Copies the contents of a file from atsAgent host to a new file on the local host. <br>
      * <b>Note:</b> If no atsAgent is used or it is local, then the source files is searched on the local host
      *
      * @param fromFile the source file
@@ -604,7 +604,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Deletes a file <br/>
+     * Deletes a file <br>
      * <b>Note: </b>It does nothing if the file does not exist
      *
      * @param filePath the file to work with
@@ -650,7 +650,7 @@ public class FileSystemOperations {
     /**
      * Creates a directory
      *
-     * @param directoryName the name of the new directory.<br/>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
+     * @param directoryName the name of the new directory.<br>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
      */
     @PublicAtsApi
     public void
@@ -671,7 +671,7 @@ public class FileSystemOperations {
     /**
      * Creates a directory on with a specific user and group id
      *
-     * @param directoryName the name of the new directory<br/>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
+     * @param directoryName the name of the new directory<br>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
      * @param userId the identification number of the user this file should belong to
      * @param groupId the identification number of the group this file should belong to
      * Note group and user ID are applied only to the last directory
@@ -845,7 +845,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Deletes a directory and all its content. <br/>
+     * Deletes a directory and all its content. <br>
      * <b>Note: </b>It does nothing if the directory does not exist
      *
      * @param directoryPath the directory to work with
@@ -867,7 +867,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Deletes all directory's content, but does not touch the directory itself<br/>
+     * Deletes all directory's content, but does not touch the directory itself<br>
      * <b>Note: </b>It does nothing if the directory does not exist
      *
      * @param directoryPath the directory to work with
@@ -947,7 +947,7 @@ public class FileSystemOperations {
      * @param mode mode for computing the MD5 sum
      * <blockquote>
      * ASCII mode - the line endings will be ignored when computing the sum.
-     * E.g. same file with Windows and Linux style line endings will give same MD5 sum <br/>
+     * E.g. same file with Windows and Linux style line endings will give same MD5 sum <br>
      * BINARY mode - each byte is affecting the returned result
      * </blockquote>
      * @return the MD5 sum in hex format
@@ -1011,7 +1011,7 @@ public class FileSystemOperations {
      * <blockquote>
      * true - expects match using only these (DOS/Win-style) special characters:
      *      <blockquote>
-     *      '*' character - matches a sequence of any characters<br/>
+     *      '*' character - matches a sequence of any characters<br>
      *      '?' character - matches one single character
      *      </blockquote>
      * false - supports any Java regular expression
@@ -1244,7 +1244,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Reads the file content<br/>
+     * Reads the file content<br>
      * <b>NOTE:</b> This method should be used for relatively small files as it loads the whole file in the memory
      *
      * @param filePath the file to work with
@@ -1265,7 +1265,7 @@ public class FileSystemOperations {
 
     /**
      * Searches some text in file and it remembers where the search stopped.
-     * The following search starts from the point where the last search stopped<br/>
+     * The following search starts from the point where the last search stopped<br>
      *
      * This method is appropriate for growing text files(for example some kind of a log file)
      *
@@ -1289,7 +1289,7 @@ public class FileSystemOperations {
 
     /**
      * Searches some texts in file and it remembers where the search stopped.
-     * The following search starts from the point where the last search stopped<br/>
+     * The following search starts from the point where the last search stopped<br>
      *
      * This method is appropriate for growing text files(for example some kind of a log file)
      *
@@ -1328,7 +1328,7 @@ public class FileSystemOperations {
 
     /**
      * Searches for files and/or directories on the file system and returns the
-     * path of the matched ones. </br>
+     * path of the matched ones. <br>
      * <b>Note: </b>When path points to a directory, it ends with host's file path separator "/" or "\"
      *
      * @param startLocation the folder where search starts
@@ -1456,7 +1456,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Read file from specific byte position. Used for file tail.<br/>
+     * Read file from specific byte position. Used for file tail.<br>
      * <b>NOTE:</b> If the file is replaced with the same byte content, then no change is assumed and 'null' is returned
      *
      * @param fileName file name

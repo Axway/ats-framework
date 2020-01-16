@@ -95,7 +95,7 @@ public class FileSystemEqualityState implements Serializable {
      * <p>&nbsp;&nbsp;&nbsp;&nbsp;Section [languages], key '00A' : {snap1: 'English', snap1: 'Spanish'}</p>
      * <p>}</p>
      * </div>
-     * @returns map that holds the differences 
+     * @return map that holds the differences
      * */
 
     @PublicAtsApi

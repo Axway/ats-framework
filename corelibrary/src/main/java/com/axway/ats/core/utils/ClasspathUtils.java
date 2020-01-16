@@ -150,8 +150,8 @@ public class ClasspathUtils {
     }
 
     /**
-     * Log in the console jars that are likely to cause issues running the tests:</br>
-     *  - duplicated jars </br>
+     * Log in the console jars that are likely to cause issues running the tests:<br>
+     *  - duplicated jars <br>
      *  - jars that are used by ATS and are not supposed to be added by the user manually
      */
     public void logProblematicJars() {

@@ -293,9 +293,9 @@ public abstract class UiDriver {
 
     /**
      * Driver for working with mobile applications
-     * @param deviceName the kind of mobile device or emulator to use. You can use one of {@link MobileDriver} driver type constants.<br/>
-     *  For example: MobileDriver.DEVICE_ANDROID_EMULATOR, MobileDriver.DEVICE_IPHONE_SIMULATOR or iPhone Retina 4-inch, Galaxy S4, ... <br/>
-     *  On iOS, this should be one of the valid devices returned by instruments with <i>instruments -s devices</i>. <br/>
+     * @param deviceName the kind of mobile device or emulator to use. You can use one of {@link MobileDriver} driver type constants.<br>
+     *  For example: MobileDriver.DEVICE_ANDROID_EMULATOR, MobileDriver.DEVICE_IPHONE_SIMULATOR or iPhone Retina 4-inch, Galaxy S4, ... <br>
+     *  On iOS, this should be one of the valid devices returned by instruments with <i>instruments -s devices</i>. <br>
      * @param platformVersion mobile OS version. For example: 8.1, 4.4 ... For Android it could be skipped (null)
      * @param udid unique device identifier of the connected physical device or null for emulator/simulator usage
      * @param host the host address of the Appium server. null may be passed if you want to work with localhost emulator
@@ -313,9 +313,9 @@ public abstract class UiDriver {
 
     /**
      * Driver for working with mobile applications
-     * @param deviceName the kind of mobile device or emulator to use. You can use one of {@link MobileDriver} driver type constants.<br/>
-     *  For example: MobileDriver.DEVICE_ANDROID_EMULATOR, MobileDriver.DEVICE_IPHONE_SIMULATOR or iPhone Retina 4-inch, Galaxy S4, ... <br/>
-     *  On iOS, this should be one of the valid devices returned by instruments with <i>instruments -s devices</i>. <br/>
+     * @param deviceName the kind of mobile device or emulator to use. You can use one of {@link MobileDriver} driver type constants.<br>
+     *  For example: MobileDriver.DEVICE_ANDROID_EMULATOR, MobileDriver.DEVICE_IPHONE_SIMULATOR or iPhone Retina 4-inch, Galaxy S4, ... <br>
+     *  On iOS, this should be one of the valid devices returned by instruments with <i>instruments -s devices</i>. <br>
      * @param platformVersion mobile OS version. For example: 11.4, 8.1 ... For Android it could be skipped (null)
      * @param udid unique device identifier of the connected physical device or null for emulator/simulator usage
      * @param host the host address of the Appium server. null may be passed if you want to work with localhost emulator

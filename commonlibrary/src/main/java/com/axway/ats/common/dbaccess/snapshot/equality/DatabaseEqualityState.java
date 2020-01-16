@@ -115,7 +115,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with different primary keys </br>
+     * Get list of tables with different primary keys <br>
      * Note that the list of tables is the same for both snapshots
      * 
      * @param snapshot snapshot name
@@ -133,7 +133,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get the different primary keys per table and snapshot. </br>
+     * Get the different primary keys per table and snapshot. <br>
      * Note that we currently do not support more than one primary key difference
      * 
      * @param snapshot snapshot name
@@ -173,7 +173,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with different number of rows </br>
+     * Get list of tables with different number of rows <br>
      * Note that the list of tables is the same for both snapshots
      * 
      * @param snapshot snapshot name
@@ -191,7 +191,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get the number of rows for the given table and snapshot. </br>
+     * Get the number of rows for the given table and snapshot. <br>
      * 
      * @param snapshot snapshot name
      * @param table table name
@@ -228,7 +228,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique columns </br>
+     * Get list of tables with unique columns <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique columns
@@ -240,7 +240,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique columns for the given table and snapshot. </br>
+     * Get a list of unique columns for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents a column description.
      * The list contains a map where the key is a column attribute name while the value
@@ -257,7 +257,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique columns for the given table and snapshot. </br>
+     * Get a list of unique columns for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing a column.
      * 
@@ -296,7 +296,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique indexes </br>
+     * Get list of tables with unique indexes <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique indexes
@@ -308,7 +308,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique indexes for the given table and snapshot. </br>
+     * Get a list of unique indexes for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents an index description.
      * The list contains a map where the key is an index attribute name while the value
@@ -325,7 +325,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique indexes for the given table and snapshot. </br>
+     * Get a list of unique indexes for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing an index.
      * 
@@ -365,7 +365,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique rows </br>
+     * Get list of tables with unique rows <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique rows
@@ -377,7 +377,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique rows for the given table and snapshot. </br>
+     * Get a list of unique rows for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents a row.
      * The list contains a map where the key is a column name while the value
@@ -394,7 +394,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique rows for the given table and snapshot. </br>
+     * Get a list of unique rows for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing the row content.
      * 

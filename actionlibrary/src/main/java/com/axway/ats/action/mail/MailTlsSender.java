@@ -25,7 +25,7 @@ import com.axway.ats.common.PublicAtsApi;
 public class MailTlsSender extends MailSender {
 
     /**
-     * A TLS mail sender which accepts any SSL certificate<br/>
+     * A TLS mail sender which accepts any SSL certificate<br>
      * Uses default SSLSocketFactory provided by ATS: {@link BasicSslSocketFactory}
      *
      */

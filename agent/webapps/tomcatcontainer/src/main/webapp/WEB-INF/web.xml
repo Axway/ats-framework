@@ -23,8 +23,6 @@
     </listener>
     <servlet>
         <servlet-name>agentservice_servlet</servlet-name>
-        
-        
         <servlet-class>
             com.sun.xml.ws.transport.http.servlet.WSServlet
         </servlet-class>

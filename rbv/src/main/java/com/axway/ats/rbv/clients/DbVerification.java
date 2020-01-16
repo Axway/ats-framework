@@ -49,8 +49,8 @@ import com.axway.ats.rbv.model.RbvException;
  * <p>Note that <code>check</code> methods add rules for match whereas actual rules
  * evaluation is done in one of the methods with <code>verify</code> prefix.</p>
   *
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/>
+ * <br><br>
+ * <b>User guide</b> pages related to this class:<br>
  * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
  * <a href="https://axway.github.io/ats-framework/Database-verifications.html">Database verification details</a>

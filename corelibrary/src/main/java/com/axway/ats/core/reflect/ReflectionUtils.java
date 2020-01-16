@@ -51,7 +51,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Set field value from instance.</br>
+     * Set field value from instance.<br>
      * Note that private static final fields could not handled by this method. 
      * @param instance - the object over which the search for this field will be invoked
      * @param fieldName - the field name (case-sensitive)
@@ -194,7 +194,7 @@ public class ReflectionUtils {
     }
 
     /**
-     * Get method from class and make it accessible, so {@link Method#invoke(Object, Object...)} can be executed later over this object</br>
+     * Get method from class and make it accessible, so {@link Method#invoke(Object, Object...)} can be executed later over this object<br>
      * Note that the method may not be accessible, so before invoking it, you may have to call Method.setAccessible(true) and then after you are done using the method, revert that accessible flag to the original one
      * @param clazz - the Class (Someclass.class or someObject.getClass())
      * @param methodName - the methodName

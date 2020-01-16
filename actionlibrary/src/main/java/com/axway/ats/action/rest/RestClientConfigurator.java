@@ -47,7 +47,7 @@ public class RestClientConfigurator {
      * */
     private ConnectorProvider           connectorProvider;
     /**
-     * Additional properties for configuring the  {@link ConnectorProvider} </br>
+     * Additional properties for configuring the  {@link ConnectorProvider} <br>
      * If there is no connector provider, those properties will not be applied.
      * */
     private Map<String, Object>         connectorProviderProperties;
@@ -143,9 +143,9 @@ public class RestClientConfigurator {
     }
 
     /**
-     * Register third-party {@link ConnectorProvider}, like org.glassfish.jersey.apache.connector.ApacheConnectorProvider, etc, along with (optional) configuration properties for the provider.<br/>
-     * If not specified, <code>org.glassfish.jersey.client.HttpUrlConnectorProvider</code> is used as a connection provider.<br/>
-     * </br>Note: Currently only Apache connector is expected to work properly. Other connector providers may or may not work if additional configuration is needed.
+     * Register third-party {@link ConnectorProvider}, like org.glassfish.jersey.apache.connector.ApacheConnectorProvider, etc, along with (optional) configuration properties for the provider.<br>
+     * If not specified, <code>org.glassfish.jersey.client.HttpUrlConnectorProvider</code> is used as a connection provider.<br>
+     * <br>Note: Currently only Apache connector is expected to work properly. Other connector providers may or may not work if additional configuration is needed.
      * 
      * @param connectorProvider - the connection provider
      * @param properties - (optional) configuration properties for the connection provider
@@ -162,7 +162,7 @@ public class RestClientConfigurator {
     }
 
     /**
-     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider.<br/>
+     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider.<br>
      * Note that an additional dependency (jersey-apache-connector) must be specified before using this method.
      */
     @PublicAtsApi
@@ -197,7 +197,7 @@ public class RestClientConfigurator {
     }
 
     /** <strong>Note</strong>: For internal usage only. Using this method may lead to undesired effects
-     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider<br/>
+     * Use org.glassfish.jersey.apache.connector.ApacheConnectorProvider as a provider<br>
      * @param connectorProvider - the connector provider's class
      * @param properties - (optional) configuration properties for the connection provider.
      * <strong>Note</strong>: If connections will be done over SSL (HTTPS), any of the needed configuration must be done by you.

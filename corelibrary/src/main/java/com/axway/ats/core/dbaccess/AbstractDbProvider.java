@@ -345,7 +345,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Executes a given SQL update statement and returns number of updated rows
      * @param query the SQL query to execute
-     * <br/><b>Note: </b>The SQL query must content inside any needed parameter escaping.
+     * <br><b>Note: </b>The SQL query must content inside any needed parameter escaping.
      * @return the number of rows affected
      * @throws DbException
      */

@@ -105,7 +105,7 @@ public class FileSystemSnapshotException extends RuntimeException {
 
     /**
      * Get the all directories which are present in just one of the snapshots.
-     * </br>Note that <b>null</b> is returned if provide a not existing snapshot name.
+     * <br>Note that <b>null</b> is returned if provide a not existing snapshot name.
      *
      * @param snapshot snapshot name
      * @return list of matching directories
@@ -132,7 +132,7 @@ public class FileSystemSnapshotException extends RuntimeException {
 
     /**
      * Get the all files which are present in just one of the snapshots.
-     * </br>Note that <b>null</b> is returned if provide a not existing snapshot name.
+     * <br>Note that <b>null</b> is returned if provide a not existing snapshot name.
      *
      * @param snapshot snapshot name
      * @return list of matching files

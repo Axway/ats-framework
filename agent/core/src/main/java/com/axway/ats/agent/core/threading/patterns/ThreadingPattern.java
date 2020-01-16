@@ -204,7 +204,7 @@ public abstract class ThreadingPattern implements StartPattern, Serializable {
     }
 
     /**
-    * In some cases you do not want to load the tested application on the maximum.</br></br>
+    * In some cases you do not want to load the tested application on the maximum.<br><br>
     * 
     * ATS cannot make your actions execute slower, but using this method it is easy
     * to specify how many iterations will be executed for a period of time.

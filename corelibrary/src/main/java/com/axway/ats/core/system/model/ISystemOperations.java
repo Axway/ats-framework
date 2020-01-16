@@ -56,9 +56,9 @@ public interface ISystemOperations {
     public String getAtsVersion();
 
     /**
-     * Creates screenshot image file.<br/>
-     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br/>
-     * <br/>
+     * Creates screenshot image file.<br>
+     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br>
+     * <br>
      * <b>NOTE:</b> For remote usage, the filePath value must be only the image file extension/format/type eg. ".PNG"
      * The temporary image file with this format will be created
      *

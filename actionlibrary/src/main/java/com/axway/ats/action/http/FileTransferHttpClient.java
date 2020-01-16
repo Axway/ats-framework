@@ -50,7 +50,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 /**
  * An HTTP(s) client which inherits see the fully functional @see {@link HttpClient} but is targeted
- * in achieving simple file uploads and downloads.</br></br>
+ * in achieving simple file uploads and downloads.<br><br>
  * Its main methods follow the trivial <b>connect -> upload/download -> disconnect</b> logic
  */
 @PublicAtsApi
@@ -76,7 +76,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public final static String  SOCKET_READ_TIMEOUT                   = "HTTP_HTTPS_SOCKET_READ_TIMEOUT";
 
     /**
-     * Set the <strong>Transfer-Encoding</strong> value.<br/> Currently the only supported value is <strong>chunked</strong>
+     * Set the <strong>Transfer-Encoding</strong> value.<br> Currently the only supported value is <strong>chunked</strong>
      * */
     public static final String  TRANSFER_ENCODING_MODE                = "HTTP_HTTPS_TRANSFER_ENCODING_MODE";
     public static final String  TRANSFER_ENCODING_MODE_CHUNKED        = "chunked";

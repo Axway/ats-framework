@@ -169,7 +169,7 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
+     * 1. Replaces any '\\' characters with '/' <br>
      * 2. Appends '/' at the end if not present
      *
      * @param source the source directory
@@ -191,8 +191,8 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
-     * 2. Appends '/' at the end if not present </br>
+     * 1. Replaces any '\\' characters with '/' <br>
+     * 2. Appends '/' at the end if not present <br>
      * 3. Adds '"' character at the start and at the end of the string
      *
      * @param source the source directory
@@ -230,7 +230,7 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
+     * 1. Replaces any '\\' characters with '/' <br>
      * 2. Adds '"' character at the start and at the end of the string
      *
      * @param source the source file
@@ -423,7 +423,7 @@ public class IoUtils {
     /**
      * Loads a file from a jar and returns it as an {@link InputStream}
      * <p><em>Note:</em> The returned stream is full in-memory copy and should be used with small files only.</p>
-     * <p><strong>EXAMPLE:</strong><br/>
+     * <p><strong>EXAMPLE:</strong><br>
      * If you want to load "file:/C:/folder/myJarFile.jar!/com/test/myFile.xml"<br>
      * then jarContainingTheFileToRead must be "file:/C:/folder/myJarFile.jar!/com/test/myFile.xml"
      * or "file:/C:/folder/myJarFile.jar"<br>

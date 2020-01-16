@@ -59,16 +59,16 @@ public class AtsSystemProperties {
      * */
     public static final String  LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
 
-    /** The MAX number of events that will be processed at once when batch mode is enabled.</br>
+    /** The MAX number of events that will be processed at once when batch mode is enabled.<br>
      *  This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
      * */
     @PublicAtsApi
     public static final String  LOG__MAX_CACHE_EVENTS                                             = "ats.log.db.max.cache.events";
 
-    /** When the test execution db logging is in batch mode, there is a cache for events.<br/>
-     * That cache size is managed by {@link AtsSystemProperties#LOG__MAX_CACHE_EVENTS}.<br/>
+    /** When the test execution db logging is in batch mode, there is a cache for events.<br>
+     * That cache size is managed by {@link AtsSystemProperties#LOG__MAX_CACHE_EVENTS}.<br>
      * This means that the cache is flushed, when the cache size is reached. But the user can force the cache to be flushed after a certain time interval expired and that
-     * time interval is configured by this property.<br/>
+     * time interval is configured by this property.<br>
      * Note that the timeout must be in <strong>seconds</strong>
      * */
     @PublicAtsApi
@@ -193,10 +193,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - an error is thrown
      *
-     * If key is not found - null is returned.</br>
+     * If key is not found - null is returned.<br>
      *
      * @param key the name of the searched system property
      * @return a boolean value
@@ -208,10 +208,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - default value is returned if provided, otherwise an error is thrown
      *
-     * If key is not found - default value is returned if provided, otherwise null is returned.</br>
+     * If key is not found - default value is returned if provided, otherwise null is returned.<br>
      *
      * @param key the name of the searched system property
      * @param defaultValue default value in case the system property does not exist or is invalid
@@ -241,10 +241,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - an error is thrown
      *
-     * If key is not found - null is returned.</br>
+     * If key is not found - null is returned.<br>
      *
      * @param key the name of the searched system property
      * @return a number that is 0 or above
@@ -256,10 +256,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - default value is returned if provided, otherwise an error is thrown
      *
-     * If key is not found - default value is returned if provided, otherwise null is returned.</br>
+     * If key is not found - default value is returned if provided, otherwise null is returned.<br>
      *
      * @param key the name of the searched system property
      * @param defaultValue default value in case the system property does not exist or is invalid

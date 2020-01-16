@@ -55,7 +55,7 @@ public class RemoteExecutor extends AbstractClientExecutor {
 
     /**
      * @param atsAgent the remote agent address
-     * @param configureAgent whether we want to send the log configuration to the agent.</br>
+     * @param configureAgent whether we want to send the log configuration to the agent.<br>
      * Pass <i>false</i> when there is chance that the agent is not available - for example 
      * if it was just restarted.
      * @throws AgentException

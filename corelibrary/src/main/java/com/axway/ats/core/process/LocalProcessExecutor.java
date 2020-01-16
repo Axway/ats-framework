@@ -313,7 +313,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Returns the full standard output content.</br></br>
+     * Returns the full standard output content.<br><br>
      *
      * <b>Note:</b> This is a blocking operation which will:
      * <ul>
@@ -330,7 +330,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Returns the full error output content.</br></br>
+     * Returns the full error output content.<br><br>
      *
      * <b>Note:</b> This is a blocking operation which will:
      * <ul>

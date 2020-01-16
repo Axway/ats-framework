@@ -1784,7 +1784,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Read file from specific position. Used for file tail.<br/>
+     * Read file from specific position. Used for file tail.<br>
      *
      * <b>NOTE:</b> If the file is replaced with the same byte content, then no change is assumed and 'null' is returned
      *
@@ -2461,9 +2461,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * File transfer status holder<br/>
-     * Used for waiting the file transfer to complete<br/>
-     * <br/>
+     * File transfer status holder<br>
+     * Used for waiting the file transfer to complete<br>
+     * <br>
      * <b>NOTE</b>: We can't use {@link Boolean} instead of this class, because in some moment we have to
      * change the boolean value, but {@link Boolean} is immutable and we also need to use the same object,
      * because we are synchronizing on it.

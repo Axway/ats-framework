@@ -27,9 +27,9 @@ import com.axway.ats.core.validation.Validator;
  * Operations on the Windows registry.
  * If an ATS Agent is given(by the appropriate constructor), we are working remotely.
  *
- * <br/><br/>Note: On error all methods in this class are likely to throw RegistryOperationsException
+ * <br><br>Note: On error all methods in this class are likely to throw RegistryOperationsException
  *
- * <br/>
+ * <br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/Windows-Registry-Operations.html">page</a>
  * related to this class

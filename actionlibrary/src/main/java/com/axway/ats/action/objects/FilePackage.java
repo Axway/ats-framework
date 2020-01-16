@@ -197,7 +197,7 @@ public class FilePackage implements Package {
 
     /**
      * Get the name of the owner of the entity. 
-     * </br>Note: It returns null on Windows.
+     * <br>Note: It returns null on Windows.
      * 
      * @return
      * @throws PackageException
@@ -224,7 +224,7 @@ public class FilePackage implements Package {
 
     /**
      * Get the name of the group of the entity. 
-     * </br>Note: It returns null on Windows.
+     * <br>Note: It returns null on Windows.
      * 
      * @return
      * @throws PackageException

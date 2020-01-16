@@ -38,7 +38,7 @@ import com.axway.ats.core.utils.HostUtils;
  *   </li>
  *  </ol>
  *
- * <br/>
+ * <br>
  * <p>For more info and examples check dedicated
  * <a href="https://axway.github.io/ats-framework/Interacting-with-external-process.html">page</a>
  * in ATS User guide.

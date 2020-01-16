@@ -42,8 +42,8 @@ public @interface Action {
 
     /**
      * Specify if the action execution will be registered in the database.
-     * </br>The default value is <b>true</b>
-     * </br></br>When set to false:
+     * <br>The default value is <b>true</b>
+     * <br><br>When set to false:
      * <li>the action will be missing on the Test Explorer's <i>Performance actions</i> tab
      * <li>the action response time will not be included in the <i>Queue execution time</i>
      */
@@ -52,8 +52,8 @@ public @interface Action {
     /**
      * Specify if the action response time will be included in
      * the <i>Queue execution time</i> on the Test Explorer's <i>Performance actions</i> tab
-     * </br>The default value is <b>true</b>
-     * </br></br><b>Note:</b> this parameter has no effect when the {@link registerActionExecution} is false
+     * <br>The default value is <b>true</b>
+     * <br><br><b>Note:</b> this parameter has no effect when the {@link #registerActionExecution()} is false
      */
     boolean registerActionExecutionInQueueExecutionTime() default true;
 }

@@ -309,7 +309,7 @@ public class MobileEngine extends AbstractEngine {
         /**
          *  <p>Install application.</p>
          *  <p>
-         *      <em>NOTE</em>: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br/>
+         *      <em>NOTE</em>: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br>
          *      Example:  export PATH=/opt/android/android-sdk_r24.0.2/platform-tools/:$PATH
          *  </p>
          *  @param appPath application absolute path or relative to the started Appium server
@@ -423,12 +423,12 @@ public class MobileEngine extends AbstractEngine {
          * Calculate file MD5 sum directly on the mobile device
          *
          * @param filePath file absolute path
-         * <br/>
+         * <br>
          * <b>Note for iOS:</b> You can specify relative path too, by skipping the root slash '/' at the beginning
-         *   and pass the path relative to the application data folder<br/>
-         * For example: <i>"Documents/MyAppFiles/IMG_0001.PNG"</i><br/>
+         *   and pass the path relative to the application data folder<br>
+         * For example: <i>"Documents/MyAppFiles/IMG_0001.PNG"</i><br>
          * and we'll internally search for:
-         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/IMG_0001.PNG"</i><br/>
+         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/IMG_0001.PNG"</i><br>
          * which is the iOS Simulator application data folder path
          *
          * @return the MD5 sum of the specified file
@@ -445,11 +445,11 @@ public class MobileEngine extends AbstractEngine {
          *
          * @param path a path on the mobile device. It can be a directory or file (if you want to check
          * for specific file existence)
-         * <br/>
-         * <b>Note for iOS:</b> You have to specify a relative path to the application data folder<br/>
-         * For example: <i>"Documents/MyAppFiles"</i><br/>
+         * <br>
+         * <b>Note for iOS:</b> You have to specify a relative path to the application data folder<br>
+         * For example: <i>"Documents/MyAppFiles"</i><br>
          * and we'll internally search for files in:
-         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/"</i><br/>
+         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/"</i><br>
          * which is the iOS Simulator application data folder path
          *
          * @return {@link FileInfo} array with all the files and folders from the target path
@@ -468,10 +468,10 @@ public class MobileEngine extends AbstractEngine {
          * @param recursively whether to delete the internal directories recursively
          *
          * <b>Note for iOS:</b> You can specify relative directory path too, by skipping the root slash '/' at the beginning
-         *   and pass the path relative to the application data folder<br/>
-         * For example: <i>"Documents/MyAppFiles"</i><br/>
+         *   and pass the path relative to the application data folder<br>
+         * For example: <i>"Documents/MyAppFiles"</i><br>
          * and we'll internally search for:
-         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/"</i><br/>
+         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/"</i><br>
          * which is the iOS Simulator application data folder path
          */
         @PublicAtsApi
@@ -488,10 +488,10 @@ public class MobileEngine extends AbstractEngine {
          * @param filePath the file for deletion
          *
          * <b>Note for iOS:</b> You can specify relative file path too, by skipping the root slash '/' at the beginning
-         *   and pass the path relative to the application data folder<br/>
-         * For example: <i>"Documents/MyAppFiles/fileToDelete"</i><br/>
+         *   and pass the path relative to the application data folder<br>
+         * For example: <i>"Documents/MyAppFiles/fileToDelete"</i><br>
          * and we'll internally search for:
-         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/fileToDelete"</i><br/>
+         *  <i>"/Users/&lt;username&gt;/Library/Developer/CoreSimulator/Devices/&lt;device_id&gt;/data/Containers/Data/Application/&lt;app_id&gt;/Documents/MyAppFiles/fileToDelete"</i><br>
          * which is the iOS Simulator application data folder path
          */
         @PublicAtsApi

@@ -57,7 +57,7 @@ public class SharedReadingBean extends ReadingBean {
      * Invalid double values set to "-1.0"
      *
      * @param value double value
-     * @return the double value if it is >= 0 and is not NaN or Infinite, else returns -1
+     * @return the double value if it is &gt;= 0 and is not NaN or Infinite, else returns -1
      */
     protected double fixDoubleValue(
                                      double value ) {
@@ -75,7 +75,7 @@ public class SharedReadingBean extends ReadingBean {
      * Invalid double percent values set to "-0.01"
      *
      * @param value double value
-     * @return the double value if it is >= 0 and is not NaN or Infinite, else returns -0.01
+     * @return the double value if it is &gt;= 0 and is not NaN or Infinite, else returns -0.01
      */
     protected float fixDoubleValueInPercents(
                                               double value ) {
@@ -94,7 +94,7 @@ public class SharedReadingBean extends ReadingBean {
      * Negative long values set to "-1"
      * 
      * @param value long value
-     * @return the long value if it is >= 0, else returns -1
+     * @return the long value if it is &gt;= 0, else returns -1
      */
     protected long fixLongValue(
                                  long value ) {

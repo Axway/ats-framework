@@ -46,7 +46,7 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * Implementation for sending MIME packages
  *
- * <br/><br/>
+ * <br><br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/Mail-and-SMTP-operations.html">page</a>
  * related to this class
@@ -214,7 +214,7 @@ public class MailSender extends PackageSender {
     }
 
     /**
-     * Set mail session property.<br/>
+     * Set mail session property.<br>
      * SMTP properties reference: https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
      *
      * @param propertyKey property key

@@ -57,8 +57,8 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>It is expected to have Test Explorer running on port 80.
-     * </br>The file must not be bigger than 10MB
+     * <br>It is expected to have Test Explorer running on port 80.
+     * <br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
      * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
@@ -74,7 +74,7 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>The file must not be bigger than 10MB
+     * <br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
      * @param testExplorerContextName the name of the web application context, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
@@ -93,8 +93,8 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach( upload) a local file to the a testcase in the Test Explorer DB.
-     * </br>It is expected to have Test Explorer running on port 80 or alternatively use {{@link #attachFileToTestcase(int, String, String, int)}}
-     * </br>The file must not be bigger than 10MB
+     * <br>It is expected to have Test Explorer running on port 80 or alternatively use {{@link #attachFileToTestcase(int, String, String, int)}}
+     * <br>The file must not be bigger than 10MB
      * 
      * @param testcaseId the testcase ID to which the file will be attached
      * @param fileLocation the absolute path to the file
@@ -111,7 +111,7 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the a testcase in the Test Explorer DB.
-     * </br>The file must not be bigger than 10MB
+     * <br>The file must not be bigger than 10MB
      * 
      * @param testcaseId the testcase id to which the file will be attached
      * @param fileLocation the absolute path to the file

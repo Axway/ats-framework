@@ -53,7 +53,7 @@ public class AddTestcaseMetainfoEvent extends AbstractLoggingEvent {
     }
 
     /**
-     * Return the testcase ID that will be associated with that meta info.</br>
+     * Return the testcase ID that will be associated with that meta info.<br>
      * @return the testcase's ID or -1 if no testcase ID is explicitly specified. In the later case, the current testcase's ID will be associated with that meta info
      * */
     public int getTestcaseId() {

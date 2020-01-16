@@ -176,9 +176,9 @@ public class LocalSystemOperations implements ISystemOperations {
     }
 
     /**
-     * Creates display screenshot and save it in an image file.<br/>
-     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br/>
-     * <br/>
+     * Creates display screenshot and save it in an image file.<br>
+     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br>
+     * <br>
      * <b>NOTE:</b> For remote usage, the filePath value must be only the image file extension eg. ".PNG"
      *
      * @param filePath the screenshot image file path. If the file extension is not specified, the default format PNG will be used

@@ -45,7 +45,7 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
  * <a href="http://htmlunit.sourceforge.net/">HTML Unit</a> browser.
  * Using Selenium <a href="https://github.com/SeleniumHQ/htmlunit-driver">htmlunit-driver</a> WebDriver.
  *
- * <br/>
+ * <br>
  * This is a headless (no UI) browser.
  */
 @PublicAtsApi

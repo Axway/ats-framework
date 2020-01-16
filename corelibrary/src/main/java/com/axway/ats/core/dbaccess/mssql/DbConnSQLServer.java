@@ -433,7 +433,7 @@ public class DbConnSQLServer extends DbConnection {
      *
      * <p>
      * By default jTDS is used. If you want to use JSQLConnect you should add this
-     * to your Java VM invocation command line:<br/>
+     * to your Java VM invocation command line:<br>
      * <code>
      * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix=jdbc:JSQLConnect://
      * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class=com.jnetdirect.jsql.JSQLDriver

@@ -456,9 +456,9 @@ public class TableDescription {
     }
 
     /**
-     * For Oracle DB, the column name is only presented in the Index's UID value.</br>
-     * This method extracts the column name from that UID.</br>
-     * It is expected that either column_name or COLUMN_NAME key is presented in the UID. </br>
+     * For Oracle DB, the column name is only presented in the Index's UID value.<br>
+     * This method extracts the column name from that UID.<br>
+     * It is expected that either column_name or COLUMN_NAME key is presented in the UID. <br>
      * */
     private String getIndexColumnNameFromIndexUid( String indexUid ) {
 

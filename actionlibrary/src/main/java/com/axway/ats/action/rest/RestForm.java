@@ -38,7 +38,7 @@ public class RestForm {
     }
 
     /**
-     * Add form parameters.</br></br>
+     * Add form parameters.<br><br>
      *
      * <b>Note:</b> For convenience this method returns the form itself,
      * so you can write code like new RESTForm().addParameter("username", "Will").addParameter("userpass", "Smith")

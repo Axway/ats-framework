@@ -139,7 +139,7 @@ public class DatabaseSnapshot {
 
     /**
      * Specify a column which values will not be read when comparing the table content.
-     * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
+     * <br>Note: the column meta information(like column type and indexes it participates into) is still compared
      * 
      * @param table table name
      * @param column column
@@ -152,7 +152,7 @@ public class DatabaseSnapshot {
 
     /**
      * Specify columns which values will not be read when comparing the table content.
-     * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
+     * <br>Note: the column meta information(like column type and indexes it participates into) is still compared
      * 
      * @param table table name
      * @param columns columns
@@ -179,10 +179,10 @@ public class DatabaseSnapshot {
 
     /**
      * Specify table(s) which content (rows) will not be checked, but
-     * we will check whether the number of rows is same. </br>
+     * we will check whether the number of rows is same. <br>
      * Some prefer to use this method for tables with changing binary data
      * (for example some certificates), but they still
-     * want to verify the number of rows(for example number of certificates) is not changed. </br>
+     * want to verify the number of rows(for example number of certificates) is not changed. <br>
      * Note that table meta-data is also checked.
      * 
      * @param tables one or many tables
@@ -238,7 +238,7 @@ public class DatabaseSnapshot {
 
     /**
      * Provide instance of this interface which will define 
-     * whether some table index names should be treated as same or not.</br></br>
+     * whether some table index names should be treated as same or not.<br><br>
      * 
      * <b>Note:</b> If not used, the index names are compared as regular text.
      * 
@@ -252,12 +252,12 @@ public class DatabaseSnapshot {
 
     /**
      * Provide a java regular expression which will define 
-     * whether some table index names should be treated as same or not.</br></br>
+     * whether some table index names should be treated as same or not.<br><br>
      * <b>Note:</b> The regular expression is applied on the index names,
-     * the first matched subsequences of both index names are compared for equality.</br>
+     * the first matched subsequences of both index names are compared for equality.<br>
      * 
      * In other words, we compare whatever is returned by the {@link Matcher#find()} method 
-     * when applied on both index names.</br></br>
+     * when applied on both index names.<br><br>
      * 
      * 
      * <b>Note:</b> If not used, the index names are compared as regular text.
@@ -289,7 +289,7 @@ public class DatabaseSnapshot {
     }
 
     /**
-     * Take a database snapshot</br>
+     * Take a database snapshot<br>
      * <b>NOTE:</b> We will get only meta data about the tables in the database. 
      * No table content is loaded at this moment as this may cause memory issues.
      * The content of each table is loaded when needed while comparing this snapshot with another one, or while
@@ -412,7 +412,7 @@ public class DatabaseSnapshot {
     }
 
     /**
-     * Save a snapshot into a file.</br>
+     * Save a snapshot into a file.<br>
      * <b>NOTE:</b> This is the moment when the contents of each table is read from the database 
      * one at a time and is saved into the file.
      * 
@@ -431,7 +431,7 @@ public class DatabaseSnapshot {
      * Load a snapshot from a file
      * 
      * @param newSnapshotName the name of the new snapshot
-     * </br>Pass null or empty string if want to use the snapshot name as saved in the file,
+     * <br>Pass null or empty string if want to use the snapshot name as saved in the file,
      * or provide a new name here
      * @param sourceFile the backup file name
      */

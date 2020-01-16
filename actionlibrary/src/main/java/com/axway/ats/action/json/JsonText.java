@@ -35,7 +35,7 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * A parser for JSON REST body.
  * 
- * </br> </br> <b>Note:</b> Key paths are represented as the following: 
+ * <br> <br> <b>Note:</b> Key paths are represented as the following:
  * <ul>
  * <li>"key1" - pointing to a root level element</li>
  * <li>"key1/key2" - pointing to an element under a root element</li>
@@ -43,7 +43,7 @@ import com.axway.ats.core.utils.StringUtils;
  * example we are pointing to the 4th element</li>
  * </ul>
  * 
- * </br> </br> <b>Note:</b> Many of the supported methods return the instance of this object 
+ * <br> <br> <b>Note:</b> Many of the supported methods return the instance of this object
  * which allows chaining the code like this:
  * <blockquote>new JSONText().add("name", "John").add("age", "20").add("sex", "Male");</blockquote>
  */

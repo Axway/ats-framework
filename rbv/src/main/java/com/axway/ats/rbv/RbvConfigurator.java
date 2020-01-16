@@ -21,7 +21,7 @@ import com.axway.ats.config.AbstractConfigurator;
 /**
  * Class used to configure the behavior of the RBV engine.
  *
- * <br/><br/>
+ * <br><br>
  * <b>User guide</b> 
  * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">page</a>
  * for RBV.

@@ -165,7 +165,7 @@ public class MobileDriver extends UiDriver {
     }
 
     /**
-     * Start session to device and load the application <br/>
+     * Start session to device and load the application <br>
      * @param appPath filesystem path to the application - absolute or relative to the Appium server current dir
      * <pre>
      *       <b>iOS</b>: absolute path to simulator-compiled .app file or the bundle_id of the desired target on device
@@ -289,7 +289,7 @@ public class MobileDriver extends UiDriver {
 
         if (isAndroidAgent) {
 
-            // Clear application cache using ADB command: ./adb shell pm clear &lt;PACKAGE&gt;<br/>
+            // Clear application cache using ADB command: ./adb shell pm clear &lt;PACKAGE&gt;<br>
             // for example: ./adb shell pm clear com.axway.st.mobile
 
             if (this.adbLocation == null) {

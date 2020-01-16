@@ -49,8 +49,8 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * The {@link FtpsClient} uses the Apache Commons Net component suite for Java
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTPS 
- * connections to a remote server. <br/>
- * <br/>
+ * connections to a remote server. <br>
+ * <br>
  * The current implementation does *not* verify the server certificate against a
  * local trusted CA store!
  */

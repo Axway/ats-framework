@@ -43,7 +43,7 @@ import com.axway.ats.core.validation.Validator;
  * Operations on the OS level like getting OS type, get/set time, get classpath and
  * perform keyboard/mouse operations.
  *
- * <br/>
+ * <br>
  * <p>User guide page related to this class is
  * <a href="https://axway.github.io/ats-framework/Basic-System-Operations.html">here</a>
  * </p>
@@ -100,7 +100,7 @@ public class SystemOperations {
     }
 
     /**
-     * Get the value of the environment's system property.<br/>
+     * Get the value of the environment's system property.<br>
      *
      * It calls internally System.getProperty("property name");
      *
@@ -190,7 +190,7 @@ public class SystemOperations {
     }
 
     /**
-     * Creates screenshot image file.<br/>
+     * Creates screenshot image file.<br>
      * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP
      *
      * @param filePath the screenshot image file path. If the file extension is not specified, the default format PNG will be used

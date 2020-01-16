@@ -76,7 +76,7 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * A utility class for working with REST requests and responses
  *
- * <br/><br/>   
+ * <br><br>
  * <b>User guide</b> page related to this class is
  * <a href="https://axway.github.io/ats-framework/REST-Operations.html">here</a>
  *
@@ -396,7 +396,7 @@ public class RestClient {
 
     /**
      * If the URI is not fully specified in the constructor,
-     * you can navigate to an internal resource.</br>
+     * you can navigate to an internal resource.<br>
      * For example you can pass:
      * <ul>
      *   <li>"company"</li>
@@ -601,9 +601,9 @@ public class RestClient {
     }
 
     /**
-     * Add one or more values for one request(also called query) parameter</br></br>
+     * Add one or more values for one request(also called query) parameter<br><br>
      *
-     * The following example adds a language request parameter:</br>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
      * @param name parameter name
@@ -628,9 +628,9 @@ public class RestClient {
     }
 
     /**
-     * Add a list of values for one request(also called query) parameter</br></br>
+     * Add a list of values for one request(also called query) parameter<br><br>
      *
-     * The following example adds a language request parameter:</br>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
      * @param name parameter name
@@ -649,12 +649,12 @@ public class RestClient {
     }
 
     /**
-     * Add one or more request(also called query) parameters<br/></br/>
+     * Add one or more request(also called query) parameters<br></br/>
      *
-     * The following example adds a language request parameter:<br/>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
-     * @param valueList map with parameter names and values
+     * @param requestParameters map with parameter names and values
      *
      * @return this client's instance
      */
@@ -671,7 +671,7 @@ public class RestClient {
     }
 
     /**
-     * Remove a request(also called query) parameter<br/></br/>
+     * Remove a request(also called query) parameter<br></br/>
      *
      * @param name the name of the parameter
      *
@@ -699,7 +699,7 @@ public class RestClient {
     }
 
     /**
-     * Remove one or more request(also called query) parameters<br/></br/>
+     * Remove one or more request(also called query) parameters<br></br/>
      *
      * @param names the names of the parameters
      *
@@ -757,7 +757,7 @@ public class RestClient {
 
     /**
      * Set the request HTTP media type.
-     * This is the value of the "Content-Type" header.</br>
+     * This is the value of the "Content-Type" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the request media type
      *
@@ -787,7 +787,7 @@ public class RestClient {
 
     /**
      * Set the request HTTP media type and charset.
-     * This is the value of the "Content-Type" header.</br>
+     * This is the value of the "Content-Type" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      *
      * @param mediaType the request media type
@@ -821,7 +821,7 @@ public class RestClient {
 
     /**
      * Set the response HTTP media type.
-     * This is the value of the "Accept" header.</br>
+     * This is the value of the "Accept" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the response media type
      *
@@ -839,7 +839,7 @@ public class RestClient {
 
     /**
      * Set the response HTTP media type and charset.
-     * These are the values of "Accept" and "Accept-Charset" headers.</br>
+     * These are the values of "Accept" and "Accept-Charset" headers.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the response media type
      * @param mediaCharset the response media charset
@@ -1204,12 +1204,12 @@ public class RestClient {
      * Whether the response body will be buffered <strong>immediately</strong> after the HTTP request is executed by 
      * the RestClient. 
      * <ul>
-     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br/>
+     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br>
      *      If possible, RestClient will still <strong>try</strong> to buffer the response body (if not too big),  
      *      but this will happen only <strong>after</strong> explicit usage of getBodyAsXYZ() method in test code. </li>
      *  <li>If <code>true</code> then body will be consumed and buffered automatically. This allows usage of the 
      *      RestClient without explicitly (in your code) to have to consume the (whole) response body. One such case is if 
-     *      you verify only the returned HTTP status code or the headers.</br>
+     *      you verify only the returned HTTP status code or the headers.<br>
      *      It is highly recommended to set it to <code>true</code> if you are using <code>ApacheConnector</code> 
      *      provider.</li>
      * </ul> 
@@ -1226,7 +1226,7 @@ public class RestClient {
     }
 
     /**
-     * Set whether a connection pool will be used to obtain connection.</br>
+     * Set whether a connection pool will be used to obtain connection.<br>
      * <strong>Note</strong> that this currently works only if ApacheConnectorProvider is registered
      * @param usePooling - true/false with behavior explained above.
      * */

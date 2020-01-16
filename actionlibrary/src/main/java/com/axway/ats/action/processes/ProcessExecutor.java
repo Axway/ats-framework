@@ -27,11 +27,11 @@ import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
 /**
- * Used for running a system processes. <br/>
+ * Used for running a system processes. <br>
  * <b>Note</b> that this is not the same as simply running a shell command, as for example
  * the executed process will inherit the environment variables from the parent process.
  *
- * <br/>
+ * <br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/Running-external-process.html">page</a>
  * related to this class.
@@ -160,7 +160,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on the local host. <br/>
+     * Killing external process(such not started by us) on the local host. <br>
      * The process is found by a token which is contained in the start command.
      * No regex supported.
      *
@@ -179,7 +179,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on a remote host. <br/>
+     * Killing external process(such not started by us) on a remote host. <br>
      * The process is found by a token which is contained in the start command.
      * No regex supported.
      *
@@ -205,7 +205,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Tries to get the ID of the process started.<br/>
+     * Tries to get the ID of the process started.<br>
      * <b>Note</b>: Currently works only on some UNIX variants with SUN/Oracle JDK.
      *
      * @return The ID of the process. -1 in case of error.
@@ -218,7 +218,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Returns the exit code of the executed process.<br/>
+     * Returns the exit code of the executed process.<br>
      * Sometimes like on some Linux versions the process should be invoked after making sure that it
      * has already completed. Otherwise an exception is thrown by the VM.
      *
@@ -368,7 +368,7 @@ public class ProcessExecutor {
 
     /**
      * Append some value to an existing environment variable.
-     * If the variable is not present - it will be created. <br/>
+     * If the variable is not present - it will be created. <br>
      * <b>Note</b>: it is caller's responsibility to use appropriate delimiter when concatenating values.
      *
      * @param variableName name of the environment variable

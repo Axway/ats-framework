@@ -550,12 +550,12 @@ public class SslUtils {
     /**
      * Registers Bouncy Castle (BC) as <em>first security provider</em> before any other providers 
      * coming with the Java runtime. This is done once, if not already applied.
-     * </br>ATS calls this method internally when it is supposed to be needed.
+     * <br>ATS calls this method internally when it is supposed to be needed.
      * 
-     * </br></br><b>Note:</b> This is a static operation. All working threads will be affected. 
+     * <br><br><b>Note:</b> This is a static operation. All working threads will be affected.
      * The method itself is not thread-safe.
      * 
-     * </br></br><b>Note:</b> Effective set of provider is done only once per Java runtime. 
+     * <br><br><b>Note:</b> Effective set of provider is done only once per Java runtime.
      *   Currently subsequent invocations do not check whether provider is removed meanwhile and 
      *   this way could be forcefully set other security provider.  
      */

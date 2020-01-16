@@ -20,7 +20,7 @@ import java.io.Serializable;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
- * This class describes an SSH Cipher. Currently used in SftpClient.<br/>
+ * This class describes an SSH Cipher. Currently used in SftpClient.<br>
  * It contains some public constants of the frequently used ciphers (predefined {@link SshCipher} instances).
  */
 @PublicAtsApi
@@ -94,7 +94,7 @@ public class SshCipher implements Serializable {
                                                                    32);
 
     /**
-     * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt<br/>
+     * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt <br>
      * eg: 3des-cbc, blowfish-cbc, twofish256-cbc, aes256-cbc, aes192-cbc, aes128-cbc...
      *
      */
@@ -116,7 +116,7 @@ public class SshCipher implements Serializable {
     private String                jceAlgorithmName;
 
     /**
-     * The JCE provider name<br/>
+     * The JCE provider name<br>
      * For example "BC" for BouncyCastle or null for the default Sun provider
      */
     public String                 provider;
@@ -132,8 +132,8 @@ public class SshCipher implements Serializable {
     private int                   keyLength;
 
     /**
-     * The Class that is implementing the current cipher. Can be skipped if the provider can handle that step directly.</br>
-     * Basically if something fails, you can try setting this
+     * The Class that is implementing the current cipher. Can be skipped if the provider can handle that step directly.<br>
+     * Basically if something fails, you can try setting this property.
      * */
     private Class<?>              implClass;
 

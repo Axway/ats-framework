@@ -79,7 +79,7 @@ public class FileTransferClient {
     @PublicAtsApi
     public final static String    HTTP_HTTPS_SOCKET_BUFFER_SIZE                    = FileTransferHttpClient.SOCKET_BUFFER_SIZE;
 
-    /** Property for customizing the HTTP/HTTPS client's request <strong>Transfer-Encoding</strong>.<br/> 
+    /** Property for customizing the HTTP/HTTPS client's request <strong>Transfer-Encoding</strong>.<br>
      *  Currently only supported value is <strong>chunked</strong>
      *  */
     @PublicAtsApi

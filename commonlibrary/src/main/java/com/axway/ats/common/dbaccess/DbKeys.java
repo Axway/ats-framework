@@ -52,7 +52,7 @@ public class DbKeys {
     public static final String KEY_STORE_PASSWORD          = "javax.net.ssl.trustStorePassword";
 
     /**
-     * Use this property to specify which driver to be used for DB IO.</br>
+     * Use this property to specify which driver to be used for DB IO.<br>
      * Currently it is only applicable for SQL Server connections and the available values are {@link DbKeys#SQL_SERVER_DRIVER_JTDS} and {@link DbKeys#SQL_SERVER_DRIVER_MICROSOFT}
      * */
     @PublicAtsApi

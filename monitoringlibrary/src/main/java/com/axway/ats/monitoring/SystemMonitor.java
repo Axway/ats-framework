@@ -41,8 +41,8 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  * The monitored host parameter accepted by some methods is actually the ATS
  * Agent address.
  *
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  * <b>User guide</b> <a href=
  * "https://axway.github.io/ats-framework/ATS-OS-Documentation">page</a> for the
  * System monitor
@@ -330,7 +330,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring on a system process.
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param monitoredHost the host where the monitored process lives
      * @param processPattern the pattern to use in order to find the process among all system processes.
@@ -360,7 +360,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring on a system process. This method specifies the name of the user who started the process to monitor.
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param monitoredHost the host where the monitored process lives
      * @param processPattern the pattern to use in order to find the process among all system processes.
@@ -392,9 +392,9 @@ public class SystemMonitor {
     /**
     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
     * a name of a parent process.
-    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * <br>When one or more processes have a parent process specified, the parent process will combine
     * the statistics of all of its children processes.
-    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * <br>This way it is possible to get a picture of the resource usage of a whole tested product
     * which is running more than one actual system processes
     *
     * @param monitoredHost the host where the monitored process lives
@@ -424,9 +424,9 @@ public class SystemMonitor {
     /**
     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
     * a name of a parent process.
-    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * <br>When one or more processes have a parent process specified, the parent process will combine
     * the statistics of all of its children processes.
-    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * <br>This way it is possible to get a picture of the resource usage of a whole tested product
     * which is running more than one actual system processes
     *
     * @param monitoredHost the host where the monitored process lives
@@ -520,9 +520,9 @@ public class SystemMonitor {
      * @param mbeanName the name of the mbean than would be monitored
      * @param unit the metric unit
      * @param mbeanAttributes the MBean attribute to capture values for. 
-     * </br><b>Note: </b>This can be an array of nested attributes as sometimes the first MBean attribute is not a simple value but a composite element. Then the following attribute is the actual one to track.
-     * </br>For example when monitoring the Heap Used Memory, you have to provide "java.lang:type=Memory" as MBean name, the first level attribute is "HeapMemoryUsage" which is a composite element and its "used" attribute is the one of interest. In such case you need to provide here: "HeapMemoryUsage", "used"
-     * </br><b>Note: </b> Order of the mbeanAttributes is important
+     * <br><b>Note: </b>This can be an array of nested attributes as sometimes the first MBean attribute is not a simple value but a composite element. Then the following attribute is the actual one to track.
+     * <br>For example when monitoring the Heap Used Memory, you have to provide "java.lang:type=Memory" as MBean name, the first level attribute is "HeapMemoryUsage" which is a composite element and its "used" attribute is the one of interest. In such case you need to provide here: "HeapMemoryUsage", "used"
+     * <br><b>Note: </b> Order of the mbeanAttributes is important
      */
     @PublicAtsApi
     public void scheduleCustomJvmMonitoring(
@@ -549,7 +549,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring the user activity on an ATS Agent(usually used as a performance test loader).
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param atsAgent the ATS Agent which runs the monitored virtual users
      */
@@ -602,7 +602,7 @@ public class SystemMonitor {
     }
 
     /**
-     * Stop all monitoring activity.</br>Note that after this call, the current instance could not be used anymore.
+     * Stop all monitoring activity.<br>Note that after this call, the current instance could not be used anymore.
      */
     @PublicAtsApi
     public void stopMonitoring() {
