@@ -17,7 +17,7 @@
 
     <properties>
         <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
-        <selelnium-htmlunit-driver.version>2.36.0</selelnium-htmlunit-driver.version>
+        <selenium-htmlunit-driver.version>2.36.0</selenium-htmlunit-driver.version>
         <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)</selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
@@ -160,7 +160,7 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>htmlunit-driver</artifactId>
-            <version>${selelnium-htmlunit-driver.version}</version>
+            <version>${selenium-htmlunit-driver.version}</version>
         </dependency>
 
         <!-- <dependency>
