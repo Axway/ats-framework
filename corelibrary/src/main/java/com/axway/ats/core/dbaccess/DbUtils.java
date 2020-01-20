@@ -26,6 +26,7 @@ import java.sql.Statement;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.utils.ExceptionUtils;
 
 /**
  * Utilities to close Database connection, statement
@@ -80,6 +81,11 @@ public class DbUtils {
             if (connection != null) {
                 if (connection.isClosed()) {
                     String msg = "SQL connection is already closed";
+                    if (log.getLog4jLogger().isDebugEnabled()) {
+                        msg += "Location stacktrace follows: \n" + ExceptionUtils.getExceptionMsg(new Throwable());
+                    } else {
+                        msg += "For more information, set the LOG level to DEBUG or higher";
+                    }
                     log.warn(msg);
                 } else {
                     connection.close();
@@ -87,7 +93,6 @@ public class DbUtils {
             }
         } catch (SQLException sqle) {
             String msg = "Error closing database connection";
-            // TODO - first print to console on new object and then log4j
             log.error(getFullSqlException(msg, sqle));
         }
     }
@@ -135,7 +140,8 @@ public class DbUtils {
      * @param dbPassword the database password used for login
      * @return null if MSSQL database is available, and an Exception if MSSQL database is NOT available
      * */
-    public static Exception isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser, String dbPassword ) {
+    public static Exception isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
+                                                      String dbPassword ) {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
@@ -172,7 +178,7 @@ public class DbUtils {
     * @return null if PostgreSQL database is available, and an Exception if PostgreSQL database is NOT available
     * */
     public static Exception isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
-                                                         String dbPassword ) {
+                                                           String dbPassword ) {
 
         Connection sqlConnection = null;
         DbConnPostgreSQL postgreConnection = null;

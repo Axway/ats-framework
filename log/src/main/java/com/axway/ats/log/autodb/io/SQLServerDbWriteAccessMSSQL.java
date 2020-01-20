@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
@@ -101,7 +102,12 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         } catch (Exception e) {
             throw new DatabaseAccessException("Could not insert checkpoint to ATS log DB", e);
         } finally {
-            DbUtils.closeConnection(connection);
+            try {
+                if (connection != null && !connection.isClosed()) {
+                    DbUtils.closeConnection(connection);
+                }
+            } catch (SQLException e) {}
+
         }
 
     }
@@ -331,7 +337,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 checkpointSummary.maxResponseTime = (int) Math.max(responseTime, checkpointSummary.maxResponseTime);
                 // here we use the average response time as a total response time, not the average values.
                 // The average value will be calculated right before flushing to the DB
-                checkpointSummary.avgResponseTime += responseTime; 
+                checkpointSummary.avgResponseTime += responseTime;
 
                 checkpointSummary.minTransferRate = (float) Math.min(transferRate, checkpointSummary.minTransferRate);
                 checkpointSummary.maxTransferRate = (float) Math.max(transferRate, checkpointSummary.maxTransferRate);
