@@ -80,11 +80,11 @@ public class DbUtils {
         try {
             if (connection != null) {
                 if (connection.isClosed()) {
-                    String msg = "SQL connection is already closed";
+                    String msg = "SQL connection is already closed. ";
                     if (log.getLog4jLogger().isDebugEnabled()) {
                         msg += "Location stacktrace follows: \n" + ExceptionUtils.getExceptionMsg(new Throwable());
                     } else {
-                        msg += "For more information, set the LOG level to DEBUG or higher";
+                        msg += "For more information, set the LOG level to DEBUG or TRACE";
                     }
                     log.warn(msg);
                 } else {
