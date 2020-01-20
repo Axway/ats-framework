@@ -15,11 +15,9 @@
  */
 package com.axway.ats.action.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -377,6 +376,28 @@ public class RestClient {
      * @param supportedProtocols preferred protocols. <em>Note</em> that currently only the first one will be used!
      */
     public RestClient setSupportedProtocols( String[] supportedProtocols ) {
+
+        if (supportedProtocols == null) {
+            throw new IllegalArgumentException("Supported protocols could not be null");
+        } else if (supportedProtocols.length == 0) {
+            throw new IllegalArgumentException("Supported protocols could not be empty array");
+        } else {
+            if (supportedProtocols.length > 1) {
+                log.warn("Multiple protocols provided, but only the first one will be used");
+            }
+            String firstProtocol = supportedProtocols[0];
+            if (StringUtils.isNullOrEmpty(firstProtocol)) {
+                throw new IllegalArgumentException("The first protocol could not be null/empty");
+            } else {
+                if (firstProtocol.contains(",")) {
+                    throw new IllegalArgumentException("Multi-value protocols '" + supportedProtocols[0]
+                                                       + "' are not supported. Please specify only one");
+                }
+            }
+        }
+
+        // trim the first value, because otherwise an error for Unsupported protocol is thrown later
+        supportedProtocols[0] = supportedProtocols[0].trim();
 
         this.supportedProtocols = supportedProtocols;
 
@@ -1320,6 +1341,8 @@ public class RestClient {
         if (isHttps()) {
             // configure Trust-all SSL context
 
+            checkSupportedProtocols();
+
             SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
                                                            clientConfigurator.getCertificateFilePassword(),
                                                            supportedProtocols[0]);
@@ -1468,6 +1491,8 @@ public class RestClient {
         if (isHttps()) {
             // configure Trust-all SSL context
 
+            checkSupportedProtocols();
+
             SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
                                                            clientConfigurator.getCertificateFilePassword(),
                                                            supportedProtocols[0]);
@@ -1480,6 +1505,42 @@ public class RestClient {
         createClient(clientBuilder);
 
         createInvocationBuilder(descriptionToken);
+
+    }
+
+    private void checkSupportedProtocols() {
+
+        final String HTTPS_PROTOCOLS_KEY = "https.protocols";
+
+        String systemPropertyProtocols = System.getProperty(HTTPS_PROTOCOLS_KEY);
+
+        if (StringUtils.isNullOrEmpty(systemPropertyProtocols)) {
+            return;
+        }
+
+        if (systemPropertyProtocols.contains(" ")) {
+            // 0x20 = space (" ")
+            log.error("The system property '" + HTTPS_PROTOCOLS_KEY + " (" + systemPropertyProtocols + ")"
+                      + "' have invalid character - space (0x20)");
+        }
+
+        String[] systemPropertyProtocolsArray = systemPropertyProtocols.split(Pattern.quote(","));
+
+        String supportedProtocol = this.supportedProtocols[0];
+        boolean found = false;
+        for (String protocol : systemPropertyProtocolsArray) {
+            if (protocol.equalsIgnoreCase(supportedProtocol)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            log.error("The provided HTTP protocol '" + supportedProtocol
+                      + "' not found in the value of the system property '" + HTTPS_PROTOCOLS_KEY + " ( "
+                      + systemPropertyProtocols + ")"
+                      + "'. This can lead to an error");
+        }
 
     }
 
@@ -1635,8 +1696,8 @@ public class RestClient {
         return url;
     }
 
-    private KeyStore convertToKeyStore( String certificateFileName ) {
-
+    /*private KeyStore convertToKeyStore( String certificateFileName ) {
+    
         try {
             X509Certificate[] certificates = new X509Certificate[]{ SslUtils.convertFileToX509Certificate(new File(certificateFileName)) };
             KeyStore keystore = KeyStore.getInstance("JKS");
@@ -1650,7 +1711,7 @@ public class RestClient {
         } catch (Exception e) {
             throw new RestException("Failed to create keystore from certificate", e);
         }
-    }
+    }*/
 
     private void createClient( ClientBuilder newClientBuilder ) {
 
