@@ -302,11 +302,8 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Inserts a row in the given table.
      *
-     * @param tableName
-     * @param colums
-     * @param values This param must look like this: "'string_value', int_value, .."
-     * @param config
-     * @param log the log object
+     * @param tableName name
+     * @param columns map of column:value pairs
      *
      * @return The inserted rows, 0 or 1
      */
@@ -538,15 +535,15 @@ public abstract class AbstractDbProvider implements DbProvider {
      *
      * @param data the byte array
      * @param size the number of bytes to read
-     * @return a HEX string representing the binary data
+     * @return a HEX string representing the binary data. Currently in upper case.
      */
     protected String bytesToHex( byte[] data, int size ) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < size; i++) {
             String hexString = Integer.toHexString(data[i] & 0xFF);
             if (hexString.length() == 1) {
-                buf.append("0");
+                buf.append("0"); // add leading zero if number is too short ( 1 hex digit)
             }
 
             buf.append(hexString);
@@ -796,7 +793,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Each provider can put restrictions on the types of tables to be processed
      *
-     * @param tablesResultSet
+     * @param tableResultSet
      * @param dbName
      * @param tableName
      * @return

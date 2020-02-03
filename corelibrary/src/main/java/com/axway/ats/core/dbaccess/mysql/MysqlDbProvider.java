@@ -51,7 +51,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
      * Constructor to create authenticated connection to a database.
      * Takes DbConnection object
      * 
-     * @param dbconn db-connection object
+     * @param dbConnection db-connection object
      */
     public MysqlDbProvider( DbConnMySQL dbConnection ) {
 
@@ -68,7 +68,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
      * Returns the {@link Connection} associated with this {@link DbProvider}
      * 
      * @return the {@link Connection} associated with this {@link DbProvider}
-     * @throws DbException
+     * @throws DbException in case of an DB error
      */
     public Connection getConnection() throws DbException {
 

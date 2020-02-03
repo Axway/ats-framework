@@ -238,8 +238,7 @@ final class ClassUtilities {
     /**
      * @param  aClass  a Class
      * @param  methodName  name of a method
-     * @param  paramTypes  Class array representing the types
-     * of a method's formal parameters
+     * @param  parameterTypes  Class array representing the types of a method's formal parameters
      * @return  the Method with the given name and formal
      * parameter types that is in the nearest accessible class in the
      * class hierarchy, starting with aClass's superclass.  The
@@ -259,7 +258,7 @@ final class ClassUtilities {
         if (superclass != null && classIsAccessible(superclass)) {
             try {
                 overriddenMethod = superclass.getMethod(methodName, parameterTypes);
-            } catch (NoSuchMethodException _) {}
+            } catch (NoSuchMethodException exc) {}
 
             if (overriddenMethod != null)
                 return overriddenMethod;
@@ -277,7 +276,7 @@ final class ClassUtilities {
             if (classIsAccessible(interfaces[i])) {
                 try {
                     overriddenMethod = interfaces[i].getMethod(methodName, parameterTypes);
-                } catch (NoSuchMethodException _) {}
+                } catch (NoSuchMethodException exc) {}
 
                 if (overriddenMethod != null)
                     return overriddenMethod;

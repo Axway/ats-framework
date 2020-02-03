@@ -53,7 +53,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
     /**
      * Constructor to create authenticated connection to a database.
      *
-     * @param dbconn db-connection object
+     * @param dbConnection DB-connection object
      */
     public MssqlDbProvider( DbConnSQLServer dbConnection ) {
 
@@ -201,7 +201,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
     /**
      * Currently handling the case where a system table is returned, we do not want such table.
-     * In such case the TABLE_SCEM is 'sys', but the regular tables have the DB name instead.
+     * In such case the TABLE_SCHEM is 'sys', but the regular tables have the DB name instead.
      */
     @Override
     protected boolean isTableAccepted( ResultSet tableResultSet, String dbName, String tableName ) {
