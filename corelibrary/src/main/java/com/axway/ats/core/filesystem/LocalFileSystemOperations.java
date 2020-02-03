@@ -894,11 +894,19 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         File file = new File(fileName);
         boolean fileExists = checkFileExistence(file, false);
 
-        if (fileExists && !file.delete()) {
-            throw new FileSystemOperationException("Unable to delete " + (file.isDirectory()
-                                                                                             ? "directory"
-                                                                                             : "file")
-                                                   + " '" + fileName + "'");
+        if (fileExists) {
+            boolean isDirectory = file.isDirectory();
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                throw new FileSystemOperationException("Unable to delete " + (isDirectory
+                                                                                          ? "directory"
+                                                                                          : "file")
+                                                       + " '" + fileName + "'" + (isDirectory
+                                                                                              ? ". Try invoking deleteDirectory() instead."
+                                                                                              : ""),
+                                                       e);
+            }
         }
     }
 

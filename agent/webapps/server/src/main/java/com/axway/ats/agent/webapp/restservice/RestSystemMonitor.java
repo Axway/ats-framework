@@ -469,6 +469,8 @@ public class RestSystemMonitor {
                 }
 
                 cancelAnyMonitoringActivity(ThreadsPerCaller.getCaller());
+                // clear the readings because an error occurred
+                this.readingTypes.clear();
                 throw new MonitoringException("There were error starting the system monitoring process");
             }
         }
@@ -485,6 +487,8 @@ public class RestSystemMonitor {
                 }
 
                 cancelAnyMonitoringActivity(ThreadsPerCaller.getCaller());
+                // clear the readings because an error occurred
+                this.readingTypes.clear();
                 throw new MonitoringException("There were errors starting the monitoring process on ATS Agent");
             }
         }

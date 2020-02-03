@@ -106,7 +106,9 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 if (connection != null && !connection.isClosed()) {
                     DbUtils.closeConnection(connection);
                 }
-            } catch (SQLException e) {}
+            } catch (SQLException e) {
+                log.error(e);
+            }
 
         }
 
