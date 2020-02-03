@@ -118,7 +118,8 @@ agent_start() {
         fi
 
         JAVA_VERSION=`$JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}'`
-		if [ "$JAVA_VERSION" = *"7"* ] || [ "$JAVA_VERSION" = *"8"* ]; then
+		if [ "$JAVA_VERSION" = "1.7"* ] || [ "$JAVA_VERSION" = "1.8"* ]; then
+		        # Java 7 or 8 - use endorsed dir
 			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
 			$JMX_OPTIONS \
 			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
@@ -128,6 +129,7 @@ agent_start() {
 			$JAVA_OPTS $DEBUG_OPTIONS \
 			-jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
 		else
+		        # Java 9 or newer
 			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
 			$JMX_OPTIONS \
 			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
