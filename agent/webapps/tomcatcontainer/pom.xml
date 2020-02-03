@@ -182,6 +182,12 @@
             <scope>provided</scope>
         </dependency>
         
+        <dependency>
+        	<groupId>org.glassfish.pfl</groupId>
+        	<artifactId>pfl-basic</artifactId>
+        	<version>4.0.1</version> <!-- TODO expose for both jboss and tomcat -->
+        </dependency>
+        
         <!-- dependency for working with external processes -->
 		<dependency>
 			<groupId>com.axway.ats.expectj</groupId>

@@ -117,14 +117,26 @@ agent_start() {
             exit
         fi
 
-        nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
-         $JMX_OPTIONS \
-        -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-        -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-        -Dlogging.severity="$LOGGING_SEVERITY" \
-        -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-        $JAVA_OPTS $DEBUG_OPTIONS \
-        -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+        JAVA_VERSION=`$JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}'`
+		if [ "$JAVA_VERSION" = *"7"* ] || [ "$JAVA_VERSION" = *"8"* ]; then
+			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
+			$JMX_OPTIONS \
+			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+			-Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+			-Dlogging.severity="$LOGGING_SEVERITY" \
+			-Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
+			$JAVA_OPTS $DEBUG_OPTIONS \
+			-jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+		else
+			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+			$JMX_OPTIONS \
+			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+			-Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+			-Dlogging.severity="$LOGGING_SEVERITY" \
+			-Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
+			$JAVA_OPTS $DEBUG_OPTIONS \
+			-jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+		fi
 
         JVM_PID=$!
         if $DEBUG
