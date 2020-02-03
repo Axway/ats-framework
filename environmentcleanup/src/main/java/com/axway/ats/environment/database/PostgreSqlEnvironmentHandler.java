@@ -161,7 +161,10 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                      ColumnHasNoDefaultValueException {
 
         String tableName = table.getTableName(); // just table name, w/o schema
-        String schemaName = getFullTableName(table); // public schema in the database by default
+        String schemaName = table.getTableSchema();
+        if (StringUtils.isNullOrEmpty(table.getTableSchema())) {
+            schemaName = "public"; // public schema in the default schema if not specified. TODO: could also check search_path
+        }
         // Alternative: check with DatabaseMetaData
 
         String selectColumnsInfo = "SELECT column_name, data_type, is_nullable, column_default "
@@ -345,16 +348,11 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         StringBuilder result = new StringBuilder();
         for (char currentCharacter : fieldValue.toCharArray()) {
-            // double quote
-            if (currentCharacter == '"') {
-                result.append("\\\"");
-                // single quote
-            } else if (currentCharacter == '\'') {
+            // Currently seems that " and \ should not be escaped
+            // double quote result.append("\\\"");
+            // \ backslash result.append("\\\\");
+            if (currentCharacter == '\'') {
                 result.append("''");
-                // backslash
-            } else if (currentCharacter == '\\') {
-                result.append("\\\\");
-                // any other character
             } else {
                 result.append(currentCharacter);
             }
@@ -375,10 +373,9 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             String fieldValue ) {
 
         StringBuilder insertStatement = new StringBuilder();
-        //if (LOG.isTraceEnabled()) {
-        // TODO: change back to trace
-        LOG.info("Getting backup-friendly string for DB value: '" + fieldValue + "' for column " + column + ".");
-        //}
+        if (LOG.isDebugEnabled()) {
+            LOG.info("Getting backup-friendly string for DB value: '" + fieldValue + "' for column " + column + ".");
+        }
 
         if ("NULL".equals(fieldValue)) {
             insertStatement.append(fieldValue);
