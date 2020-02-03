@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,6 +24,8 @@ import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.BackupHandler;
 import com.axway.ats.environment.database.model.RestoreHandler;
@@ -63,13 +65,13 @@ public class EnvironmentHandlerFactory {
      * takes care of instantiating the proper type of {@link BackupHandler}
      * depending on the parameters passed
      *
-     * @param databaseConfig the database configuration
+     * @param dbConnection the database connection to use
      * @return a new instance of the {@link BackupHandler}
      *
      * @throws DatabaseEnvironmentCleanupException
      */
     public BackupHandler createDbBackupHandler(
-                                                DbConnection dbConnection ) {
+            DbConnection dbConnection ) {
 
         switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
@@ -84,6 +86,10 @@ public class EnvironmentHandlerFactory {
             case DbConnSQLServer.DATABASE_TYPE: {
                 DbConnSQLServer mssqlConnection = (DbConnSQLServer) dbConnection;
                 return new MssqlEnvironmentHandler(mssqlConnection, new MssqlDbProvider(mssqlConnection));
+            }
+            case DbConnPostgreSQL.DATABASE_TYPE: {
+                DbConnPostgreSQL dbConnPostgreSQL = (DbConnPostgreSQL) dbConnection;
+                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlProvider(dbConnPostgreSQL));
             }
             case DbConnCassandra.DATABASE_TYPE: {
                 DbConnCassandra cassandraConnection = (DbConnCassandra) dbConnection;
@@ -102,13 +108,13 @@ public class EnvironmentHandlerFactory {
      * takes care of instantiating the proper type of {@link RestoreHandler}
      * depending on the parameters passed
      *
-     * @param databaseConfig the database configuration
+     * @param dbConnection the database connection
      * @return a new instance of the {@link RestoreHandler}
      *
      * @throws DatabaseEnvironmentCleanupException
      */
     public RestoreHandler createDbRestoreHandler(
-                                                  DbConnection dbConnection ) {
+            DbConnection dbConnection ) {
 
         switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
@@ -124,6 +130,11 @@ public class EnvironmentHandlerFactory {
                 DbConnSQLServer mssqlConnection = (DbConnSQLServer) dbConnection;
                 return new MssqlEnvironmentHandler(mssqlConnection, new MssqlDbProvider(mssqlConnection));
             }
+            case DbConnPostgreSQL.DATABASE_TYPE: {
+                DbConnPostgreSQL dbConnPostgreSQL = (DbConnPostgreSQL) dbConnection;
+                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlProvider(dbConnPostgreSQL));
+            }
+
             case DbConnCassandra.DATABASE_TYPE: {
                 DbConnCassandra cassandraConnection = (DbConnCassandra) dbConnection;
                 return new CassandraEnvironmentHandler(cassandraConnection,
