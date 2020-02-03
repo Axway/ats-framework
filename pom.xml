@@ -79,8 +79,8 @@
 
         <junit.version>4.12
         </junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
-        <org.powermock.powermock-easymock.version>1.6.2</org.powermock.powermock-easymock.version>
-        <org.easymock.version>3.3.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
+        <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
+        <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
         <cglib.cglib.version>3.0</cglib.cglib.version>
         <org.javassist.version>3.20.0-GA</org.javassist.version>
         <!-- TestNG version extended by ATS team. Used in TestHarness -->
@@ -207,6 +207,7 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
                 <version>${org.apache.maven.plugins.maven.javadoc.plugin.version}</version>
                 <configuration>
+                    <source>8</source>
                     <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated as warnings -->
                     <!-- due to being not available in JDK 7, building it via it, will cause build error -->
                     <!--<additionalparam>-Xdoclint:none</additionalparam>-->
@@ -409,7 +410,7 @@
                 <artifactId>easymock</artifactId>
                 <version>${org.easymock.version}</version>
                 <scope>test</scope>
-                <exclusions>
+                <exclusions> <!-- TODO: seems to not be included in 4.1+, so check if this exclusion is still needed -->
                     <exclusion>
                         <artifactId>cglib</artifactId>
                         <groupId>cglib</groupId>
