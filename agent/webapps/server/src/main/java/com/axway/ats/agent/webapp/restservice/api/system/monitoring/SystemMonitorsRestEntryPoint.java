@@ -164,7 +164,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             SystemMonitorsManager.initializeMonitoringContext(resourceId,
                                                               request.getLocalAddr() + ":" + request.getLocalPort());
@@ -212,7 +212,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             systemReadingTypes = GSON.fromJson(getJsonElement(jsonObject, "systemReadingTypes"), String[].class);
             SystemMonitorsManager.scheduleSystemMonitoring(resourceId, systemReadingTypes,
@@ -261,7 +261,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             readingType = getJsonElement(jsonObject, "readingType").getAsString();
             if (StringUtils.isNullOrEmpty(readingType)) {
@@ -319,7 +319,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             processPattern = getJsonElement(jsonObject, "processPattern").getAsString();
             if (StringUtils.isNullOrEmpty(processPattern)) {
@@ -427,7 +427,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             jvmPort = getJsonElement(jsonObject, "jvmPort").getAsString();
             if (StringUtils.isNullOrEmpty(jvmPort)) {
@@ -495,7 +495,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             // TODO
             jmxPort = getJsonElement(jsonObject, "jmxPort").getAsString();
@@ -562,7 +562,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             SystemMonitorsManager.scheduleUserActivity(resourceId,
                                                        request.getLocalAddr() + ":" + request.getLocalPort());
@@ -611,15 +611,15 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             pollingInterval = getJsonElement(jsonObject, "pollingInterval").getAsInt();
             if (pollingInterval < 0) {
-                throw new IllegalArgumentException("pollingInterval has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("pollingInterval has invalid value '" + resourceId + "'");
             }
             startTimestamp = getJsonElement(jsonObject, "startTimestamp").getAsLong();
             if (startTimestamp < 0) {
-                throw new IllegalArgumentException("startTimestamp has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("startTimestamp has invalid value '" + resourceId + "'");
             }
             try {
                 maximumRunningTime = getJsonElement(jsonObject, "maximumRunningTime").getAsLong();
@@ -672,7 +672,7 @@ public class SystemMonitorsRestEntryPoint {
             ThreadsPerCaller.registerThread(callerId);
             resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
             if (resourceId < 0) {
-                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
             }
             SystemMonitorsManager.stopMonitoring(resourceId,
                                                  request.getLocalAddr() + ":" + request.getLocalPort());
