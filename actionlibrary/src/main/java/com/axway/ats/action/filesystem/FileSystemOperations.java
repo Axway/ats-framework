@@ -469,7 +469,7 @@ public class FileSystemOperations {
 
     /**
      * Copies the contents of a file from atsAgent host to a new file on the local host. <br>
-     * <b>Note:</b> If no atsAgent is used or it is local, then the source files is searched on the local host
+     * <b>Note:</b> If no atsAgent is used or it is local, then the source files is searched on the local host.
      *
      * @param fromFile the source file
      * @param toFile the local destination file
@@ -729,10 +729,11 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a directory to a new one
+     * Copies the contents of a directory <code>fromDirName</code> in atsAgent host to a new one on the local host. <br>
+     * <b>Note:</b> If no atsAgent is used or it is local, then the source directory is searched on the local host.
      *
-     * @param fromDirName the source file to copy
-     * @param toDirName the destination file to copy to
+     * @param fromDirName the source directory to be copied
+     * @param toDirName the destination directory
      * @param isRecursive whether to copy recursively or not
      */
     @PublicAtsApi

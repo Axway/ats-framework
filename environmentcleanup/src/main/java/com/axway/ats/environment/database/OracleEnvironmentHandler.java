@@ -174,7 +174,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         }
 
         /*
-         *  For reseting some sequence to given value (in this case 100), we need to execute something like this:
+         *  For resetting some sequence to given value (in this case 100), we need to execute something like this:
          *
             DECLARE
                 currVal NUMBER;

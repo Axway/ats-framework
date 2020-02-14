@@ -585,7 +585,7 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
         try {
             remoteFileSystemOperations.createDirectory(directoryName, userId, groupId);
         } catch (Exception e) {
-            throw new FileSystemOperationException("Unable to create dirctory by the name of "
+            throw new FileSystemOperationException("Unable to create directory by the name of "
                                                    + directoryName + " on " + this.atsAgent, e);
         }
     }

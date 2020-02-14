@@ -151,10 +151,10 @@ public interface IFileTransferClient {
 
     /**
      * Starts an upload and pauses it before the file is uploaded.
-     * Resume the upload with the {@link resumePausedTransfer} method.
+     * Resume the upload with the {@link #resumePausedTransfer()} method.
      * If an error occurs it is logged but an exception is not thrown here since
      * the operation is performed in a different thread. The current thread is interrupted
-     * and the exception should be thrown in the {@link resumePausedTransfer} method.
+     * and the exception should be thrown in the {@link #resumePausedTransfer()} method.
      * @param localFile the local file to upload
      * @param remoteDir the remote directory to upload the file to
      * @param remoteFile the remote file name that the file should have
