@@ -1,0 +1,121 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-framework</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+    </parent>
+    <artifactId>ats-examples</artifactId>
+    <packaging>pom</packaging>
+
+    <url>https://axway.github.io/ats-framework/Ready-for-use-test-project.html</url>
+    <description>Contains ATS Examples projects as the ones used in the ready to use ATS Examples VM</description>
+
+    <properties>
+        <ats.version>${project.version}</ats.version>
+        <!-- project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-surefire-plugin.version>2.22.0</maven-surefire-plugin.version>
+        <java.version>1.8</java.version -->
+    </properties>
+
+    <modules>
+        <module>vm-actions</module>
+        <module>vm-tests</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.axway.ats.framework</groupId>
+                <artifactId>ats-actionlibrary</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.axway.ats.framework</groupId>
+                <artifactId>ats-rbv</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.axway.ats.framework</groupId>
+                <artifactId>ats-monitoringlibrary</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.axway.ats.framework.utilities</groupId>
+                <artifactId>ats-s3-utilities</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.axway.ats.framework</groupId>
+                <artifactId>ats-uiengine</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.axway.ats.framework.agent</groupId>
+                <artifactId>ats-agent-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+             only. It has no influence on the Maven build itself. Without it Eclipse shows
+             some irritating error about the maven-antrun-plugin above -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-antrun-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [1.7,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>run</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>
+                                            org.apache.maven.plugins
+                                        </groupId>
+                                        <artifactId>
+                                            maven-checkstyle-plugin
+                                        </artifactId>
+                                        <versionRange>
+                                            [3.1.0,)
+                                        </versionRange>
+                                        <goals>
+                                            <goal>check</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore></ignore>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+</project>
