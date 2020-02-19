@@ -1,6 +1,6 @@
 language: java
 jdk:
-    openjdk11
+    openjdk8
 before_install:
   #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
   #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
@@ -10,7 +10,7 @@ before_install:
   - cp settings.xml ~/.m2
 script:
   # for fast Travis builds w/o tests: mvn clean install deploy -DskipTests=true or -P fast
-  - mvn clean deploy -P fast
+  - mvn clean deploy
 cache:
   directories:
     - $HOME/.m2
