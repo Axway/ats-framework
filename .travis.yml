@@ -1,6 +1,6 @@
 language: java
 jdk:
-    openjdk8
+    openjdk11
 before_install:
   #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.jar --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
   #- wget https://maven.oracle.com/com/oracle/jdbc/ojdbc7/12.1.0.1/ojdbc7-12.1.0.1.pom --user=$MAVEN_ORACLE_USERNAME --password=$MAVEN_ORACLE_PASSWORD
