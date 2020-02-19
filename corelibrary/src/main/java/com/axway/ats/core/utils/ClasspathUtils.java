@@ -362,8 +362,11 @@ public class ClasspathUtils {
                 while (jarEntries.hasMoreElements()) {
                     JarEntry je = jarEntries.nextElement();
                     if (je.getName().equals(resourceName)) {
-                        String resourceFilepath = "jar:file:" + jarFileFullpath + "!/" + resourceName;
-                        resourcesUrls.add(new URI(resourceFilepath).toURL());
+                         if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS) {
+                            resourceFilepath = resourceFilepath.replace("\\", "/");
+                        } else {
+                            resourcesUrls.add(new URI(resourceFilepath).toURL());
+                        }
                     }
                 }
             } catch (Exception e) {
