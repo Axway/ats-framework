@@ -133,7 +133,7 @@ if "!isPortBusy!"=="YES" (
 TITLE %TITLE%
 
 !JAVA_EXEC! -showversion ^
--Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
+-Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" ^
 %JMX_OPTIONS% ^
 -Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
 -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
