@@ -362,11 +362,11 @@ public class ClasspathUtils {
                 while (jarEntries.hasMoreElements()) {
                     JarEntry je = jarEntries.nextElement();
                     if (je.getName().equals(resourceName)) {
-                         if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS) {
+                        String resourceFilepath = "jar:file:" + jarFileFullpath + "!/" + resourceName;
+                        if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS) {
                             resourceFilepath = resourceFilepath.replace("\\", "/");
-                        } else {
-                            resourcesUrls.add(new URI(resourceFilepath).toURL());
                         }
+                        resourcesUrls.add(new URI(resourceFilepath).toURL());
                     }
                 }
             } catch (Exception e) {
