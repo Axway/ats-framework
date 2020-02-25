@@ -336,11 +336,11 @@ public class SystemOperations {
 
     /**
      * Attach file appender to the Root logger
-     * @param filepath - path/to/logfile. Can be absolute or relative
-     * @param messageFormatPattern - the layout/format of the log messages. For more information see {@link PatternLayout} If not sure what to use, use this one:<br><br> 
+     * @param filepath Path/to/logFile. Can be absolute or relative
+     * @param messageFormatPattern The layout/format of the log messages. For more information see {@link PatternLayout}.
+     *                            If not sure what to use, use this one:<br>
      * <strong><code>%-5p %d{HH:mm:ss:SSS} %c{2}: %m%n</code></strong>
-     * */
-    @PublicAtsApi
+     */
     public void attachFileAppender( @Validate(
             name = "filepath",
             type = ValidationType.NOT_NULL) String filepath,
