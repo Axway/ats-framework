@@ -396,22 +396,19 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     @Override
     public String executeCommand( String command ) throws FileTransferException {
 
-        // not applicable
-        return null;
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override
     public String executeCommand( String command, InputStream payload ) throws FileTransferException {
 
-        // not applicable
-        return null;
+        throw new UnsupportedOperationException("Not supported");
     }
     
     @Override
     public Object executeCommand( String command, Object[] arguments ) throws FileTransferException {
 
-        // not applicable
-        return null;
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override

@@ -434,6 +434,7 @@ public class FileTransferClient {
                             InputStream payload ) {
 
         // validate input parameters
+        // since payload can be null, we do not validate it at all
         new Validator().validateMethodParameters(new Object[]{ command });
 
         // execute the command
@@ -451,10 +452,10 @@ public class FileTransferClient {
     @PublicAtsApi
     public Object
             executeCommand( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate( name = "command", type = ValidationType.NOT_NULL) Object[] arguments ) {
+                            @Validate( name = "arguments", type = ValidationType.NOT_NULL) Object[] arguments ) {
 
         // validate input parameters
-        new Validator().validateMethodParameters(new Object[]{ command });
+        new Validator().validateMethodParameters(new Object[]{ command, arguments });
 
         // execute the command
         return this.client.executeCommand(command, arguments);
