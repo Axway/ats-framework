@@ -519,7 +519,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         String suiteName = channel.currentSuiteName;
         channel.currentSuiteName = null;
-        logger.endSuite("End suite '" + suiteName + "'");
+        logger.endSuite("End suite '" + suiteName + "'",
+                        Integer.parseInt(ExecutorUtils.extractThreadId(channel.callerId)));
     }
 
     private void startTestcase( Channel channel, ITestResult testResult, ITestContext context,

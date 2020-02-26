@@ -69,5 +69,12 @@ public class DbKeys {
      * */
     @PublicAtsApi
     public static final String CONNECTION_TIMEOUT        = "dbcp.connectionTimeout";
+    
+    /**
+     * Use this property to specify which driver to be used for DB IO.</br>
+     * Currently it is only applicable for SQL Server connections and the available values are "JTDS" (the default one) and "MSSQL"
+     * */
+    @PublicAtsApi
+    public static final String DRIVER                = "DRIVER";
 
 }
