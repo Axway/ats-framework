@@ -159,7 +159,7 @@ public interface IFileTransferClient {
      * Execute some custom command. This is specific for each protocol and remote server.
      * 
      * @param command the command to run
-     * @param payload the command payload
+     * @param payload the command payload. Generally used for file transfer commands (stor, retr, etc)
      * @return the command output
      * @throws FileTransferException thrown on failure
      */

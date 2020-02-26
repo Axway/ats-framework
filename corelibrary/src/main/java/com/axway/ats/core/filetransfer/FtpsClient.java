@@ -424,9 +424,9 @@ public class FtpsClient extends AbstractFileTransferClient implements IFtpClient
 
     public String executeCommand( String command ) throws FileTransferException {
 
-        return this.executeCommand(command, new ByteArrayInputStream("".getBytes()));
+        return this.executeCommand(command, (InputStream) null);
     }
-    
+
     @Override
     public String executeCommand( String command, Object[] arguments ) throws FileTransferException {
 

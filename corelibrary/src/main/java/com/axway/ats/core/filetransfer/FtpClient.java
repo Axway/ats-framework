@@ -359,7 +359,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
         }
 
     }
-    
+
     @Override
     public String executeCommand( String command, Object[] arguments ) throws FileTransferException {
 
@@ -370,7 +370,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
 
     public String executeCommand( String command ) throws FileTransferException {
 
-        return this.executeCommand(command, new ByteArrayInputStream("".getBytes()));
+        return this.executeCommand(command, (InputStream) null);
     }
 
     public String executeCommand( String command, InputStream localData ) throws FileTransferException {
