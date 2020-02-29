@@ -229,13 +229,14 @@ public class ComponentRepository {
             ComponentActionMap actionMap = component.getActionMap();
             if (actionMap == null) {
                 log.warn("Action map for component '" + component.getComponentName() + "' is null");
+                continue;
             }
             Class<? extends FinalizationHandler> finalizationClass = actionMap.getFinalizationHandler();
 
             //skip the finalization phase if the component has not declared a handler
             if (finalizationClass == null) {
-                log.debug("Component '" + actionMap.getComponentName()
-                          + "' does not have a finalization handler");
+                log.info("Component '" + actionMap.getComponentName()
+                          + "' does not have a finalization handler class");
                 continue;
             }
 
