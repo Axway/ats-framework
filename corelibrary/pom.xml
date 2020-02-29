@@ -1,199 +1,232 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.axway.ats.framework</groupId>
-		<artifactId>ats-framework</artifactId>
-		<version>4.1.0-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-framework</artifactId>
+        <version>4.1.0-SNAPSHOT</version>
+    </parent>
 
-	<artifactId>ats-core</artifactId>
-	<name>ATS-CoreLibrary</name>
-	<description>ATS Core Library</description>
-	<url>https://github.com/Axway/ats-framework</url>
+    <artifactId>ats-core</artifactId>
+    <name>ATS-CoreLibrary</name>
+    <description>ATS Core Library</description>
+    <url>https://github.com/Axway/ats-framework</url>
 
-	<properties>
-		<!-- Apache FTP and FTPS Library -->
-		<org.apache.commons.net.version>3.5</org.apache.commons.net.version>
-		<mysql.mysql-connector-java.version>5.1.13</mysql.mysql-connector-java.version>
-		<!-- jTDS dependency is defined in parent pom.xml -->
-		<com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
-		<!-- Note that there is a possible issue to be monitored: Sometimes winp 
-			is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
-		<org.jvnet.winp.version>1.23</org.jvnet.winp.version>
+    <properties>
+        <!-- Apache FTP and FTPS Library -->
+        <org.apache.commons.net.version>3.5</org.apache.commons.net.version>
+        <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, Error example: javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify -->
+        <mysql.mysql-connector-java.version>5.1.48</mysql.mysql-connector-java.version>
+        <!-- jTDS dependency is defined in parent pom.xml -->
+        <com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
+        <!-- Note that there is a possible issue to be monitored: Sometimes winp
+            is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
+        <org.jvnet.winp.version>1.23</org.jvnet.winp.version>
 
-		<org.dom4j.version>1.6.1</org.dom4j.version>
-		<!-- PostgreSQL dependency is defined in parent pom.xml -->
-		<!-- ExpectJ dependency is defined in parent pom.xml -->
-	</properties>
+        <org.dom4j.version>1.6.1</org.dom4j.version>
+        <!-- PostgreSQL dependency is defined in parent pom.xml -->
+        <!-- ExpectJ dependency is defined in parent pom.xml -->
+    </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-configuration</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>javax.mail</groupId>
-			<artifactId>mail</artifactId>
-			<version>${javax.mail.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>javax.activation</groupId>
-			<artifactId>activation</artifactId>
-			<version>${javax.activation.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.httpcomponents</groupId>
-			<artifactId>httpclient</artifactId>
-			<version>${apache.httpcomponents.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>${commons-io.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>xerces</groupId>
-			<artifactId>xercesImpl</artifactId>
-			<version>${apache.xercesImpl.version}</version>
-			<optional>false</optional>
-		</dependency>
-		<dependency>
-			<groupId>xalan</groupId>
-			<artifactId>xalan</artifactId>
-			<version>${apache.xalan.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>dom4j</groupId>
-			<artifactId>dom4j</artifactId>
-			<version>${org.dom4j.version}</version>
-			<exclusions>
-				<exclusion>
-					<groupId>xml-apis</groupId>
-					<artifactId>xml-apis</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<!-- Needed for jTDS -->
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
-			<version>2.1.1</version>
-		</dependency>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-jar-plugin</artifactId>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>false</addClasspath>
+                        </manifest>
+                        <manifestEntries>
+                            <Build-Time>${maven.build.timestamp}</Build-Time>
+                            <Build-Java>${java.version}</Build-Java>
+                            <Build-ATS-Version>${project.version}</Build-ATS-Version>
+                        </manifestEntries>
+                    </archive>
+                </configuration>
 
-		<dependency>
-			<groupId>net.sourceforge.jtds</groupId>
-			<artifactId>jtds</artifactId>
-			<version>${net.sourceforge.jtds.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.oracle.jdbc</groupId>
-			<artifactId>ojdbc7</artifactId>
-			<optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com 
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+            <version>${javax.mail.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>${javax.activation.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${apache.httpcomponents.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>xerces</groupId>
+            <artifactId>xercesImpl</artifactId>
+            <version>${apache.xercesImpl.version}</version>
+            <optional>false</optional>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>xalan</artifactId>
+            <version>${apache.xalan.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>dom4j</groupId>
+            <artifactId>dom4j</artifactId>
+            <version>${org.dom4j.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>xml-apis</groupId>
+                    <artifactId>xml-apis</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- Needed for jTDS -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
+            <version>${apache.commons-dbcp.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.sourceforge.jtds</groupId>
+            <artifactId>jtds</artifactId>
+            <version>${net.sourceforge.jtds.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.microsoft.sqlserver</groupId>
+            <artifactId>mssql-jdbc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.oracle.jdbc</groupId>
+            <artifactId>ojdbc7</artifactId>
+            <optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com
 				repo -->
-			<exclusions>
-				<exclusion>
-					<groupId>*</groupId>
-					<artifactId>*</artifactId>
-				</exclusion>
-			</exclusions>
-		</dependency>
-		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<version>${mysql.mysql-connector-java.version}</version>
-			<!-- TODO: make optional or runtime -->
-		</dependency>
-		<!-- dependency for working with PostgreSQL databases -->
-		<dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${org.postgresql.postgresql.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-net</groupId>
-			<artifactId>commons-net</artifactId>
-			<version>${org.apache.commons.net.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jvnet.winp</groupId>
-			<artifactId>winp</artifactId>
-			<version>${org.jvnet.winp.version}</version>
-		</dependency>
-		<dependency> <!-- SFTP client dependencies -->
-			<groupId>com.jcraft</groupId>
-			<artifactId>jsch</artifactId>
-			<version>${com.jcraft.jsch.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcprov-jdk15on</artifactId>
-			<version>${org.bouncycastle.version}</version>
-		</dependency>
-		<!-- Used to read content from PEM files for SFTP connections -->
-		<dependency>
-			<groupId>org.bouncycastle</groupId>
-			<artifactId>bcpkix-jdk15on</artifactId>
-			<version>${org.bouncycastle.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.datastax.cassandra</groupId>
-			<artifactId>cassandra-driver-core</artifactId>
-			<version>${com.datastax.cassandra.driver.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>jna</artifactId>
-			<version>${net.java.dev.jna.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>net.java.dev.jna</groupId>
-			<artifactId>platform</artifactId>
-			<version>${net.java.dev.jna.version}</version>
-		</dependency>
-		<!-- ProcessTalker dependencies -->
-		<dependency>
-			<groupId>com.axway.ats.expectj</groupId>
-			<artifactId>ats-expectj</artifactId>
-			<version>${ats-expectj.version}</version>
-		</dependency>
-		<!-- TEST dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-compress</artifactId>
-		</dependency>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>${mysql.mysql-connector-java.version}</version>
+            <!-- TODO: make optional or runtime -->
+        </dependency>
+        <!-- dependency for working with PostgreSQL databases -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${org.postgresql.postgresql.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-net</groupId>
+            <artifactId>commons-net</artifactId>
+            <version>${org.apache.commons.net.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.winp</groupId>
+            <artifactId>winp</artifactId>
+            <version>${org.jvnet.winp.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>${org.bouncycastle.version}</version>
+        </dependency>
+        <!-- Used to read content from PEM files for SFTP connections -->
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcpkix-jdk15on</artifactId>
+            <version>${org.bouncycastle.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.datastax.cassandra</groupId>
+            <artifactId>cassandra-driver-core</artifactId>
+            <version>${com.datastax.cassandra.driver.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>jna</artifactId>
+            <version>${net.java.dev.jna.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>net.java.dev.jna</groupId>
+            <artifactId>platform</artifactId>
+            <version>${net.java.dev.jna.version}</version>
+        </dependency>
+        <!-- ProcessTalker dependencies -->
+        <!-- Dependency for working with external processes -->
+        <dependency>
+            <groupId>com.axway.ats.expectj</groupId>
+            <artifactId>ats-expectj</artifactId>
+            <version>${ats-expectj.version}</version>
+            <exclusions>
+                <exclusion> <!-- older JSch version -->
+                    <groupId>com.jcraft</groupId>
+                    <artifactId>jsch</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${com.jcraft.jsch.version}</version>
+        </dependency>
+        <!-- TEST dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+        </dependency>
 
-	</dependencies>
+    </dependencies>
 
 </project>

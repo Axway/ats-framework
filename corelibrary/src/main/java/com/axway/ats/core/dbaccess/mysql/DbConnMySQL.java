@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,10 +16,12 @@
 package com.axway.ats.core.dbaccess.mysql;
 
 import java.sql.Driver;
+import java.sql.SQLException;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
+import com.axway.ats.core.dbaccess.DbUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
@@ -32,26 +34,24 @@ import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger                 log               = Logger.getLogger(DbConnMySQL.class);
+    private static Logger log = Logger.getLogger(DbConnMySQL.class);
 
     /**
      * Default DB port
      */
-    public static final int               DEFAULT_PORT      = 3306;
+    public static final int DEFAULT_PORT = 3306;
 
     /**
      * The JDBC MySQL prefix string
      */
-    private static final String           JDBC_MYSQL_PREFIX = "jdbc:mysql://";
+    private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
 
+    public static final String DATABASE_TYPE = "MYSQL";
     /**
      * The connection URL
      */
-    private String                        url;
-
-    private MysqlConnectionPoolDataSource dataSource;
-
-    public static final String            DATABASE_TYPE     = "MYSQL";
+    private             String url;
+    MysqlConnectionPoolDataSource dataSource;
 
     /**
      * Constructor
@@ -148,8 +148,12 @@ public class DbConnMySQL extends DbConnection {
         if (this.timeout == null) {
             this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
         }
-        dataSource.setConnectTimeout(this.timeout);
-        dataSource.setSocketTimeout(this.timeout);
+        try {
+            dataSource.setConnectTimeout(this.timeout);
+            dataSource.setSocketTimeout(this.timeout);
+        } catch (SQLException e) {
+            throw new RuntimeException(DbUtils.getFullSqlException(null, e));
+        }
     }
 
     @Override
