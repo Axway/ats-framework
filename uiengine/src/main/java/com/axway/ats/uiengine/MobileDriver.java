@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,9 @@ import java.net.URL;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 
+import io.appium.java_client.remote.AutomationName;
+import io.appium.java_client.remote.IOSMobileCapabilityType;
+import io.appium.java_client.remote.MobileCapabilityType;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
@@ -49,38 +52,38 @@ import io.appium.java_client.ios.IOSDriver;
 @PublicAtsApi
 public class MobileDriver extends UiDriver {
 
-    private static final Logger      log                     = Logger.getLogger(MobileDriver.class);
+    private static final Logger log = Logger.getLogger(MobileDriver.class);
 
     @PublicAtsApi
-    public static final String       DEVICE_ANDROID_EMULATOR = "Android Emulator";
+    public static final String DEVICE_ANDROID_EMULATOR = "Android Emulator";
     @PublicAtsApi
-    public static final String       DEVICE_ANDROID          = "Android";
+    public static final String DEVICE_ANDROID          = "Android";
     @PublicAtsApi
-    public static final String       DEVICE_IPHONE_SIMULATOR = "iPhone Simulator";
+    public static final String DEVICE_IPHONE_SIMULATOR = "iPhone Simulator";
     @PublicAtsApi
-    public static final String       DEVICE_IPAD_SIMULATOR   = "iPad Simulator";
+    public static final String DEVICE_IPAD_SIMULATOR   = "iPad Simulator";
     @PublicAtsApi
-    public static final String       NATIVE_CONTEXT          = "NATIVE_APP";
+    public static final String NATIVE_CONTEXT          = "NATIVE_APP";
 
-    private static final String      ANDROID_HOME_ENV_VAR    = "ANDROID_HOME";
-    private static final int         MAX_ADB_RELATED_RETRIES = 2;
-    private static final int         DEFAULT_APPIUM_PORT     = 4723;
+    private static final String ANDROID_HOME_ENV_VAR    = "ANDROID_HOME";
+    private static final int    MAX_ADB_RELATED_RETRIES = 2;
+    private static final int    DEFAULT_APPIUM_PORT     = 4723;
 
-    private AppiumDriver<WebElement> driver;
-    private String                   deviceName              = null;
-    private String                   platformVersion         = null;
-    private String                   udid                    = null;
-    private String                   host                    = null;
-    private int                      port                    = -1;
-    private MobileEngine             mobileEngine;
-    private boolean                  isWorkingRemotely       = false;
+    private AppiumDriver<? extends WebElement> driver;
+    private String                             deviceName        = null;
+    private String                             platformVersion   = null;
+    private String                             udid              = null;
+    private String                             host              = null;
+    private int                                port              = -1;
+    private MobileEngine                       mobileEngine;
+    private boolean                            isWorkingRemotely = false;
 
-    private boolean                  isAndroidAgent          = false;
-    private String                   androidHome             = null;
-    private String                   adbLocation             = null;
-    private Dimension                screenDimensions;
+    private boolean   isAndroidAgent = false;
+    private String    androidHome    = null;
+    private String    adbLocation    = null;
+    private Dimension screenDimensions;
 
-    private MobileDeviceUtils        mobileDeviceUtils;
+    private MobileDeviceUtils mobileDeviceUtils;
 
     public MobileDriver( String deviceName, String platformVersion, String udid ) {
 
@@ -162,8 +165,8 @@ public class MobileDriver extends UiDriver {
     }
 
     /**
-     * Start session to device and load the application <br/>
-     * @param appPath the absolute path to the application:
+     * Start session to device and load the application <br>
+     * @param appPath filesystem path to the application - absolute or relative to the Appium server current dir
      * <pre>
      *       <b>iOS</b>: absolute path to simulator-compiled .app file or the bundle_id of the desired target on device
      *       <b>Android</b>: absolute path to .apk file
@@ -173,10 +176,13 @@ public class MobileDriver extends UiDriver {
     public void start( String appPath ) {
 
         log.info("Starting mobile testing session to device: " + getDeviceDescription());
+        URL url = null;
+        String platformName = null;
         try {
+            url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
             // http://appium.io/slate/en/master/?java#appium-server-capabilities
             DesiredCapabilities desiredCapabilities = new DesiredCapabilities();
-            desiredCapabilities.setCapability("automationName", "Appium");
+            desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, "Appium");
             if (isAndroidAgent) {
 
                 // start emulator:          .../sdk/tools/emulator -avd vmname
@@ -187,27 +193,30 @@ public class MobileDriver extends UiDriver {
                     readAndroidHomeFromEnvironment();
                     if (this.adbLocation == null) {
                         throw new MobileOperationException("You must specify a valid Android home location or define "
-                                                           + ANDROID_HOME_ENV_VAR
-                                                           + " environment variable. The ADB executable must be located in a 'platform-tools/' subfolder");
+                                                           + ANDROID_HOME_ENV_VAR + " environment variable."
+                                                           + " The ADB executable must be located in a 'platform-tools/' subfolder");
                     }
                 }
-                desiredCapabilities.setCapability("platformName", "Android");
+                platformName = "Android";
             } else {
-
-                desiredCapabilities.setCapability("platformName", "iOS");
+                desiredCapabilities.setCapability(MobileCapabilityType.AUTOMATION_NAME, AutomationName.IOS_XCUI_TEST);
+                platformName = "iOS";
             }
+            desiredCapabilities.setCapability("platformName", platformName);
             desiredCapabilities.setCapability("deviceName", deviceName);
             desiredCapabilities.setCapability("platformVersion", this.platformVersion);
             if (!StringUtils.isNullOrEmpty(this.udid)) {
                 desiredCapabilities.setCapability("udid", this.udid);
             }
-            desiredCapabilities.setCapability("app", appPath);
+            desiredCapabilities.setCapability(MobileCapabilityType.APP /*"app" */, appPath);
             desiredCapabilities.setCapability("autoLaunch", true);
             desiredCapabilities.setCapability("newCommandTimeout", 30 * 60);
-            desiredCapabilities.setCapability("noReset", true); // don’t reset settings and app state before this session
+            desiredCapabilities.setCapability("noReset",
+                                              true); // don’t reset settings and app state before this session
+            // sometimes environment has performance problems
+            desiredCapabilities.setCapability(IOSMobileCapabilityType.LAUNCH_TIMEOUT, 500_000); // in ms
             // desiredCapabilities.setCapability( "fullReset", true ); // clean all Android/iOS settings (iCloud settings), close and uninstall the app
 
-            URL url = new URL("http://" + this.host + ":" + this.port + "/wd/hub");
             if (isAndroidAgent) {
                 driver = new AndroidDriver<WebElement>(url, desiredCapabilities);
             } else {
@@ -226,10 +235,13 @@ public class MobileDriver extends UiDriver {
             this.screenDimensions = driver.manage().window().getSize(); // must be called in NATIVE context
 
             mobileEngine = new MobileEngine(this, this.mobileDeviceUtils);
+            // log.info("Application file at " +  appPath + " is started and initialized");
         } catch (Exception e) {
-            throw new MobileOperationException("Error starting connection to device and application under test."
-                                               + " Check if there is connection to device and the Appium server is running.",
-                                               e);
+            throw new MobileOperationException(
+                    "Error starting connection to " + platformName + " device and application "
+                    + "under test. Check if there is connection to the device and the Appium "
+                    + "server at " + url + " is running.",
+                    e);
         }
     }
 
@@ -237,21 +249,34 @@ public class MobileDriver extends UiDriver {
     public void stop() {
 
         log.info("Stopping mobile testing session to device: " + getDeviceDescription());
-
-        driver.quit();
+        if (driver != null) {
+            driver.quit();
+        } else {
+            log.warn(this.getClass().getSimpleName() + " seems not started. Check that you have invoked start(appName) "
+                     + "before stop()");
+        }
     }
 
     /**
-     * Stop application by package name and the session to device
-     * @deprecated Use {@link #stop()} method instead
+     * Stop application by name
      *
      * @param applicationPackage application package name
      */
     @PublicAtsApi
-    @Deprecated
-    public void stop( String applicationPackage ) {
+    public void terminateApp( String applicationPackage ) {
 
-        stop();
+        driver.terminateApp(applicationPackage); // bundleID
+    }
+
+    /**
+     * Remove application by name
+     *
+     * @param applicationPackage - bundle identifier or application ID of the application to be removed
+     */
+    @PublicAtsApi
+    public void removeApp( String applicationPackage ) {
+
+        driver.removeApp(applicationPackage);
     }
 
     /**
@@ -264,7 +289,7 @@ public class MobileDriver extends UiDriver {
 
         if (isAndroidAgent) {
 
-            // Clear application cache using ADB command: ./adb shell pm clear &lt;PACKAGE&gt;<br/>
+            // Clear application cache using ADB command: ./adb shell pm clear &lt;PACKAGE&gt;<br>
             // for example: ./adb shell pm clear com.axway.st.mobile
 
             if (this.adbLocation == null) {
@@ -308,7 +333,8 @@ public class MobileDriver extends UiDriver {
         } else {
 
             //TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
-            throw new NotSupportedOperationException("Currently clear application cache operation for iOS is not implemented");
+            throw new NotSupportedOperationException(
+                    "Currently clear application cache operation for iOS is not implemented. Hint: check with resetApp");
         }
     }
 
@@ -387,126 +413,6 @@ public class MobileDriver extends UiDriver {
     }
 
     /**
-     * Start application using ADB command: ./adb shell am start -W -S -n &lt;ACTIVITY&gt;<br/>
-     * for example: ./adb shell am start -W -S -n com.axway.st.mobile/.MobileAccessPlus
-     *
-     * @param activity application activity name
-     */
-    private void startAndroidApplication( String activity ) {
-
-        log.info("Starting application with activity '" + activity + "' on device: "
-                 + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "shell", "am", "start", "-W", "-S", "-n", activity };
-        int numRetries = 0;
-        IProcessExecutor pe = null;
-        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
-            if (numRetries > 0) {
-                log.info("Retrying to start application action as previous try failed");
-            }
-            try {
-                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
-            } catch (Exception e) {
-                throw new MobileOperationException("Unable to start Android application with activity '"
-                                                   + activity + "'", e);
-            }
-            numRetries++;
-            if (pe.getExitCode() == 0) {
-                break;
-            } else {
-                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
-                    log.error("Unable to start Android application with activity '" + activity
-                              + "'. Start command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
-                    //try to kill ADB and issue start again
-                    killAdbServer();
-                } else {
-                    throw new MobileOperationException("Unable to start Android application with activity '"
-                                                       + activity + "'. Start command failed (STDOUT: '"
-                                                       + pe.getStandardOutput() + "', STDERR: '"
-                                                       + pe.getErrorOutput() + "')");
-                }
-            }
-        }
-    }
-
-    /**
-     * Stop application using ADB command: ./adb shell am force-stop  &lt;PACKAGE&gt;<br/>
-     * for example: ./adb shell am force-stop com.axway.st.mobile
-     *
-     * @param applicationPackage application package
-     */
-    private void stopAndroidApplication( String applicationPackage ) {
-
-        log.info("Stopping application '" + applicationPackage + "' on device: " + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "shell", "am", "force-stop", applicationPackage };
-        IProcessExecutor pe = null;
-        int numRetries = 0;
-        while (numRetries <= MAX_ADB_RELATED_RETRIES) {
-            if (numRetries > 0) {
-                log.warn("Retrying to start application action as previous try failed");
-            }
-            try {
-                pe = this.mobileDeviceUtils.executeAdbCommand(commandArguments, false);
-            } catch (Exception e) {
-                throw new MobileOperationException("Unable to stop Android application with package '"
-                                                   + applicationPackage + "'", e);
-            }
-            numRetries++;
-            if (pe.getExitCode() == 0) {
-                break;
-            } else {
-                if (numRetries <= MAX_ADB_RELATED_RETRIES) {
-                    log.error("Unable to stop Android application with package '" + applicationPackage
-                              + "'. Stop command failed (Exit code: " + pe.getExitCode() + ", STDOUT: '"
-                              + pe.getStandardOutput() + "', STDERR: '" + pe.getErrorOutput() + "')");
-                    // try to kill ADB and issue stop again
-                    killAdbServer();
-                } else {
-                    throw new MobileOperationException("Unable to stop Android application with package '"
-                                                       + applicationPackage
-                                                       + "'. Stop command failed (Exit code: "
-                                                       + pe.getExitCode() + ", STDOUT: '"
-                                                       + pe.getStandardOutput() + "', STDERR: '"
-                                                       + pe.getErrorOutput() + "')");
-                }
-            }
-        } // while
-    }
-
-    /**
-     * <pre>
-     * Start iOS application using <b>ios-sim</b> command: ios-sim launch &lt;PATH TO APPLICATION.APP&gt; --timeout 60 --exit<br/>
-     * for example: <i>ios-sim launch /tmp/test/MobileAccessPlus.app --timeout 60 --exit</i>
-     * <br/>
-     * This command also starts the iOS Simulator if it's not already started.
-     * <br/>
-     * Check here how to install <b>ios-sim</b>: <a href="https://github.com/phonegap/ios-sim#installation">https://github.com/phonegap/ios-sim#installation</a>
-     * </pre>
-     * @param appPath path to the application .app file
-     */
-    private void startIOSApplication( String appPath ) {
-
-        log.info("Starting application '" + appPath + "' on device: " + getDeviceDescription());
-
-        String[] commandArguments = new String[]{ "launch", appPath, "--timeout", "60", "--exit" };
-        IProcessExecutor pe = null;
-        try {
-            pe = getProcessExecutorImpl("ios-sim", commandArguments);
-            pe.execute();
-        } catch (Exception e) {
-            throw new MobileOperationException("Unable to start iOS application '" + appPath + "'", e);
-        }
-        if (pe.getExitCode() != 0) {
-            throw new MobileOperationException("Unable to start iOS application '" + appPath
-                                               + "'. Start command failed (STDOUT: '"
-                                               + pe.getStandardOutput() + "', STDERR: '"
-                                               + pe.getErrorOutput() + "')");
-        }
-    }
-
-    /**
      * Stopping iOS Simulator
      */
     @PublicAtsApi
@@ -560,11 +466,11 @@ public class MobileDriver extends UiDriver {
     private String getDeviceDescription() {
 
         return deviceName + (host != null
-                                          ? ", host: " + host
-                                          : "")
+                             ? ", host: " + host
+                             : "")
                + (port > 0
-                           ? ", port: " + port
-                           : "");
+                  ? ", port: " + port
+                  : "");
     }
 
     /**
@@ -593,8 +499,7 @@ public class MobileDriver extends UiDriver {
                     pe = new LocalProcessExecutor("taskkill.exe",
                                                   new String[]{ "/IM", "adb.exe", "/F", "/T" });
                 } else {
-                    pe = new LocalProcessExecutor("killall",
-                                                  new String[]{ "adb" });
+                    pe = new LocalProcessExecutor("killall", new String[]{ "adb" });
                 }
                 pe.execute();
             } catch (Exception e) {

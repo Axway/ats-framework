@@ -15,6 +15,8 @@
  */
 package com.axway.ats.uiengine.utilities.mobile;
 
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.touch.TouchActions;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -33,13 +35,13 @@ import io.appium.java_client.MobileElement;
 
 public class MobileElementState {
 
-    private AppiumDriver        appiumDriver;
+    private static final int SLEEP_PERIOD = 500; // in ms
+
+    private AppiumDriver<? extends WebElement> appiumDriver;
 
     private UiElementProperties elementProperties;
 
     private UiElement           element;
-
-    private static final int    SLEEP_PERIOD = 500; // in ms
 
     /**
      * @param uiElement the element of interest
@@ -48,7 +50,8 @@ public class MobileElementState {
 
         this.element = uiElement;
         this.elementProperties = uiElement.getElementProperties();
-        this.appiumDriver = (AppiumDriver) ((MobileDriver) uiElement.getUiDriver()).getInternalObject(InternalObjectsEnum.WebDriver.name());
+        this.appiumDriver = (AppiumDriver<? extends WebElement>) ((MobileDriver) uiElement.getUiDriver()).getInternalObject(
+                InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -60,7 +63,8 @@ public class MobileElementState {
         try {
             MobileElement mobileElement = (MobileElement) MobileElementFinder.findElement(appiumDriver,
                                                                                           element);
-            mobileElement.tap(1, 100);
+            // use tap to focus
+            new TouchActions(appiumDriver).singleTap(mobileElement).perform();
         } catch (Exception se) {
             throw new MobileOperationException("Error trying to set the focus to " + getElementDescription(),
                                                se);
@@ -205,7 +209,8 @@ public class MobileElementState {
         try {
             return MobileElementFinder.findElement(appiumDriver, element) != null;
         } catch (UnreachableBrowserException ube) {
-            throw new MobileOperationException("Check if there is connection to the target device and the Appium server is running",
+            throw new MobileOperationException(
+                    "Check if there is connection to the target device and the Appium server is running",
                                                ube);
         } catch (Exception e) {
 
@@ -218,12 +223,17 @@ public class MobileElementState {
     public boolean isElementDisplayed() {
 
         try {
-            return MobileElementFinder.findElement(appiumDriver, element).isDisplayed();
+            WebElement webElement = MobileElementFinder.findElement(appiumDriver, element);
+            if (webElement == null) {
+                return false;
+            } else {
+                return webElement.isDisplayed();
+            }
         } catch (UnreachableBrowserException ube) {
-            throw new MobileOperationException("Check if there is connection to the target device and the Appium server is running",
+            throw new MobileOperationException(
+                    "Check if there is connection to the target device and the Appium server is running",
                                                ube);
         } catch (Exception e) {
-
             // element is not present or got error checking if it is present
             return false;
         }
@@ -241,7 +251,8 @@ public class MobileElementState {
 
         // append 'context' if not specified thru the element properties
         if (elementProperties.getProperty("context") == null) {
-            desc.append(", context=" + MobileElementFinder.defaultContext);
+            desc.append(", context=");
+            desc.append(MobileElementFinder.defaultContext);
         }
         desc.append("'");
         return desc.toString();

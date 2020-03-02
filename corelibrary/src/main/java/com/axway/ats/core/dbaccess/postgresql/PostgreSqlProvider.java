@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,9 +68,10 @@ public class PostgreSqlProvider extends AbstractDbProvider {
             Blob blobValue = (Blob) valueAsObject;
             InputStream blobInputStream = blobValue.getBinaryStream();
             StringBuilder hexString = new StringBuilder();
-
-            //read the binary data from the stream and convert it to hex according to the sample from
-            // http://www.herongyang.com/jdbc/Oracle-BLOB-SQL-INSERT.html - see 3 variants for Oracle, MsSQL and MySQL
+            // Read the binary data from the stream and convert it to hex according to the sample from
+            // '\x123ABC', according to https://www.postgresql.org/docs/current/datatype-binary.html,
+            // Section 8.4.1. bytea Hex Format
+            hexString.append("\\x");
             hexString = addBinDataAsHexAndCloseStream(hexString, blobInputStream);
             value = hexString.toString();
         } else {

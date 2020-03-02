@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -155,14 +155,14 @@
             <artifactId>jersey-media-multipart</artifactId>
             <version>${org.glassfish.jersey.jersey-client.version}</version>
             <scope>compile</scope>
-        </dependency>       
+        </dependency>
         <!-- this dependency is required after jersey 2.26 -->
         <!-- https://stackoverflow.com/questions/44088493/jersey-stopped-working-with-injectionmanagerfactory-not-found -->
-		<!-- <dependency>
-		    <groupId>org.glassfish.jersey.inject</groupId>
-		    <artifactId>jersey-hk2</artifactId>
-		    <version>${org.glassfish.jersey.inject.version}</version>
-		</dependency>      -->   
+        <!-- <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${org.glassfish.jersey.inject.version}</version>
+        </dependency>      -->
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
@@ -235,7 +235,7 @@
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ojdbc7</artifactId>
             <optional>true</optional>
-      <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core 
+            <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core
         library -->
             <exclusions>
                 <exclusion>

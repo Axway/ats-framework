@@ -457,10 +457,10 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     /**
      * <pre>
      * Gets the result of evaluating the specified JavaScript command. The command/snippet may have multiple lines,
-     * but only the result of the last line will be returned. <br/>
+     * but only the result of the last line will be returned. <br>
      *
      * Note that, by default, the command will run in the context of the "selenium" object itself,
-     * so <b>this</b> will refer to the Selenium object. <br/>
+     * so <b>this</b> will refer to the Selenium object. <br>
      * Use <b>window</b> to refer to the window of your application,
      *  e.g. <i>var fooEl = window.document.getElementById('foo'); fooEl.name;</i>
      * </pre>
@@ -485,7 +485,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     }
 
     /**
-     * Returns the number of HTML elements that match the specified xpath<br/>
+     * Returns the number of HTML elements that match the specified xpath<br>
      *  eg. "//table" would give the number of tables
      *
      * @param xpath the xpath expression to evaluate
@@ -507,7 +507,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     }
 
     /**
-     * Returns the number of HTML elements that match the specified css selector<br/>
+     * Returns the number of HTML elements that match the specified css selector<br>
      *  eg. "//table" would give the number of tables
      *
      * @param cssSelector the css selector expression to evaluate
@@ -589,7 +589,7 @@ public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtml
     }
 
     /**
-     * Delete the named cookie from the current domain.<br/>
+     * Delete the named cookie from the current domain.<br>
      * This is equivalent to setting the named cookie's expiration date to some time in the past.
      *
      * @param cookieName the name of the cookie. May not be null or an empty string.

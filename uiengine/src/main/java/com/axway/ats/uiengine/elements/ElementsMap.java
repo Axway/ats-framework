@@ -126,6 +126,7 @@ public class ElementsMap {
     public void setMapSection( String mapSection ) {
 
         if (StringUtils.isNullOrEmpty(mapSection)) {
+
             throw new ElementsMapException("Error loading elements map section. Provided null/empty map section argument");
         }
 
@@ -184,7 +185,10 @@ public class ElementsMap {
                 return mapSec;
             }
         }
-        log.error("No map section is set, no attribute of the current section can be get!");
+        if (log.isDebugEnabled()) {
+            log.debug("No map section is set, no attribute of the current section can be get!");
+        }
+
         return null;
     }
 

@@ -29,7 +29,7 @@ import com.axway.ats.core.utils.IoUtils;
  * A driver operating over 
  * <a href="http://phantomjs.org/">PhantomJS</a> browser
  * 
- * <br/>
+ * <br>
  * This is a headless(no UI) browser.<br />
  * <em>Note</em> that PahntomJS has no recent updates so it is deprecated and will be removed as supported driver.
  *

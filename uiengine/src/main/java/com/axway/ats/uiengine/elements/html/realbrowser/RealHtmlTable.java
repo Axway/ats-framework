@@ -65,7 +65,7 @@ public class RealHtmlTable extends HtmlTable {
      *
      * @param row the field row starting at 0
      * @param column the field column starting at 0
-     * @return
+     * @return the value
      */
     @Override
     @PublicAtsApi
@@ -188,7 +188,7 @@ public class RealHtmlTable extends HtmlTable {
 
         String css = this.getElementProperty("_css");
 
-        List<WebElement> elements = null;
+        List<WebElement> elements;
 
         if (!StringUtils.isNullOrEmpty(css)) {
             css += " tr";
@@ -238,7 +238,7 @@ public class RealHtmlTable extends HtmlTable {
     /**
      * Verify the field value is as specified
      *
-     * @param expectedValue
+     * @param expectedValue expected value to be checked
      * @param row the field row starting at 0
      * @param column the field column starting at 0
      */
@@ -253,9 +253,10 @@ public class RealHtmlTable extends HtmlTable {
     }
 
     /**
-     * Verify the field value is NOT as specified
+     * Verify the field value is NOT as specified.
+     * Currently check is not case-insensitive
      *
-     * @param notExpectedValue
+     * @param notExpectedValue value which should not match
      * @param row the field row starting at 0
      * @param column the field column starting at 0
      */

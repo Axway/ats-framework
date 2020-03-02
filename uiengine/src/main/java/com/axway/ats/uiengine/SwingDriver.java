@@ -196,7 +196,7 @@ public class SwingDriver extends UiDriver {
     }
 
     /**
-     * Set the delay time between commands<br/>
+     * Set the delay time between commands<br>
      * <b>NOTE:</b> It also sets this delay time as a default command delay time of {@link UiEngineConfigurator}
      *
      * @param commandDelay a value representing the delay time between commands (in milliseconds)

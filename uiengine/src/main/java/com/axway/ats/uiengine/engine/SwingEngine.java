@@ -559,7 +559,7 @@ public class SwingEngine extends AbstractEngine {
     /**
      * Whether to use component inspector tool,
      * which logs the selected component type, its available properties and calculates its index
-     * in the component hierarchy tree in the scope of the current container.</br>
+     * in the component hierarchy tree in the scope of the current container.<br>
      * The tool works with mouse click action only.
      *
      */

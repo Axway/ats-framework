@@ -18,6 +18,6 @@ SCRIPTPATH=`cd "\`dirname \"$0\"\`" && pwd`
 
 
 # Build and install artifacts locally
-mvn -V -s $SCRIPTPATH/settings.xml clean install $*
+mvn -V -s $SCRIPTPATH/settings.xml clean install -Dconnection.retry.timeout=1 -Dconnection.retry.count=2 $*
 # For other goals you may comment above line and uncomment next one
 #mvn -V -s $SCRIPTPATH/settings.xml $*

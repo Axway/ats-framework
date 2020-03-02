@@ -73,10 +73,10 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
     @Test
     public void getFileUidPositive() throws Exception {
     	
-    	Thread.sleep(3000);
+    	//Thread.sleep(3000);
         if( realOsType.isUnix() ) {
             String[] stats = getFileStats( file.getAbsolutePath(), true );
-            System.out.println(Arrays.toString(stats));
+            //System.out.println(Arrays.toString(stats));
 
             LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
             assertEquals( Long.parseLong( stats[2] ),

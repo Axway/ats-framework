@@ -42,6 +42,7 @@ import java.nio.channels.FileLock;
 import java.nio.channels.OverlappingFileLockException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -59,6 +60,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -524,7 +526,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             throw new IllegalArgumentException("Could not copy directories. The target directory name is null");
         }
         if (isRecursive && toDirName.startsWith(fromDirName)) {
-            throw new IllegalArgumentException("Could not copy directories. The target directory is subdirectory of the source one");
+            throw new IllegalArgumentException(
+                                               "Could not copy directories. The target directory is subdirectory of the source one");
         }
 
         File fromDir = new File(fromDirName);
@@ -712,7 +715,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             int fileNameLength = dis.readInt();
                             checkParamLengthForSocketTransfer(fileNameLength, "file name length");
                             String fileName = readString(dis, fileNameLength);
-                            fileName = IoUtils.normalizeFilePath(fileName, osType); // switch file separators according to the current OS
+                            fileName = IoUtils.normalizeFilePath(fileName,
+                                                                 osType); // switch file separators according to the current OS
                             File file = new File(fileName);
                             if (fdType.equals(FILE_COPY_SOCKET_COMMAND)) {
 
@@ -867,7 +871,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     try {
                         transferStatus.wait(FILE_TRANSFER_TIMEOUT);
                     } catch (InterruptedException e) {
-                        throw new FileSystemOperationException("Timeout while waiting to read the last data chunk from the remote agent. The timeout is "
+                        throw new FileSystemOperationException(
+                                                               "Timeout while waiting to read the last data chunk from the remote agent. The timeout is "
                                                                + (FILE_TRANSFER_TIMEOUT / 1000) + " sec.",
                                                                e);
                     }
@@ -889,11 +894,19 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         File file = new File(fileName);
         boolean fileExists = checkFileExistence(file, false);
 
-        if (fileExists && !file.delete()) {
-            throw new FileSystemOperationException("Unable to delete " + (file.isDirectory()
+        if (fileExists) {
+            boolean isDirectory = file.isDirectory();
+            try {
+                Files.delete(file.toPath());
+            } catch (IOException e) {
+                throw new FileSystemOperationException("Unable to delete " + (isDirectory
                                                                                              ? "directory"
                                                                                              : "file")
-                                                   + " '" + fileName + "'");
+                                                       + " '" + fileName + "'" + (isDirectory
+                                                                                              ? ". Try invoking deleteDirectory() instead."
+                                                                                              : ""),
+                                                       e);
+            }
         }
     }
 
@@ -1442,7 +1455,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         }
         if (isRecursive
             && IoUtils.normalizeDirPath(toDirName).startsWith(IoUtils.normalizeDirPath(fromDirName))) {
-            throw new IllegalArgumentException("Could not copy directories. The target directory is subdirectory of the source one");
+            throw new IllegalArgumentException(
+                                               "Could not copy directories. The target directory is subdirectory of the source one");
         }
         File sourceDir = new File(fromDirName);
         if (! (sourceDir.exists() && sourceDir.isDirectory())) {
@@ -1778,7 +1792,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Read file from specific position. Used for file tail.<br/>
+     * Read file from specific position. Used for file tail.<br>
      *
      * <b>NOTE:</b> If the file is replaced with the same byte content, then no change is assumed and 'null' is returned
      *
@@ -1851,11 +1865,19 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         if (exists) {
             if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null) {
-                    for (File c : files) {
-                        deleteRecursively(c);
+                DirectoryStream<Path> dirStream = null;
+                try {
+                    dirStream = Files.newDirectoryStream(file.toPath());
+                    Iterator<Path> it = dirStream.iterator();
+                    while (it.hasNext()) {
+                        Path path = it.next();
+                        deleteRecursively(path.toFile());
                     }
+                } catch (Exception e) {
+                    throw new FileSystemOperationException("Could not purge contents of directory '" + directoryName
+                                                           + "'", e);
+                } finally {
+                    IoUtils.closeStream(dirStream);
                 }
             } else {
                 throw new FileSystemOperationException(directoryName + " is not a directory! ");
@@ -1874,11 +1896,20 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                     File file ) {
 
         if (file.isDirectory()) {
-            File[] files = file.listFiles();
-            if (files != null) {
-                for (File c : files) {
-                    deleteRecursively(c);
+            DirectoryStream<Path> dirStream = null;
+            try {
+                dirStream = Files.newDirectoryStream(file.toPath());
+                Iterator<Path> it = dirStream.iterator();
+                while (it.hasNext()) {
+                    Path path = it.next();
+                    deleteRecursively(path.toFile());
                 }
+            } catch (Exception e) {
+                throw new FileSystemOperationException("Could not purge contents of directory '"
+                                                       + file.getAbsolutePath()
+                                                       + "'", e);
+            } finally {
+                IoUtils.closeStream(dirStream);
             }
         }
 
@@ -2438,9 +2469,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * File transfer status holder<br/>
-     * Used for waiting the file transfer to complete<br/>
-     * <br/>
+     * File transfer status holder<br>
+     * Used for waiting the file transfer to complete<br>
+     * <br>
      * <b>NOTE</b>: We can't use {@link Boolean} instead of this class, because in some moment we have to
      * change the boolean value, but {@link Boolean} is immutable and we also need to use the same object,
      * because we are synchronizing on it.
@@ -2513,7 +2544,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
     /**
      * Extract archive file to local or remote machine.
-     * Supported file formats are Zip, GZip, TAR and TAR GZip
+     * Supported file formats are Zip (JAR, WAR, EAR, SAR), GZip, TAR and TAR GZip
      * If the machine is UNIX-like it will preserve the permissions
      *
      * @param archiveFilePath the archive file path
@@ -2523,13 +2554,16 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     @Override
     public void extract( String archiveFilePath, String outputDirPath ) throws FileSystemOperationException {
 
-        if (archiveFilePath.endsWith(".zip")) {
+        String lowerCaseName = archiveFilePath.toLowerCase();
+        if (lowerCaseName.endsWith(".zip") || archiveFilePath.endsWith(".jar")
+            || archiveFilePath.endsWith(".war") || archiveFilePath.endsWith(".ear")
+            || archiveFilePath.endsWith(".sar") || archiveFilePath.endsWith(".apk")) {
             extractZip(archiveFilePath, outputDirPath);
-        } else if (archiveFilePath.endsWith(".gz") && !archiveFilePath.endsWith(".tar.gz")) {
+        } else if (lowerCaseName.endsWith(".gz") && !lowerCaseName.endsWith(".tar.gz")) {
             extractGZip(archiveFilePath, outputDirPath);
-        } else if (archiveFilePath.endsWith("tar.gz")) {
+        } else if (lowerCaseName.endsWith("tar.gz")) {
             extractTarGZip(archiveFilePath, outputDirPath);
-        } else if (archiveFilePath.endsWith(".tar")) {
+        } else if (lowerCaseName.endsWith(".tar")) {
             extractTar(archiveFilePath, outputDirPath);
         } else {
             String[] filenameTokens = IoUtils.getFileName(archiveFilePath).split("\\.");
@@ -2582,7 +2616,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private void extractTarGZip( String tarGzipFilePath, String outputDirPath ) {
 
         TarArchiveEntry entry = null;
-        try (TarArchiveInputStream tis = new TarArchiveInputStream(new GzipCompressorInputStream(new FileInputStream(tarGzipFilePath)))) {
+        try (TarArchiveInputStream tis = new TarArchiveInputStream(
+                                                                   new GzipCompressorInputStream(new FileInputStream(tarGzipFilePath)))) {
             while ( (entry = (TarArchiveEntry) tis.getNextEntry()) != null) {
                 if (log.isDebugEnabled()) {
                     log.debug("Extracting " + entry.getName());
@@ -2773,7 +2808,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * This is method for internal use only.
      * Currently used on the agent when copying files from the executor
      * 
-     * @param srcFilename the file name without path, existing on the executor
+     * @param srcFileName the file name without path, existing on the executor
      * @param dstFilePath the target file path - desired file location (directory or directory + file name)
      * 
      * @return full file path on the agent, used for file copy operations

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ public class AtsSystemProperties {
      * */
     public static final String  LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
   
-    /** The MAX number of events that will be processed at once when batch mode is enabled.</br>
+    /** The MAX number of events that will be processed at once when batch mode is enabled.<br>
      *  This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
      * */
     @PublicAtsApi
@@ -101,11 +101,15 @@ public class AtsSystemProperties {
     public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
     public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
     public static final String  SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
-    public static final String  SYSTEM_USER_DIR                                                   = System.getProperty("user.dir");
     public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
     public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
     public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");
     public static final String  SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty("http.proxyPort");
+    /**
+     * User directory as of initial call of this class. Note that actual value of this system property could be changed later.
+     * And it seems that currently there is no easy Java-only reliable way to change actual current directory.
+     */
+    public static final String  USER_CURRENT_DIR                                                  = System.getProperty("user.dir");
 
     /**
      * @return the default ATS agent port number
@@ -186,10 +190,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - an error is thrown
      *
-     * If key is not found - null is returned.</br>
+     * If key is not found - null is returned.<br>
      *
      * @param key the name of the searched system property
      * @return a boolean value
@@ -201,10 +205,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - default value is returned if provided, otherwise an error is thrown
      *
-     * If key is not found - default value is returned if provided, otherwise null is returned.</br>
+     * If key is not found - default value is returned if provided, otherwise null is returned.<br>
      *
      * @param key the name of the searched system property
      * @param defaultValue default value in case the system property does not exist or is invalid
@@ -234,10 +238,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - an error is thrown
      *
-     * If key is not found - null is returned.</br>
+     * If key is not found - null is returned.<br>
      *
      * @param key the name of the searched system property
      * @return a number that is 0 or above
@@ -249,10 +253,10 @@ public class AtsSystemProperties {
     }
 
     /**
-     * If key is found and is parsed OK - the wanted value is returned.</br>
+     * If key is found and is parsed OK - the wanted value is returned.<br>
      * If key is found and fail parsing - default value is returned if provided, otherwise an error is thrown
      *
-     * If key is not found - default value is returned if provided, otherwise null is returned.</br>
+     * If key is not found - default value is returned if provided, otherwise null is returned.<br>
      *
      * @param key the name of the searched system property
      * @param defaultValue default value in case the system property does not exist or is invalid
@@ -285,7 +289,7 @@ public class AtsSystemProperties {
      * Return a system property as a String. Return null if not present.
      *
      * @param key the name of the searched system property
-     * @return
+     * @return the property value trimmed or null if it does not exist
      */
     @PublicAtsApi
     public static String getPropertyAsString( String key ) {
@@ -304,7 +308,7 @@ public class AtsSystemProperties {
      *
      * @param key the name of the searched system property
      * @param defaultValue default value to return if property not defined
-     * @return
+     * @return the property value trimmed or defaultValue if there is no value set yet
      */
     @PublicAtsApi
     public static String getPropertyAsString( String key, String defaultValue ) {

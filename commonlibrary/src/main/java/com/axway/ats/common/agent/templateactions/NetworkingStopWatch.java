@@ -22,29 +22,29 @@ import org.apache.log4j.Logger;
  * Tracks network(and server) times during execution of template actions.
  * Wraps state transitions
  *<pre>
- * 0. setNewContext - phaese0
-   1. Sending request
-   1.1. 1st measure: urlConnection.getOutputStream(): Open connection for - resume and suspend NET timer (on 2-3 places - plain HTTP request and AMF ones)
-      step1_start
-      step2_end
-   1.2. 2nd real data: resume & suspend NET timer
-      step3_start
-      step4_end
-   1.3. Store request time
-
- 2. Intermediate timer - for non-data actions after sending request and before asking for response data.
- Primarily for new XML Document creation...
-   2.1. Start right after request is sent (interim, 1)
-      step5_
- 3. Get response
-    3.1.1 Get response code - suspend interm. timer and resume NET time; After get - resume back to interim. timer. (interim, 2)
-      step6_start
-      step7_end
-    3.1.2  Get response data - stop interim timer and start NET timer. At the end stop NET timer.
-      step8_start
-      step9_end
-   Note: For HTTP get response code and body are on same place so no interim timer resume.
-  </pre>
+ * 0. setNewContext - phase0
+ *  1. Sending request
+ *  1.1. 1st measure: urlConnection.getOutputStream(): Open connection for - resume and suspend NET timer (on 2-3 places - plain HTTP request and AMF ones)
+ *     step1_start
+ *     step2_end
+ *  1.2. 2nd real data: resume &amp; suspend NET timer
+ *     step3_start
+ *     step4_end
+ *  1.3. Store request time
+ *
+ * 2. Intermediate timer - for non-data actions after sending request and before asking for response data.
+ * Primarily for new XML Document creation...
+ *  2.1. Start right after request is sent (interim, 1)
+ *     step5_
+ * 3. Get response
+ *   3.1.1 Get response code - suspend interm. timer and resume NET time; After get - resume back to interim. timer. (interim, 2)
+ *     step6_start
+ *     step7_end
+ *   3.1.2  Get response data - stop interim timer and start NET timer. At the end stop NET timer.
+ *     step8_start
+ *     step9_end
+ *  Note: For HTTP get response code and body are on same place so no interim timer resume.
+ * </pre>
  *
  *
  */
@@ -183,7 +183,7 @@ public class NetworkingStopWatch {
     }
 
     /**
-     * Return used StopWatch for network. <br />
+     * Return used StopWatch for network. <br>
      * <em>Note:</em> To be used only to pass StopWatch to Common library methods
      * to serialize objects to AMF stream.
      * @return StopWatch

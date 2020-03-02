@@ -45,6 +45,10 @@ public class UiEngineConfigurator extends AbstractConfigurator {
     private static final String            PROPERTY_COMMAND_DELAY                = "uiengine.commandDelay";
     private static final String            PROPERTY_ELEMENT_STATE_CHANGE_DELAY   = "uiengine.elementStateChangeDelay";
     private static final String            PROPERTY_HIGHLIGHT_ELEMENTS           = "uiengine.highlightElements";
+    /**
+     * Property to be removed. Requires internal Selenium code
+     */
+    @Deprecated
     private static final String            PROPERTY_WORK_WITH_INVISIBLE_ELEMENTS = "uiengine.workWithInvisibleElements";
 
     private static final String            PROPERTY_BROWSER_ACTION_TIMEOUT       = "uiengine.browser.action.timeout";

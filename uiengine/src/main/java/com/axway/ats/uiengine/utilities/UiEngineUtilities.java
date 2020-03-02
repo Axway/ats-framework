@@ -62,15 +62,15 @@ public class UiEngineUtilities {
             try {
                 Thread.sleep(millis);
             } catch (InterruptedException e) {
-                // swallow this error
+                // ignore this error
             }
         }
     }
 
     /**
-     * Create a screenshot image (supported image format/type is PNG).<br/>
-     * If the screenshot image file already exists it will be automatically replaced by the new one.<br/>
-     * <br/>
+     * Create a screenshot image (supported image format/type is PNG).<br>
+     * If the screenshot image file already exists it will be automatically replaced by the new one.<br>
+     * <br>
      * Currently the supported UI drivers are {@link AbstractRealBrowserDriver} and {@link MobileDriver}:
      * <ul>
      *     <li>{@link AbstractRealBrowserDriver} - the method makes a best effort to create a screenshot,
@@ -82,7 +82,7 @@ public class UiEngineUtilities {
      *              <li>The screenshot of the entire display containing the browser</li>
      *          </ul>
      *     </li>
-     *     <li>{@link MobileDriver} - creates a screenshot of the mobile device screen.<br/>
+     *     <li>{@link MobileDriver} - creates a screenshot of the mobile device screen.<br>
      *          <b>NOTE:</b> There is a <a href="https://github.com/selendroid/selendroid/issues/325">known issue</a> on Android Virtual Device with <b>"Use Host GPU"</b> enabled option.
      *          So in order to get a screenshot it should be disabled. Keep in mind that it will affect the performance, because
      *          it is a performance acceleration option.

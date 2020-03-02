@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -10,15 +11,16 @@
 
     <artifactId>ats-uiengine</artifactId>
     <name>ATS-UIEngine</name>
-    <description>ATS UI Engine library for performing tests over applications in HTML/JS and Swing</description>
+    <description>ATS UI Engine library for performing tests over Web applications (HTML/JavaScript), mobile (Android and
+        iOS) and Swing
+    </description>
     <url>https://axway.github.io/ats-framework/Automated-testing-of-HTML-and-Javascript-application.html</url>
 
     <properties>
-        <selenium-java.version>3.8.1</selenium-java.version>
-        <selelnium-htmlunit-driver.version>2.26</selelnium-htmlunit-driver.version>
-        <selenium-supported.browser.versions>Firefox 59, IE 11, Safari 5.1+, Chrome 66, Edge(limited) </selenium-supported.browser.versions>
-
-        <!-- use version referred from Selenium <htmlunit.version>2.12</htmlunit.version> -->
+        <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
+        <selenium-htmlunit-driver.version>2.36.0</selenium-htmlunit-driver.version>
+        <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)
+        </selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
         <com.github.detro.ghostdriver.phantomjsdriver>1.2.1</com.github.detro.ghostdriver.phantomjsdriver>
@@ -44,13 +46,14 @@
                 </configuration>
             </plugin>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>com.nickwongdev</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.10</version>
+                <version>1.12.1</version>
                 <configuration>
                     <complianceLevel>${java.classlevel.version}</complianceLevel>
                     <source>${java.classlevel.version}</source>
                     <target>${java.classlevel.version}</target>
+
                 </configuration>
                 <!--configuration> <complianceLevel>1.6</complianceLevel>
                     <Xlint>warning</Xlint> </configuration -->
@@ -66,7 +69,7 @@
         </plugins>
         <pluginManagement>
             <plugins>
-            <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
+                <!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
                 <plugin>
                     <groupId>org.eclipse.m2e</groupId>
                     <artifactId>lifecycle-mapping</artifactId>
@@ -76,7 +79,7 @@
                             <pluginExecutions>
                                 <pluginExecution>
                                     <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
+                                        <groupId>com.nickwongdev</groupId>
                                         <artifactId>aspectj-maven-plugin</artifactId>
                                         <versionRange>[1.7,)</versionRange>
                                         <goals>
@@ -85,7 +88,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <ignore />
+                                        <ignore/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -107,11 +110,11 @@
             <artifactId>ats-core</artifactId>
             <version>${project.version}</version>
             <exclusions>
-	            <!-- Excluding guava version from cassandra because it is too old -->
-            	<exclusion>
-            		<groupId>com.google.guava</groupId>
-            		<artifactId>guava</artifactId>
-            	</exclusion>
+                <!-- Excluding guava version from Cassandra because it is too old -->
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -156,15 +159,15 @@
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
             <artifactId>htmlunit-driver</artifactId>
-            <version>${selelnium-htmlunit-driver.version}</version>
+            <version>${selenium-htmlunit-driver.version}</version>
         </dependency>
 
-        <dependency>
-            <!-- Runtime dependant at least for HtmlUnit tests -->
+        <!-- <dependency>
+            Seems not needed anymore by HtmlUnit. Before:  Runtime dependant at least for HtmlUnit tests
             <groupId>xml-apis</groupId>
             <artifactId>xml-apis</artifactId>
             <version>${xml-apis.version}</version>
-        </dependency>
+        </dependency> -->
 
         <dependency> <!-- Selenium WebDriver for PhantomJS -->
             <groupId>com.codeborne</groupId>
@@ -211,10 +214,9 @@
         <dependency>
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
-            <version>3.0.0</version>
-            <exclusions>
-                <exclusion> <!-- Currently depending on selenium-java-2.46, but working fine with 2.48.2
-                        (tested) -->
+            <version>7.0.0</version>
+            <exclusions> <!-- Rely on versions referenced by selenium-java -->
+                <exclusion>
                     <groupId>org.seleniumhq.selenium</groupId>
                     <artifactId>selenium-java</artifactId>
                 </exclusion>
@@ -222,14 +224,13 @@
                     <groupId>com.google.code.gson</groupId>
                     <artifactId>gson</artifactId>
                 </exclusion>
-                <!-- Excluding guava version from io.appium because it is too old -->
                 <exclusion>
-                	<groupId>com.google.guava</groupId>
-                	<artifactId>guava</artifactId>
+                    <!-- Excluding guava version from io.appium because if it is older compared to Selenium -->
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
-
     </dependencies>
 
 </project>
