@@ -156,11 +156,6 @@
             <artifactId>winp</artifactId>
             <version>${org.jvnet.winp.version}</version>
         </dependency>
-        <dependency> <!-- SFTP client dependencies -->
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>${com.jcraft.jsch.version}</version>
-        </dependency>
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
@@ -188,10 +183,22 @@
             <version>${net.java.dev.jna.version}</version>
         </dependency>
         <!-- ProcessTalker dependencies -->
+        <!-- Dependency for working with external processes -->
         <dependency>
             <groupId>com.axway.ats.expectj</groupId>
             <artifactId>ats-expectj</artifactId>
             <version>${ats-expectj.version}</version>
+            <exclusions>
+                <exclusion> <!-- older JSch version -->
+                    <groupId>com.jcraft</groupId>
+                    <artifactId>jsch</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${com.jcraft.jsch.version}</version>
         </dependency>
         <!-- TEST dependencies -->
         <dependency>
