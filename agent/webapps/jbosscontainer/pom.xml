@@ -1,47 +1,45 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework.agent.webapp</groupId>
-        <artifactId>ats-agent-webapp</artifactId>
-        <version>4.0.7-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.axway.ats.framework.agent.webapp</groupId>
+		<artifactId>ats-agent-webapp</artifactId>
+		<version>4.0.7-jre11-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>ats-agent-webapp-jbosscontainer</artifactId>
-    <name>ATS-Agent-WebApp-JBossContainer</name>
-    <packaging>war</packaging>
+	<artifactId>ats-agent-webapp-jbosscontainer</artifactId>
+	<name>ATS-Agent-WebApp-JBossContainer</name>
+	<packaging>war</packaging>
 
-    <build>
-        <plugins>
-            <plugin> <!-- extract WSDL from ats-agent-webapp-server -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-agent-server-resources</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/extra-resources/wsdl
-                            </outputDirectory> <!-- TODO: strip META-INF from unpack -->
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <includeArtifactIds>ats-agent-webapp-server</includeArtifactIds>
-                            <includes>META-INF/wsdl/**</includes>
-                            <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin> <!-- extract WSDL from ats-agent-webapp-server -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-agent-server-resources</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<outputDirectory>${project.build.directory}/extra-resources/wsdl</outputDirectory> <!-- TODO: strip META-INF from unpack -->
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<includeArtifactIds>ats-agent-webapp-server</includeArtifactIds>
+							<includes>META-INF/wsdl/**</includes>
+							<excludeTransitive>true</excludeTransitive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration> <!-- Needed for optional management of extra included resources like WSDL -->
-                    <webResources>
-                        <resource>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration> <!-- Needed for optional management of extra included resources like WSDL -->
+					<webResources>
+						<resource>
                             <!-- Copy WSDL from META-INF/wsdl/ (from webapp-server artifact)
                                 to WEB-INF/wsdl/ -->
                             <directory>${project.build.directory}/extra-resources/wsdl/META-INF/wsdl</directory>

@@ -22,6 +22,8 @@ local.properties
 
 # IntelliJ IDEA exclusions
 .idea/
+*.iml
+
 
 # External tool builders
 .externalToolBuilders/

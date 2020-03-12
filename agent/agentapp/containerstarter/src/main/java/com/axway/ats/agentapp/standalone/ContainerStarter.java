@@ -335,30 +335,50 @@ public class ContainerStarter {
         String pattern = (String) variables.get("logging.pattern");
         String agentPort = (String) variables.get("ats.agent.default.port");
         String agentSeverity = (String) variables.get("logging.severity");
-        
+
         /*
-         * If the log4j.xml file has user-defined/thirdparty filters, they must be in the classpath (inside container directory)
-         * */
+         * If the log4j.xml file has user-defined/third-party filters, they must be in the classpath (inside container directory)
+         **/
         boolean enableLog4jConfigFile = Boolean.valueOf((String) variables.get("logging.enable.log4j.file"));
-        
+        String log4JFileName = "log4j.xml"; // on the same level as agent.sh/.bat
+        File file = new File(log4JFileName);
+        if (file.exists()) {
+            System.out.println("ContainerStarter: Found log4j.xml file in current directory (" + file.getAbsolutePath()
+                               + ") and will be used instead of default ATS logging configuration.");
+            DOMConfigurator.configure(log4JFileName);
+            // possibly manage log level of Jetty
+            return;
+        }
         if (enableLog4jConfigFile) {
-            DOMConfigurator.configure("log4j.xml"); // on the same level as agent.sh/.bat
+            String dir = System.getProperty("ats.agent.home");
+            StringBuilder fullPath = new StringBuilder();
+            if (dir != null && dir.trim().length() > 0) {
+                fullPath.append(dir);
+                if (!dir.endsWith("/") && !dir.endsWith("\\")) {
+                    fullPath.append("/");
+                }
+            }
+            fullPath.append("ats-agent/container/log4j.xml");
+            System.out.println("ContainerStarter: Loading log4j.xml file from " + fullPath);
+            DOMConfigurator.configure(fullPath.toString());
         }
 
         // check agent logging severity and set the appropriate level
-        if ("INFO".equalsIgnoreCase(agentSeverity)) {
-            logLevel = Level.INFO;
-        } else if ("DEBUG".equalsIgnoreCase(agentSeverity)) {
-            logLevel = Level.DEBUG;
-        } else if ("WARN".equalsIgnoreCase(agentSeverity)) {
-            logLevel = Level.WARN;
-        } else if ("ERROR".equalsIgnoreCase(agentSeverity)) {
-            logLevel = Level.ERROR;
-        } else if ("FATAL".equalsIgnoreCase(agentSeverity)) {
-            logLevel = Level.FATAL;
-        } else {
-            log.info("Unknown severity level is set: " + agentSeverity
-                     + ". Possible values are: DEBUG, INFO, WARN, ERROR, FATAL.");
+        if (agentSeverity != null) {
+            if ("INFO".equalsIgnoreCase(agentSeverity)) {
+                logLevel = Level.INFO;
+            } else if ("DEBUG".equalsIgnoreCase(agentSeverity)) {
+                logLevel = Level.DEBUG;
+            } else if ("WARN".equalsIgnoreCase(agentSeverity)) {
+                logLevel = Level.WARN;
+            } else if ("ERROR".equalsIgnoreCase(agentSeverity)) {
+                logLevel = Level.ERROR;
+            } else if ("FATAL".equalsIgnoreCase(agentSeverity)) {
+                logLevel = Level.FATAL;
+            } else {
+                log.info("Unknown severity level is set: " + agentSeverity
+                         + ". Possible values are: DEBUG, INFO, WARN, ERROR, FATAL.");
+            }
         }
 
         String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";

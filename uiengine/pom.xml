@@ -3,19 +3,19 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework</groupId>
-        <artifactId>ats-framework</artifactId>
-        <version>4.0.7-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.axway.ats.framework</groupId>
+		<artifactId>ats-framework</artifactId>
+		<version>4.0.7-jre11-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>ats-uiengine</artifactId>
-    <name>ATS-UIEngine</name>
-    <description>ATS UI Engine library for performing tests over Web applications (HTML/JavaScript), mobile (Android and
+	<artifactId>ats-uiengine</artifactId>
+	<name>ATS-UIEngine</name>
+	<description>ATS UI Engine library for performing tests over Web applications (HTML/JavaScript), mobile (Android and
         iOS) and Swing
     </description>
-    <url>https://github.com/Axway/ats-framework</url>
-
+	<url>https://github.com/Axway/ats-framework</url>
+  
     <properties>
         <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
         <selenium-htmlunit-driver.version>2.36.0</selenium-htmlunit-driver.version>
@@ -129,30 +129,29 @@
             <artifactId>ats-actionlibrary</artifactId>
             <version>${project.version}</version>
         </dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>test</scope>
+		</dependency>
 
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>selenium-java</artifactId>
-            <version>${selenium-java.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.testng</groupId>
-                    <artifactId>testng</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.seleniumhq.selenium</groupId>
-            <artifactId>htmlunit-driver</artifactId>
-            <version>${selenium-htmlunit-driver.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>selenium-java</artifactId>
+			<version>${selenium-java.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.testng</groupId>
+					<artifactId>testng</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.seleniumhq.selenium</groupId>
+			<artifactId>htmlunit-driver</artifactId>
+			<version>${selenium-htmlunit-driver.version}</version>
+		</dependency>
 
         <!-- <dependency>
             Seems not needed anymore by HtmlUnit. Before:  Runtime dependant at least for HtmlUnit tests
@@ -169,38 +168,38 @@
 					exclusion by name because mvn eclipse:eclipse does not work with wildcards -->
                 <!-- Wildcard exclusion for artifactId works for other goals
                     but produces warnings. There is feature request for fix: http://jira.codehaus.org/browse/MNG-3832 -->
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-remote-driver</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-server</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-remote-driver</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-server</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.seleniumhq.selenium</groupId>
+					<artifactId>selenium-java</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>org.easytesting</groupId>
-            <artifactId>fest-swing</artifactId>
-            <version>${fest.swing.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.easytesting</groupId>
+			<artifactId>fest-swing</artifactId>
+			<version>${fest.swing.version}</version>
+		</dependency>
 
-        <!-- Used by the SwingDriver to load JNLP applications -->
-        <dependency>
-            <groupId>org.jvnet.hudson</groupId>
-            <artifactId>netx</artifactId>
-            <version>0.5-hudson-2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.aspectj</groupId>
-            <artifactId>aspectjrt</artifactId>
-            <version>1.8.2</version>
-        </dependency>
+		<!-- Used by the SwingDriver to load JNLP applications -->
+		<dependency>
+			<groupId>org.jvnet.hudson</groupId>
+			<artifactId>netx</artifactId>
+			<version>0.5-hudson-2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.aspectj</groupId>
+			<artifactId>aspectjrt</artifactId>
+			<version>1.8.2</version>
+		</dependency>
 
         <!-- Mobile dependencies -->
         <dependency>

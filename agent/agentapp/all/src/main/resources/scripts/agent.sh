@@ -44,7 +44,7 @@ LOGGING_PATTERN=
 PROG_NAME=AtsAgent
 
 # get the absolute path to the script, e.g. /home/user/ats_agent/agent.sh
-SCRIPTPATH=`cd "\`dirname \"$0\"\`" && pwd`
+SCRIPTPATH=$(cd "$(dirname "$0")" && pwd)
 
 # Do not change next line without sync-ing with Agent-with-Java POM parts.
 # parse the input arguments
@@ -118,27 +118,28 @@ agent_start() {
         fi
 
         JAVA_VERSION=`$JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}'`
-		if [ "$JAVA_VERSION" = "1.7"* ] || [ "$JAVA_VERSION" = "1.8"* ]; then
-		        # Java 7 or 8 - use endorsed dir
-			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
-			$JMX_OPTIONS \
-			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-			-Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-			-Dlogging.severity="$LOGGING_SEVERITY" \
-			-Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-			$JAVA_OPTS $DEBUG_OPTIONS \
-			-jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
-		else
-		        # Java 9 or newer
-			nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
-			$JMX_OPTIONS \
-			-Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-			-Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-			-Dlogging.severity="$LOGGING_SEVERITY" \
-			-Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-			$JAVA_OPTS $DEBUG_OPTIONS \
-			-jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
-		fi
+        if [ "$JAVA_VERSION" = "1.7"* ] || [ "$JAVA_VERSION" = "1.8"* ]; then
+            # Java 7 or 8 - use endorsed dir
+            nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
+            $JMX_OPTIONS \
+            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+            -Dlogging.severity="$LOGGING_SEVERITY" \
+            -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
+            $JAVA_OPTS $DEBUG_OPTIONS \
+            -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+        else
+            # Java 9 or newer
+            nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+            $JMX_OPTIONS \
+            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+            -Dlogging.severity="$LOGGING_SEVERITY" \
+            -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
+              $JAVA_OPTS $DEBUG_OPTIONS \
+            -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+        fi
+
 
         JVM_PID=$!
         if $DEBUG
@@ -146,6 +147,40 @@ agent_start() {
             echo "started in DEBUG mode on $DEBUG_PORT with PID: $JVM_PID"
         else
             echo "started with PID: $JVM_PID"
+        fi
+}
+
+agent_start_in_container() {
+
+        echo "Starting $PROG_NAME in container mode ... "
+
+        if [ "$(agent_status)" = "$PROG_NAME is running" ]
+        then
+            echo "$PROG_NAME is already started on port $PORT"
+            exit
+        fi
+
+        JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+        if [[ "$JAVA_VERSION" = "1.7"* ]] || [[ "$JAVA_VERSION" = "1.8"* ]]; then
+            # Java 7 or 8 - use endorsed dir
+            $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
+            $JMX_OPTIONS \
+            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+            -Dlogging.enable.log4j.file=true \
+            -Xms${MEMORY}m -Xmx${MEMORY}m  \
+            $JAVA_OPTS $DEBUG_OPTIONS \
+            -jar ats-agent/ats-agent-standalone-containerstarter.jar
+        else
+            # Java 9 or newer
+            $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+            $JMX_OPTIONS \
+            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+            -Dlogging.enable.log4j.file=true \
+            -Xms${MEMORY}m -Xmx${MEMORY}m \
+            $JAVA_OPTS $DEBUG_OPTIONS \
+            -jar ats-agent/ats-agent-standalone-containerstarter.jar
         fi
 }
 
@@ -201,6 +236,9 @@ case $COMMAND in
     'start')
         agent_start
     ;;
+    'container')
+        agent_start_in_container
+    ;;
     'stop')
         agent_stop
     ;;
@@ -216,8 +254,8 @@ case $COMMAND in
         agent_version
     ;;
     *)
-		# TODO print [-java_opts JAVA_OPTS] as a known command in the future
+        # TODO print [-java_opts JAVA_OPTS] as a known command in the future
         echo "Usage:"
-        echo "$0 start|stop|restart|status|version [-port PORT] [-java_exec PATH_TO_JAVA_EXECUTABLE] [-logging_pattern day|hour|minute|30KB|20MB|10GB] [-memory MEMORY_IN_MB] [-logging_severity DEBUG|INFO|WARN|ERROR]"
+        echo "$0 start|stop|restart|status|version|container [-port PORT] [-java_exec PATH_TO_JAVA_EXECUTABLE] [-logging_pattern day|hour|minute|30KB|20MB|10GB] [-memory MEMORY_IN_MB] [-logging_severity DEBUG|INFO|WARN|ERROR]"
     ;;
 esac
