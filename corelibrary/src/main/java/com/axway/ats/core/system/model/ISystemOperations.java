@@ -15,6 +15,9 @@
  */
 package com.axway.ats.core.system.model;
 
+import org.apache.log4j.Level;
+import org.apache.log4j.PatternLayout;
+
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;
 
@@ -113,4 +116,18 @@ public interface ISystemOperations {
      * Log all duplicated JARs in current application's ClassPath
      */
     public void logDuplicatedJars();
+
+    /**
+     * Set the threshold for the ATS DB Appender
+     * @param threshold - the threshold ( Level.INFO|DEBUG,etc )
+     * */
+    public void setAtsDbAppenderThreshold( Level threshold );
+
+    /**
+     * Attach file appender to the Root logger
+     * @param filepath - path/to/logfile. Can be absolute or relative
+     * @param messageFormatPattern - the layout/format of the log messages. For more information see {@link PatternLayout} If not sure what to use, use this one:<br/><br/> 
+     * <strong><code>"%-5p %d{HH:mm:ss:SSS} %c{2}: %m%n</code></strong>
+     * */
+    public void attachFileAppender( String filepath, String messageFormatPattern );
 }

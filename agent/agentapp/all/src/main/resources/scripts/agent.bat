@@ -132,15 +132,47 @@ if "!isPortBusy!"=="YES" (
 
 TITLE %TITLE%
 
-!JAVA_EXEC! -showversion ^
--Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
-%JMX_OPTIONS% ^
--Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
--Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
--Dlogging.severity="%LOGGING_SEVERITY%" ^
--Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
-%JAVA_OPTS% %DEBUG_OPTIONS% ^
--jar ats-agent/ats-agent-standalone-containerstarter.jar
+rem check java version
+!JAVA_EXEC! -version > java.version 2>&1
+
+for /f "delims=" %%l in (java.version) do (
+	set line=%%l
+	goto next_java_version_check
+)
+
+:next_java_version_check
+echo %line% | FINDSTR /r 1\.[7-8]
+
+IF %ERRORLEVEL%==0 (
+	set java_version=8
+) ELSE (
+	set java_version=11
+)
+
+IF %java_version%==11 (
+
+	!JAVA_EXEC! -showversion ^
+	-Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" ^
+	%JMX_OPTIONS% ^
+	-Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
+	-Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
+	-Dlogging.severity="%LOGGING_SEVERITY%" ^
+	-Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
+	%JAVA_OPTS% %DEBUG_OPTIONS% ^
+	-jar ats-agent/ats-agent-standalone-containerstarter.jar
+
+) else (
+
+	!JAVA_EXEC! -showversion ^
+	-Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
+	%JMX_OPTIONS% ^
+	-Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
+	-Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
+	-Dlogging.severity="%LOGGING_SEVERITY%" ^
+	-Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
+	%JAVA_OPTS% %DEBUG_OPTIONS% ^
+	-jar ats-agent/ats-agent-standalone-containerstarter.jar
+)
 
 GOTO:EOF
 

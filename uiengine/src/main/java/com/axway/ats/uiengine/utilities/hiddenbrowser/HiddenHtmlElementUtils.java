@@ -104,6 +104,7 @@ public class HiddenHtmlElementUtils {
             // (HtmlUnitMouse.click(coordinates)) the exception is even skipped
             log.warn("Script error while clicking web element. " + webElement.toString(), e);
         } catch (Exception e) {
+
             throw new RuntimeException(e);
         } finally {
             // Restore accessibility modifier

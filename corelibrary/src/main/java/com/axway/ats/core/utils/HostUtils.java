@@ -111,7 +111,7 @@ public class HostUtils {
      * return the first valid one, so the result is not clear when have more
      * than one network card installed.
      *
-     * @return
+     * @return first IP address found
      */
     public static String getLocalHostIP() {
 

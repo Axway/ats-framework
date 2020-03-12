@@ -80,7 +80,7 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
         this.disableForeignKeys = true;
         this.includeDeleteStatements = true;
         this.writeGenerateForeignKeyProcedure = true;
-        this.dbTables = new LinkedHashMap<>();
+        this.dbTables = new LinkedHashMap<>(); // keep the order of the tables as they will be added
     }
 
     /**

@@ -69,6 +69,13 @@ public class SslUtils {
 
     private static boolean      bcProviderAlreadyRegisteredAsFirst = false;
 
+    /**
+     * Since java 9, the default keystore type is changed to P12, instead of JKS.<br>
+     * This leads to a problem, when BC provider is registered, because the JAVA_HOME/lib/security/cacerts keystore is expected to be p12, but is JKS<br>
+     * So we use the Security property "keystore.type" to set the store type to JKS and save the original value in the field below
+     * */
+    private static String       origKeystoreType                   = null;
+
     private static SSLContext   trustAllSSlContext;
 
     // in this list are collected all created keystore files during THIS run
@@ -588,6 +595,11 @@ public class SslUtils {
             Security.insertProviderAt(bcProvider, 1);
             bcProviderAlreadyRegisteredAsFirst = true;
             log.info("Bouncy Castle security provider is registered as first in the list of available providers");
+
+            origKeystoreType = Security.getProperty("keystore.type");
+
+            Security.setProperty("keystore.type", "jks");
+            log.info("Default keystore type set to: JKS");
         }
     }
 
@@ -603,6 +615,10 @@ public class SslUtils {
                 Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
                 bcProviderAlreadyRegisteredAsFirst = false;
                 log.info("Bouncy Castle security provider is unregistered from the list of available providers");
+
+                Security.setProperty("keystore.type", "jks");
+                log.info("Default keystore type revert back to: " + origKeystoreType);
+
                 return;
             }
         }

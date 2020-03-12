@@ -15,6 +15,11 @@
  */
 package com.axway.ats.action.system;
 
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
+
 import com.axway.ats.action.filesystem.RemoteFileSystemOperations;
 import com.axway.ats.agent.components.system.operations.clients.InternalSystemOperations;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -318,6 +323,33 @@ public class RemoteSystemOperations implements ISystemOperations {
                 throw new SystemOperationException("Could not execute keyboard key release action on agent: "
                                                    + atsAgent, e);
             }
+        }
+
+    }
+
+    @Override
+    public void setAtsDbAppenderThreshold( Level threshold ) {
+
+        try {
+            this.remoteSystemOperations.setAtsDbAppenderThreshold(threshold);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not set ATS DB Appender threshold to " + threshold.toString()
+                                               + " on agent: " + atsAgent, e);
+        }
+
+    }
+
+    @Override
+    public void attachFileAppender( String filepath, String messageFormatPattern ) {
+
+        try {
+            this.remoteSystemOperations.attachFileAppender(filepath, messageFormatPattern);
+        } catch (AgentException e) {
+            throw new SystemOperationException("Could not attach file appender '" + ( (filepath != null)
+                                                                                                         ? filepath
+                                                                                                         : null)
+                                               + "' on agent: "
+                                               + atsAgent, e);
         }
 
     }

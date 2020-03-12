@@ -207,9 +207,9 @@ public class DbUtils {
 
     /**
      * Adds single SQLException details and returns reference to the nested one
-     * @param sqle
-     * @param sb
-     * @return
+     * @param sqle exception to get details from
+     * @param sb   where to append current top SQL exception details
+     * @return full details of the current (top level) SQL exception and link to nested one (cause)
      */
     private static SQLException addNestedSqlTrace(
                                                    SQLException sqle,

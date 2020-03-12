@@ -307,6 +307,12 @@ public class FtpClient extends AbstractFileTransferClient {
                  + ftpConnection.getPassiveHost());
     }
 
+    /**
+     * Currently not supporting commands requiring opening of data connection
+     * @param command the command to run
+     * @return String representing the return code
+     * @throws FileTransferException
+     */
     @Override
     public String executeCommand(
                                   String command ) throws FileTransferException {
@@ -315,7 +321,6 @@ public class FtpClient extends AbstractFileTransferClient {
         String returnCode = "";
 
         try {
-            this.ftpConnection.sendCommand(command);
             returnCode = String.valueOf(this.ftpConnection.sendCommand(command));
         } catch (IOException e) {
             log.error("Error running command: '" + command + "'", e);

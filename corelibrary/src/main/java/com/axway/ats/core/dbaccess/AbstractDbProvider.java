@@ -53,18 +53,18 @@ import com.axway.ats.core.validation.exceptions.ValidationException;
  */
 public abstract class AbstractDbProvider implements DbProvider {
 
-    private static Logger                     log;
+    private static       Logger               log;
     private static final int                  BYTE_BUFFER_SIZE = 1024;
     private static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
 
-    protected DbConnection                    dbConnection;
+    protected DbConnection dbConnection;
 
-    private Connection                        connection;
+    private Connection connection;
 
-    protected String[]                        reservedWords    = new String[]{};
+    protected String[] reservedWords = new String[]{};
 
     static {
-        // TODO in jdk8 there is a way to get them without additional libraries or reflection
+        // TODO in Java 8 there is a way to get them without additional libraries or reflection
         // http://stackoverflow.com/a/30444747
         for (Field field : Types.class.getFields()) {
             try {
@@ -302,11 +302,8 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Inserts a row in the given table.
      *
-     * @param tableName
-     * @param colums
-     * @param values This param must look like this: "'string_value', int_value, .."
-     * @param config
-     * @param log the log object
+     * @param tableName name
+     * @param columns map of column:value pairs
      *
      * @return The inserted rows, 0 or 1
      */
@@ -371,7 +368,7 @@ public abstract class AbstractDbProvider implements DbProvider {
 
     /**
      * @param tableName         the name of the table
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
@@ -385,7 +382,7 @@ public abstract class AbstractDbProvider implements DbProvider {
      * @param tableName         the name of the table
      * @param columnNameWhere   the column name for the where statement
      * @param whereValue        the where value for the where statement
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
@@ -400,13 +397,13 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * @param tableName         the name of the table
      * @param whereCondition    the where condition ( without the WHERE keyword )
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
     @Override
     public int rowCount( String tableName, String whereCondition ) throws DbException,
-                                                                   NumberValidationException {
+                                                                          NumberValidationException {
 
         int returnCount;
         String sql = " SELECT " + " COUNT(*)" + " FROM " + tableName;
@@ -420,8 +417,8 @@ public abstract class AbstractDbProvider implements DbProvider {
 
         try {
             returnCount = records == null
-                                          ? 0
-                                          : Integer.parseInt((String) records[0].get("COUNT(*)"));
+                          ? 0
+                          : Integer.parseInt((String) records[0].get("COUNT(*)"));
         } catch (NumberFormatException nfe) {
             throw new NumberValidationException("The row count could not be converted to integer", nfe);
         }
@@ -435,7 +432,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[BYTE_BUFFER_SIZE];
             int bytesRead = -1;
-            while ( (bytesRead = is.read(buffer)) > -1) {
+            while ((bytesRead = is.read(buffer)) > -1) {
                 out.write(buffer, 0, bytesRead);
             }
             ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
@@ -495,7 +492,7 @@ public abstract class AbstractDbProvider implements DbProvider {
         InputStream is;
         if (valueAsObject != null && valueAsObject.getClass().isArray()) {
             // we have an array of primitive data type
-            if (! (valueAsObject instanceof byte[])) {
+            if (!(valueAsObject instanceof byte[])) {
                 // FIXME other array types might be needed to be tracked in a different way
                 log.warn("Array type that needs attention");
             }
@@ -531,22 +528,22 @@ public abstract class AbstractDbProvider implements DbProvider {
      */
     protected abstract String getResultAsEscapedString( ResultSet resultSet, int index,
                                                         String columnTypeName ) throws SQLException,
-                                                                                IOException;
+                                                                                       IOException;
 
     /**
      * Convert an array of bytes to a HEX string
      *
      * @param data the byte array
      * @param size the number of bytes to read
-     * @return a HEX string representing the binary data
+     * @return a HEX string representing the binary data. Currently in upper case.
      */
     protected String bytesToHex( byte[] data, int size ) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < size; i++) {
             String hexString = Integer.toHexString(data[i] & 0xFF);
             if (hexString.length() == 1) {
-                buf.append("0");
+                buf.append("0"); // add leading zero if number is too short ( 1 hex digit)
             }
 
             buf.append(hexString);
@@ -744,8 +741,8 @@ public abstract class AbstractDbProvider implements DbProvider {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
 
             final String schemaPattern = (this instanceof OracleDbProvider
-                                                                           ? dbConnection.getUser()
-                                                                           : null);
+                                          ? dbConnection.getUser()
+                                          : null);
 
             ResultSet tablesResultSet = databaseMetaData.getTables(null, schemaPattern, null,
                                                                    new String[]{ "TABLE" });
@@ -775,8 +772,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                 table.setName(tableName);
                 table.setSchema(tablesResultSet.getString("TABLE_SCHEM"));
 
-                table.setPrimaryKeyColumn(exctractPrimaryKeyColumn(tableName, databaseMetaData,
-                                                                   schemaPattern));
+                table.setPrimaryKeyColumn(extractPrimaryKeyColumn(tableName, databaseMetaData,
+                                                                  schemaPattern));
                 table.setIndexes(extractTableIndexes(tableName, databaseMetaData,
                                                      connection.getCatalog()));
 
@@ -796,7 +793,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Each provider can put restrictions on the types of tables to be processed
      *
-     * @param tablesResultSet
+     * @param tableResultSet
      * @param dbName
      * @param tableName
      * @return
@@ -806,8 +803,8 @@ public abstract class AbstractDbProvider implements DbProvider {
         return true;
     }
 
-    private String exctractPrimaryKeyColumn( String tableName, DatabaseMetaData databaseMetaData, String schemaPattern )
-                                                                                                                         throws SQLException {
+    private String extractPrimaryKeyColumn( String tableName, DatabaseMetaData databaseMetaData, String schemaPattern )
+                            throws SQLException {
 
         ResultSet pkResultSet = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableName);
         while (pkResultSet.next()) {
@@ -841,8 +838,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                 sb.append(extractBooleanResultSetAttribute(columnInformation, "COLUMN_DEF", "default"));
             } else {
                 sb.append(
-                          extractTableAttributeValue(columnInformation, "COLUMN_DEF", "default", tableName,
-                                                     columnName));
+                        extractTableAttributeValue(columnInformation, "COLUMN_DEF", "default", tableName,
+                                                   columnName));
             }
             sb.append(extractTableAttributeValue(columnInformation, "IS_NULLABLE", "nullable", tableName, columnName));
             sb.append(extractTableAttributeValue(columnInformation, "COLUMN_SIZE", "size", tableName, columnName));

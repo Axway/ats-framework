@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2020 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -75,7 +75,7 @@ public class ClasspathUtils {
     /**
      * Return all jars found in the classpath. If a jar is found more than once,
      * then we list these one after another
-     * 
+     *
      * @return StringBuilder with all jars loaded in the ClassPath
      */
     public StringBuilder getClassPathDescription() {
@@ -363,6 +363,9 @@ public class ClasspathUtils {
                     JarEntry je = jarEntries.nextElement();
                     if (je.getName().equals(resourceName)) {
                         String resourceFilepath = "jar:file:" + jarFileFullpath + "!/" + resourceName;
+                        if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS) {
+                            resourceFilepath = resourceFilepath.replace("\\", "/");
+                        }
                         resourcesUrls.add(new URI(resourceFilepath).toURL());
                     }
                 }

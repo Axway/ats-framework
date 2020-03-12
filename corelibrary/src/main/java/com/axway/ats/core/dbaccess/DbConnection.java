@@ -148,7 +148,7 @@ public abstract class DbConnection {
      * Initialize the connection descriptor custom properties - this method
      * will be called by the constructor if properties are supplied
      * 
-     * @param properties map of properties
+     * @param customProperties map of additional properties
      */
     protected abstract void initializeCustomProperties(
                                                         Map<String, Object> customProperties );
@@ -184,9 +184,11 @@ public abstract class DbConnection {
     }
 
     /**
-     * Get a DataSource from this connection
-     * 
-     * @return
+     * Get a new DataSource from this connection.
+     * <p><em>Note</em> that each call returns new DataSource instance.
+     * It is recommended to use {@link ConnectionPool#getConnection(DbConnection)} which keeps cache of
+     * existing DataSources based on connection hash of the provided {@link DbConnection} descriptor.</p>
+     * @return new {@link DataSource} instance based on current instance parameters and credentials.
      */
     public abstract DataSource getDataSource();
 

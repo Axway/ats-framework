@@ -1,4 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -10,7 +11,7 @@
     <artifactId>ats-agent-webapp-tomcatcontainer</artifactId>
     <packaging>war</packaging>
     <name>ATS-Agent-WebApp-TomcatContainer</name>
-    
+
     <build>
         <plugins>
             <plugin> <!-- extract WSDL from ats-agent-webapp-server -->
@@ -78,10 +79,10 @@
         </dependency>
         <!-- Needed for jTDS -->
         <dependency>
-			<groupId>org.apache.commons</groupId>
-			<artifactId>commons-dbcp2</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-dbcp2</artifactId>
             <version>${apache.commons-dbcp.version}</version>
-		</dependency>
+        </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
@@ -99,12 +100,12 @@
             <artifactId>jtds</artifactId>
             <version>${net.sourceforge.jtds.version}</version>
         </dependency>
-        
+
         <dependency>
-			<groupId>org.postgresql</groupId>
-			<artifactId>postgresql</artifactId>
-			<version>${org.postgresql.postgresql.version}</version>
-		</dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${org.postgresql.postgresql.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>com.axway.ats.framework.agent</groupId>
@@ -181,52 +182,63 @@
             <artifactId>log4j</artifactId>
             <scope>provided</scope>
         </dependency>
-        
-        <dependency>
-        	<groupId>org.glassfish.pfl</groupId>
-        	<artifactId>pfl-basic</artifactId>
-        	<version>4.0.1</version> <!-- TODO expose for both jboss and tomcat -->
+
+        <dependency> <!-- Needed for jaxws-rt -->
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-basic</artifactId>
+            <version>4.0.1</version>
         </dependency>
-        
-        <!-- dependency for working with external processes -->
-		<dependency>
-			<groupId>com.axway.ats.expectj</groupId>
-			<artifactId>ats-expectj</artifactId>
-			<version>${ats-expectj.version}</version>
-		</dependency>
-        
-		<!-- REST dependencies -->
-		<dependency>
-			<groupId>javax.ws.rs</groupId>
-			<artifactId>javax.ws.rs-api</artifactId>
-			<version>${javax.ws.rs-api.version}</version>
-			<!-- <scope>provided</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.containers</groupId>
-			<artifactId>jersey-container-servlet</artifactId>
-			<version>${org.glassfish.jersey.jersey-server.version}</version>
-			<!-- <scope>provided</scope> -->
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.core</groupId>
-			<artifactId>jersey-server</artifactId>
-			<version>${org.glassfish.jersey.jersey-server.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.glassfish.jersey.media</groupId>
-			<artifactId>jersey-media-moxy</artifactId>
-			<version>${org.glassfish.jersey.jersey-server.version}</version>
-		</dependency>
-		<dependency>
+
+        <!-- Dependency for working with external processes -->
+        <dependency>
+            <groupId>com.axway.ats.expectj</groupId>
+            <artifactId>ats-expectj</artifactId>
+            <version>${ats-expectj.version}</version>
+            <exclusions>
+                <exclusion> <!-- older JSch version -->
+                    <groupId>com.jcraft</groupId>
+                    <artifactId>jsch</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency> <!-- Newer version of dependency needed for ExpectJ -->
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>${com.jcraft.jsch.version}</version>
+        </dependency>
+
+        <!-- REST dependencies -->
+        <dependency>
+            <groupId>javax.ws.rs</groupId>
+            <artifactId>javax.ws.rs-api</artifactId>
+            <version>${javax.ws.rs-api.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
+            <version>${org.glassfish.jersey.jersey-server.version}</version>
+            <!-- <scope>provided</scope> -->
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${org.glassfish.jersey.jersey-server.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+            <version>${org.glassfish.jersey.jersey-server.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.microsoft.sqlserver</groupId>
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
-		<!-- this dependency is required after jersey 2.26 -->
-		<!-- <dependency>
-			<groupId>org.glassfish.jersey.inject</groupId>
-			<artifactId>jersey-hk2</artifactId>
-			<version>${org.glassfish.jersey.inject.version}</version>
-		</dependency> -->
+        <!-- this dependency is required after jersey 2.26 -->
+        <!-- <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${org.glassfish.jersey.inject.version}</version>
+        </dependency> -->
     </dependencies>
 </project>

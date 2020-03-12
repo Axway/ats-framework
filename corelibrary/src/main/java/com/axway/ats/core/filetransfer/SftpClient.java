@@ -363,7 +363,7 @@ public class SftpClient extends AbstractFileTransferClient {
                                       String remoteFile ) throws FileTransferException {
 
         checkConnected( "file upload" );
-        
+
         FileInputStream fis = null;
 
         try {

@@ -19,7 +19,7 @@ package com.axway.ats.common.dbaccess;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
- * Constants used when initializing connection to a Casssadra database
+ * Constants used when initializing connection to a Cassandra database
  */
 @PublicAtsApi
 public class CassandraKeys extends DbKeys {
