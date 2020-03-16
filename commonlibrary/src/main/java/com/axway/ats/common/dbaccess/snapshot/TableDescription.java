@@ -19,15 +19,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
@@ -517,15 +510,16 @@ public class TableDescription {
 
     /**
      * Compare DB table indexes by attributes
-     * @param thisIndex full string representation of an table index from the first snapshot
-     * @param thatIndex full string representation of an table index from the second snapshot
+     * @param thisIndexProps properties of this index
+     * @param thisIndexUid ID of this index
+     * @param thatIndexProps properties of that index
+     * @param thatIndexUid ID of that index
      * @return <strong>true</strong> if indexes are the same, <strong>false</strong> otherwise
      * */
     private boolean checkIndexesByAttributes( Properties thisIndexProps, String thisIndexUid, Properties thatIndexProps,
                                               String thatIndexUid ) {
 
         try {
-
             // remove the indexes' names since they were already checked via IndexNameMatcher
             thisIndexProps.remove("INDEX_NAME");
             thisIndexProps.remove("index_name");
@@ -573,12 +567,25 @@ public class TableDescription {
     private boolean compareIndexProperties( Properties thisIndexProps, Properties thatIndexProps ) {
 
         StringWriter sw1 = new StringWriter();
-        thisIndexProps.list(new PrintWriter(sw1));
+        propertiesList(thisIndexProps, new PrintWriter(sw1));
 
         StringWriter sw2 = new StringWriter();
-        thatIndexProps.list(new PrintWriter(sw2));
+        propertiesList(thatIndexProps, new PrintWriter(sw2));
 
         return sw1.toString().equals(sw2.toString());
+    }
+
+    /**
+     * List properties without cutting values as in Properties.list()
+     */
+    private void propertiesList(Properties props, PrintWriter out) {
+        out.println("-- listing properties --");
+        // no new copy as in Properties.list()
+        for (Enumeration<Object> e = props.keys() ; e.hasMoreElements() ;) {
+            Object key = e.nextElement();
+            Object val = props.get(key);
+            out.println(key + "=" + val);
+        }
     }
 
     @Override
