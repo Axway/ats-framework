@@ -16,6 +16,7 @@
 package com.axway.ats.harness.config;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.utils.HostUtils;
 
 /**
  * A test box 
@@ -29,9 +30,6 @@ public class TestBox extends Box {
      * Constant for specifying that DB port is not set
      */
     public final static int   DB_PORT_NOT_SPECIFIED = 0;
-
-    private final static int  LOWEST_PORT_NUMBER    = 0;
-    private final static int  HIGHEST_PORT_NUMBER   = 64 * 1024;
 
     private String            host;
     /**
@@ -87,15 +85,15 @@ public class TestBox extends Box {
 
         verifyNotNullNorEmptyParameter("dbPort", dbPortStr);
         int dbPortInt = DB_PORT_NOT_SPECIFIED;
-        final String errMsg = "'. Expected number within range [" + LOWEST_PORT_NUMBER + ","
-                              + HIGHEST_PORT_NUMBER + "]";
+        final String errMsg = "'. Expected number within range [" + HostUtils.LOWEST_PORT_NUMBER + ","
+                              + HostUtils.HIGHEST_PORT_NUMBER + "]";
         try {
             dbPortStr = dbPortStr.trim();
             dbPortInt = Integer.parseInt(dbPortStr);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Illegal value for DB port specified: '" + dbPortStr + errMsg);
         }
-        if (dbPortInt < LOWEST_PORT_NUMBER || dbPortInt > HIGHEST_PORT_NUMBER) {
+        if (dbPortInt < HostUtils.LOWEST_PORT_NUMBER || dbPortInt > HostUtils.HIGHEST_PORT_NUMBER) {
             throw new IllegalArgumentException("Illegal number for DB port specified: '" + dbPortInt
                                                + errMsg);
         }
