@@ -172,6 +172,7 @@ public class Test_FileSystemOperations extends BaseTest {
         // setup expectations
         expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
         remoteFSOperationsMock.copyFile(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true);
+        remoteFSOperationsMock.setCopyInPassiveMode(false);
 
         replayAll();
 
