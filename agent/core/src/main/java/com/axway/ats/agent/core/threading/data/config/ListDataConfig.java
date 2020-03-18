@@ -111,14 +111,26 @@ public class ListDataConfig extends AbstractParameterDataConfig {
                                                + " agents! Decrease number of loaders or increase the possible values.");
         } else {
 
+            int lastEndIdx = -1;
             for (int i = 0; i < agents; i++) {
-                int startIndex = i * distributionValues[i];
+                int startIndex = -1;
+                int endIndex = -1;
+
+                if (lastEndIdx == -1) {
+                    startIndex = i;
+                } else {
+                    startIndex = lastEndIdx;
+                }
+
+                endIndex = startIndex + distributionValues[i];
+
                 // if we do not create a new instance of ArrayList here,
                 // the subList method returns a RandomAccessSublist which is not serializable
                 distributedParameterProviders.add(new ListDataConfig(this.parameterName,
                                                                      new ArrayList<Object>(values.subList(startIndex,
-                                                                                                          startIndex + distributionValues[i])),
+                                                                                                          endIndex)),
                                                                      this.parameterProviderLevel));
+                lastEndIdx = endIndex; // save the current end index
             }
         }
         return distributedParameterProviders;
