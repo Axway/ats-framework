@@ -160,7 +160,7 @@ agent_start_in_container() {
         fi
 
         JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
-        if [[ "$JAVA_VERSION" = "1.7"* ]] || [[ "$JAVA_VERSION" = "1.8"* ]]; then
+        if [ "$JAVA_VERSION" = "1.7"* ] || [ "$JAVA_VERSION" = "1.8"* ]; then
             # Java 7 or 8 - use endorsed dir
             $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
             $JMX_OPTIONS \
