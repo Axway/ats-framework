@@ -222,6 +222,7 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Nexus Staging plugin marker start -->
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -233,6 +234,7 @@
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
+            <!-- Nexus Staging plugin marker end -->
             <!-- Used only when deploying new release version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
