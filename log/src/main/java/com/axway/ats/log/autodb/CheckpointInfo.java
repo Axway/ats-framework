@@ -22,17 +22,14 @@ public class CheckpointInfo {
 
     private String name;                // checkpoint name
     private int    checkpointSummaryId; // id from the checkpoint summary table
-    private int    checkpointId;        // id from the checkpoint details table
+    private long   checkpointId;        // id from the checkpoint details table
     private long   startTimestamp;      // the checkpoint start time
 
     public CheckpointInfo() {
 
     }
 
-    public CheckpointInfo( String name,
-                           int checkpointSummaryId,
-                           int checkpointId,
-                           long startTimestamp ) {
+    public CheckpointInfo( String name, int checkpointSummaryId, long checkpointId, long startTimestamp ) {
 
         this.name = name;
         this.checkpointSummaryId = checkpointSummaryId;
@@ -50,7 +47,7 @@ public class CheckpointInfo {
         return checkpointSummaryId;
     }
 
-    public int getCheckpointId() {
+    public long getCheckpointId() {
 
         return checkpointId;
     }
@@ -66,7 +63,7 @@ public class CheckpointInfo {
     }
 
     /**
-     * Hash code and equals currently only look for name property as this is the 
+     * Hash code and equals currently only look for name property as this is the
      * important key for the set of each thread's running checkpoints.
      */
     @Override
@@ -78,12 +75,11 @@ public class CheckpointInfo {
     }
 
     /**
-     * Hash code and equals currently only look for name property as this is the 
+     * Hash code and equals currently only look for name property as this is the
      * important key for the set of each thread's running checkpoints.
      */
     @Override
-    public boolean equals(
-                           Object obj ) {
+    public boolean equals( Object obj ) {
 
         if (this == obj)
             return true;

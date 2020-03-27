@@ -19,7 +19,7 @@ public class Checkpoint extends DbEntity {
 
     private static final long serialVersionUID = 1L;
 
-    public int                checkpointId;
+    public long               checkpointId;
     public String             name;
 
     public int                responseTime;

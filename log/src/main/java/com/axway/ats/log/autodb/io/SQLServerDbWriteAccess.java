@@ -22,6 +22,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -126,7 +127,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                          String hostName,
                          boolean closeConnection ) throws DatabaseAccessException {
 
-        final String errMsg = "Unable to insert run with name " + runName;
+        String procedureName = "sp_start_run";
+        List<Object> argValues = new ArrayList<Object>();
+
+        final String errMsg = "Unable to insert run with name " + runName + " using the following statement: "
+                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
 
         timestamp = inUTC(timestamp);
 
@@ -1151,7 +1156,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             callableStatement.setInt(3, checkpointLogLevel.toInt());
             callableStatement.setString(4, transferUnit);
             callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
-            callableStatement.registerOutParameter(indexCheckpointId, Types.INTEGER);
+            callableStatement.registerOutParameter(indexCheckpointId, Types.BIGINT);
 
             callableStatement.execute();
 
@@ -1162,12 +1167,12 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             // we update the checkpoint table only in FULL mode
             if (checkpointLogLevel == CheckpointLogLevel.FULL
-                && callableStatement.getInt(indexCheckpointId) == 0) {
+                && callableStatement.getLong(indexCheckpointId) == 0) {
                 throw new DatabaseAccessException(errMsg + " - checkpoint ID returned was 0");
             }
 
             int checkpointSummaryId = callableStatement.getInt(indexCheckpointSummaryId);
-            int checkpointId = callableStatement.getInt(indexCheckpointId);
+            long checkpointId = callableStatement.getLong(indexCheckpointId);
 
             return new CheckpointInfo(name, checkpointSummaryId, checkpointId, startTimestamp);
 
@@ -1204,7 +1209,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             callableStatement = connection.prepareCall("{ call sp_end_checkpoint(?, ?, ?, ?, ?, ?, ?, ?) }");
             callableStatement.setInt(1, runningCheckpointInfo.getCheckpointSummaryId());
-            callableStatement.setInt(2, runningCheckpointInfo.getCheckpointId());
+            callableStatement.setLong(2, runningCheckpointInfo.getCheckpointId());
             callableStatement.setInt(3, responseTime >= 0
                                                           ? responseTime
                                                           : 0);
@@ -1766,6 +1771,11 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
     }
 
+    public void setSkipUTCConversion( boolean skip ) {
+
+        this.skipUTCConversion = skip;
+    }
+
     /**
      * @return the current connection object
      * @throws DatabaseAccessException
@@ -1807,9 +1817,25 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         return timestamp;
     }
 
-    public void setSkipUTCConversion( boolean skip ) {
+    private String constructStoredProcedureArgumentsMap( String procedureName, List<Object> arguments ) {
 
-        this.skipUTCConversion = skip;
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(procedureName + "(");
+
+        for (Object arg : arguments) {
+            if (arg instanceof String || arg instanceof CharSequence || arg instanceof Character) {
+                sb.append("'" + arg + "'").append(", ");
+            } else {
+                sb.append(arg);
+            }
+        }
+
+        sb.setLength(sb.length() - 1); // remove trailing comma
+
+        sb.append(")");
+
+        return sb.toString();
     }
 
     /**

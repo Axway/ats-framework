@@ -1462,7 +1462,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
             while (rs.next()) {
 
                 Checkpoint checkpoint = new Checkpoint();
-                checkpoint.checkpointId = rs.getInt("checkpointId");
+                checkpoint.checkpointId = rs.getLong("checkpointId");
                 checkpoint.name = checkpointName;
                 checkpoint.responseTime = rs.getInt("responseTime");
                 checkpoint.transferRate = rs.getFloat("transferRate");

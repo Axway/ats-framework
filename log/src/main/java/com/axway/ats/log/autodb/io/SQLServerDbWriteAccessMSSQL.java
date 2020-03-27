@@ -463,7 +463,7 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                     sis = new ByteArrayInputStream(sb.toString().getBytes());
 
                     fileRecord = new SQLServerBulkCSVFileRecord(sis, null, ",", false);
-                    fileRecord.addColumnMetadata(1, null, java.sql.Types.INTEGER, 0, 0); // checkpointId
+                    fileRecord.addColumnMetadata(1, null, java.sql.Types.BIGINT, 0, 0); // checkpointId
                     fileRecord.addColumnMetadata(2, null, java.sql.Types.INTEGER, 0, 0); // checkpointSummaryId
                     fileRecord.addColumnMetadata(3, null, java.sql.Types.VARCHAR, 0, 0); // name
                     fileRecord.addColumnMetadata(4, null, java.sql.Types.INTEGER, 0, 0); // responseTime

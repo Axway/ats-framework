@@ -93,7 +93,7 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
             while (rs.next()) {
 
                 Checkpoint checkpoint = new Checkpoint();
-                checkpoint.checkpointId = rs.getInt("checkpointId");
+                checkpoint.checkpointId = rs.getLong("checkpointId");
                 checkpoint.name = checkpointName;
                 checkpoint.responseTime = rs.getInt("responseTime");
                 checkpoint.transferRate = rs.getFloat("transferRate");

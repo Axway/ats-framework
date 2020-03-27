@@ -27,7 +27,7 @@ public class Statistic extends DbEntity {
     // name for container combining statistics from different action queues
     public static final String COMBINED_STATISTICS_CONTAINER = "ALL QUEUES";
 
-    public int                 statisticTypeId;
+    public long                statisticTypeId;
 
     public String              name;
     public String              parentName;

@@ -327,7 +327,7 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             callableStatement.setInt(3, checkpointLogLevel.toInt());
             callableStatement.setString(4, transferRateUnit);
             callableStatement.registerOutParameter(indexCheckpointSummaryId, Types.INTEGER);
-            callableStatement.registerOutParameter(indexCheckpointId, Types.INTEGER);
+            callableStatement.registerOutParameter(indexCheckpointId, Types.BIGINT);
 
             callableStatement.execute();
 
@@ -342,7 +342,7 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             }
 
             int checkpointSummaryId = callableStatement.getInt(indexCheckpointSummaryId);
-            int checkpointId = callableStatement.getInt(indexCheckpointId);
+            long checkpointId = callableStatement.getLong(indexCheckpointId);
 
             return new CheckpointInfo(name, checkpointSummaryId, checkpointId, startTimestamp);
 
