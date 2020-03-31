@@ -127,17 +127,13 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                          String hostName,
                          boolean closeConnection ) throws DatabaseAccessException {
 
-        String procedureName = "sp_start_run";
-        List<Object> argValues = new ArrayList<Object>();
-
-        final String errMsg = "Unable to insert run with name " + runName + " using the following statement: "
-                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
-
         timestamp = inUTC(timestamp);
 
         // then start the run
         final int indexRowsInserted = 8;
         final int indexRunId = 9;
+
+        String errMsg = "Unable to insert run with name " + runName;
 
         CallableStatement callableStatement = null;
         try {
@@ -159,7 +155,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
                 // check if the run ID is correct
                 if (callableStatement.getInt(indexRunId) == 0) {
-                    throw new DatabaseAccessException(errMsg + " - run ID returned was 0");
+                    throw new DatabaseAccessException(errMsg
+                                                      + " - run ID returned was 0");
                 }
             } else {
                 throw new DatabaseAccessException(errMsg);
@@ -169,6 +166,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             return callableStatement.getInt(indexRunId);
 
         } catch (Exception e) {
+            String procedureName = "sp_start_run";
+            List<Object> argValues = new ArrayList<Object>();
+            argValues.add(procedureName);
+            argValues.add(versionName);
+            argValues.add(buildName);
+            argValues.add(runName);
+            argValues.add(osName);
+            argValues.add(timestamp);
+            argValues.add(hostName);
+
+            errMsg += " using the following statement: "
+                      + constructStoredProcedureArgumentsMap(procedureName, argValues);
             throw new DatabaseAccessException(errMsg, e);
         } finally {
             if (closeConnection) {
@@ -907,7 +916,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
         } else {
             // execute this event now
-            final String errMsg = "Unable to insert testcase message '" + message + "'";
+            String errMsg = "Unable to insert testcase message '" + message + "'";
 
             try {
                 insertMessageStatement.execute();
@@ -916,6 +925,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                     throw new DatabaseAccessException(errMsg);
                 }
             } catch (SQLException e) {
+                String procedureName = "sp_insert_message";
+                List<Object> argValues = new ArrayList<Object>();
+                argValues.add(testCaseId);
+                argValues.add(level);
+                argValues.add(message);
+                argValues.add(escapeHtml);
+                argValues.add(machineName);
+                argValues.add(threadName);
+                argValues.add(timestamp);
+
+                errMsg += " using the following statement: "
+                          + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
                 if (closeConnection) {
@@ -970,7 +991,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 return dbEventsCache.addInsertRunMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
-                final String errMsg = "Unable to insert run message '" + message + "'";
+                String errMsg = "Unable to insert run message '" + message + "'";
 
                 try {
                     insertMessageStatement.execute();
@@ -978,6 +999,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                         throw new DatabaseAccessException(errMsg);
                     }
                 } catch (SQLException e) {
+                    String procedureName = "sp_insert_run_message";
+                    List<Object> argValues = new ArrayList<Object>();
+                    argValues.add(runId);
+                    argValues.add(level);
+                    argValues.add(message);
+                    argValues.add(escapeHtml);
+                    argValues.add(machineName);
+                    argValues.add(threadName);
+                    argValues.add(timestamp);
+
+                    errMsg += " using the following statement: "
+                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
                     if (closeConnection) {
@@ -1033,7 +1066,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 return dbEventsCache.addInsertSuiteMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
-                final String errMsg = "Unable to insert suite message '" + message + "'";
+                String errMsg = "Unable to insert suite message '" + message + "'";
 
                 try {
                     insertMessageStatement.execute();
@@ -1041,6 +1074,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                         throw new DatabaseAccessException(errMsg);
                     }
                 } catch (SQLException e) {
+                    String procedureName = "sp_insert_suite_message";
+                    List<Object> argValues = new ArrayList<Object>();
+                    argValues.add(suiteId);
+                    argValues.add(level);
+                    argValues.add(message);
+                    argValues.add(escapeHtml);
+                    argValues.add(machineName);
+                    argValues.add(threadName);
+                    argValues.add(timestamp);
+
+                    errMsg += " using the following statement: "
+                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
                     if (closeConnection) {
@@ -1089,7 +1134,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
         } else {
             // execute this event now
-            final String errMsg = "Unable to insert checkpoint '" + name + "'";
+            String errMsg = "Unable to insert checkpoint '" + name + "'";
             // final int indexRowsInserted = 8;
 
             try {
@@ -1099,6 +1144,19 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 // throw new DatabaseAccessException( errMsg );
                 // }
             } catch (SQLException e) {
+                String procedureName = "sp_insert_checkpoint";
+                List<Object> argValues = new ArrayList<Object>();
+                argValues.add(loadQueueId);
+                argValues.add(name);
+                argValues.add(responseTime);
+                argValues.add(startTimestamp + responseTime);
+                argValues.add(transferSize);
+                argValues.add(transferUnit);
+                argValues.add(result);
+                argValues.add(checkpointLogLevel.toInt());
+
+                errMsg += " using the following statement: "
+                          + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
                 if (closeConnection) {
@@ -1817,21 +1875,23 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         return timestamp;
     }
 
-    private String constructStoredProcedureArgumentsMap( String procedureName, List<Object> arguments ) {
+    protected String constructStoredProcedureArgumentsMap( String procedureName, List<Object> arguments ) {
 
         StringBuilder sb = new StringBuilder();
 
         sb.append(procedureName + "(");
 
-        for (Object arg : arguments) {
-            if (arg instanceof String || arg instanceof CharSequence || arg instanceof Character) {
-                sb.append("'" + arg + "'").append(", ");
-            } else {
-                sb.append(arg);
+        if (arguments != null && arguments.size() > 0) {
+            for (Object arg : arguments) {
+                if (arg instanceof String || arg instanceof CharSequence || arg instanceof Character) {
+                    sb.append("'" + arg + "'").append(", ");
+                } else {
+                    sb.append(arg);
+                }
             }
-        }
 
-        sb.setLength(sb.length() - 1); // remove trailing comma
+            sb.setLength(sb.length() - 1); // remove trailing comma
+        }
 
         sb.append(")");
 
@@ -2493,8 +2553,8 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 theStatement.setLong(5, transferSize);
                 theStatement.setString(6, transferUnit);
                 theStatement.setInt(7, result);
-                theStatement.setInt(8, checkpointLogLevel.toInt());
 
+                theStatement.setInt(8, checkpointLogLevel.toInt());
                 return theStatement;
             } catch (Exception e) {
                 throw new DatabaseAccessException("Unable to set parameters for inserting a checkpoint '"

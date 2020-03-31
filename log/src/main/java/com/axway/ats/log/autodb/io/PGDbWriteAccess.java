@@ -22,6 +22,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
@@ -177,11 +179,23 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
         } else {
             // execute this event now
-            final String errMsg = "Unable to insert testcase message '" + message + "'";
+            String errMsg = "Unable to insert testcase message '" + message + "'";
 
             try {
                 insertMessageStatement.execute();
             } catch (SQLException e) {
+                String procedureName = "sp_insert_message";
+                List<Object> argValues = new ArrayList<Object>();
+                argValues.add(testCaseId);
+                argValues.add(level);
+                argValues.add(message);
+                argValues.add(escapeHtml);
+                argValues.add(machineName);
+                argValues.add(threadName);
+                argValues.add(timestamp);
+
+                errMsg += " using the following statement: "
+                          + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
                 if (closeConnection) {
@@ -232,11 +246,23 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                 return dbEventsCache.addInsertRunMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
-                final String errMsg = "Unable to insert run message '" + message + "'";
+                String errMsg = "Unable to insert run message '" + message + "'";
 
                 try {
                     insertMessageStatement.execute();
                 } catch (SQLException e) {
+                    String procedureName = "sp_insert_run_message";
+                    List<Object> argValues = new ArrayList<Object>();
+                    argValues.add(runId);
+                    argValues.add(level);
+                    argValues.add(message);
+                    argValues.add(escapeHtml);
+                    argValues.add(machineName);
+                    argValues.add(threadName);
+                    argValues.add(timestamp);
+
+                    errMsg += " using the following statement: "
+                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
                     if (closeConnection) {
@@ -288,11 +314,23 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                 return dbEventsCache.addInsertSuiteMessageEventToBatch(insertMessageStatement);
             } else {
                 // execute this event now
-                final String errMsg = "Unable to insert suite message '" + message + "'";
+                String errMsg = "Unable to insert suite message '" + message + "'";
 
                 try {
                     insertMessageStatement.execute();
                 } catch (SQLException e) {
+                    String procedureName = "sp_insert_suite_message";
+                    List<Object> argValues = new ArrayList<Object>();
+                    argValues.add(suiteId);
+                    argValues.add(level);
+                    argValues.add(message);
+                    argValues.add(escapeHtml);
+                    argValues.add(machineName);
+                    argValues.add(threadName);
+                    argValues.add(timestamp);
+
+                    errMsg += " using the following statement: "
+                              + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
                     if (closeConnection) {
@@ -383,10 +421,23 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             return dbEventsCache.addInsertCheckpointEventToBatch(insertCheckpointStatement);
         } else {
             // execute this event now
-            final String errMsg = "Unable to insert checkpoint '" + name + "'";
+            String errMsg = "Unable to insert checkpoint '" + name + "'";
             try {
                 insertCheckpointStatement.execute();
             } catch (SQLException e) {
+                String procedureName = "sp_insert_checkpoint";
+                List<Object> argValues = new ArrayList<Object>();
+                argValues.add(loadQueueId);
+                argValues.add(name);
+                argValues.add(responseTime);
+                argValues.add(startTimestamp + responseTime);
+                argValues.add(transferSize);
+                argValues.add(transferUnit);
+                argValues.add(result);
+                argValues.add(checkpointLogLevel.toInt());
+
+                errMsg += " using the following statement: "
+                          + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
                 if (closeConnection) {
