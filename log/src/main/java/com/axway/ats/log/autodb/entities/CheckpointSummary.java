@@ -29,11 +29,11 @@ public class CheckpointSummary extends DbEntity {
     public int                numFailed;
 
     public int                minResponseTime;
-    public float              avgResponseTime;
+    public double             avgResponseTime;
     public int                maxResponseTime;
 
-    public float              minTransferRate;
-    public float              avgTransferRate;
-    public float              maxTransferRate;
+    public double             minTransferRate;
+    public double             avgTransferRate;
+    public double             maxTransferRate;
     public String             transferRateUnit;
 }

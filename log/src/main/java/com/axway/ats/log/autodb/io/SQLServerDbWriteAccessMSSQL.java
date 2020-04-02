@@ -381,8 +381,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
         }
 
         private void doUpdateCheckpointSummary( int checkpointSummaryId, int numRunning, int numPassed, int numFailed,
-                                                int minResponseTime, float avgResponseTime, int maxResponseTime,
-                                                float minTransferRate, float avgTransferRate, float maxTransferRate,
+                                                int minResponseTime, double avgResponseTime, int maxResponseTime,
+                                                double minTransferRate, double avgTransferRate, double maxTransferRate,
                                                 boolean closeConnection ) throws DatabaseAccessException {
 
             CallableStatement statement = null;
@@ -394,10 +394,10 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 statement.setInt(4, numRunning);
                 statement.setInt(5, minResponseTime);
                 statement.setInt(6, maxResponseTime);
-                statement.setFloat(7, avgResponseTime);
-                statement.setFloat(8, minTransferRate);
-                statement.setFloat(9, maxTransferRate);
-                statement.setFloat(10, avgTransferRate);
+                statement.setDouble(7, avgResponseTime);
+                statement.setDouble(8, minTransferRate);
+                statement.setDouble(9, maxTransferRate);
+                statement.setDouble(10, avgTransferRate);
                 statement.execute();
             } catch (Exception e) {
                 throw new DatabaseAccessException("Could not update checkpoint summary " + checkpointSummaryId, e);

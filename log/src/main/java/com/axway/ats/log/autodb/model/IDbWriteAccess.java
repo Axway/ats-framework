@@ -172,9 +172,9 @@ public interface IDbWriteAccess {
 
                                          int numRunning, int numPassed, int numFailed,
 
-                                         int minResponseTime, float avgResponseTime, int maxResponseTime,
+                                         int minResponseTime, double avgResponseTime, int maxResponseTime,
 
-                                         float minTransferRate, float avgTransferRate, float maxTransferRate,
+                                         double minTransferRate, double avgTransferRate, double maxTransferRate,
                                          String transferRateUnit, int loadQueueId,
                                          boolean closeConnection ) throws DatabaseAccessException;
 

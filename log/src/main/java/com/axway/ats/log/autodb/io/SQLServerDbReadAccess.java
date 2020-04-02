@@ -1402,15 +1402,15 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                 if (checkpointSummary.minResponseTime == Integer.MAX_VALUE) {
                     checkpointSummary.minResponseTime = 0;
                 }
-                checkpointSummary.avgResponseTime = rs.getFloat("avgResponseTime");
+                checkpointSummary.avgResponseTime = rs.getDouble("avgResponseTime");
                 checkpointSummary.maxResponseTime = rs.getInt("maxResponseTime");
 
-                checkpointSummary.minTransferRate = rs.getFloat("minTransferRate");
+                checkpointSummary.minTransferRate = rs.getDouble("minTransferRate");
                 if (checkpointSummary.minTransferRate == Integer.MAX_VALUE) {
                     checkpointSummary.minTransferRate = 0.0F;
                 }
-                checkpointSummary.avgTransferRate = rs.getFloat("avgTransferRate");
-                checkpointSummary.maxTransferRate = rs.getFloat("maxTransferRate");
+                checkpointSummary.avgTransferRate = rs.getDouble("avgTransferRate");
+                checkpointSummary.maxTransferRate = rs.getDouble("maxTransferRate");
                 checkpointSummary.transferRateUnit = rs.getString("transferRateUnit");
 
                 checkpoints.add(checkpointSummary);

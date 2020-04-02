@@ -1300,12 +1300,12 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                          int numFailed,
 
                                          int minResponseTime,
-                                         float avgResponseTime,
+                                         double avgResponseTime,
                                          int maxResponseTime,
 
-                                         float minTransferRate,
-                                         float avgTransferRate,
-                                         float maxTransferRate,
+                                         double minTransferRate,
+                                         double avgTransferRate,
+                                         double maxTransferRate,
                                          String transferRateUnit,
                                          int loadQueueId,
                                          boolean closeConnection ) throws DatabaseAccessException {
@@ -1327,12 +1327,12 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             preparedStatement.setInt(4, numFailed);
 
             preparedStatement.setInt(5, minResponseTime);
-            preparedStatement.setFloat(6, avgResponseTime);
+            preparedStatement.setDouble(6, avgResponseTime);
             preparedStatement.setInt(7, maxResponseTime);
 
-            preparedStatement.setFloat(8, minTransferRate);
-            preparedStatement.setFloat(9, avgTransferRate);
-            preparedStatement.setFloat(10, maxTransferRate);
+            preparedStatement.setDouble(8, minTransferRate);
+            preparedStatement.setDouble(9, avgTransferRate);
+            preparedStatement.setDouble(10, maxTransferRate);
 
             preparedStatement.setString(11, transferRateUnit);
 
