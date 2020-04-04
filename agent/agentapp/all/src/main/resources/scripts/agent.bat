@@ -25,9 +25,6 @@
 @SET DEBUG=0
 @SET DEBUG_PORT=8000
 @SET DEBUG_OPTIONS=
-@if %DEBUG% EQU 1 (
-    SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=%DEBUG_PORT%,suspend=n
-)
 
 :: enable monitoring the number of pending log events (true/false)
 @SET MONITOR_EVENTS_QUEUE=false
@@ -126,8 +123,8 @@ if "!STATUS_TEXT!"=="AtsAgent is running" (
 :: listening on this port, but there is no PID file or running agent
 call :checkIsPortBusy isPortBusy
 if "!isPortBusy!"=="YES" (
-	echo Port %PORT% is used by already started agent or another process ^^! 
-	GOTO:EOF
+    echo Port %PORT% is used by already started agent or another process ^^!
+    GOTO:EOF
 )
 
 TITLE %TITLE%
@@ -136,42 +133,53 @@ rem check java version
 !JAVA_EXEC! -version > java.version 2>&1
 
 for /f "delims=" %%l in (java.version) do (
-	set line=%%l
-	goto next_java_version_check
+    set line=%%l
+    goto next_java_version_check
 )
 
 :next_java_version_check
 echo %line% | FINDSTR /r 1\.[7-8]
 
 IF %ERRORLEVEL%==0 (
-	set java_version=8
+    set java_version=8
 ) ELSE (
-	set java_version=11
+    set java_version=11
 )
 
 IF %java_version%==11 (
+    :: Java 9 or newer
 
-	!JAVA_EXEC! -showversion ^
-	-Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" ^
-	%JMX_OPTIONS% ^
-	-Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
-	-Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
-	-Dlogging.severity="%LOGGING_SEVERITY%" ^
-	-Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
-	%JAVA_OPTS% %DEBUG_OPTIONS% ^
-	-jar ats-agent/ats-agent-standalone-containerstarter.jar
+    :: Enable REMOTE debugging. By deault Java 9+ debugging is enabled only on localhost
+    @if %DEBUG% EQU 1 (
+        SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=*:%DEBUG_PORT%,suspend=n
+    )
+
+    !JAVA_EXEC! -showversion ^
+    -Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" ^
+    %JMX_OPTIONS% ^
+    -Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
+    -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
+    -Dlogging.severity="%LOGGING_SEVERITY%" ^
+    -Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
+    %JAVA_OPTS% %DEBUG_OPTIONS% ^
+    -jar ats-agent/ats-agent-standalone-containerstarter.jar
 
 ) else (
+    :: Java <= 8
 
-	!JAVA_EXEC! -showversion ^
-	-Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
-	%JMX_OPTIONS% ^
-	-Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
-	-Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
-	-Dlogging.severity="%LOGGING_SEVERITY%" ^
-	-Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
-	%JAVA_OPTS% %DEBUG_OPTIONS% ^
-	-jar ats-agent/ats-agent-standalone-containerstarter.jar
+    @if %DEBUG% EQU 1 (
+        SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=%DEBUG_PORT%,suspend=n
+    )
+
+    !JAVA_EXEC! -showversion ^
+    -Dats.agent.default.port=!PORT! -Dats.agent.home="%AGENT_HOME:\=/%" -Djava.endorsed.dirs=ats-agent/endorsed ^
+    %JMX_OPTIONS% ^
+    -Dats.log.monitor.events.queue=%MONITOR_EVENTS_QUEUE% ^
+    -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
+    -Dlogging.severity="%LOGGING_SEVERITY%" ^
+    -Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
+    %JAVA_OPTS% %DEBUG_OPTIONS% ^
+    -jar ats-agent/ats-agent-standalone-containerstarter.jar
 )
 
 GOTO:EOF
@@ -226,9 +234,9 @@ GOTO:EOF
 :: check if there is started process on this port and is listening
 SETLOCAL ENABLEEXTENSIONS
 for /f "tokens=*" %%i in ('netstat -ano ^| findstr %PORT% ^| findstr "LISTENING"') do ( 
-	if [%%i] neq [] (
-		endlocal&set %1=YES&goto :eof 
-	)
+    if [%%i] neq [] (
+        endlocal&set %1=YES&goto :eof
+    )
 )
 endlocal&set %1=NO&goto :eof
 
@@ -302,11 +310,11 @@ if !PID! neq "" (
         REM pass this line
         call :checkIfStarted %%a
         if !agentStartedResult!=="YES" (
-			call :checkIsPortBusy isPortBusy
-			if "!isPortBusy!"=="YES" (
-				endlocal&set %1=AtsAgent is running&goto :eof
-				GOTO:EOF
-			)
+            call :checkIsPortBusy isPortBusy
+            if "!isPortBusy!"=="YES" (
+                endlocal&set %1=AtsAgent is running&goto :eof
+                GOTO:EOF
+            )
         ) 
     )
 )

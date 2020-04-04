@@ -19,11 +19,8 @@ MEMORY=256
 # allow remote connections for debug purposes (true/false)
 DEBUG=false
 DEBUG_PORT=8000
+# DEBUG_OPTIONS details are defined later
 DEBUG_OPTIONS=""
-if $DEBUG
-then
-    DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
-fi
 
 # enable monitoring the number of pending log events (true/false)
 MONITOR_EVENTS_QUEUE=false
@@ -109,90 +106,117 @@ done
 
 agent_start() {
 
-        echo "Starting $PROG_NAME ..."
+    echo "Starting $PROG_NAME ..."
 
-        if [ "$(agent_status)" = "$PROG_NAME is running" ]
-        then
-            echo "$PROG_NAME is already started on port $PORT"
-            exit
-        fi
+    if [ "$(agent_status)" = "$PROG_NAME is running" ]
+    then
+        echo "$PROG_NAME is already started on port $PORT"
+        exit
+    fi
 
-        JAVA_VERSION=`$JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}'`
-        if [ "$JAVA_VERSION" = "1.7"* ] || [ "$JAVA_VERSION" = "1.8"* ]; then
-            # Java 7 or 8 - use endorsed dir
-            nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
-            $JMX_OPTIONS \
-            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-            -Dlogging.severity="$LOGGING_SEVERITY" \
-            -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-            $JAVA_OPTS $DEBUG_OPTIONS \
-            -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
-        else
-            # Java 9 or newer
-            nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
-            $JMX_OPTIONS \
-            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-            -Dlogging.severity="$LOGGING_SEVERITY" \
-            -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-              $JAVA_OPTS $DEBUG_OPTIONS \
-            -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
-        fi
+    ENDORSED_OPTIONS=""
+    JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    case "$JAVA_VERSION" in
+        "1.8"*)
+            # Java 8 (lower not supported) - use endorsed dir
+            if $DEBUG
+            then
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
+            fi
+            ENDORSED_OPTIONS=-Djava.endorsed.dirs=ats-agent/endorsed
+            ;;
+        "1."*)
+            echo "Unsupported Java version - $JAVA_VERSION. It looks to be less than 1.8!"
+            exit 5
+            ;;
+        *) # Java 9 or newer
+            if $DEBUG
+            then
+                # Listen on all network interfaces - use "address=*:port" Java 9+ format.
+                # Since Java 9 by default debug session listens on localhost only but this is not usable
+                # as ATS agents by default are remote
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=*:$DEBUG_PORT,suspend=n"
+            fi
+            # No endorsed mechanism
+            ENDORSED_OPTIONS=""
+            ;;
+    esac
 
+    nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+       $ENDORSED_OPTIONS $JMX_OPTIONS \
+       -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+       -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+       -Xms${MEMORY}m -Xmx${MEMORY}m \
+       -Dlogging.severity="$LOGGING_SEVERITY" -Dlogging.pattern="$LOGGING_PATTERN" \
+       $JAVA_OPTS $DEBUG_OPTIONS \
+       -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
 
-        JVM_PID=$!
-        if $DEBUG
-        then
-            echo "started in DEBUG mode on $DEBUG_PORT with PID: $JVM_PID"
-        else
-            echo "started with PID: $JVM_PID"
-        fi
+    JVM_PID=$!
+    if $DEBUG
+    then
+        echo "started in DEBUG mode on $DEBUG_PORT with PID: $JVM_PID"
+    else
+        echo "started with PID: $JVM_PID"
+    fi
 }
 
 agent_start_in_container() {
 
-        echo "Starting $PROG_NAME in container mode ... "
+    echo "Starting $PROG_NAME in container mode ... "
 
-        if [ "$(agent_status)" = "$PROG_NAME is running" ]
-        then
-            echo "$PROG_NAME is already started on port $PORT"
-            exit
-        fi
+    if [ "$(agent_status)" = "$PROG_NAME is running" ]
+    then
+        echo "$PROG_NAME is already started on port $PORT"
+        exit
+    fi
 
-        JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
-        if [[ "$JAVA_VERSION" = "1.7"* ]] || [[ "$JAVA_VERSION" = "1.8"* ]]; then
-            # Java 7 or 8 - use endorsed dir
-            $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
-            $JMX_OPTIONS \
-            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-            -Dlogging.enable.log4j.file=true \
-            -Xms${MEMORY}m -Xmx${MEMORY}m  \
-            $JAVA_OPTS $DEBUG_OPTIONS \
-            -jar ats-agent/ats-agent-standalone-containerstarter.jar
-        else
+    ENDORSED_OPTIONS=""
+    JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    case "$JAVA_VERSION" in
+        "1.8"*)
+            # Java 8 (lower not supported) - use endorsed dir
+            if $DEBUG
+            then
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
+            fi
+            ENDORSED_OPTIONS=-Djava.endorsed.dirs=ats-agent/endorsed
+            ;;
+        "1."*)
+            echo "Unsupported Java version - $JAVA_VERSION! It looks to be less than 1.8."
+            exit 16
+            ;;
+        *)
             # Java 9 or newer
-            $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
-            $JMX_OPTIONS \
-            -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-            -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-            -Dlogging.enable.log4j.file=true \
-            -Xms${MEMORY}m -Xmx${MEMORY}m \
-            $JAVA_OPTS $DEBUG_OPTIONS \
-            -jar ats-agent/ats-agent-standalone-containerstarter.jar
-        fi
+            if $DEBUG
+            then
+                # Listen on all network interfaces - use "address=*:port" Java 9+ format. Since Java 9 by default
+                # debug session listens on localhost only but this is not usable as ATS agents by default are remote
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=*:$DEBUG_PORT,suspend=n"
+            fi
+            # No endorsed mechanism
+            ENDORSED_OPTIONS=""
+            ;;
+    esac
+
+    $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+    $ENDORSED_OPTIONS $JMX_OPTIONS \
+    -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+    -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+    -Xms${MEMORY}m -Xmx${MEMORY}m  \
+    $JAVA_OPTS \
+    $DEBUG_OPTIONS \
+    -Dlogging.enable.log4j.file=true \
+    -jar ats-agent/ats-agent-standalone-containerstarter.jar
 }
 
 agent_stop() {
-
-    if [ -f logs/atsAgent_$PORT.pid ]
+    if [ -f logs/atsAgent_"$PORT".pid ]
     then
-        read JVM_PID < logs/atsAgent_$PORT.pid
+        read JVM_PID < logs/atsAgent_"$PORT".pid
         echo "Stopping $PROG_NAME with PID: $JVM_PID"
         # try to exit gracefully
-        kill $JVM_PID 2>/dev/null
-        rm logs/atsAgent_$PORT.pid
+        kill "$JVM_PID" 2>/dev/null
+        rm logs/atsAgent_"$PORT".pid
     else
         echo "$PROG_NAME seems not running. No such .pid file."
     fi
