@@ -91,4 +91,38 @@ public class ExceptionUtils {
         }
         return resMsg;
     }
+
+    /**
+     * Check if exception contains certain message
+     * @param message the exception message as java.lang.String
+     * @param exception the exception
+     * */
+    public static boolean containsMessage( String message, Exception exception ) {
+
+        return containsMessage(message, exception, true);
+    }
+
+    /**
+     * Check if exception contains certain message
+     * @param message the exception message as java.lang.String
+     * @param exception the exception
+     * @param deepSearch whether to search for the message in the entire stack trace (true) or just the top most exception (false)
+     * */
+    public static boolean containsMessage( String message, Exception exception, boolean deepSearch ) {
+
+        Throwable th = exception;
+        while (th != null) {
+            String errMsg = th.getMessage();
+            if (!StringUtils.isNullOrEmpty(errMsg)) {
+                if (errMsg.contains(message)) {
+                    return true;
+                }
+            }
+            if (!deepSearch) {
+                return false;
+            }
+            th = th.getCause();
+        }
+        return false;
+    }
 }
