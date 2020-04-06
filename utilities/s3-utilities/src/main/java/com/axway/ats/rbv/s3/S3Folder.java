@@ -94,7 +94,7 @@ public class S3Folder implements Matchable {
 
         //first check if the folder is already open
         if (!isOpen) {
-            throw new MatchableNotOpenException("File system folder is not open");
+            throw new MatchableNotOpenException("S3 folder is not open");
         }
 
         newMetaData.clear();

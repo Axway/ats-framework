@@ -1,81 +1,80 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework.utilities</groupId>
-        <artifactId>ats-utilities</artifactId>
-        <version>4.0.7-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.axway.ats.framework.utilities</groupId>
+		<artifactId>ats-utilities</artifactId>
+		<version>4.0.7-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>ats-s3-utilities</artifactId>
-    <name>ATS-S3-Utilities</name>
-    <description>ATS S3 Storage utility classes - operations and verification</description>
+	<artifactId>ats-s3-utilities</artifactId>
+	<name>ATS-S3-Utilities</name>
+	<description>ATS S3 Storage utility classes - operations and verification</description>
 
-    <build>
-        <plugins>
-            <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>${maven-compiler-plugin.version}</version>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-resources-plugin</artifactId>
-                <version>${maven-resources-plugin.version}</version>
-                <configuration>
-                    <includeEmptyDirs>true</includeEmptyDirs>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>${maven-compiler-plugin.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>${maven-resources-plugin.version}</version>
+				<configuration>
+					<includeEmptyDirs>true</includeEmptyDirs>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-    <reporting>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-report-plugin</artifactId>
-                <version>${maven-surefire-plugin.version}</version>
-            </plugin>
-        </plugins>
-    </reporting>
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+				<version>${maven-surefire-plugin.version}</version>
+			</plugin>
+		</plugins>
+	</reporting>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-actionlibrary</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-rbv</artifactId>
-            <version>${project.version}</version>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-actionlibrary</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-rbv</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
-        <!-- S3 dependencies -->
-        <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
+		<!-- S3 dependencies -->
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+		</dependency>
 
-        <dependency>
-            <groupId>com.amazonaws</groupId>
-            <artifactId>aws-java-sdk-s3</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>com.amazonaws</groupId>
+			<artifactId>aws-java-sdk-s3</artifactId>
+		</dependency>
 
 
-    </dependencies>
+	</dependencies>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.amazonaws</groupId>
-                <artifactId>aws-java-sdk-bom</artifactId>
-                <!-- latest version could be seen at https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
-                <version>1.11.244</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>com.amazonaws</groupId>
+				<artifactId>aws-java-sdk-bom</artifactId>
+				<!-- latest version could be seen at https://mvnrepository.com/artifact/com.amazonaws/aws-java-sdk-bom -->
+				<version>1.11.244</version>
+				<type>pom</type>
+				<scope>import</scope>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 
 </project>
