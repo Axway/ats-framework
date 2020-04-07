@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,13 @@ public interface ITestcaseStateListener {
      */
     public abstract void onConfigureAtsAgents(
                                                List<String> atsAgents ) throws Exception;
+
+    /**
+     * Explicitly mark ATS agents as not configured. If agent was not previously configured, no error will thrown<br>
+     * Note that this method does not perform any operation to the actual agent, neither checks if the agent is still running in the provided host:port
+     * @param atsAgents - list of ATS agents in the format <HOST>:<PORT> (if port is omitted, the default 8089 will be used instead) to be mark as not configured
+     * */
+    public abstract void invalidateConfiguredAtsAgents( List<String> atsAgents );
 
     /**
      * Called to release some resources on the agent side.

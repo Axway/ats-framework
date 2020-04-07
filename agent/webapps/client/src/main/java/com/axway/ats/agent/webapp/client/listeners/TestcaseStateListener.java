@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.axway.ats.agent.webapp.client.listeners;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
@@ -164,6 +165,30 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         }
     }
 
+    @Override
+    public synchronized void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
+
+        final String atsAgentAddressPlaceholder = "_ATS_AGENT_ADDRESS_PLACEHOLDER";
+        String message = "Invalidating ATS Log DB configuration for ATS agent '" + atsAgentAddressPlaceholder + "'";
+
+        if (configuredAgents == null || configuredAgents.isEmpty()) {
+            return;
+        } else {
+            for (String agent : atsAgents) {
+                agent = HostUtils.getAtsAgentIpAndPort(agent); // set the default port if needed
+                if (configuredAgents.contains(agent)) {
+                    log.info(message.replace(atsAgentAddressPlaceholder, agent));
+                    configuredAgents.remove(agent);
+                    agent = agent.split(Pattern.quote(":"))[1];
+                } else if (configuredAgents.contains(agent)) {
+                    log.info(message.replace(atsAgentAddressPlaceholder, agent));
+                    configuredAgents.remove(agent);
+                }
+            }
+        }
+
+    }
+
     /**
      * Wrap the test case state from the log component into the bean
      * which the web service expects
@@ -225,4 +250,5 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             // log.error( "Can't cleanup resource with identifier " + internalObjectResourceId + " on ATS agent '" + atsAgent + "'", e );
         }
     }
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,5 +118,14 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
         if (testcaseStateListener != null) {
             testcaseStateListener.cleanupInternalObjectResources(atsAgent, internalObjectResourceId);
         }
+    }
+
+    @Override
+    public void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
+
+        if (testcaseStateListener != null) {
+            testcaseStateListener.invalidateConfiguredAtsAgents(atsAgents);
+        }
+
     }
 }

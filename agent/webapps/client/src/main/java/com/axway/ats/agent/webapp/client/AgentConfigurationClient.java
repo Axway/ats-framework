@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManage
 import com.axway.ats.agent.webapp.client.executors.AbstractClientExecutor;
 import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
+import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.log.LogLevel;
@@ -405,5 +406,26 @@ public final class AgentConfigurationClient extends ActionClient {
                 } catch (InterruptedException e) {}
             }
         }
+    }
+
+    /**
+     * Explicitly mark this ATS agent as not configured. If agent was not previously configured, no error will thrown<br>
+     * Note that this method does not perform any operation to the actual agent, neither checks if the agent is still running in the provided address
+     */
+    @PublicAtsApi
+    public void invalidateAtsDbLogConfiguration() {
+
+        TestcaseStateListener.getInstance()
+                             .invalidateConfiguredAtsAgents(java.util.Collections.singletonList(this.atsAgent));
+    }
+
+    /**
+     * Explicitly mark ATS agent(s) as not configured. If any of the agent was not previously configured, no error will thrown<br>
+     * Note that this method does not perform any operation to the actual agents, neither checks if agent is still running in the provided address
+     */
+    public static synchronized void invalidateAtsDbLogConfiguration( List<String> atsAgents ) {
+
+        TestcaseStateListener.getInstance()
+                             .invalidateConfiguredAtsAgents(atsAgents);
     }
 }
