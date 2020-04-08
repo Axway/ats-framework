@@ -18,10 +18,10 @@ package com.axway.ats.rbv.azure.rules;
 
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.azure.AzureBlobStorageMetaData;
+import com.axway.ats.rbv.azure.BlobStorageMetaData;
 import com.axway.ats.rbv.model.RbvException;
 
-public class BlobFolderAzureBlobStorageRule extends AbstractAzureBlobStorageRule {
+public class BlobFolderRule extends AbstractBlobStorageRule {
 
     public static final String CHECK_IS_CONTAINER_RULE_NAME = "checkIsContainer";
     public static final String CHECK_IS_BLOB_RULE_NAME      = "checkIsBlob";
@@ -29,7 +29,7 @@ public class BlobFolderAzureBlobStorageRule extends AbstractAzureBlobStorageRule
 
     private boolean            isFileExpected;
 
-    public BlobFolderAzureBlobStorageRule( boolean isFile, String ruleName, boolean expectedResult ) {
+    public BlobFolderRule( boolean isFile, String ruleName, boolean expectedResult ) {
 
         super(ruleName, expectedResult, MetaData.class);
 
@@ -37,7 +37,7 @@ public class BlobFolderAzureBlobStorageRule extends AbstractAzureBlobStorageRule
         this.isFileExpected = isFile;
     }
 
-    public BlobFolderAzureBlobStorageRule( boolean isFile, String ruleName, boolean expectedResult, int priority ) {
+    public BlobFolderRule( boolean isFile, String ruleName, boolean expectedResult, int priority ) {
 
         super(ruleName, expectedResult, MetaData.class, priority);
 
@@ -53,10 +53,10 @@ public class BlobFolderAzureBlobStorageRule extends AbstractAzureBlobStorageRule
             // get the file from the meta data
             Object file = null;
             if (getRuleName().equals(CHECK_IS_CONTAINER_RULE_NAME)) {
-                file = metaData.getProperty(AzureBlobStorageMetaData.CONTAINER_NAME);
+                file = metaData.getProperty(BlobStorageMetaData.CONTAINER_NAME);
                 return !StringUtils.isNullOrEmpty((String) file);
             } else if (getRuleName().equals(CHECK_IS_BLOB_RULE_NAME)) {
-                file = metaData.getProperty(AzureBlobStorageMetaData.BLOB_NAME);
+                file = metaData.getProperty(BlobStorageMetaData.BLOB_NAME);
                 if (file != null && !StringUtils.isNullOrEmpty((String) file)
                     && this.isFileExpected) {
                     return true;

@@ -18,15 +18,15 @@ package com.axway.ats.rbv.azure.rules;
 
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.azure.AzureBlobStorageMetaData;
+import com.axway.ats.rbv.azure.BlobStorageMetaData;
 import com.axway.ats.rbv.model.RbvException;
 
-public class BlobMd5AzureBlobStorageRule extends AbstractAzureBlobStorageRule {
+public class BlobMd5BlobStorageRule extends AbstractBlobStorageRule {
 
     protected String expectedMD5;
     protected String currentMD5;
 
-    public BlobMd5AzureBlobStorageRule( String md5sum, String ruleName, boolean expectedResult ) {
+    public BlobMd5BlobStorageRule( String md5sum, String ruleName, boolean expectedResult ) {
 
         super(ruleName, expectedResult, MetaData.class);
 
@@ -39,7 +39,7 @@ public class BlobMd5AzureBlobStorageRule extends AbstractAzureBlobStorageRule {
         boolean actualResult = false;
 
         //get the file from the meta data
-        currentMD5 = (String) metaData.getProperty(AzureBlobStorageMetaData.MD5);
+        currentMD5 = (String) metaData.getProperty(BlobStorageMetaData.MD5);
         if (currentMD5 == null) {
             return false;
         }

@@ -18,23 +18,23 @@ package com.axway.ats.action.azure;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
- * Exception thrown by various methods from {@link AzureBlobStorageOperations} while working with Azure blob storage
+ * Exception thrown by various methods from {@link BlobStorageOperations} while working with Azure blob storage
  * */
 
 @PublicAtsApi
-public class AzureBlobStorageException extends RuntimeException {
+public class BlobStorageException extends RuntimeException {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public AzureBlobStorageException( String message ) {
+    public BlobStorageException( String message ) {
 
         super(message);
     }
 
-    public AzureBlobStorageException( String message, Throwable cause ) {
+    public BlobStorageException( String message, Throwable cause ) {
 
         super(message, cause);
     }

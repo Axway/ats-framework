@@ -17,15 +17,15 @@
 package com.axway.ats.rbv.azure.rules;
 
 import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.azure.AzureBlobStorageMetaData;
+import com.axway.ats.rbv.azure.BlobStorageMetaData;
 import com.axway.ats.rbv.model.RbvException;
 
-public class BlobSizeAzureBlobStorageRule extends AbstractAzureBlobStorageRule {
+public class BlobSizeBlobStorageRule extends AbstractBlobStorageRule {
 
     private long srcSize;
     private long destSize;
 
-    public BlobSizeAzureBlobStorageRule( long size, String ruleName, boolean expectedResult ) {
+    public BlobSizeBlobStorageRule( long size, String ruleName, boolean expectedResult ) {
 
         super(ruleName, expectedResult, MetaData.class);
 
@@ -38,7 +38,7 @@ public class BlobSizeAzureBlobStorageRule extends AbstractAzureBlobStorageRule {
         boolean actuaResult = false;
 
         //get the file from the meta data
-        Object size = metaData.getProperty(AzureBlobStorageMetaData.SIZE);
+        Object size = metaData.getProperty(BlobStorageMetaData.SIZE);
 
         if (size == null) {
             return false;

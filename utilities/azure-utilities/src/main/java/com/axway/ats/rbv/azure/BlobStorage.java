@@ -21,7 +21,7 @@ import com.axway.ats.rbv.storage.Matchable;
 import com.axway.ats.rbv.storage.SearchTerm;
 import com.axway.ats.rbv.storage.Storage;
 
-public class AzureBlobStorage implements Storage {
+public class BlobStorage implements Storage {
 
     @Override
     public Matchable getFolder( SearchTerm searchTerm ) throws RbvStorageException {
@@ -30,14 +30,14 @@ public class AzureBlobStorage implements Storage {
             throw new RbvStorageException("Search term is null");
         }
 
-        if (! (searchTerm instanceof AzureBlobStorageSearchTerm)) {
+        if (! (searchTerm instanceof BlobStorageSearchTerm)) {
             throw new RbvStorageException("Class " + searchTerm.getClass().getSimpleName()
                                           + " is not valid Azure Blob Storage search term");
         }
 
-        AzureBlobStorageSearchTerm azureSearchTerm = (AzureBlobStorageSearchTerm) searchTerm;
+        BlobStorageSearchTerm azureSearchTerm = (BlobStorageSearchTerm) searchTerm;
 
-        return new AzureBlobStorageFolder(azureSearchTerm);
+        return new BlobStorageFolder(azureSearchTerm);
     }
 
 }

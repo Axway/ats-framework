@@ -18,7 +18,7 @@ package com.axway.ats.rbv.azure;
 
 import com.axway.ats.rbv.MetaData;
 
-public class AzureBlobStorageMetaData extends MetaData {
+public class BlobStorageMetaData extends MetaData {
 
     public static final String CONTAINER_NAME = "CONTAINER_NAME";
 

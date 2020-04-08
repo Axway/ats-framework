@@ -19,15 +19,15 @@ package com.axway.ats.rbv.azure.rules;
 import java.util.Date;
 
 import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.azure.AzureBlobStorageMetaData;
+import com.axway.ats.rbv.azure.BlobStorageMetaData;
 import com.axway.ats.rbv.model.RbvException;
 
-public class BlobModtimeAzureBlobStorageRule extends AbstractAzureBlobStorageRule {
+public class BlobModtimeBlobStorageRule extends AbstractBlobStorageRule {
 
     protected long srcModtime;
     private long   actualTime; // in ms but rounded to 1 sec
 
-    public BlobModtimeAzureBlobStorageRule( long modtime, String ruleName, boolean expectedResult ) {
+    public BlobModtimeBlobStorageRule( long modtime, String ruleName, boolean expectedResult ) {
 
         super(ruleName, expectedResult, MetaData.class);
 
@@ -40,7 +40,7 @@ public class BlobModtimeAzureBlobStorageRule extends AbstractAzureBlobStorageRul
         boolean actualResult = false;
 
         //get the file from the meta data
-        Object modTime = metaData.getProperty(AzureBlobStorageMetaData.LAST_MODIFIED);
+        Object modTime = metaData.getProperty(BlobStorageMetaData.LAST_MODIFIED);
         if (modTime == null) {
             return false;
         }

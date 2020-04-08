@@ -19,15 +19,15 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import com.axway.ats.action.azure.AzureBlobInfo;
+import com.axway.ats.action.azure.BlobInfo;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 import com.axway.ats.rbv.MetaData;
-import com.axway.ats.rbv.azure.rules.BlobFolderAzureBlobStorageRule;
-import com.axway.ats.rbv.azure.rules.BlobMd5AzureBlobStorageRule;
-import com.axway.ats.rbv.azure.rules.BlobModtimeAzureBlobStorageRule;
-import com.axway.ats.rbv.azure.rules.BlobSizeAzureBlobStorageRule;
+import com.axway.ats.rbv.azure.rules.BlobFolderRule;
+import com.axway.ats.rbv.azure.rules.BlobMd5BlobStorageRule;
+import com.axway.ats.rbv.azure.rules.BlobModtimeBlobStorageRule;
+import com.axway.ats.rbv.azure.rules.BlobSizeBlobStorageRule;
 import com.axway.ats.rbv.clients.VerificationSkeleton;
 import com.axway.ats.rbv.executors.MetaExecutor;
 import com.axway.ats.rbv.model.RbvException;
@@ -40,21 +40,21 @@ import com.azure.storage.blob.models.BlobType;
 * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">here</a>
 *
 */
-public class AzureBlobStorageVerifications extends VerificationSkeleton {
+public class BlobStorageVerifications extends VerificationSkeleton {
 
     private String monitorName = "azure_blob_storage_monitor_";
 
     /**
      * Construct object verification client for an Azure Blob Storage.<br>
-     * Note that instance, created by this constructor can only work with containers! For blobs use {@link AzureBlobStorageVerifications#AzureBlobStorageVerifications(String, String, String, String, boolean)}
+     * Note that instance, created by this constructor can only work with containers! For blobs use {@link BlobStorageVerifications#BlobStorageVerifications(String, String, String, String, boolean)}
      * @param connectionString
      * @param sasToken
      * @param containerName  - the container name
      */
-    public AzureBlobStorageVerifications(
-                                          String connectionString,
-                                          String sasToken,
-                                          String containerName ) {
+    public BlobStorageVerifications(
+                                     String connectionString,
+                                     String sasToken,
+                                     String containerName ) {
 
         super();
 
@@ -66,9 +66,9 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
 
         this.monitorName += "_$containerName: " + containerName;
 
-        AzureBlobStorage storage = new AzureBlobStorage();
-        folder = storage.getFolder(new AzureBlobStorageSearchTerm(connectionString, sasToken, containerName, null,
-                                                                  false, true));
+        BlobStorage storage = new BlobStorage();
+        folder = storage.getFolder(new BlobStorageSearchTerm(connectionString, sasToken, containerName, null,
+                                                             false, true));
         this.executor = new MetaExecutor();
     }
 
@@ -79,12 +79,12 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
      * @param containerName  - the container name
      * @param recursive - should search for match be done recursively
      */
-    public AzureBlobStorageVerifications(
-                                          String connectionString,
-                                          String sasToken,
-                                          String containerName,
-                                          String blobName,
-                                          boolean recursive ) {
+    public BlobStorageVerifications(
+                                     String connectionString,
+                                     String sasToken,
+                                     String containerName,
+                                     String blobName,
+                                     boolean recursive ) {
 
         super();
 
@@ -99,59 +99,59 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
 
         this.monitorName += "_$containerName: " + containerName + "_$blobName: " + blobName;
 
-        AzureBlobStorage storage = new AzureBlobStorage();
-        folder = storage.getFolder(new AzureBlobStorageSearchTerm(connectionString, sasToken, containerName, blobName,
-                                                                  recursive, false));
+        BlobStorage storage = new BlobStorage();
+        folder = storage.getFolder(new BlobStorageSearchTerm(connectionString, sasToken, containerName, blobName,
+                                                             recursive, false));
         this.executor = new MetaExecutor();
     }
 
     @PublicAtsApi
     public void checkBlobSize( long size ) {
 
-        BlobSizeAzureBlobStorageRule rule = new BlobSizeAzureBlobStorageRule(size, "checkSize", true);
+        BlobSizeBlobStorageRule rule = new BlobSizeBlobStorageRule(size, "checkSize", true);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
     public void checkBlobSizeDifferent( long size ) {
 
-        BlobSizeAzureBlobStorageRule rule = new BlobSizeAzureBlobStorageRule(size, "checkSizeDifferent", false);
+        BlobSizeBlobStorageRule rule = new BlobSizeBlobStorageRule(size, "checkSizeDifferent", false);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
     public void checkBlobModificationTime( long modTime ) {
 
-        BlobModtimeAzureBlobStorageRule rule = new BlobModtimeAzureBlobStorageRule(modTime, "checkModificationTime",
-                                                                                   true);
+        BlobModtimeBlobStorageRule rule = new BlobModtimeBlobStorageRule(modTime, "checkModificationTime",
+                                                                         true);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
     public void checkBlobModificationTimeDifferent( long modTime ) {
 
-        BlobModtimeAzureBlobStorageRule rule = new BlobModtimeAzureBlobStorageRule(modTime,
-                                                                                   "checkModificationTimeDifferent",
-                                                                                   false);
+        BlobModtimeBlobStorageRule rule = new BlobModtimeBlobStorageRule(modTime,
+                                                                         "checkModificationTimeDifferent",
+                                                                         false);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
     public void checkBlobMd5( String md5 ) {
 
-        BlobMd5AzureBlobStorageRule rule = new BlobMd5AzureBlobStorageRule(md5, "checkMd5", true);
+        BlobMd5BlobStorageRule rule = new BlobMd5BlobStorageRule(md5, "checkMd5", true);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
     public void checkBlobMd5Different( String md5 ) {
 
-        BlobMd5AzureBlobStorageRule rule = new BlobMd5AzureBlobStorageRule(md5, "checkMd5Different", false);
+        BlobMd5BlobStorageRule rule = new BlobMd5BlobStorageRule(md5, "checkMd5Different", false);
         rootRule.addRule(rule);
     }
 
     @PublicAtsApi
-    public AzureBlobInfo[] verifyBlobExists() throws RbvException {
+    public BlobInfo[] verifyBlobExists() throws RbvException {
 
         addFileCheckRule();
 
@@ -162,7 +162,7 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
     }
 
     @PublicAtsApi
-    public AzureBlobInfo[] verifyBlobAlwaysExists() throws RbvException {
+    public BlobInfo[] verifyBlobAlwaysExists() throws RbvException {
 
         addFileCheckRule();
 
@@ -227,10 +227,10 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
 
         // set the second highest priority for this rule - if the file path is correct the second most
         // important thing is to check if the entity is a file
-        BlobFolderAzureBlobStorageRule rule = new BlobFolderAzureBlobStorageRule(true,
-                                                                                 BlobFolderAzureBlobStorageRule.CHECK_IS_BLOB_RULE_NAME,
-                                                                                 true,
-                                                                                 Integer.MIN_VALUE);
+        BlobFolderRule rule = new BlobFolderRule(true,
+                                                 BlobFolderRule.CHECK_IS_BLOB_RULE_NAME,
+                                                 true,
+                                                 Integer.MIN_VALUE);
         rootRule.addRule(rule);
     }
 
@@ -238,10 +238,10 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
 
         // set the second highest priority for this rule - if the file path is correct the second most
         // important thing is to check if the entity is a file
-        BlobFolderAzureBlobStorageRule rule = new BlobFolderAzureBlobStorageRule(false,
-                                                                                 BlobFolderAzureBlobStorageRule.CHECK_IS_CONTAINER_RULE_NAME,
-                                                                                 true,
-                                                                                 Integer.MIN_VALUE);
+        BlobFolderRule rule = new BlobFolderRule(false,
+                                                 BlobFolderRule.CHECK_IS_CONTAINER_RULE_NAME,
+                                                 true,
+                                                 Integer.MIN_VALUE);
         rootRule.addRule(rule);
     }
 
@@ -251,23 +251,23 @@ public class AzureBlobStorageVerifications extends VerificationSkeleton {
         return monitorName;
     }
 
-    private AzureBlobInfo[] constructMatchedObjects( List<MetaData> matchedMetaData ) {
+    private BlobInfo[] constructMatchedObjects( List<MetaData> matchedMetaData ) {
 
-        AzureBlobInfo[] matchedObjects = new AzureBlobInfo[matchedMetaData.size()];
+        BlobInfo[] matchedObjects = new BlobInfo[matchedMetaData.size()];
         for (int i = 0; i < matchedMetaData.size(); i++) {
-            AzureBlobInfo newMatchedObject = new AzureBlobInfo();
+            BlobInfo newMatchedObject = new BlobInfo();
             matchedObjects[i] = newMatchedObject;
             MetaData currentMetaData = matchedMetaData.get(i);
-            newMatchedObject.setBlobName((String) currentMetaData.getProperty(AzureBlobStorageMetaData.BLOB_NAME));
-            newMatchedObject.setBlobType((BlobType) currentMetaData.getProperty(AzureBlobStorageMetaData.BLOB_TYPE));
-            newMatchedObject.setContainerName((String) currentMetaData.getProperty(AzureBlobStorageMetaData.CONTAINER_NAME));
-            newMatchedObject.setContentType((String) currentMetaData.getProperty(AzureBlobStorageMetaData.CONTENT_TYPE));
-            newMatchedObject.setCreationTime((Date) currentMetaData.getProperty(AzureBlobStorageMetaData.CREATION_TIME));
-            newMatchedObject.setETag((String) currentMetaData.getProperty(AzureBlobStorageMetaData.E_TAG));
-            newMatchedObject.setLastModified((Date) currentMetaData.getProperty(AzureBlobStorageMetaData.LAST_MODIFIED));
-            newMatchedObject.setMd5((String) currentMetaData.getProperty(AzureBlobStorageMetaData.BLOB_NAME));
-            newMatchedObject.setMetadata((Map<String, String>) currentMetaData.getProperty(AzureBlobStorageMetaData.META_DATA));
-            newMatchedObject.setSize((long) currentMetaData.getProperty(AzureBlobStorageMetaData.SIZE));
+            newMatchedObject.setBlobName((String) currentMetaData.getProperty(BlobStorageMetaData.BLOB_NAME));
+            newMatchedObject.setBlobType((BlobType) currentMetaData.getProperty(BlobStorageMetaData.BLOB_TYPE));
+            newMatchedObject.setContainerName((String) currentMetaData.getProperty(BlobStorageMetaData.CONTAINER_NAME));
+            newMatchedObject.setContentType((String) currentMetaData.getProperty(BlobStorageMetaData.CONTENT_TYPE));
+            newMatchedObject.setCreationTime((Date) currentMetaData.getProperty(BlobStorageMetaData.CREATION_TIME));
+            newMatchedObject.setETag((String) currentMetaData.getProperty(BlobStorageMetaData.E_TAG));
+            newMatchedObject.setLastModified((Date) currentMetaData.getProperty(BlobStorageMetaData.LAST_MODIFIED));
+            newMatchedObject.setMd5((String) currentMetaData.getProperty(BlobStorageMetaData.BLOB_NAME));
+            newMatchedObject.setMetadata((Map<String, String>) currentMetaData.getProperty(BlobStorageMetaData.META_DATA));
+            newMatchedObject.setSize((long) currentMetaData.getProperty(BlobStorageMetaData.SIZE));
         }
 
         return matchedObjects;

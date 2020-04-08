@@ -22,8 +22,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.axway.ats.action.azure.AzureBlobInfo;
-import com.axway.ats.action.azure.AzureBlobStorageOperations;
+import com.axway.ats.action.azure.BlobInfo;
+import com.axway.ats.action.azure.BlobStorageOperations;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.MatchableAlreadyOpenException;
@@ -33,13 +33,13 @@ import com.axway.ats.rbv.model.RbvStorageException;
 import com.axway.ats.rbv.storage.Matchable;
 
 /**
- * Class that encapsulates SINGLE Azure Blob Storage instance and retrieves {@link AzureBlobStorageMetaData} for particular blob insde container<br>
- * All of the needed values (storage <strong>connection string</strong> and <strong>sas token</strong>, along with <strong>container name</strong> and <strong>blob name</strong>), are obtained from the {@link AzureBlobStorageSearchTerm} object
+ * Class that encapsulates SINGLE Azure Blob Storage instance and retrieves {@link BlobStorageMetaData} for particular blob insde container<br>
+ * All of the needed values (storage <strong>connection string</strong> and <strong>sas token</strong>, along with <strong>container name</strong> and <strong>blob name</strong>), are obtained from the {@link BlobStorageSearchTerm} object
  * 
  * */
-public class AzureBlobStorageFolder implements Matchable {
+public class BlobStorageFolder implements Matchable {
 
-    private static final Logger        log = Logger.getLogger(AzureBlobStorageFolder.class);
+    private static final Logger        log = Logger.getLogger(BlobStorageFolder.class);
 
     private boolean                    isOpen;
     private String                     containerName;
@@ -47,11 +47,11 @@ public class AzureBlobStorageFolder implements Matchable {
     private boolean                    searchRecursively;
     private boolean                    containerOperationsOnly;
 
-    private AzureBlobStorageOperations operations;
+    private BlobStorageOperations operations;
     private HashMap<String, MetaData>  allMetaData;
     private List<MetaData>             newMetaData;
 
-    AzureBlobStorageFolder( AzureBlobStorageSearchTerm searchTerm ) {
+    BlobStorageFolder( BlobStorageSearchTerm searchTerm ) {
 
         this.isOpen = false;
         this.containerName = searchTerm.getContainerName();
@@ -59,7 +59,7 @@ public class AzureBlobStorageFolder implements Matchable {
         this.searchRecursively = searchTerm.isRecursive();
         this.containerOperationsOnly = searchTerm.isContainerOperationsOnly();
 
-        this.operations = new AzureBlobStorageOperations(searchTerm.getConnectionString(), searchTerm.getSasToken());
+        this.operations = new BlobStorageOperations(searchTerm.getConnectionString(), searchTerm.getSasToken());
         this.allMetaData = new HashMap<String, MetaData>();
         this.newMetaData = new ArrayList<MetaData>();
     }
@@ -110,7 +110,7 @@ public class AzureBlobStorageFolder implements Matchable {
                 blobName = ".*";
             }
 
-            List<AzureBlobInfo> blobs = null;
+            List<BlobInfo> blobs = null;
 
             String directory = null;
             String actualBlobName = blobName;
@@ -136,19 +136,19 @@ public class AzureBlobStorageFolder implements Matchable {
             }
 
             if (blobs != null) {
-                for (AzureBlobInfo blob : blobs) {
-                    MetaData metaData = new AzureBlobStorageMetaData();
-                    metaData.putProperty(AzureBlobStorageMetaData.BLOB_NAME, blob.getBlobName());
-                    metaData.putProperty(AzureBlobStorageMetaData.BLOB_TYPE, blob.getBlobType());
-                    metaData.putProperty(AzureBlobStorageMetaData.CONTAINER_NAME, blob.getContainerName());
-                    metaData.putProperty(AzureBlobStorageMetaData.CONTENT_TYPE, blob.getContentType());
+                for (BlobInfo blob : blobs) {
+                    MetaData metaData = new BlobStorageMetaData();
+                    metaData.putProperty(BlobStorageMetaData.BLOB_NAME, blob.getBlobName());
+                    metaData.putProperty(BlobStorageMetaData.BLOB_TYPE, blob.getBlobType());
+                    metaData.putProperty(BlobStorageMetaData.CONTAINER_NAME, blob.getContainerName());
+                    metaData.putProperty(BlobStorageMetaData.CONTENT_TYPE, blob.getContentType());
 
-                    metaData.putProperty(AzureBlobStorageMetaData.CREATION_TIME, blob.getCreationTime());
-                    metaData.putProperty(AzureBlobStorageMetaData.E_TAG, blob.getETag());
-                    metaData.putProperty(AzureBlobStorageMetaData.LAST_MODIFIED, blob.getLastModified());
-                    metaData.putProperty(AzureBlobStorageMetaData.MD5, blob.getMd5());
-                    metaData.putProperty(AzureBlobStorageMetaData.META_DATA, blob.getMetadata());
-                    metaData.putProperty(AzureBlobStorageMetaData.SIZE, blob.getSize());
+                    metaData.putProperty(BlobStorageMetaData.CREATION_TIME, blob.getCreationTime());
+                    metaData.putProperty(BlobStorageMetaData.E_TAG, blob.getETag());
+                    metaData.putProperty(BlobStorageMetaData.LAST_MODIFIED, blob.getLastModified());
+                    metaData.putProperty(BlobStorageMetaData.MD5, blob.getMd5());
+                    metaData.putProperty(BlobStorageMetaData.META_DATA, blob.getMetadata());
+                    metaData.putProperty(BlobStorageMetaData.SIZE, blob.getSize());
 
                     String hashKey = blob.toString();
 
@@ -171,7 +171,7 @@ public class AzureBlobStorageFolder implements Matchable {
 
         if (operations.doesContainerExist(containerName)) {
             MetaData metadata = new MetaData();
-            metadata.putProperty(AzureBlobStorageMetaData.CONTAINER_NAME, this.containerName);
+            metadata.putProperty(BlobStorageMetaData.CONTAINER_NAME, this.containerName);
             return metadata;
         } else {
             return null;

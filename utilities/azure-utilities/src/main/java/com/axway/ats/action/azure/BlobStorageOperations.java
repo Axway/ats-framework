@@ -38,7 +38,6 @@ import com.azure.storage.blob.models.BlobContainerListDetails;
 import com.azure.storage.blob.models.BlobItem;
 import com.azure.storage.blob.models.BlobItemProperties;
 import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.models.BlobStorageException;
 import com.azure.storage.blob.models.BlobType;
 import com.azure.storage.blob.models.ListBlobContainersOptions;
 import com.azure.storage.blob.models.ListBlobsOptions;
@@ -48,14 +47,14 @@ import com.azure.storage.blob.specialized.PageBlobAsyncClient;
  * Class, encapsulating Azure Blob Storage operations
  * */
 @PublicAtsApi
-public class AzureBlobStorageOperations {
+public class BlobStorageOperations {
 
-    private static final Logger log = Logger.getLogger(AzureBlobStorageOperations.class);
+    private static final Logger log = Logger.getLogger(BlobStorageOperations.class);
 
     private BlobServiceClient   serviceClient;
 
     @PublicAtsApi
-    public AzureBlobStorageOperations( String connectionString, String sasToken ) {
+    public BlobStorageOperations( String connectionString, String sasToken ) {
 
         serviceClient = new BlobServiceClientBuilder().connectionString(connectionString)
                                                       .sasToken(sasToken)
@@ -64,7 +63,7 @@ public class AzureBlobStorageOperations {
 
     /**
      * Obtain list of the container's names<br>
-     * Note that this method will return up to 5000 container names. If you want more than that, use {@link AzureBlobStorageOperations#listContainers(int, String, long)}
+     * Note that this method will return up to 5000 container names. If you want more than that, use {@link BlobStorageOperations#listContainers(int, String, long)}
      * @return list of container names
      * */
     @PublicAtsApi
@@ -76,7 +75,7 @@ public class AzureBlobStorageOperations {
     /**
      * Obtain list of the container's names
      * @param containerNamePrefix - specify container name prefix or the full container name
-     * @param retrieveTimeouts - the maximum amount of time (in milliseconds) to wait for the operation to complete. If the operation did not complete in that time {@link AzureBlobStorageException} will be thrown/raised
+     * @param retrieveTimeouts - the maximum amount of time (in milliseconds) to wait for the operation to complete. If the operation did not complete in that time {@link BlobStorageException} will be thrown/raised
      * @return list of container names
      * */
     @PublicAtsApi
@@ -135,7 +134,7 @@ public class AzureBlobStorageOperations {
      * Create new container
      * @param containerName - the new container name
      * @param timeout - the maximum amount of time (in milliseconds) to wait for container to be created.
-     * @throws AzureBlobStorageException if the container was not created for up to timeout milliseconds
+     * @throws BlobStorageException if the container was not created for up to timeout milliseconds
      * */
     @PublicAtsApi
     public void createContainer( String containerName, long timeout ) {
@@ -170,14 +169,14 @@ public class AzureBlobStorageOperations {
             } catch (InterruptedException e) {}
         }
 
-        throw new AzureBlobStorageException("Could not create container '" + containerName + "' in " + timeout
+        throw new BlobStorageException("Could not create container '" + containerName + "' in " + timeout
                                             + " milliseconds",
                                             lastException);
     }
 
     /**
      * Delete existing container. If the container exists, a {@link BlobStorageException} will be thrown<br>
-     * Note that there is a delay between calling this method and the container being deleted, so invoking {@code AzureBlobOperations#createContainer(String)} with the same container name may fail
+     * Note that there is a delay between calling this method and the container being deleted, so invoking {@code BlobOperations#createContainer(String)} with the same container name may fail
      * @param containerName - the container name
      * */
     @PublicAtsApi
@@ -194,7 +193,7 @@ public class AzureBlobStorageOperations {
      * Delete existing container
      * @param containerName - the container name
      * @param timeout - the maximum amount of time (in milliseconds) to wait for container to be deleted.
-     * @throws AzureBlobStorageException if the container was not deleted for up to timeout milliseconds
+     * @throws BlobStorageException if the container was not deleted for up to timeout milliseconds
      * */
     @PublicAtsApi
     public void deleteContainer( String containerName, long timeout ) {
@@ -218,7 +217,7 @@ public class AzureBlobStorageOperations {
             } catch (InterruptedException e) {}
         }
 
-        throw new AzureBlobStorageException("Could not delete container '" + containerName + "' in " + timeout
+        throw new BlobStorageException("Could not delete container '" + containerName + "' in " + timeout
                                             + " milliseconds",
                                             lastException);
     }
@@ -232,21 +231,21 @@ public class AzureBlobStorageOperations {
 
         log.info("Purging container '" + containerName + "' ...");
 
-        List<AzureBlobInfo> blobs = listBlobs(containerName);
+        List<BlobInfo> blobs = listBlobs(containerName);
         if (blobs == null || blobs.isEmpty()) {
             log.info("Cointaner '" + containerName + "' has no blobs inside. Nothing to purge.");
         } else {
             log.info("Cointaner '" + containerName + "' has " + blobs.size()
                      + " blobs inside. Begin purging of all blobs ...");
         }
-        for (AzureBlobInfo blob : blobs) {
+        for (BlobInfo blob : blobs) {
             this.deleteBlob(containerName, blob.getBlobName());
         }
 
         if (!isContainerEmpty(containerName)) {
             blobs = listBlobs(containerName);
             //TODO: print blob names ?!?!
-            throw new AzureBlobStorageException("Container '" + containerName
+            throw new BlobStorageException("Container '" + containerName
                                                 + "' could not be properly purged. Blobs left: "
                                                 + blobs.size());
         }
@@ -271,10 +270,10 @@ public class AzureBlobStorageOperations {
     /**
      * List all blobs from container
      * @param containerName - the container name
-     * @return list of {@link AzureBlobInfo}
+     * @return list of {@link BlobInfo}
      * */
     @PublicAtsApi
-    public List<AzureBlobInfo> listBlobs( String containerName ) {
+    public List<BlobInfo> listBlobs( String containerName ) {
 
         return listBlobs(containerName, null, null, 0);
     }
@@ -283,10 +282,10 @@ public class AzureBlobStorageOperations {
      * List blobs, with specified name prefix, from container
      * @param containerName - the container name
      * @param prefix - blob names prefix. Example: prefix = "blob-", will return blobs with name, starting with blob-
-     * @return list of {@link AzureBlobInfo}
+     * @return list of {@link BlobInfo}
      * */
     @PublicAtsApi
-    public List<AzureBlobInfo> listBlobs( String containerName, String prefix ) {
+    public List<BlobInfo> listBlobs( String containerName, String prefix ) {
 
         return listBlobs(containerName, prefix, null, 0);
 
@@ -297,10 +296,10 @@ public class AzureBlobStorageOperations {
      * @param containerName - the container name
      * @param prefix - blob names prefix. Example: prefix = "blob-", will return blobs with name, starting with blob-
      * @param directory - the directory name. Could by a nested directory as well, like foo/bar/baz
-     * @return list of {@link AzureBlobInfo}
+     * @return list of {@link BlobInfo}
      * */
     @PublicAtsApi
-    public List<AzureBlobInfo> listBlobs( String containerName, String prefix, String directory ) {
+    public List<BlobInfo> listBlobs( String containerName, String prefix, String directory ) {
 
         return listBlobs(containerName, prefix, directory, 0);
     }
@@ -310,11 +309,11 @@ public class AzureBlobStorageOperations {
      * @param containerName - the container name
      * @param prefix - prefix for the blobs names or null for all blobs
      * @param directory - the directory which will be listed, or null to search the whole container
-     * @param retrieveTimeout - the maximum amount of time (in seconds) to wait for the operation to complete. If the operation did not complete in that time {@link AzureBlobStorageException} will be thrown/raised. Pass 0 (zero) to use the default value
-     * @return list {@link AzureBlobInfo}
+     * @param retrieveTimeout - the maximum amount of time (in seconds) to wait for the operation to complete. If the operation did not complete in that time {@link BlobStorageException} will be thrown/raised. Pass 0 (zero) to use the default value
+     * @return list {@link BlobInfo}
      * */
     @PublicAtsApi
-    public List<AzureBlobInfo> listBlobs( String containerName, String prefix, String directory,
+    public List<BlobInfo> listBlobs( String containerName, String prefix, String directory,
                                           long retrieveTimeout ) {
 
         StringBuilder sb = new StringBuilder();
@@ -323,7 +322,7 @@ public class AzureBlobStorageOperations {
 
         log.info(sb.toString());
 
-        final List<AzureBlobInfo> infos = new ArrayList<AzureBlobInfo>();
+        final List<BlobInfo> infos = new ArrayList<BlobInfo>();
 
         PagedIterable<BlobItem> blobs = null;
 
@@ -356,7 +355,7 @@ public class AzureBlobStorageOperations {
             blobs.stream().forEach(new Consumer<BlobItem>() {
                 public void accept( BlobItem blobItem ) {
 
-                    AzureBlobInfo info = new AzureBlobInfo();
+                    BlobInfo info = new BlobInfo();
 
                     BlobItemProperties properties = blobItem.getProperties();
 
@@ -417,7 +416,7 @@ public class AzureBlobStorageOperations {
      * @param blobName - the blob name
      * */
     @PublicAtsApi
-    public AzureBlobInfo getBlobInfo( String containerName, String blobName ) {
+    public BlobInfo getBlobInfo( String containerName, String blobName ) {
 
         log.info("Getting info for blob '" + blobName + "' from container '" + containerName + "' ...");
 
@@ -425,10 +424,10 @@ public class AzureBlobStorageOperations {
             BlobProperties props = serviceClient.getBlobContainerClient(containerName)
                                                 .getBlobClient(blobName)
                                                 .getProperties();
-            return new AzureBlobInfo(containerName, blobName, props);
+            return new BlobInfo(containerName, blobName, props);
         } catch (Exception e) {
             if (ExceptionUtils.containsMessage("Status code 404, (empty body)", e, true)) {
-                throw new AzureBlobStorageException("Blob '" + blobName + "' does not exist in container '"
+                throw new BlobStorageException("Blob '" + blobName + "' does not exist in container '"
                                                     + containerName
                                                     + "'", e);
             } else {
@@ -635,7 +634,7 @@ public class AzureBlobStorageOperations {
                          .getPageBlobClient()
                          .create(size, overwrite);
         } catch (Exception e) {
-            throw new AzureBlobStorageException("Could not create block blob '" + blobName + "' inside container '"
+            throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
                                                 + containerName + "'", e);
         }
 
@@ -663,7 +662,7 @@ public class AzureBlobStorageOperations {
                          .getAppendBlobClient()
                          .create(overwrite);
         } catch (Exception e) {
-            throw new AzureBlobStorageException("Could not create block blob '" + blobName + "' inside container '"
+            throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
                                                 + containerName + "'", e);
         }
 
@@ -738,7 +737,7 @@ public class AzureBlobStorageOperations {
                      + content.length + ".");
 
         } catch (Exception e) {
-            throw new AzureBlobStorageException("Could not create block blob '" + blobName + "' inside container '"
+            throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
                                                 + containerName + "'", e);
         } finally {
             if (bais != null) {

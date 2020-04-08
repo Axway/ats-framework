@@ -24,7 +24,7 @@ import com.azure.storage.blob.models.BlobProperties;
 import com.azure.storage.blob.models.BlobType;
 
 @PublicAtsApi
-public class AzureBlobInfo {
+public class BlobInfo {
 
     private String              containerName;
     private String              blobName;
@@ -38,17 +38,17 @@ public class AzureBlobInfo {
     private Map<String, String> metadata;
     private AccessTier          accessTier;
 
-    AzureBlobInfo( BlobProperties blobProperties ) {
+    BlobInfo( BlobProperties blobProperties ) {
 
         this(null, null, blobProperties);
     }
 
     @PublicAtsApi
-    public AzureBlobInfo() {
+    public BlobInfo() {
 
     }
 
-    AzureBlobInfo( String containerName, String blobName, BlobProperties properties ) {
+    BlobInfo( String containerName, String blobName, BlobProperties properties ) {
 
         this(containerName, blobName, properties.getContentMd5(),
              properties.getBlobSize(), properties.getETag(), properties.getContentType(), properties.getBlobType(),
@@ -57,7 +57,7 @@ public class AzureBlobInfo {
     }
 
     @PublicAtsApi
-    public AzureBlobInfo( String containerName, String blobName, byte[] md5, long size, String eTag, String contentType,
+    public BlobInfo( String containerName, String blobName, byte[] md5, long size, String eTag, String contentType,
                           BlobType blobType, Date lastModified, Date creationTime, Map<String, String> metadata,
                           AccessTier accessTier ) {
 

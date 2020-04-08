@@ -17,7 +17,7 @@ package com.axway.ats.rbv.azure;
 
 import com.axway.ats.rbv.storage.SearchTerm;
 
-public class AzureBlobStorageSearchTerm implements SearchTerm {
+public class BlobStorageSearchTerm implements SearchTerm {
 
     String  connectionString;
     String  sasToken;
@@ -26,7 +26,7 @@ public class AzureBlobStorageSearchTerm implements SearchTerm {
     boolean recursive;
     boolean containerOperationsOnly;
 
-    public AzureBlobStorageSearchTerm( String connectionString, String sasToken, String containerName,
+    public BlobStorageSearchTerm( String connectionString, String sasToken, String containerName,
                                        String blobName, boolean recursive, boolean containerOperationsOnly ) {
 
         this.connectionString = connectionString;
