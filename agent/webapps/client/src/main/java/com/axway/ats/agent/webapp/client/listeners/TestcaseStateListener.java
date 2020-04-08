@@ -162,7 +162,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     }
 
     @Override
-    public synchronized void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
+    public void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
 
         String message = "Invalidating ATS Log DB configuration for ATS agent '%s'";
 
