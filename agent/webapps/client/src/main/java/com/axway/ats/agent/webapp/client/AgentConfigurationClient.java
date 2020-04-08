@@ -408,19 +408,19 @@ public final class AgentConfigurationClient extends ActionClient {
         }
     }
 
-    /**
-     * Explicitly mark this ATS agent as not configured. If agent was not previously configured, no error will thrown<br>
-     * Note that this method does not perform any operation to the actual agent, neither checks if the agent is still running in the provided address
+    /** Mark the ATS Agent as non-configured
+     * @see AgentConfigurationClient#invalidateAtsDbLogConfiguration(List)
      */
     @PublicAtsApi
     public void invalidateAtsDbLogConfiguration() {
 
-        TestcaseStateListener.getInstance()
-                             .invalidateConfiguredAtsAgents(java.util.Collections.singletonList(this.atsAgent));
+        List<String> atsAgents = new ArrayList<String>();
+        atsAgents.add(this.atsAgent);
+        invalidateAtsDbLogConfiguration(atsAgents);
     }
 
     /**
-     * Explicitly mark ATS agent(s) as not configured. If any of the agent was not previously configured, no error will thrown<br>
+     * Explicitly mark ATS agent(s) as not configured. If any of the agent was not previously configured, no error will be thrown<br>
      * Note that this method does not perform any operation to the actual agents, neither checks if agent is still running in the provided address
      */
     public static synchronized void invalidateAtsDbLogConfiguration( List<String> atsAgents ) {

@@ -40,9 +40,9 @@ public interface ITestcaseStateListener {
                                                List<String> atsAgents ) throws Exception;
 
     /**
-     * Explicitly mark ATS agents as not configured. If agent was not previously configured, no error will thrown<br>
+     * Explicitly mark ATS agents as not configured. If agent was not previously configured, no error will be thrown<br>
      * Note that this method does not perform any operation to the actual agent, neither checks if the agent is still running in the provided host:port
-     * @param atsAgents - list of ATS agents in the format <HOST>:<PORT> (if port is omitted, the default 8089 will be used instead) to be mark as not configured
+     * @param atsAgents - list of ATS agents in the format <HOST>:<PORT> (if port is omitted, the default 8089 will be used instead) to be marked as not configured
      * */
     public abstract void invalidateConfiguredAtsAgents( List<String> atsAgents );
 
