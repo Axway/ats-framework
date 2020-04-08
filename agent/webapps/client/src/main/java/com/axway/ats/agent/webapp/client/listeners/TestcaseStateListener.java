@@ -34,6 +34,8 @@ import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManage
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.core.utils.HostUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -218,15 +220,15 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                     } catch (Exception e) {
                         String message = null;
-                        if(testCaseState != null) {
+                        if (testCaseState != null) {
                             message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
-                            + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
-                            + ai.address
-                            + "'";
+                                      + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
+                                      + ai.address
+                                      + "'";
                         } else {
                             message = "Unable to start testcase, because ATS could not obtain testcase state information";
                         }
-                        
+
                         log.error(message);
                         throw new AgentException(message, e);
                     }
@@ -280,6 +282,51 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         } catch (Exception e) {
             log.warn("Error waiting for all important threads to finish.", e);
         }
+    }
+
+    @Override
+    public void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
+
+        String message = "Invalidating ATS Log DB configuration for ATS agent '%s', configured by caller '%s'";
+
+        if (agentInfos == null || agentInfos.isEmpty() || atsAgents == null || atsAgents.isEmpty()) {
+            return;
+        } else {
+            synchronized (configurationMutex) {
+                for (String agent : atsAgents) {
+                    for (Map.Entry<String, List<AgentInfo>> entry : agentInfos.entrySet()) {
+                        String callerId = entry.getKey();
+                        List<AgentInfo> agentsInfos = entry.getValue();
+                        if (agentsInfos == null || agentsInfos.isEmpty()) {
+                            continue;
+                        }
+                        for (AgentInfo info : agentsInfos) {
+                            boolean agentCleared = false;
+                            if (info == null || StringUtils.isNullOrEmpty(info.address)) {
+                                continue; // not sure if possible. And maybe if possible, throw an Exception
+                            }
+                            // do we have to mark only the agent as deleted, or delete the entry from the list?
+                            if (info.address.equals(agent)) {
+                                info.logConfigured = false;
+                                info.testConfigured = false;
+                                agentCleared = true;
+                            } else {
+                                if (info.address.equals(HostUtils.getAtsAgentIpAndPort(agent))) { // try with the <HOST>:<default port> (if needed)
+                                    info.logConfigured = false;
+                                    info.testConfigured = false;
+                                    agentCleared = true;
+                                }
+                            }
+
+                            if (agentCleared) {
+                                log.info(String.format(message, agent, callerId));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
     }
 
 }

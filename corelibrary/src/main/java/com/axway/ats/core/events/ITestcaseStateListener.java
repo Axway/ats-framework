@@ -28,12 +28,12 @@ public interface ITestcaseStateListener {
      * When a test is ending
      */
     public abstract void onTestEnd();
-    
+
     /**
      * Used when testcases are run in parallel.
      * 
      * */
-    public abstract void onTestEnd(List<String> callerIDs);
+    public abstract void onTestEnd( List<String> callerIDs );
 
     /**
      * Prior to interacting with ATS Agent, we must make sure it is properly configured
@@ -44,5 +44,12 @@ public interface ITestcaseStateListener {
      */
     public abstract void onConfigureAtsAgents(
                                                List<String> atsAgents ) throws Exception;
+
+    /**
+     * Explicitly mark ATS agents as not configured. If agent was not previously configured, no error will be thrown<br>
+     * Note that this method does not perform any operation to the actual agent, neither checks if the agent is still running in the provided host:port
+     * @param atsAgents - list of ATS agents in the format <HOST>:<PORT> (if port is omitted, the default 8089 will be used instead) to be marked as not configured
+     * */
+    public abstract void invalidateConfiguredAtsAgents( List<String> atsAgents );
 
 }

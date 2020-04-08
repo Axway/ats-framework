@@ -35,6 +35,7 @@ import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManage
 import com.axway.ats.agent.webapp.client.executors.AbstractClientExecutor;
 import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
+import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.log.LogLevel;
@@ -250,7 +251,6 @@ public final class AgentConfigurationClient extends ActionClient {
         }
     }
 
-
     /**
      * Set using of HTTPS communication protocol
      *
@@ -364,5 +364,26 @@ public final class AgentConfigurationClient extends ActionClient {
                 } catch (InterruptedException e) {}
             }
         }
+    }
+
+    /** Mark the ATS Agent as non-configured
+     * @see AgentConfigurationClient#invalidateAtsDbLogConfiguration(List)
+     */
+    @PublicAtsApi
+    public void invalidateAtsDbLogConfiguration() {
+
+        List<String> atsAgents = new ArrayList<String>();
+        atsAgents.add(this.atsAgent);
+        invalidateAtsDbLogConfiguration(atsAgents);
+    }
+
+    /**
+     * Explicitly mark ATS agent(s) as not configured. If any of the agent was not previously configured, no error will be thrown<br>
+     * Note that this method does not perform any operation to the actual agents, neither checks if agent is still running in the provided address
+     */
+    public static void invalidateAtsDbLogConfiguration( List<String> atsAgents ) {
+
+        TestcaseStateListener.getInstance()
+                             .invalidateConfiguredAtsAgents(atsAgents);
     }
 }
