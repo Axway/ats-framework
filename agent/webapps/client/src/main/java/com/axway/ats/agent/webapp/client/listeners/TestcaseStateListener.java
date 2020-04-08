@@ -111,15 +111,12 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             return;
         }
 
-        for (String atsAgent : atsAgents) {
+        synchronized (configuredAgents) {
 
-            // configure only not configured agents
-            if (!configuredAgents.contains(atsAgent)) {
+            for (String atsAgent : atsAgents) {
 
-                // Here we need to sync on the 'atsAgent' String, which is not good solution at all,
-                // because there can be another sync on the same string in the JVM (possible deadlocks).
-                // We will try to prevent that adding a 'unique' prefix
-                synchronized ( ("ATS_STRING_LOCK-" + atsAgent).intern()) {
+                // configure only not configured agents
+                if (!configuredAgents.contains(atsAgent)) {
 
                     if (!configuredAgents.contains(atsAgent)) {
 
@@ -172,24 +169,27 @@ public class TestcaseStateListener implements ITestcaseStateListener {
         if (configuredAgents == null || configuredAgents.isEmpty()) {
             return;
         } else {
-            for (String agent : atsAgents) {
-                boolean agentCleared = false;
-                
-                if (configuredAgents.contains(agent)) {
-                    configuredAgents.remove(agent);
-                    agentCleared = true;
-                } else {
-                    agent = HostUtils.getAtsAgentIpAndPort(agent); // set the default port if needed
+
+            synchronized (configuredAgents) {
+                for (String agent : atsAgents) {
+                    boolean agentCleared = false;
+
                     if (configuredAgents.contains(agent)) {
                         configuredAgents.remove(agent);
                         agentCleared = true;
+                    } else {
+                        agent = HostUtils.getAtsAgentIpAndPort(agent); // set the default port if needed
+                        if (configuredAgents.contains(agent)) {
+                            configuredAgents.remove(agent);
+                            agentCleared = true;
+                        }
                     }
-                }
 
-                if (agentCleared) {
-                    log.info(String.format(message, agent));
-                }
+                    if (agentCleared) {
+                        log.info(String.format(message, agent));
+                    }
 
+                }
             }
         }
 
