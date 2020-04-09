@@ -71,7 +71,7 @@ public class S3Verification extends VerificationSkeleton {
      * @param secretKey credentials
      * @param bucketName name of the bucket to be used
      * @param directory base directory. Should not start with slash and root bucket directory is just empty string
-     * @param objectName object name/key to be found
+     * @param fileName object name/key to be found
      * @param recursive should search for match be done recursively
      */
     @PublicAtsApi
@@ -91,7 +91,7 @@ public class S3Verification extends VerificationSkeleton {
      *           Null means default region.
      * @param bucketName name of the bucket to be used
      * @param directory base directory. Should not start with slash and root bucket directory is just empty string
-     * @param objectName object name/key to be found
+     * @param fileName object name/key to be found
      * @param recursive should search for match be done recursively
      */
     @PublicAtsApi

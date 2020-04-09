@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.axway.ats.core.utils.IoUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -49,9 +50,10 @@ import com.azure.storage.blob.specialized.PageBlobAsyncClient;
 @PublicAtsApi
 public class BlobStorageOperations {
 
-    private static final Logger log = Logger.getLogger(BlobStorageOperations.class);
+    private static final Logger log                    = Logger.getLogger(BlobStorageOperations.class);
+    private static final long   DEFAULT_TIMEOUT_IN_SEC = 5 * 60; // in seconds
 
-    private BlobServiceClient   serviceClient;
+    private BlobServiceClient serviceClient;
 
     @PublicAtsApi
     public BlobStorageOperations( String connectionString, String sasToken ) {
@@ -63,19 +65,22 @@ public class BlobStorageOperations {
 
     /**
      * Obtain list of the container's names<br>
-     * Note that this method will return up to 5000 container names. If you want more than that, use {@link BlobStorageOperations#listContainers(int, String, long)}
+     * Uses default timeout of {@link #DEFAULT_TIMEOUT_IN_SEC} seconds.
+     * @see #listContainers(String, long)
      * @return list of container names
      * */
     @PublicAtsApi
     public List<String> listContainers() {
 
-        return listContainers(null, 0);
+        return listContainers(null, DEFAULT_TIMEOUT_IN_SEC);
     }
 
     /**
      * Obtain list of the container's names
      * @param containerNamePrefix - specify container name prefix or the full container name
-     * @param retrieveTimeouts - the maximum amount of time (in milliseconds) to wait for the operation to complete. If the operation did not complete in that time {@link BlobStorageException} will be thrown/raised
+     * @param retrieveTimeout - the maximum amount of time (in seconds) to wait for the operation to complete.
+     *                        If the operation did not complete in that time {@link BlobStorageException} will
+     *                        be thrown/raised
      * @return list of container names
      * */
     @PublicAtsApi
@@ -89,7 +94,6 @@ public class BlobStorageOperations {
             public void accept( BlobContainerItem t ) {
 
                 containerNames.add(t.getName());
-
             }
         });
         return containerNames;
@@ -108,46 +112,45 @@ public class BlobStorageOperations {
         try {
             return serviceClient.getBlobContainerClient(containerName).exists();
         } catch (Exception e) {
-            e.printStackTrace();
+            log.warn("Error while looking for container named '" + containerName + "'", e);
             return false;
         }
-
     }
 
     /**
-     * Create new container. If the container already exists, a {@link BlobStorageException} will be thrown<br>
-     * Note that this method may fail if the container was recently deleted. So you may have to wait a little before invoking this method on already deleted container
-     * 
+     * Create new container. If the container already exists, a {@link BlobStorageException} will be thrown.<br>
+     * Note that this method may fail if the container was recently deleted. So you may have to wait a little before
+     * invoking this method on already deleted container.
+     *
      * @param containerName - the container name
      * */
     @PublicAtsApi
     public void createContainer( String containerName ) {
 
         log.info("Creating container '" + containerName + "' ...");
-
         serviceClient.getBlobContainerClient(containerName).create();
-
         log.info("Container '" + containerName + "' successfully created.");
     }
 
     /**
      * Create new container
      * @param containerName - the new container name
-     * @param timeout - the maximum amount of time (in milliseconds) to wait for container to be created.
-     * @throws BlobStorageException if the container was not created for up to timeout milliseconds
+     * @param timeoutSec - the maximum amount of time (in seconds) to wait for container to be created.
+     * @throws BlobStorageException if the container was not created for up to timeout seconds
      * */
     @PublicAtsApi
-    public void createContainer( String containerName, long timeout ) {
+    public void createContainer( String containerName, long timeoutSec ) {
 
         long startTime = System.currentTimeMillis();
+        long timeoutMs = timeoutSec * 1000; // convert to Ms
 
         boolean logBeingDeletedMessage = true;
 
-        log.info("Creating container '" + containerName + "' while waiting up to " + timeout
-                 + " milliseconds for the operation to complete ...");
+        log.info("Creating container '" + containerName + "' while waiting up to " + timeoutSec
+                 + " seconds for the operation to complete ...");
 
         BlobStorageException lastException = null;
-        while (System.currentTimeMillis() - startTime <= timeout) {
+        while (System.currentTimeMillis() - startTime <= timeoutMs) {
 
             try {
                 serviceClient.getBlobContainerClient(containerName).create();
@@ -155,28 +158,30 @@ public class BlobStorageOperations {
                 return;
             } catch (BlobStorageException bse) {
                 if (ExceptionUtils.containsMessage("InvalidResourceName", bse, true)) {
-                    throw bse;
+                    throw bse; // TODO: wrap exception into ATS one
                 } else if (ExceptionUtils.containsMessage("ContainerBeingDeleted", bse, true)
                            && logBeingDeletedMessage) {
                     logBeingDeletedMessage = false;
-                    log.warn("Container '" + containerName
-                             + "' is currently being deleted!. This can lead to failure of createContainer method. You should increase the timeout for creation of this container if this error is persistent");
+                    log.warn("Container '" + containerName + "' is currently being deleted!. This can lead to failure "
+                             + "of createContainer method. You should increase the timeout for creation of this "
+                             + "container if this error is persistent");
                 }
                 lastException = bse;
             }
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
 
-        throw new BlobStorageException("Could not create container '" + containerName + "' in " + timeout
-                                            + " milliseconds",
-                                            lastException);
+        throw new BlobStorageException("Could not create container '" + containerName + "' in " + timeoutSec
+                                       + " seconds", lastException);
     }
 
     /**
      * Delete existing container. If the container exists, a {@link BlobStorageException} will be thrown<br>
-     * Note that there is a delay between calling this method and the container being deleted, so invoking {@code BlobOperations#createContainer(String)} with the same container name may fail
+     * Note that there is a delay between calling this method and the container being deleted, so invoking
+     * {@code BlobOperations#createContainer(String)} with the same container name may fail.
      * @param containerName - the container name
      * */
     @PublicAtsApi
@@ -192,16 +197,17 @@ public class BlobStorageOperations {
     /**
      * Delete existing container
      * @param containerName - the container name
-     * @param timeout - the maximum amount of time (in milliseconds) to wait for container to be deleted.
-     * @throws BlobStorageException if the container was not deleted for up to timeout milliseconds
+     * @param timeoutSec - the maximum amount of time (in seconds) to wait for container to be deleted.
+     * @throws BlobStorageException if the container was not deleted for up to timeout seconds
      * */
     @PublicAtsApi
-    public void deleteContainer( String containerName, long timeout ) {
+    public void deleteContainer( String containerName, long timeoutSec ) {
 
         long startTime = System.currentTimeMillis();
+        long timeoutMs = timeoutSec * 1000;
 
         BlobStorageException lastException = null;
-        while (System.currentTimeMillis() - startTime <= timeout) {
+        while (System.currentTimeMillis() - startTime <= timeoutMs) {
 
             try {
                 this.deleteContainer(containerName);
@@ -214,12 +220,12 @@ public class BlobStorageOperations {
 
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {}
+            } catch (InterruptedException e) {
+            }
         }
 
-        throw new BlobStorageException("Could not delete container '" + containerName + "' in " + timeout
-                                            + " milliseconds",
-                                            lastException);
+        throw new BlobStorageException("Could not delete container '" + containerName + "' in " + timeoutSec
+                                       + " seconds", lastException);
     }
 
     /**
@@ -233,10 +239,10 @@ public class BlobStorageOperations {
 
         List<BlobInfo> blobs = listBlobs(containerName);
         if (blobs == null || blobs.isEmpty()) {
-            log.info("Cointaner '" + containerName + "' has no blobs inside. Nothing to purge.");
+            log.info("Container '" + containerName + "' has no blobs inside. Nothing to purge.");
         } else {
-            log.info("Cointaner '" + containerName + "' has " + blobs.size()
-                     + " blobs inside. Begin purging of all blobs ...");
+            log.info("Container '" + containerName + "' has " + blobs.size() + " blobs inside. Begin purging of "
+                     + "all blobs ...");
         }
         for (BlobInfo blob : blobs) {
             this.deleteBlob(containerName, blob.getBlobName());
@@ -244,14 +250,11 @@ public class BlobStorageOperations {
 
         if (!isContainerEmpty(containerName)) {
             blobs = listBlobs(containerName);
-            //TODO: print blob names ?!?!
+            // if needed, left objects could be listed after exception is caught
             throw new BlobStorageException("Container '" + containerName
-                                                + "' could not be properly purged. Blobs left: "
-                                                + blobs.size());
+                                           + "' could not be properly purged. Blobs left: " + blobs.size());
         }
-
         log.info("Container '" + containerName + "' successfully purged.");
-
     }
 
     /**
@@ -275,7 +278,7 @@ public class BlobStorageOperations {
     @PublicAtsApi
     public List<BlobInfo> listBlobs( String containerName ) {
 
-        return listBlobs(containerName, null, null, 0);
+        return listBlobs(containerName, null, null, DEFAULT_TIMEOUT_IN_SEC);
     }
 
     /**
@@ -287,7 +290,7 @@ public class BlobStorageOperations {
     @PublicAtsApi
     public List<BlobInfo> listBlobs( String containerName, String prefix ) {
 
-        return listBlobs(containerName, prefix, null, 0);
+        return listBlobs(containerName, prefix, null, DEFAULT_TIMEOUT_IN_SEC);
 
     }
 
@@ -301,7 +304,7 @@ public class BlobStorageOperations {
     @PublicAtsApi
     public List<BlobInfo> listBlobs( String containerName, String prefix, String directory ) {
 
-        return listBlobs(containerName, prefix, directory, 0);
+        return listBlobs(containerName, prefix, directory, DEFAULT_TIMEOUT_IN_SEC);
     }
 
     /**
@@ -313,17 +316,13 @@ public class BlobStorageOperations {
      * @return list {@link BlobInfo}
      * */
     @PublicAtsApi
-    public List<BlobInfo> listBlobs( String containerName, String prefix, String directory,
-                                          long retrieveTimeout ) {
+    public List<BlobInfo> listBlobs( String containerName, String prefix, String directory, long retrieveTimeout ) {
 
         StringBuilder sb = new StringBuilder();
-
         sb.append("Listing blobs");
-
         log.info(sb.toString());
 
         final List<BlobInfo> infos = new ArrayList<BlobInfo>();
-
         PagedIterable<BlobItem> blobs = null;
 
         ListBlobsOptions lbops = new ListBlobsOptions();
@@ -356,7 +355,6 @@ public class BlobStorageOperations {
                 public void accept( BlobItem blobItem ) {
 
                     BlobInfo info = new BlobInfo();
-
                     BlobItemProperties properties = blobItem.getProperties();
 
                     info.setAccessTier(properties.getAccessTier());
@@ -428,8 +426,8 @@ public class BlobStorageOperations {
         } catch (Exception e) {
             if (ExceptionUtils.containsMessage("Status code 404, (empty body)", e, true)) {
                 throw new BlobStorageException("Blob '" + blobName + "' does not exist in container '"
-                                                    + containerName
-                                                    + "'", e);
+                                               + containerName
+                                               + "'", e);
             } else {
                 throw e;
             }
@@ -513,50 +511,50 @@ public class BlobStorageOperations {
         log.info("Blob '" + blobName + "' successfully undeleted from container '" + containerName + "' ...");
     }*/
 
-    /**
+    /*
      * Rename existing blob<br>
      * Note that the creation and last modified time will be updated and only block blobs can be renamed
      * @param containerName - the container name
      * @param oldBlobName - the old blob name
      * @param newBlobName - the new blob name
-     * *//*
-                     @PublicAtsApi
-                     public void renameBlob( String containerName, String oldBlobName, String newBlobName ) {
-                     
-                     log.info("Renaming blob '" + oldBlobName + "' to '" + newBlobName + "' inside container '" + containerName
-                             + "' ...");
-                     
-                     try {
-                        String oldBlobUrl = this.serviceClient.getBlobContainerClient(containerName)
-                                                              .getBlobClient(oldBlobName)
-                                                              .getBlobUrl()
-                                            + this.sasToken;
-                     
-                        AzureBlobInfo origInfo = this.getBlobInfo(containerName, oldBlobName);
-                     
-                        if (origInfo.getBlobType() != BlobType.BLOCK_BLOB) {
-                            throw new AzureBlobStorageException("Only block blobs can be renamed!");
-                        }
-                     
-                        this.serviceClient.getBlobContainerClient(containerName)
-                                          .getBlobClient(newBlobName)
-                                          .copyFromUrlWithResponse(oldBlobUrl,
-                                                                   origInfo.getMetadata(),
-                                                                   origInfo.getAccessTier(),
-                                                                   null,
-                                                                   null,
-                                                                   null, null);
-                     
-                        this.deleteBlob(containerName, oldBlobName);
-                     } catch (Exception e) {
-                        throw new AzureBlobStorageException("Unable to rename blob from '" + oldBlobName + "' to '" + newBlobName
-                                                   + "' inside container '" + containerName + "'", e);
-                     }
-                     
-                     log.info("Successfully renamed blob from '" + oldBlobName + "' to '" + newBlobName + "' inside container '"
-                             + containerName + "'.");
-                     
-                     }*/
+     *
+             @PublicAtsApi
+             public void renameBlob( String containerName, String oldBlobName, String newBlobName ) {
+
+             log.info("Renaming blob '" + oldBlobName + "' to '" + newBlobName + "' inside container '" + containerName
+                     + "' ...");
+
+             try {
+                String oldBlobUrl = this.serviceClient.getBlobContainerClient(containerName)
+                                                      .getBlobClient(oldBlobName)
+                                                      .getBlobUrl()
+                                    + this.sasToken;
+
+                AzureBlobInfo origInfo = this.getBlobInfo(containerName, oldBlobName);
+
+                if (origInfo.getBlobType() != BlobType.BLOCK_BLOB) {
+                    throw new AzureBlobStorageException("Only block blobs can be renamed!");
+                }
+
+                this.serviceClient.getBlobContainerClient(containerName)
+                                  .getBlobClient(newBlobName)
+                                  .copyFromUrlWithResponse(oldBlobUrl,
+                                                           origInfo.getMetadata(),
+                                                           origInfo.getAccessTier(),
+                                                           null,
+                                                           null,
+                                                           null, null);
+
+                this.deleteBlob(containerName, oldBlobName);
+             } catch (Exception e) {
+                throw new AzureBlobStorageException("Unable to rename blob from '" + oldBlobName + "' to '" + newBlobName
+                                           + "' inside container '" + containerName + "'", e);
+             }
+
+             log.info("Successfully renamed blob from '" + oldBlobName + "' to '" + newBlobName + "' inside container '"
+                     + containerName + "'.");
+
+             }*/
 
     /**
      * Upload local file to a blob
@@ -566,16 +564,14 @@ public class BlobStorageOperations {
      * @param overwrite - whether to overwrite an existing blob with the same name or not
      * */
     @PublicAtsApi
-    public void uploadBlob( String containerName, String blobName, String localFilepath, boolean overwrite ) {
+    public void upload( String containerName, String blobName, String localFilepath, boolean overwrite ) {
 
         if (blobName == null || blobName.isEmpty()) {
             String[] tokens = localFilepath.replace("\\", "/").split("/");
             blobName = tokens[tokens.length - 1];
         }
 
-        log.info("Uploading " + ( (overwrite)
-                                              ? "(overwrite enabled)"
-                                              : "")
+        log.info("Uploading " + ((overwrite) ? "(overwrite enabled)" : "")
                  + " '" + localFilepath + "' to container '" + containerName + "' as a blob, named '" + blobName
                  + "' ...");
 
@@ -595,11 +591,9 @@ public class BlobStorageOperations {
      * @param overwrite - whether to overwrite an existing local file with the blob's content or not
      * */
     @PublicAtsApi
-    public void downloadBlob( String containerName, String blobName, String localFilepath, boolean overwrite ) {
+    public void download( String containerName, String blobName, String localFilepath, boolean overwrite ) {
 
-        log.info("Downloading " + ( (overwrite)
-                                                ? "(overwrite enabled)"
-                                                : "")
+        log.info("Downloading " + ((overwrite) ? "(overwrite enabled)" : "")
                  + "blob '" + blobName + "' from container '" + containerName + "' to file '" + localFilepath
                  + "' ...");
 
@@ -616,15 +610,16 @@ public class BlobStorageOperations {
      * Create page blob
      * @param containerName - the container name
      * @param blobName - the blob name
-     * @param size - the blob size. Note that it must be multiple of {@link PageBlobAsyncClient.PAGE_BYTES} (currently 512 bytes)
+     * @param size - the blob size. Note that it must be multiple of {@link PageBlobAsyncClient#PAGE_BYTES}
+     *             (currently 512 bytes)
      * @param overwrite - whether to overwrite any existing blob with the same name
      * */
     @PublicAtsApi
     public void createPageBlob( String containerName, String blobName, long size, boolean overwrite ) {
 
-        log.info("Creating " + ( (overwrite)
-                                             ? "or overwriting existing"
-                                             : "")
+        log.info("Creating " + ((overwrite)
+                                ? "or overwriting existing"
+                                : "")
                  + " page blob '" + blobName + "' inside container '" + containerName + "' with size '" + size
                  + "' ...");
 
@@ -635,7 +630,7 @@ public class BlobStorageOperations {
                          .create(size, overwrite);
         } catch (Exception e) {
             throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
-                                                + containerName + "'", e);
+                                           + containerName + "'", e);
         }
 
         log.info("Successfully created page blob '" + blobName + "' inside container '" + containerName + "' with size "
@@ -651,9 +646,7 @@ public class BlobStorageOperations {
     @PublicAtsApi
     public void createAppendBlob( String containerName, String blobName, boolean overwrite ) {
 
-        log.info("Creating " + ( (overwrite)
-                                             ? "or overwriting existing"
-                                             : "")
+        log.info("Creating " + ((overwrite) ? "or overwriting existing" : "")
                  + " append blob '" + blobName + "' inside container '" + containerName + "' ...");
 
         try {
@@ -663,7 +656,7 @@ public class BlobStorageOperations {
                          .create(overwrite);
         } catch (Exception e) {
             throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
-                                                + containerName + "'", e);
+                                           + containerName + "'", e);
         }
 
         log.info("Successfully created append blob '" + blobName + "' inside container '" + containerName + "'.");
@@ -694,7 +687,7 @@ public class BlobStorageOperations {
                 this.createBlockBlob(containerName, blobName, content, overwrite);
                 break;
             case PAGE_BLOB:
-                long size = calculatePageBlobSize(content.length);
+                long size = calculatePageBlobs(content.length);
                 this.createPageBlob(containerName, blobName, size, overwrite);
                 break;
             default:
@@ -719,9 +712,7 @@ public class BlobStorageOperations {
                 throw new IllegalArgumentException("Content must not be null");
             }
 
-            log.info("Creating " + ( (overwrite)
-                                                 ? "or overwriting existing"
-                                                 : "")
+            log.info("Creating " + ((overwrite) ? "or overwriting existing" : "")
                      + " block blob '" + blobName + "' inside container '" + containerName + "' with size '"
                      + content.length
                      + "' ...");
@@ -733,18 +724,13 @@ public class BlobStorageOperations {
                               .upload(bais, content.length, overwrite);
 
             log.info("Successfully created block blob '" + blobName + "' inside container '" + containerName
-                     + "' with size "
-                     + content.length + ".");
+                     + "' with size " + content.length + ".");
 
         } catch (Exception e) {
             throw new BlobStorageException("Could not create block blob '" + blobName + "' inside container '"
-                                                + containerName + "'", e);
+                                           + containerName + "'", e);
         } finally {
-            if (bais != null) {
-                try {
-                    bais.close();
-                } catch (IOException e) {}
-            }
+            IoUtils.closeStream(bais, "Could not close byte array stream");
         }
 
     }
@@ -774,32 +760,32 @@ public class BlobStorageOperations {
                          .getAppendBlobClient()
                          .appendBlock(bais, content.length);
 
-            log.info("Susscessfully appended " + content.length + " bytes to append blob '" + blobName
-                     + "' from container '" + containerName + "'.");
+            log.info("Successfully appended " + content.length + " bytes to append blob '" + blobName
+                         + "' from container '" + containerName + "'.");
         } finally {
-            if (bais != null) {
-                try {
-                    bais.close();
-                } catch (IOException e) {
-                    log.error("Could not close byte array stream", e);
-                }
-            }
+            IoUtils.closeStream(bais, "Could not close byte array stream");
         }
     }
 
-    private long calculatePageBlobSize( long length ) {
+    /**
+     * Calculate ceil - number of pages/blocks to hold length number of bytes
+     * @param length total bytes needed
+     * @return number of pages/blocks needed, each having {@link PageBlobAsyncClient#PAGE_BYTES} bytes
+     */
+    private long calculatePageBlobs( long length ) {
 
-        int pageLength = PageBlobAsyncClient.PAGE_BYTES;
+        /*int pageLength = PageBlobAsyncClient.PAGE_BYTES;
         int i = 0;
         while (pageLength < length) {
             pageLength = i++ * PageBlobAsyncClient.PAGE_BYTES;
         }
-
         return pageLength;
+        */
+        return (length + PageBlobAsyncClient.PAGE_BYTES - 1) / PageBlobAsyncClient.PAGE_BYTES;
     }
 
     private PagedIterable<BlobContainerItem> listContainers( String containerNamePrefix,
-                                                             long retrieveTimeoutMilliSeconds,
+                                                             long retrieveTimeoutSeconds,
                                                              boolean retrieveMetadata ) {
 
         StringBuilder message = new StringBuilder();
@@ -812,15 +798,18 @@ public class BlobStorageOperations {
             message.append(" with prefix '" + containerNamePrefix + "'");
             lbco.setPrefix(containerNamePrefix);
         }
-        message.append(" ...");
-        log.info(message.toString());
+        if (log.isInfoEnabled()) {
+            message.append(" ...");
+            log.info(message.toString());
+        }
         bcld.setRetrieveMetadata(retrieveMetadata);
         lbco.setDetails(bcld);
-        if (retrieveTimeoutMilliSeconds <= 0) {
-            retrieveTimeoutMilliSeconds = Integer.MAX_VALUE / 2; // just a little less than too much
+        if (retrieveTimeoutSeconds <= 0) {
+            retrieveTimeoutSeconds = Integer.MAX_VALUE / 2; // just a little less than too much
         }
         PagedIterable<BlobContainerItem> blobContainers = serviceClient.listBlobContainers(lbco,
-                                                                                           Duration.ofMillis(retrieveTimeoutMilliSeconds));
+                                                                                           Duration.ofSeconds(
+                                                                                                   retrieveTimeoutSeconds));
 
         log.info("Successfully listed " + blobContainers.stream().count() + " containers.");
 

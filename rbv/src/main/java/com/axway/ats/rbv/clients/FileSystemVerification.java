@@ -190,8 +190,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     }
 
     /**
-     * Add rule to check if the file is formated in the way that ASCII armor files are
-     * formated. This would mean that it should have the following properties:
+     * Add rule to check if the file is formatted in the way that ASCII armor files are
+     * formatted. This would mean that it should have the following properties:
      * <ul>
      *  <li> a "-----BEGIN PGP MESSAGE-----" message </li>
      *  <li> no line longer than 65 characters </li>
@@ -203,7 +203,7 @@ public class FileSystemVerification extends VerificationSkeleton {
      * the two strings are present and that each line is shorter than 65 characters.
      * However this solution should work for most of the cases</b>
      *
-     * @param isAsciiArmour true if we would expect the file to be formated this way
+     * @param isAsciiArmour true if we would expect the file to be formatted this way
      * @throws RbvException thrown on error
      */
     @PublicAtsApi

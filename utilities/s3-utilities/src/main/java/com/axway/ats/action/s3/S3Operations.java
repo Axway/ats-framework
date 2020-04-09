@@ -464,7 +464,7 @@ public class S3Operations {
     }
 
     /**
-     * Upload a file with metadata.
+     * Upload object data directly from stream.
      *
      * @param targetObjectName the name of the file that will be uploaded
      * @param sourceInputStream the InputStream of the data that should be uploaded. It might be closed after reading.

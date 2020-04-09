@@ -45,7 +45,7 @@ public class BlobModtimeBlobStorageRule extends AbstractBlobStorageRule {
             return false;
         }
 
-        // nullifying the last 3 digits, so it will return the same result as from S3Operations method getObject() 
+        // nullifying the last 3 digits, so it will return the same result as from BlobStorageOperations method getObject()
         actualTime = ( ((Date) modTime).getTime() / 1000) * 1000;
         actualResult = actualTime == this.srcModtime;
 

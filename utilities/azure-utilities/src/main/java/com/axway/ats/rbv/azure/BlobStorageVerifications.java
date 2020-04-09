@@ -40,6 +40,7 @@ import com.azure.storage.blob.models.BlobType;
 * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">here</a>
 *
 */
+@PublicAtsApi
 public class BlobStorageVerifications extends VerificationSkeleton {
 
     private String monitorName = "azure_blob_storage_monitor_";
