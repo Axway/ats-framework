@@ -260,7 +260,7 @@ public class BlobStorageVerifications extends VerificationSkeleton {
             matchedObjects[i] = newMatchedObject;
             MetaData currentMetaData = matchedMetaData.get(i);
             newMatchedObject.setBlobName((String) currentMetaData.getProperty(BlobStorageMetaData.BLOB_NAME));
-            newMatchedObject.setBlobType((BlobType) currentMetaData.getProperty(BlobStorageMetaData.BLOB_TYPE));
+            newMatchedObject.setBlobType((com.axway.ats.action.azure.BlobInfo.BlobType) currentMetaData.getProperty(BlobStorageMetaData.BLOB_TYPE));
             newMatchedObject.setContainerName((String) currentMetaData.getProperty(BlobStorageMetaData.CONTAINER_NAME));
             newMatchedObject.setContentType((String) currentMetaData.getProperty(BlobStorageMetaData.CONTENT_TYPE));
             newMatchedObject.setCreationTime((Date) currentMetaData.getProperty(BlobStorageMetaData.CREATION_TIME));

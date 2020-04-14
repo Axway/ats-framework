@@ -19,12 +19,26 @@ import java.util.Date;
 import java.util.Map;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.azure.storage.blob.models.AccessTier;
+import com.axway.ats.core.utils.StringUtils;
 import com.azure.storage.blob.models.BlobProperties;
-import com.azure.storage.blob.models.BlobType;
 
 @PublicAtsApi
 public class BlobInfo {
+
+    /**
+     * Wrapper around the Azure Blob Type
+     * */
+    public enum BlobType {
+        APPEND_BLOB, BLOCK_BLOB, PAGE_BLOB;
+
+    }
+
+    /**
+     * Wrapper around the Azure Access Tier
+     * */
+    public enum AccessTier {
+        P4, P6, P10, P15, P20, P30, P40, P50, P60, P70, P80, HOT, COOL, ARCHIVE
+    };
 
     private String              containerName;
     private String              blobName;
@@ -51,15 +65,17 @@ public class BlobInfo {
     BlobInfo( String containerName, String blobName, BlobProperties properties ) {
 
         this(containerName, blobName, properties.getContentMd5(),
-             properties.getBlobSize(), properties.getETag(), properties.getContentType(), properties.getBlobType(),
+             properties.getBlobSize(), properties.getETag(), properties.getContentType(),
+             toAtsBlobType(properties.getBlobType()),
              Date.from(properties.getLastModified().toInstant()),
-             Date.from(properties.getCreationTime().toInstant()), properties.getMetadata(), properties.getAccessTier());
+             Date.from(properties.getCreationTime().toInstant()), properties.getMetadata(),
+             toAtsAccessTier(properties.getAccessTier()));
     }
 
     @PublicAtsApi
     public BlobInfo( String containerName, String blobName, byte[] md5, long size, String eTag, String contentType,
-                          BlobType blobType, Date lastModified, Date creationTime, Map<String, String> metadata,
-                          AccessTier accessTier ) {
+                     BlobType blobType, Date lastModified, Date creationTime, Map<String, String> metadata,
+                     AccessTier accessTier ) {
 
         this.containerName = containerName;
         this.blobName = blobName;
@@ -74,6 +90,24 @@ public class BlobInfo {
         this.creationTime = creationTime;
         this.metadata = metadata;
         this.accessTier = accessTier;
+    }
+
+    public static BlobType toAtsBlobType( com.azure.storage.blob.models.BlobType azureBlobType ) {
+
+        if (azureBlobType == null || StringUtils.isNullOrEmpty(azureBlobType.name())) {
+            return null;
+        }
+
+        return BlobType.valueOf(azureBlobType.name());
+    }
+
+    public static AccessTier toAtsAccessTier( com.azure.storage.blob.models.AccessTier azureAccessTier ) {
+
+        if (azureAccessTier == null || StringUtils.isNullOrEmpty(azureAccessTier.toString())) {
+            return null;
+        }
+
+        return AccessTier.valueOf(azureAccessTier.toString().toUpperCase());
     }
 
     public String getContainerName() {
@@ -195,14 +229,21 @@ public class BlobInfo {
 
     public String toString() {
 
-        final String delimiter = "|_|";
-
         StringBuilder sb = new StringBuilder();
 
-        sb.append(containerName + delimiter)
-          .append(blobName + delimiter)
-          .append(md5 + delimiter)
-          .append(creationTime.getTime() + delimiter);
+        sb.append(this.getClass().getSimpleName())
+          .append(" [")
+          .append("name=" + this.blobName + ", ")
+          .append("container name=" + this.containerName + ", ")
+          .append("type=" + this.blobType + ", ")
+          .append("access tier=" + this.accessTier + ", ")
+          .append("eTag=" + this.eTag + ", ")
+          .append("content type=" + this.contentType + ", ")
+          .append("MD5=" + this.md5 + ", ")
+          .append("size=" + this.size + ", ")
+          .append("creation time=" + this.creationTime + ", ")
+          .append("last mod time=" + this.lastModified + "")
+          .append("]");
 
         return sb.toString();
 

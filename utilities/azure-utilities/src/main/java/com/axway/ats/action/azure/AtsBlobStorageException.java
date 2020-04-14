@@ -22,19 +22,19 @@ import com.axway.ats.common.PublicAtsApi;
  * */
 
 @PublicAtsApi
-public class BlobStorageException extends RuntimeException {
+public class AtsBlobStorageException extends RuntimeException {
 
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
-    public BlobStorageException( String message ) {
+    public AtsBlobStorageException( String message ) {
 
         super(message);
     }
 
-    public BlobStorageException( String message, Throwable cause ) {
+    public AtsBlobStorageException( String message, Throwable cause ) {
 
         super(message, cause);
     }
