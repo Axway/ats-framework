@@ -872,18 +872,10 @@ public class BlobStorageOperations {
                                           long contentLength,
                                           boolean overwrite ) throws IOException {
 
-        if (overwrite) {
-            if (this.doesBlobExist(containerName, blobName)) {
-                this.deleteBlob(containerName, blobName);
-            }
-        }
-
-        boolean create = true;
-
         try (BlobOutputStream bos = this.serviceClient.getBlobContainerClient(containerName)
                                                       .getBlobClient(blobName)
                                                       .getBlockBlobClient()
-                                                      .getBlobOutputStream()) {
+                                                      .getBlobOutputStream(overwrite)) {
 
             // create the append blob
             long bytesTransferred = 0;
@@ -894,10 +886,6 @@ public class BlobStorageOperations {
                 // append the next block of data
                 if (readBytes < defaultBufferSize) {
                     buffer = Arrays.copyOf(buffer, readBytes);
-                }
-                if (create) {
-                    this.createBlockBlob(containerName, blobName, buffer, overwrite);
-                    create = false;
                 }
                 bos.write(buffer);
                 bytesTransferred += readBytes;
@@ -1233,30 +1221,30 @@ public class BlobStorageOperations {
      * @param overwrite - whether to overwrite any existing blob with the same name
      * @throws AtsBlobStorageException - if exception occurred
      * *//*
-                                                                                                                               @PublicAtsApi
-                                                                                                                               public void createBlob( String containerName, String blobName, byte[] content, BlobType blobType,
-                                                                                                                                                  boolean overwrite ) {
-                                                                                                                               
-                                                                                                                               if (content == null) {
-                                                                                                                                  throw new IllegalArgumentException("Content must not be null");
-                                                                                                                               }
-                                                                                                                               
-                                                                                                                               switch (blobType) {
-                                                                                                                                  case APPEND_BLOB:
-                                                                                                                                      this.createAppendBlob(containerName, blobName, overwrite);
-                                                                                                                                      this.appendToBlob(containerName, blobName, content);
-                                                                                                                                      break;
-                                                                                                                                  case BLOCK_BLOB:
-                                                                                                                                      this.createBlockBlob(containerName, blobName, content, overwrite);
-                                                                                                                                      break;
-                                                                                                                                  case PAGE_BLOB:
-                                                                                                                                      long size = calculatePageBlobs(content.length);
-                                                                                                                                      this.createPageBlob(containerName, blobName, size, overwrite);
-                                                                                                                                      break;
-                                                                                                                                  default:
-                                                                                                                                      throw new IllegalArgumentException("Blob type '" + blobType.name() + "' is not supported");
-                                                                                                                               }
-                                                                                                                               }*/
+                                                                                                                                   @PublicAtsApi
+                                                                                                                                   public void createBlob( String containerName, String blobName, byte[] content, BlobType blobType,
+                                                                                                                                                      boolean overwrite ) {
+                                                                                                                                   
+                                                                                                                                   if (content == null) {
+                                                                                                                                      throw new IllegalArgumentException("Content must not be null");
+                                                                                                                                   }
+                                                                                                                                   
+                                                                                                                                   switch (blobType) {
+                                                                                                                                      case APPEND_BLOB:
+                                                                                                                                          this.createAppendBlob(containerName, blobName, overwrite);
+                                                                                                                                          this.appendToBlob(containerName, blobName, content);
+                                                                                                                                          break;
+                                                                                                                                      case BLOCK_BLOB:
+                                                                                                                                          this.createBlockBlob(containerName, blobName, content, overwrite);
+                                                                                                                                          break;
+                                                                                                                                      case PAGE_BLOB:
+                                                                                                                                          long size = calculatePageBlobs(content.length);
+                                                                                                                                          this.createPageBlob(containerName, blobName, size, overwrite);
+                                                                                                                                          break;
+                                                                                                                                      default:
+                                                                                                                                          throw new IllegalArgumentException("Blob type '" + blobType.name() + "' is not supported");
+                                                                                                                                   }
+                                                                                                                                   }*/
 
     /**
      * Append to an Append blob
