@@ -26,7 +26,7 @@ import com.azure.storage.blob.models.BlobProperties;
 public class BlobInfo {
 
     /**
-     * Wrapper around the Azure Blob Type
+     * Wrapper around the Azure Blob Type {@link com.azure.storage.blob.models.BlobType}
      * */
     public enum BlobType {
         APPEND_BLOB, BLOCK_BLOB, PAGE_BLOB;
@@ -34,7 +34,7 @@ public class BlobInfo {
     }
 
     /**
-     * Wrapper around the Azure Access Tier
+     * Wrapper around the Azure Access Tier {@link com.azure.storage.blob.models.AccessTier}
      * */
     public enum AccessTier {
         P4, P6, P10, P15, P20, P30, P40, P50, P60, P70, P80, HOT, COOL, ARCHIVE
