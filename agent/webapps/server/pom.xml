@@ -12,7 +12,6 @@
 
 	<properties>
 		<maven.compiler.verbose>false</maven.compiler.verbose> <!-- Use true only for debugging. Produces too much verbose messages like loading classes from classpath -->
-		<gson.version>2.7</gson.version>
 	</properties>
 
 	<build>

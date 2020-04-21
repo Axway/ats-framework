@@ -132,18 +132,12 @@
             <artifactId>ats-actionlibrary</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!-- <dependency> -->
-        <!-- <groupId>com.axway.ats.framework</groupId> -->
-        <!-- <artifactId>ats-testharness</artifactId> -->
-        <!-- <version>${project.version}</version> -->
-        <!-- <scope>test</scope> -->
-        <!-- </dependency> -->
-        <!--<dependency>
+        <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
             <scope>test</scope>
-        </dependency>-->
+        </dependency>
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>

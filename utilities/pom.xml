@@ -15,5 +15,6 @@
 
     <modules>
         <module>s3-utilities</module>
+        <module>azure-utilities</module>
     </modules>
 </project>

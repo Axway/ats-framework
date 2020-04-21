@@ -140,10 +140,10 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
+        <dependency> <!-- Needed for jaxws-rt -->
             <groupId>org.glassfish.pfl</groupId>
             <artifactId>pfl-basic</artifactId>
-            <version>4.0.1</version> <!-- TODO expose for both jboss and tomcat -->
+            <version>4.0.1</version>
         </dependency>
 
         <!-- Dependency for working with external processes -->

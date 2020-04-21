@@ -56,6 +56,7 @@
         <gpg.executable>gpg2</gpg.executable>
 
         <log4j.version>1.2.17</log4j.version>
+        <slf4j.version>1.7.30</slf4j.version>
         <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
         <javax.mail.version>1.4.4</javax.mail.version>
         <!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
@@ -364,6 +365,16 @@
                 <version>${log4j.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${org.apache.commons.commons-lang3.version}</version>
@@ -411,7 +422,7 @@
                 <artifactId>easymock</artifactId>
                 <version>${org.easymock.version}</version>
                 <scope>test</scope>
-                <exclusions>
+                <exclusions> <!-- TODO: seems to not be included in 4.1+, so check if this exclusion is still needed -->
                     <exclusion>
                         <artifactId>cglib</artifactId>
                         <groupId>cglib</groupId>

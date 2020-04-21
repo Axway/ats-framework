@@ -139,6 +139,11 @@
             <artifactId>log4j</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency> <!-- Needed for jaxws-rt -->
+            <groupId>org.glassfish.pfl</groupId>
+            <artifactId>pfl-basic</artifactId>
+            <version>4.0.1</version>
+        </dependency>
 
         <!-- Dependency for working with external processes -->
         <dependency>
@@ -162,7 +167,7 @@
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>javax.ws.rs-api</artifactId>
-            <version>${javax.ws.rs-api.version}</version> <!-- shouold be in sync with Jersey server and client impl -->
+            <version>${javax.ws.rs-api.version}</version> <!-- should be in sync with Jersey server and client impl -->
             <!-- <scope>provided</scope> -->
         </dependency>
         <dependency>

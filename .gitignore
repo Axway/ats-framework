@@ -22,6 +22,7 @@ local.properties
 
 # IntelliJ IDEA exclusions
 .idea/
+*.iml
 
 # External tool builders
 .externalToolBuilders/
@@ -36,6 +37,7 @@ local.properties
 build/
 ivy-lib/
 test-output/
+
 ### Maven ###
 target/
 pom.xml.tag
@@ -48,4 +50,4 @@ buildNumber.properties
 .mvn/timing.properties
 
 ### Swagger auto-generated doc ###
-agent/webapps/tomcatcontainer/src/main/webapp/swagger/swagger.json
+#agent/webapps/tomcatcontainer/src/main/webapp/swagger/swagger.json

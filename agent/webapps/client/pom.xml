@@ -22,6 +22,30 @@
         </resources>
 
         <plugins>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>${org.apache.maven.plugins.maven.javadoc.plugin.version}</version>
+                <configuration>
+                    <source>8</source>
+                    <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are
+                        treated as warnings -->
+                    <additionalJOption>-Xdoclint:none</additionalJOption>
+                    <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
+                    <failOnWarnings>false</failOnWarnings>
+                    <skip>true</skip> <!-- Do not generate javadoc for any of the classes in this module -->
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxws-maven-plugin</artifactId>
@@ -33,6 +57,7 @@
                     </execution>
                 </executions>
                 <configuration>
+
                     <packageName>com.axway.ats.agent.webapp.client</packageName>
                 </configuration>
             </plugin>
