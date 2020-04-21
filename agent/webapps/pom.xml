@@ -1,79 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.axway.ats.framework.agent</groupId>
-		<artifactId>ats-agent</artifactId>
-		<version>4.0.7-SNAPSHOT</version>
-	</parent>
+    <parent>
+        <groupId>com.axway.ats.framework.agent</groupId>
+        <artifactId>ats-agent</artifactId>
+        <version>4.0.7-SNAPSHOT</version>
+    </parent>
 
-	<groupId>com.axway.ats.framework.agent.webapp</groupId>
-	<artifactId>ats-agent-webapp</artifactId>
-	<name>ATS-Agent-WebApp</name>
-	<packaging>pom</packaging>
+    <groupId>com.axway.ats.framework.agent.webapp</groupId>
+    <artifactId>ats-agent-webapp</artifactId>
+    <name>ATS-Agent-WebApp</name>
+    <packaging>pom</packaging>
 
-	<modules>
-		<module>client</module>
-		<module>server</module>
-		<module>jbosscontainer</module>
-		<module>tomcatcontainer</module>
-	</modules>
+    <modules>
+        <module>client</module>
+        <module>server</module>
+        <module>jbosscontainer</module>
+        <module>tomcatcontainer</module>
+    </modules>
 
-	<properties>
-		<maven-war-plugin.version>2.6</maven-war-plugin.version>
-	</properties>
+    <properties>
+        <maven-war-plugin.version>2.6</maven-war-plugin.version>
+    </properties>
 
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-war-plugin</artifactId>
-					<version>${maven-war-plugin.version}</version>
-				</plugin>
-				<plugin>
-					<groupId>org.codehaus.mojo</groupId>
-					<artifactId>jaxws-maven-plugin</artifactId>
-					<version>2.6</version>
-					<configuration>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-war-plugin</artifactId>
+                    <version>${maven-war-plugin.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>jaxws-maven-plugin</artifactId>
+                    <version>2.6</version>
+                    <configuration>
                         <vmArgs><!-- needed with newer JAXP versions and java 8, to access local wsdl files -->
-							<vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
-						</vmArgs>
-						<keep>true</keep>
-						<verbose>true</verbose>
-						<xnocompile>true</xnocompile>
-					</configuration>
-				</plugin>
-				<!--This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>jaxws-maven-plugin</artifactId>
-										<versionRange>[2.3,)</versionRange>
-										<goals>
-											<goal>wsimport</goal>
-											<goal>wsgen</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+                            <vmArg>-Djavax.xml.accessExternalSchema=all</vmArg>
+                        </vmArgs>
+                        <keep>true</keep>
+                        <verbose>true</verbose>
+                        <xnocompile>true</xnocompile>
+                    </configuration>
+                </plugin>
+                <!--This plugin's configuration is used to store Eclipse m2e settings
+                    only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>jaxws-maven-plugin</artifactId>
+                                        <versionRange>[2.3,)</versionRange>
+                                        <goals>
+                                            <goal>wsimport</goal>
+                                            <goal>wsgen</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <ignore/>
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
