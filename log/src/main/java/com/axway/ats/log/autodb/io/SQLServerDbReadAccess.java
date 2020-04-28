@@ -562,7 +562,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         }
     }
 
-    public List<Machine> getMachines() throws DatabaseAccessException {
+    public List<Machine> getMachines( String whereClause ) throws DatabaseAccessException {
 
         List<Machine> machines = new ArrayList<Machine>();
 
@@ -570,7 +570,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM tMachines ORDER BY machineName");
+            statement = connection.prepareStatement("SELECT * FROM tMachines " + whereClause + " ORDER BY machineName");
             rs = statement.executeQuery();
             while (rs.next()) {
                 Machine machine = new Machine();
@@ -587,6 +587,13 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         }
 
         return machines;
+
+    }
+
+    public List<Machine> getMachines() throws DatabaseAccessException {
+
+        return getMachines("WHERE 1=1");
+
     }
 
     public List<Message> getMessages( int startRecord, int recordsCount, String whereClause,
@@ -1050,13 +1057,14 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         return allStatistics;
     }
 
-    public List<Statistic> getSystemStatistics( float timeOffset,
+    public List<Statistic> getSystemStatistics(
+                                                float timeOffset,
                                                 String testcaseIds,
                                                 String machineIds,
                                                 String statsTypeIds,
+                                                String whereClause,
                                                 int utcTimeOffset,
-                                                boolean dayLightSavingOn )
-                                                                           throws DatabaseAccessException {
+                                                boolean dayLightSavingOn ) throws DatabaseAccessException {
 
         List<Statistic> allStatistics = new ArrayList<Statistic>();
 
@@ -1071,12 +1079,13 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         ResultSet rs = null;
         try {
 
-            callableStatement = connection.prepareCall("{ call sp_get_system_statistics(?, ?, ?, ?) }");
+            callableStatement = connection.prepareCall("{ call sp_get_system_statistics(?, ?, ?, ?, ?) }");
 
             callableStatement.setString(1, formatDateFromEpoch(timeOffset));
             callableStatement.setString(2, testcaseIds);
             callableStatement.setString(3, machineIds);
             callableStatement.setString(4, statsTypeIds);
+            callableStatement.setString(5, whereClause);
 
             rs = callableStatement.executeQuery();
             int numberRecords = 0;
@@ -1113,6 +1122,19 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         }
 
         return allStatistics;
+
+    }
+
+    public List<Statistic> getSystemStatistics( float timeOffset,
+                                                String testcaseIds,
+                                                String machineIds,
+                                                String statsTypeIds,
+                                                int utcTimeOffset,
+                                                boolean dayLightSavingOn )
+                                                                           throws DatabaseAccessException {
+
+        return getSystemStatistics(timeOffset, testcaseIds, machineIds, statsTypeIds, "1=1", utcTimeOffset,
+                                   dayLightSavingOn);
     }
 
     public List<Statistic> getCheckpointStatistics( float timeOffset, String testcaseIds, String actionNames,
@@ -1428,9 +1450,21 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         return checkpoints;
     }
 
+    /**
+     * Get checkpoints, using additional where clause<br>Note that the whereClause does not need to include WHERE keyword in the beginning*/
     public List<Checkpoint> getCheckpoints( String testcaseId,
                                             int loadQueueId,
                                             String checkpointName,
+                                            int utcTimeOffset,
+                                            boolean dayLightSavingOn ) throws DatabaseAccessException {
+
+        return getCheckpoints(testcaseId, loadQueueId, checkpointName, "1=1", utcTimeOffset, dayLightSavingOn);
+    }
+
+    public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            int loadQueueId,
+                                            String checkpointName,
+                                            String whereClause,
                                             int utcTimeOffset,
                                             boolean dayLightSavingOn ) throws DatabaseAccessException {
 
@@ -1452,7 +1486,8 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                                                     + " INNER JOIN tCheckpointsSummary chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
                                                     + " INNER JOIN tLoadQueues c on (c.loadQueueId = chs.loadQueueId)"
                                                     + " INNER JOIN tTestcases tt on (tt.testcaseId = c.testcaseId) "
-                                                    + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ?");
+                                                    + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ? AND "
+                                                    + whereClause);
 
             statement.setString(1, testcaseId);
             statement.setInt(2, loadQueueId);

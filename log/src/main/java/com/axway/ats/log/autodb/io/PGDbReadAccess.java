@@ -34,11 +34,18 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 public class PGDbReadAccess extends SQLServerDbReadAccess {
 
     public PGDbReadAccess( DbConnection dbConnection ) {
+
         super(dbConnection);
     }
 
     @Override
     public List<Machine> getMachines() throws DatabaseAccessException {
+
+        return getMachines("WHERE 1=1");
+    }
+
+    @Override
+    public List<Machine> getMachines( String whereClause ) throws DatabaseAccessException {
 
         List<Machine> machines = new ArrayList<Machine>();
 
@@ -46,7 +53,8 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM \"tMachines\" ORDER BY machineName");
+            statement = connection.prepareStatement("SELECT * FROM \"tMachines\" " + whereClause
+                                                    + " ORDER BY machineName");
             rs = statement.executeQuery();
             while (rs.next()) {
                 Machine machine = new Machine();
@@ -63,6 +71,7 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         }
 
         return machines;
+
     }
 
     public List<Checkpoint> getCheckpoints( String testcaseId, String checkpointName, int utcTimeOffset,
@@ -79,7 +88,7 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         try {
 
             statement = connection.prepareStatement("SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
-                                                    + " CAST(EXTRACT(EPOCH FROM ch.endTime - CAST( '1970-01-01 00:00:00' AS TIMESTAMP)) AS INTEGER) as endTime, "
+                                                    + " CAST(EXTRACT(EPOCH FROM ch.endTime - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 AS BIGINT) as endTime, "
                                                     + " ch.endtime AS copyEndTime "
                                                     + "FROM \"tCheckpoints\" ch"
                                                     + " INNER JOIN \"tCheckpointsSummary\" chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
@@ -181,7 +190,7 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
 
         return scenarioMetaInfoList;
     }
-    
+
     @Override
     public List<TestcaseMetainfo> getTestcaseMetainfo( int testcaseId ) throws DatabaseAccessException {
 
@@ -190,7 +199,8 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         PreparedStatement statement = null;
         ResultSet rs = null;
         try {
-            statement = connection.prepareStatement("SELECT * FROM \"tTestcaseMetainfo\" WHERE testcaseId = " + testcaseId);
+            statement = connection.prepareStatement("SELECT * FROM \"tTestcaseMetainfo\" WHERE testcaseId = "
+                                                    + testcaseId);
             rs = statement.executeQuery();
             while (rs.next()) {
                 TestcaseMetainfo testcaseMetainfo = new TestcaseMetainfo();
@@ -209,6 +219,72 @@ public class PGDbReadAccess extends SQLServerDbReadAccess {
         }
 
         return list;
+    }
+
+    @Override
+    public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            int loadQueueId,
+                                            String checkpointName,
+                                            String whereClause,
+                                            int utcTimeOffset,
+                                            boolean dayLightSavingOn ) throws DatabaseAccessException {
+
+        List<Checkpoint> checkpoints = new ArrayList<Checkpoint>();
+
+        String sqlLog = new SqlRequestFormatter().add("testcase id", testcaseId)
+                                                 .add("loadQueue id", loadQueueId)
+                                                 .add("checkpoint name", checkpointName)
+                                                 .format();
+        Connection connection = getConnection();
+        PreparedStatement statement = null;
+        ResultSet rs = null;
+        try {
+
+            statement = connection.prepareStatement("SELECT ch.checkpointId, ch.responseTime, ch.transferRate, ch.transferRateUnit, ch.result,"
+                                                    + " EXTRACT(EPOCH FROM ch.endTime - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 as endTime,"
+                                                    + " ch.endtime AS copyEndTime"
+                                                    + " FROM \"tCheckpoints\" ch"
+                                                    + " INNER JOIN \"tCheckpointsSummary\" chs on (chs.checkpointSummaryId = ch.checkpointSummaryId)"
+                                                    + " INNER JOIN \"tLoadQueues\" c on (c.loadQueueId = chs.loadQueueId)"
+                                                    + " INNER JOIN \"tTestcases\" tt on (tt.testcaseId = c.testcaseId) "
+                                                    + "WHERE tt.testcaseId = ? AND c.loadQueueId = ? AND ch.name = ? AND "
+                                                    + whereClause);
+
+            statement.setInt(1, Integer.parseInt(testcaseId));
+            statement.setInt(2, loadQueueId);
+            statement.setString(3, checkpointName);
+
+            rs = statement.executeQuery();
+            while (rs.next()) {
+
+                Checkpoint checkpoint = new Checkpoint();
+                checkpoint.checkpointId = rs.getLong("checkpointId");
+                checkpoint.name = checkpointName;
+                checkpoint.responseTime = rs.getInt("responseTime");
+                checkpoint.transferRate = rs.getFloat("transferRate");
+                checkpoint.transferRateUnit = rs.getString("transferRateUnit");
+                checkpoint.result = rs.getInt("result");
+
+                if (dayLightSavingOn) {
+                    checkpoint.setEndTimestamp(rs.getLong("endTime") + 3600); // add 1h
+                } else {
+                    checkpoint.setEndTimestamp(rs.getLong("endTime"));
+                }
+                checkpoint.setTimeOffset(utcTimeOffset);
+                checkpoint.copyEndTimestamp = rs.getTimestamp("copyEndTime").getTime();
+
+                checkpoints.add(checkpoint);
+            }
+
+            logQuerySuccess(sqlLog, "checkpoints", checkpoints.size());
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, statement);
+        }
+
+        return checkpoints;
     }
 
 }

@@ -82,6 +82,8 @@ public interface IDbReadAccess {
                                   String whereClause ) throws DatabaseAccessException;
 
     public List<Machine> getMachines() throws DatabaseAccessException;
+    
+    public List<Machine> getMachines(String whereClause) throws DatabaseAccessException;
 
     public List<Message> getMessages(
                                       int startRecord,
@@ -140,10 +142,26 @@ public interface IDbReadAccess {
                                                 String statsTypeIds,
                                                 int utcTimeOffset,
                                                 boolean dayLightSavingOn ) throws DatabaseAccessException;
+    
+    public List<Statistic> getSystemStatistics(
+                                               float timeOffset,
+                                               String testcaseIds,
+                                               String machineIds,
+                                               String statsTypeIds,
+                                               String whereClause,
+                                               int utcTimeOffset,
+                                               boolean dayLightSavingOn ) throws DatabaseAccessException;
 
     public List<Checkpoint> getCheckpoints( String testcaseId,
                                             int loadQueueId,
                                             String checkpointName,
+                                            int utcTimeOffset,
+                                            boolean dayLightSavingOn ) throws DatabaseAccessException;
+    
+    public List<Checkpoint> getCheckpoints( String testcaseId,
+                                            int loadQueueId,
+                                            String checkpointName,
+                                            String whereClause,
                                             int utcTimeOffset,
                                             boolean dayLightSavingOn ) throws DatabaseAccessException;
 
