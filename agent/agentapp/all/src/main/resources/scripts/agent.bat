@@ -22,9 +22,13 @@
 @SET MEMORY=256
 
 :: allow remote connections for debug purposes
-@SET DEBUG=0
+@SET DEBUG=1
 @SET DEBUG_PORT=8000
-@SET DEBUG_OPTIONS=
+rem @SET DEBUG_OPTIONS=
+IF %DEBUG% EQU 1 (
+    REM Enable remote debugging (all interfaces) for Java 9+. TODO: investigate for Java 8
+    SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=*:%DEBUG_PORT%,suspend=n
+)
 
 :: enable monitoring the number of pending log events (true/false)
 @SET MONITOR_EVENTS_QUEUE=false
@@ -33,7 +37,7 @@
 @SET JMX=0
 @SET JMX_PORT=1099
 @SET JMX_OPTIONS=
-@if %JMX% EQU 1 (
+@IF %JMX% EQU 1 (
     SET JMX_OPTIONS=-Dcom.sun.management.jmxremote.port=%JMX_PORT% -Dcom.sun.management.jmxremote.ssl=false -Dcom.sun.management.jmxremote.authenticate=false
 )
 
@@ -134,6 +138,7 @@ rem check java version
 
 for /f "delims=" %%l in (java.version) do (
     set line=%%l
+    del java.version
     goto next_java_version_check
 )
 
@@ -141,16 +146,17 @@ for /f "delims=" %%l in (java.version) do (
 echo %line% | FINDSTR /r 1\.[7-8]
 
 IF %ERRORLEVEL%==0 (
-    set java_version=8
+    set JAVA_VERSION=8
 ) ELSE (
-    set java_version=11
+    set JAVA_VERSION=9
 )
 
-IF %java_version%==11 (
-    :: Java 9 or newer
+IF %JAVA_VERSION%==9 (
+    REM Java 9 or newer detected
 
-    :: Enable REMOTE debugging. By deault Java 9+ debugging is enabled only on localhost
-    @if %DEBUG% EQU 1 (
+    REM Enable REMOTE debugging. By deault Java 9+ debugging is enabled only on localhost
+    IF %DEBUG% EQU 1 (
+        echo Enable remote debugging for Java 9+
         SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=*:%DEBUG_PORT%,suspend=n
     )
 
@@ -164,10 +170,11 @@ IF %java_version%==11 (
     %JAVA_OPTS% %DEBUG_OPTIONS% ^
     -jar ats-agent/ats-agent-standalone-containerstarter.jar
 
-) else (
-    :: Java <= 8
+) ELSE (
+    REM Java <= 8
 
-    @if %DEBUG% EQU 1 (
+    IF %DEBUG% EQU 1 (
+        ECHO Enable remote debugging for Java 8
         SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=%DEBUG_PORT%,suspend=n
     )
 
