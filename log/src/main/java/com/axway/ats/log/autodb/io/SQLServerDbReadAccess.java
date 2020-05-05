@@ -31,6 +31,7 @@ import java.util.Set;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.BackwardCompatibility;
+import com.axway.ats.log.AtsDbReader;
 import com.axway.ats.log.autodb.SqlRequestFormatter;
 import com.axway.ats.log.autodb.entities.Checkpoint;
 import com.axway.ats.log.autodb.entities.CheckpointSummary;
@@ -564,6 +565,8 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
     public List<Machine> getMachines( String whereClause ) throws DatabaseAccessException {
 
+        String sqlLog = new SqlRequestFormatter().add("where", whereClause).format();
+
         List<Machine> machines = new ArrayList<Machine>();
 
         Connection connection = getConnection();
@@ -580,7 +583,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                 machines.add(machine);
             }
         } catch (Exception e) {
-            throw new DatabaseAccessException("Error retrieving machines", e);
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
         } finally {
             DbUtils.closeResultSet(rs);
             DbUtils.close(connection, statement);
@@ -1072,6 +1075,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
                                                  .add("testcase ids", testcaseIds)
                                                  .add("machine ids", machineIds)
                                                  .add("stats type ids", statsTypeIds)
+                                                 .add("where", whereClause)
                                                  .format();
 
         Connection connection = getConnection();
@@ -1123,6 +1127,74 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
 
         return allStatistics;
 
+    }
+
+    /**
+     * Currently used by {@link AtsDbReader#getStatisticsDescriptionForDateRange(int, int, int, long, long)}
+     * */
+    public List<Statistic> getSystemStatistics( String testcaseIds,
+                                                String machineIds,
+                                                String statsTypeIds,
+                                                String whereClause ) throws DatabaseAccessException {
+
+        List<Statistic> allStatistics = new ArrayList<Statistic>();
+
+        String sqlLog = new SqlRequestFormatter().add("testcase ids", testcaseIds)
+                                                 .add("machine ids", machineIds)
+                                                 .add("stats type ids", statsTypeIds)
+                                                 .add("where", whereClause)
+                                                 .format();
+
+        Connection connection = getConnection();
+        PreparedStatement prepareStatement = null;
+        ResultSet rs = null;
+
+        try {
+            int numberRecords = 0;
+            StringBuilder query = new StringBuilder();
+            query.append("SELECT")
+                 .append(" st.name as statsName, st.units as statsUnit, st.params, st.parentName as statsParent, st.internalName,")
+                 .append(" ss.systemStatsId, ss.testcaseId, ss.machineId as machineId, ss.statsTypeId as statsTypeId, ss.timestamp as timestamp, ss.value as value,")
+                 .append(" t.testcaseId as testcaseId")
+                 .append(" FROM tSystemStats ss")
+                 .append(" INNER JOIN tStatsTypes st ON ss.statsTypeId = st.statsTypeId")
+                 .append(" INNER JOIN tTestcases  t ON ss.testcaseId = t.testcaseId")
+                 .append(" WHERE")
+                 .append(" t.testcaseId IN (" + testcaseIds + ")")
+                 .append(" AND ss.statsTypeId IN (" + statsTypeIds + ")")
+                 .append(" AND ss.machineId IN (" + machineIds + ")")
+                 .append(" AND " + whereClause);
+
+            prepareStatement = connection.prepareStatement(query.toString());
+            rs = prepareStatement.executeQuery();
+            while (rs.next()) {
+                Statistic statistic = new Statistic();
+                statistic.statisticTypeId = rs.getInt("statsTypeId");
+                statistic.name = rs.getString("statsName");
+                statistic.parentName = rs.getString("statsParent");
+                statistic.unit = rs.getString("statsUnit");
+                statistic.value = rs.getFloat("value");
+                statistic.machineId = rs.getInt("machineId");
+                statistic.testcaseId = rs.getInt("testcaseId");
+
+                long startTimestamp = rs.getTimestamp("timestamp").getTime();
+                statistic.setStartTimestamp(startTimestamp);
+                statistic.setEndTimestamp(startTimestamp);
+
+                numberRecords++;
+                // add the combined statistics to the others
+                allStatistics.add(statistic);
+            }
+
+            logQuerySuccess(sqlLog, "system statistics", numberRecords);
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Error when " + sqlLog, e);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(connection, prepareStatement);
+        }
+
+        return allStatistics;
     }
 
     public List<Statistic> getSystemStatistics( float timeOffset,
@@ -1473,6 +1545,7 @@ public class SQLServerDbReadAccess extends AbstractDbAccess implements IDbReadAc
         String sqlLog = new SqlRequestFormatter().add("testcase id", testcaseId)
                                                  .add("loadQueue id", loadQueueId)
                                                  .add("checkpoint name", checkpointName)
+                                                 .add("where", whereClause)
                                                  .format();
         Connection connection = getConnection();
         PreparedStatement statement = null;
