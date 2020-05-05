@@ -130,8 +130,8 @@
 				repo -->
             <exclusions>
                 <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
+                    <groupId>com.oracle.jdbc</groupId>
+                    <artifactId>xmlparserv2</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

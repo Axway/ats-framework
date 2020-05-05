@@ -96,7 +96,7 @@
                                 <artifactItem>
                                     <groupId>org.glassfish.metro</groupId>
                                     <artifactId>webservices-api</artifactId>
-                                    <version>2.1.1</version>
+                                    <!-- Inherited version 2.4.3 -->
                                     <type>jar</type>
                                 </artifactItem>
                                 <!-- Alternative with these 2 artifacts part of metro 2.1.1 APIs. They are not found in Axway repositories
@@ -117,7 +117,7 @@
                         <configuration>
                             <outputDirectory>${project.build.directory}/generated-resources</outputDirectory>
                             <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <includeArtifacIds>ats-agent-webapp-server</includeArtifacIds>
+                            <includeArtifactIds>ats-agent-webapp-server</includeArtifactIds>
                             <includes>META-INF/wsdl/**</includes>
                             <excludeTransitive>true</excludeTransitive>
                         </configuration>
