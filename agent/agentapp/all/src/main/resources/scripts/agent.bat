@@ -22,13 +22,9 @@
 @SET MEMORY=256
 
 :: allow remote connections for debug purposes
-@SET DEBUG=1
+@SET DEBUG=0
 @SET DEBUG_PORT=8000
-rem @SET DEBUG_OPTIONS=
-IF %DEBUG% EQU 1 (
-    REM Enable remote debugging (all interfaces) for Java 9+. TODO: investigate for Java 8
-    SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=*:%DEBUG_PORT%,suspend=n
-)
+REM Full DEBUG_OPTIONS line is constructed right before JVM start since it is dependent on the JRE version
 
 :: enable monitoring the number of pending log events (true/false)
 @SET MONITOR_EVENTS_QUEUE=false
@@ -142,6 +138,7 @@ for /f "delims=" %%l in (java.version) do (
     goto next_java_version_check
 )
 
+SETLOCAL ENABLEDELAYEDEXPANSION
 :next_java_version_check
 echo %line% | FINDSTR /r 1\.[7-8]
 
@@ -156,7 +153,7 @@ IF %JAVA_VERSION%==9 (
 
     REM Enable REMOTE debugging. By deault Java 9+ debugging is enabled only on localhost
     IF %DEBUG% EQU 1 (
-        echo Enable remote debugging for Java 9+
+        ECHO Enable remote debugging for Java 9+
         SET DEBUG_OPTIONS=-agentlib:jdwp=transport=dt_socket,server=y,address=*:%DEBUG_PORT%,suspend=n
     )
 
@@ -167,7 +164,7 @@ IF %JAVA_VERSION%==9 (
     -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
     -Dlogging.severity="%LOGGING_SEVERITY%" ^
     -Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
-    %JAVA_OPTS% %DEBUG_OPTIONS% ^
+    %JAVA_OPTS% !DEBUG_OPTIONS! ^
     -jar ats-agent/ats-agent-standalone-containerstarter.jar
 
 ) ELSE (
@@ -185,10 +182,11 @@ IF %JAVA_VERSION%==9 (
     -Dats.agent.components.folder="%COMPONENTS_FOLDER%" -Dagent.template.actions.folder="%TEMPLATE_ACTIONS_FOLDER%" ^
     -Dlogging.severity="%LOGGING_SEVERITY%" ^
     -Xms!MEMORY!m -Xmx!MEMORY!m -Dlogging.pattern="!LOGGING_PATTERN!" ^
-    %JAVA_OPTS% %DEBUG_OPTIONS% ^
+    %JAVA_OPTS% !DEBUG_OPTIONS! ^
     -jar ats-agent/ats-agent-standalone-containerstarter.jar
 )
 
+ENDLOCAL
 GOTO:EOF
 
 
