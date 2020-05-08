@@ -53,11 +53,11 @@ public class DbUtils {
             } catch (AbstractMethodError err) {
                 isClosed = false; // no JavaSE 6-compatible driver
             }
-            if (statement != null && !isClosed) {
+            if ( !isClosed ) { // statemnt != null here
                 statement.close();
             }
         } catch (SQLException e) {
-            log.error(getFullSqlException("Could not close SQL statement", e));
+            log.warn(getFullSqlException("Exception while closing SQL statement", e));
         }
     }
 
@@ -69,8 +69,8 @@ public class DbUtils {
                 resultSet.close();
             }
         } catch (SQLException sqle) {
-            String msg = "Error closing resultset connection";
-            log.error(getFullSqlException(msg, sqle));
+            String msg = "Exception while closing ResultSet";
+            log.warn(getFullSqlException(msg, sqle));
         }
     }
 
