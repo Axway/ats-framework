@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -172,6 +172,7 @@ public class Test_FileSystemOperations extends BaseTest {
         // setup expectations
         expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
         remoteFSOperationsMock.copyFile(SOURCE_FILE_NAME_VALID, DESTINATION_FILE_NAME_VALID, true);
+        remoteFSOperationsMock.setCopyInPassiveMode(false);
 
         replayAll();
 

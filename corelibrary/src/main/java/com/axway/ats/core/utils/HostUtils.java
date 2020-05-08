@@ -41,11 +41,13 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class HostUtils {
 
-    private static final Logger      log             = Logger.getLogger(HostUtils.class);
+    private static final Logger log = Logger.getLogger(HostUtils.class);
 
-    public static final String       LOCAL_HOST_NAME = "localhost";
-    public static final String       LOCAL_HOST_IPv4 = "127.0.0.1";
-    public static final String       LOCAL_HOST_IPv6 = "::1";
+    public static final String LOCAL_HOST_NAME     = "localhost";
+    public static final String LOCAL_HOST_IPv4     = "127.0.0.1";
+    public static final String LOCAL_HOST_IPv6     = "::1";
+    public static final int    LOWEST_PORT_NUMBER  = 1;
+    public static final int    HIGHEST_PORT_NUMBER = 64 * 1024;
 
     // List of hosts found to be local ones
     private static final Set<String> localHosts;
@@ -59,7 +61,7 @@ public class HostUtils {
     }
 
     // List of hosts found to be non local ones
-    private static final Set<String>        nonlocalHosts            = Collections.synchronizedSet(new HashSet<String>());
+    private static final Set<String> nonlocalHosts = Collections.synchronizedSet(new HashSet<String>());
 
     /**
      * List of public addresses of the local host. The remote Agent uses that address to connect to the local host.
@@ -196,7 +198,8 @@ public class HostUtils {
                     if (inetAddress instanceof Inet6Address) {
 
                         if (hostAddress != null
-                            && stripIPv6InterfaceId(compressIPv6Address(host)).equalsIgnoreCase(stripIPv6InterfaceId(compressIPv6Address(hostAddress)))) {
+                            && stripIPv6InterfaceId(compressIPv6Address(host)).equalsIgnoreCase(
+                                stripIPv6InterfaceId(compressIPv6Address(hostAddress)))) {
                             localHosts.add(host);
                             return true;
                         }
@@ -272,7 +275,7 @@ public class HostUtils {
                                     /*
                                      * return list, containing the last added IP address,
                                      * which will be the first IPv4 address, that was found
-                                    */
+                                     */
                                     int listSize = ipList.size();
                                     return ipList.subList(listSize - 1, listSize);
                                 }
@@ -337,19 +340,21 @@ public class HostUtils {
                         socket.connect(sa, 30000);
                         InetAddress tmpPublicAddress = socket.getLocalAddress();
                         if (tmpPublicAddress == null || tmpPublicAddress.isAnyLocalAddress()
-                        /* like: 0.0.0.0 - there is Win & Java 6 issue for IPv6*/ ) {
+                            /* like: 0.0.0.0 - there is Win & Java 6 issue for IPv6*/) {
                             localHostPublicAddress = null;
-                            throw new IllegalStateException("Unable to retrieve public IP of the local host which is used to connect to agent at "
-                                                            + remoteAtsAgent + ". Address returned was "
-                                                            + tmpPublicAddress);
+                            throw new IllegalStateException(
+                                    "Unable to retrieve public IP of the local host which is used to connect to agent at "
+                                    + remoteAtsAgent + ". Address returned was "
+                                    + tmpPublicAddress);
                         } else {
                             if (tmpPublicAddress.isLoopbackAddress()) {
                                 List<InetAddress> ipList = getIpAddressesList(true, false);
                                 if (ipList.size() > 0) {
                                     tmpPublicAddress = ipList.get(0);
-                                    log.warn("We are unable to reliably retrieve the public IP of the local host which is used to connect to agent at "
-                                             + remoteAtsAgent + ". We will use the first retrieved IP: "
-                                             + tmpPublicAddress);
+                                    log.warn(
+                                            "We are unable to reliably retrieve the public IP of the local host which is used to connect to agent at "
+                                            + remoteAtsAgent + ". We will use the first retrieved IP: "
+                                            + tmpPublicAddress);
                                 }
                             }
                             localHostPublicAddress = tmpPublicAddress;
@@ -371,7 +376,8 @@ public class HostUtils {
                     if (socket != null) {
                         try {
                             socket.close();
-                        } catch (IOException e) {}
+                        } catch (IOException e) {
+                        }
                     }
                 }
             }
@@ -506,7 +512,8 @@ public class HostUtils {
      */
     public static String stripIPv6InterfaceId( String ipv6Address ) {
 
-        int interfaceIdIndex = ipv6Address.indexOf('%'); // this is the zone index: interface index or interface name, depending on the OS
+        int interfaceIdIndex = ipv6Address.indexOf(
+                '%'); // this is the zone index: interface index or interface name, depending on the OS
         if (interfaceIdIndex > 0) {
             return ipv6Address.substring(0, interfaceIdIndex);
         }

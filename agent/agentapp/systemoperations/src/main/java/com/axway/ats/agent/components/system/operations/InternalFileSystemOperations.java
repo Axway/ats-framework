@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -292,37 +292,58 @@ public class InternalFileSystemOperations {
     public void setCopyFilePortRange( @Parameter( name = "copyFileStartPort") Integer copyFileStartPort,
                                   @Parameter(name = "copyFileEndPort") Integer copyFileEndPort ) throws Exception {
 
-        localFSOperations.setCopyFilePortRange( copyFileStartPort, copyFileEndPort );
+        localFSOperations.setCopyFilePortRange(copyFileStartPort, copyFileEndPort);
     }
 
-    @Action(name = "Internal File System Operations open File Transfer Socket")
+    @Action( name = "Internal File System Operations open File Transfer Socket" )
     public int openFileTransferSocket() throws Exception {
 
         return localFSOperations.openFileTransferSocket();
     }
 
-    @Action(name = "Internal File System Operations send File To")
-    public void sendFileTo( @Parameter(name = "fromFileName") String fromFileName,
-                            @Parameter(name = "toFileName") String toFileName,
-                            @Parameter(name = "machineIP") String machineIP,
-                            @Parameter(name = "port") int port,
-                            @Parameter(name = "failOnError") boolean failOnError ) throws Exception {
+    @Action( name = "Internal File System Operations send File To" )
+    public void sendFileTo( @Parameter( name = "fromFileName" ) String fromFileName,
+                            @Parameter( name = "toFileName" ) String toFileName,
+                            @Parameter( name = "machineIP" ) String machineIP,
+                            @Parameter( name = "port" ) int port,
+                            @Parameter( name = "failOnError" ) boolean failOnError ) throws Exception {
 
-        localFSOperations.sendFileTo( fromFileName, toFileName, machineIP, port, failOnError );
+        localFSOperations.sendFileTo(fromFileName, toFileName, machineIP, port, failOnError);
     }
 
-    @Action(name = "Internal File System Operations Copy File Locally")
-    public void copyFileLocally( @Parameter(name = "fromFileName") String fromFileName,
-                                 @Parameter(name = "toFileName") String toFileName,
-                                 @Parameter(name = "failOnError") boolean failOnError ) throws Exception {
+    /**
+     * Actually get file From. Name left for consistency with other file operations.
+     * Used when agent could not open port and will serve as file receiver without opening data pots, i.e. sender
+     * opens the port
+     * @param fromFileName Name of the sender file
+     * @param toFileName
+     * @param machineIP IP of the sender of the file
+     * @param port port number for sending data on the sending part. Receiver will request the data
+     * @param failOnError
+     * @throws Exception
+     */
+    @Action( name = "Internal File System Operations send File From" )
+    public void sendFileFrom( @Parameter( name = "fromFileName" ) String fromFileName,
+                              @Parameter( name = "toFileName" ) String toFileName,
+                              @Parameter( name = "machineIP" ) String machineIP,
+                              @Parameter( name = "port" ) int port,
+                              @Parameter( name = "failOnError" ) boolean failOnError ) throws Exception {
 
-        localFSOperations.copyFile( fromFileName, toFileName, failOnError );
+        localFSOperations.copyFileFrom(fromFileName, toFileName, machineIP, port, failOnError);
     }
 
-    @Action(name = "Internal File System Operations wait For File Transfer Completion")
-    public void waitForFileTransferCompletion( @Parameter(name = "port") int port ) throws Exception {
+    @Action( name = "Internal File System Operations Copy File Locally" )
+    public void copyFileLocally( @Parameter( name = "fromFileName" ) String fromFileName,
+                                 @Parameter( name = "toFileName" ) String toFileName,
+                                 @Parameter( name = "failOnError" ) boolean failOnError ) throws Exception {
 
-        localFSOperations.waitForFileTransferCompletion( port );
+        localFSOperations.copyFile(fromFileName, toFileName, failOnError);
+    }
+
+    @Action( name = "Internal File System Operations wait For File Transfer Completion" )
+    public void waitForFileTransferCompletion( @Parameter( name = "port" ) int port ) throws Exception {
+
+        localFSOperations.waitForFileTransferCompletion(port);
     }
 
     @Action(name = "Internal File System Operations send Directory To")

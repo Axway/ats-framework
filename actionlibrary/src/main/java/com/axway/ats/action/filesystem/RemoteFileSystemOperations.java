@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.agent.components.system.operations.clients.InternalFileSystemOperations;
@@ -39,7 +37,8 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class RemoteFileSystemOperations implements IFileSystemOperations {
 
-    private String                       atsAgent = null;
+    private String  atsAgent          = null;
+    private boolean copyInPassiveMode = false; // whether remote agents wants to work in passive mode
 
     private InternalFileSystemOperations remoteFileSystemOperations;
     private LocalFileSystemOperations    localFileSystemOperations;
@@ -118,8 +117,8 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
 
         try {
             remoteFileSystemOperations.createFile(fileName, fileContent, size, userId, groupId, eol == null
-                                                                                                            ? null
-                                                                                                            : eol.name(),
+                                                                                                ? null
+                                                                                                : eol.name(),
                                                   isRandomContent, false);
         } catch (Exception e) {
             throw new FileSystemOperationException("Unable to create file by the name of " + fileName
@@ -136,6 +135,11 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             throw new FileSystemOperationException("Unable to append content to file " + fileName + " on "
                                                    + this.atsAgent, e);
         }
+    }
+
+    public void setCopyInPassiveMode( boolean copyPassiveMode ) {
+
+        this.copyInPassiveMode = copyPassiveMode;
     }
 
     @Override
@@ -155,12 +159,22 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             if (copyFileStartPort != null && copyFileStartPort > 0 && copyFileEndPort != null
                 && copyFileEndPort > 0) {
                 remoteFileSystemOperations.setCopyFilePortRange(copyFileStartPort, copyFileEndPort);
+                localFileSystemOperations.setCopyFilePortRange(copyFileStartPort, copyFileEndPort);
             }
-            int port = remoteFileSystemOperations.openFileTransferSocket();
-            localFileSystemOperations.sendFileTo(fromFile, toFile,
-                                                 HostUtils.splitAddressHostAndPort(atsAgent)[0], port,
-                                                 failOnError);
-            remoteFileSystemOperations.waitForFileTransferCompletion(port);
+            if (!copyInPassiveMode) {
+                int port = remoteFileSystemOperations.openFileTransferSocket();
+                localFileSystemOperations.sendFileTo(fromFile, toFile,
+                                                     HostUtils.splitAddressHostAndPort(atsAgent)[0], port,
+                                                     failOnError);
+                remoteFileSystemOperations.waitForFileTransferCompletion(port);
+            } else {
+
+                int port = localFileSystemOperations.openFileTransferSocketForSending(fromFile, toFile, failOnError);
+
+                remoteFileSystemOperations.sendFileFrom(fromFile, toFile,
+                                                        HostUtils.getPublicLocalHostIp(atsAgent), port, failOnError);
+                localFileSystemOperations.waitForFileTransferCompletion(port);
+            }
 
         } catch (Exception e) {
             String message = new StringBuilder().append("Unable to copy file ")
@@ -190,7 +204,8 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             }
             int port = toRemoteFSOperations.openFileTransferSocket();
             this.remoteFileSystemOperations.sendFileTo(fromFile, toFile,
-                                                       HostUtils.splitAddressHostAndPort(HostUtils.getAtsAgentIpAndPort(toMachine) /* append port */ )[0],
+                                                       HostUtils.splitAddressHostAndPort(HostUtils.getAtsAgentIpAndPort(
+                                                               toMachine) /* append port */)[0],
                                                        port, failOnError);
             toRemoteFSOperations.waitForFileTransferCompletion(port);
 
@@ -309,7 +324,8 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             InternalFileSystemOperations toRemoteFSOperations = new InternalFileSystemOperations(toMachine);
             int port = toRemoteFSOperations.openFileTransferSocket();
             remoteFileSystemOperations.sendDirectoryTo(fromDirName, toDirName,
-                                                       HostUtils.splitAddressHostAndPort(HostUtils.getAtsAgentIpAndPort(toMachine))[0],
+                                                       HostUtils.splitAddressHostAndPort(
+                                                               HostUtils.getAtsAgentIpAndPort(toMachine))[0],
                                                        port, isRecursive, failOnError);
             toRemoteFSOperations.waitForFileTransferCompletion(port);
 
@@ -598,8 +614,8 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                 remoteFileSystemOperations.deleteDirectory(directoryName, deleteRecursively);
             } catch (Exception e) {
                 String message = new StringBuilder().append("Unable to " + (deleteRecursively
-                                                                                              ? "recursively "
-                                                                                              : "")
+                                                                            ? "recursively "
+                                                                            : "")
                                                             + "delete the directory ")
                                                     .append(directoryName)
                                                     .append(" on the host ")
@@ -709,18 +725,18 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
                                                              acceptDirectories, recursiveSearch);
         } catch (Exception e) {
             String message = new StringBuilder().append("Unable to find files" + (acceptDirectories
-                                                                                                    ? "/directories"
-                                                                                                    : "")
+                                                                                  ? "/directories"
+                                                                                  : "")
                                                         + " in '")
                                                 .append(location)
                                                 .append("' searching for " + (isRegex
-                                                                                      ? "the RegEx "
-                                                                                      : "")
+                                                                              ? "the RegEx "
+                                                                              : "")
                                                         + " '")
                                                 .append(searchString)
                                                 .append("'" + (recursiveSearch
-                                                                               ? ", recursively,"
-                                                                               : "")
+                                                               ? ", recursively,"
+                                                               : "")
                                                         + " on the host ")
                                                 .append(this.atsAgent)
                                                 .toString();
@@ -761,28 +777,28 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
             throw new FileSystemOperationException(message, e);
         }
     }
-    
+
     @Override
     public void replaceTextInFile( String fileName, Map<String, String> searchTokens, boolean isRegex ) {
 
         try {
-            remoteFileSystemOperations.replaceTextInFile( fileName, searchTokens, isRegex );
-        } catch( Exception e ) {
+            remoteFileSystemOperations.replaceTextInFile(fileName, searchTokens, isRegex);
+        } catch (Exception e) {
 
-            StringBuilder messageBuilder = new StringBuilder().append( "Unable to replace text '" );
-            for( String token : searchTokens.keySet() ) {
-                messageBuilder.append( token );
-                messageBuilder.append( "," );
+            StringBuilder messageBuilder = new StringBuilder().append("Unable to replace text '");
+            for (String token : searchTokens.keySet()) {
+                messageBuilder.append(token);
+                messageBuilder.append(",");
             }
-            messageBuilder = messageBuilder.deleteCharAt( messageBuilder.length() - 1 );
+            messageBuilder = messageBuilder.deleteCharAt(messageBuilder.length() - 1);
 
-            messageBuilder.append( "'" )
-                          .append( " in file '" )
-                          .append( fileName )
-                          .append( "' on " )
-                          .append( this.atsAgent )
+            messageBuilder.append("'")
+                          .append(" in file '")
+                          .append(fileName)
+                          .append("' on ")
+                          .append(this.atsAgent)
                           .toString();
-            throw new FileSystemOperationException( messageBuilder.toString(), e );
+            throw new FileSystemOperationException(messageBuilder.toString(), e);
         }
     }
 
