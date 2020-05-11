@@ -475,10 +475,12 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a file <strong>from</strong> atsAgent host to a new file on the local host. <br>
-     * <b>Note:</b> If no atsAgent is used or it is local, then the source files is searched on the local host.
+     * Copies the contents of a file <strong>from</strong> atsAgent host to a new file on the local host (Test Executor).
+     * <br>
+     * <b>Note:</b> If no atsAgent is specified in constructor or it is local, then the source files is searched on the
+     * local host.
      *
-     * @param fromFile the source file
+     * @param fromFile the source file located on the ATS Agent
      * @param toFile the local destination file
      */
     @PublicAtsApi
@@ -503,7 +505,7 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a file from the local host to a new file on the atsAgent host
+     * Copies the contents of a file from the local host (Test Executor) to a new file on the atsAgent host
      *
      * @param fromFile the source file to copy
      * @param toFile the destination file to copy to
