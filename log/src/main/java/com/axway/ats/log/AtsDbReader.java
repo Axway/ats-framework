@@ -869,11 +869,22 @@ public class AtsDbReader {
         sb.append("WHERE 1=1");
 
         if (startTimestamp > 0) {
-            String startTimestampSQL = "(CAST(EXTRACT(EPOCH FROM dateStart - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 AS BIGINT))";
+            String startTimestampSQL = null;
+            if(!isPGSQLServer) {
+                startTimestampSQL = "CAST(Datediff(s, '1970-01-01 00:00:00', dateStart) AS BIGINT)*1000";
+            } else {
+                startTimestampSQL = "(CAST(EXTRACT(EPOCH FROM dateStart - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 AS BIGINT))";
+            }
+            
             sb.append(" AND " + startTimestampSQL + " >= " + startTimestamp);
         }
         if (endTimestamp > 0) {
-            String endTimestampSQL = "(CAST(EXTRACT(EPOCH FROM dateEnd - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 AS BIGINT))";
+            String endTimestampSQL = null;
+            if(!isPGSQLServer) {
+                endTimestampSQL = "CAST(Datediff(s, '1970-01-01 00:00:00', dateEnd) AS BIGINT)*1000";
+            } else {
+                endTimestampSQL = "(CAST(EXTRACT(EPOCH FROM dateEnd - CAST( '1970-01-01 00:00:00' AS TIMESTAMP))*1000 AS BIGINT))";
+            }
             sb.append(" AND " + endTimestampSQL + " <= " + endTimestamp);
         }
 
