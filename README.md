@@ -26,7 +26,7 @@ ATS **key features** include:
 
 **Video tutorials** are published on YouTube [here](https://www.youtube.com/watch?v=yeOrNUucNH0&list=PLLuHfb7NQS5oaENWHfYR5XuY-wNYvZgYj)
 
-[![ATS framework preview](https://axway.github.io/ats-framework/images/ATS_Preview_TE_1.png)](https://www.youtube.com/watch?v=JfSYcwU2h8c&index=3&list=PLBEEcZZeAijMOHzPVvrPKqeg4O079W33I "ATS Framework playlist. Use Ctrl+Click or Cmd+Click to open in new browser tab")
+[![ATS framework preview](https://axway.github.io/ats-framework/images/ATS_Preview_TE_1.png)](https://www.youtube.com/watch?v=yeOrNUucNH0&list=PLLuHfb7NQS5oaENWHfYR5XuY-wNYvZgYj "ATS Framework playlist. Use Ctrl+Click or Cmd+Click to open in new browser tab")
 
 ---
 
