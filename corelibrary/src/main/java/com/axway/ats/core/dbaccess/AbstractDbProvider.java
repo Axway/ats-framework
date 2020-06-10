@@ -867,9 +867,12 @@ public abstract class AbstractDbProvider implements DbProvider {
                 StringBuilder sb = new StringBuilder();
                 String indexName = indexInformation.getString("INDEX_NAME");
                 if (!StringUtils.isNullOrEmpty(indexName)) {
+                    
+                    sb.append("index_name=" + indexName + ", ");
+                    
                     String columnName = indexInformation.getString("COLUMN_NAME");
 
-                    sb.append("name=" + columnName);
+                    sb.append("column_name=" + columnName);
                     sb.append(extractTableAttributeValue(indexInformation, "INDEX_QUALIFIER", "index catalog",
                                                          tableName, columnName));
                     sb.append(", type=" + SQL_COLUMN_TYPES.get(indexInformation.getInt("TYPE")));
