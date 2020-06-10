@@ -20,24 +20,56 @@ import java.io.InputStream;
 import java.sql.Blob;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
+import com.axway.ats.core.dbaccess.DbRecordValue;
+import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.utils.IoUtils;
 
 /**
  * Base class implementing PostgreSQL database access related methods
  *
  */
-public class PostgreSqlProvider extends AbstractDbProvider {
+public class PostgreSqlDbProvider extends AbstractDbProvider {
 
-    private static final Logger log = Logger.getLogger(PostgreSqlProvider.class);
+    private static final Logger log               = Logger.getLogger(PostgreSqlDbProvider.class);
 
-    public PostgreSqlProvider( DbConnPostgreSQL dbConnection ) {
+    private Set<String>         partitionedTables = new HashSet<>();
+
+    public PostgreSqlDbProvider( DbConnPostgreSQL dbConnection ) {
 
         super(dbConnection);
 
+        obtainPartitionedTables();
+
+    }
+
+    private void obtainPartitionedTables() {
+
+        String partitionCreatedTable = "partitioned_created_table";
+
+        String query = "SELECT i.inhrelid::regclass AS " + partitionCreatedTable + " FROM pg_inherits i;";
+
+        DbRecordValuesList[] recordsLists = this.select(query);
+
+        for (DbRecordValuesList recordList : recordsLists) {
+            for (DbRecordValue value : recordList) {
+                String partitionedCreatedTableName = value.getValueAsString();
+                partitionedTables.add(partitionedCreatedTableName);
+            }
+        }
+
+    }
+
+    @Override
+    protected boolean isTableAccepted( ResultSet tableResultSet, String dbName, String tableName ) {
+
+        // mark all partitioned created tables as REJECTED (NOT-ACCEPTED)
+        return !this.partitionedTables.contains(tableName);
     }
 
     @Override
@@ -50,7 +82,7 @@ public class PostgreSqlProvider extends AbstractDbProvider {
             return null;
         }
         if (valueAsObject != null && valueAsObject.getClass().isArray()) {
-            if (!(valueAsObject instanceof byte[])) {
+            if (! (valueAsObject instanceof byte[])) {
                 // FIXME other array types might be needed to be tracked in a different way
                 log.warn("Array type that needs attention");
             }

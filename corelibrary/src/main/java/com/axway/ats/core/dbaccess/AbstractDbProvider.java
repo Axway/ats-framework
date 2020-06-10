@@ -42,6 +42,7 @@ import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.validation.exceptions.ArrayEmptyException;
@@ -53,15 +54,15 @@ import com.axway.ats.core.validation.exceptions.ValidationException;
  */
 public abstract class AbstractDbProvider implements DbProvider {
 
-    private static       Logger               log;
+    private static Logger                     log;
     private static final int                  BYTE_BUFFER_SIZE = 1024;
     private static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
 
-    protected DbConnection dbConnection;
+    protected DbConnection                    dbConnection;
 
-    private Connection connection;
+    private Connection                        connection;
 
-    protected String[] reservedWords = new String[]{};
+    protected String[]                        reservedWords    = new String[]{};
 
     static {
         // TODO in Java 8 there is a way to get them without additional libraries or reflection
@@ -403,7 +404,7 @@ public abstract class AbstractDbProvider implements DbProvider {
      */
     @Override
     public int rowCount( String tableName, String whereCondition ) throws DbException,
-                                                                          NumberValidationException {
+                                                                   NumberValidationException {
 
         int returnCount;
         String sql = " SELECT " + " COUNT(*)" + " FROM " + tableName;
@@ -417,8 +418,8 @@ public abstract class AbstractDbProvider implements DbProvider {
 
         try {
             returnCount = records == null
-                          ? 0
-                          : Integer.parseInt((String) records[0].get("COUNT(*)"));
+                                          ? 0
+                                          : Integer.parseInt((String) records[0].get("COUNT(*)"));
         } catch (NumberFormatException nfe) {
             throw new NumberValidationException("The row count could not be converted to integer", nfe);
         }
@@ -432,7 +433,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             byte[] buffer = new byte[BYTE_BUFFER_SIZE];
             int bytesRead = -1;
-            while ((bytesRead = is.read(buffer)) > -1) {
+            while ( (bytesRead = is.read(buffer)) > -1) {
                 out.write(buffer, 0, bytesRead);
             }
             ByteArrayInputStream bis = new ByteArrayInputStream(out.toByteArray());
@@ -492,7 +493,7 @@ public abstract class AbstractDbProvider implements DbProvider {
         InputStream is;
         if (valueAsObject != null && valueAsObject.getClass().isArray()) {
             // we have an array of primitive data type
-            if (!(valueAsObject instanceof byte[])) {
+            if (! (valueAsObject instanceof byte[])) {
                 // FIXME other array types might be needed to be tracked in a different way
                 log.warn("Array type that needs attention");
             }
@@ -528,7 +529,7 @@ public abstract class AbstractDbProvider implements DbProvider {
      */
     protected abstract String getResultAsEscapedString( ResultSet resultSet, int index,
                                                         String columnTypeName ) throws SQLException,
-                                                                                       IOException;
+                                                                                IOException;
 
     /**
      * Convert an array of bytes to a HEX string
@@ -741,8 +742,8 @@ public abstract class AbstractDbProvider implements DbProvider {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
 
             final String schemaPattern = (this instanceof OracleDbProvider
-                                          ? dbConnection.getUser()
-                                          : null);
+                                                                           ? dbConnection.getUser()
+                                                                           : null);
 
             ResultSet tablesResultSet = databaseMetaData.getTables(null, schemaPattern, null,
                                                                    new String[]{ "TABLE" });
@@ -804,7 +805,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     }
 
     private String extractPrimaryKeyColumn( String tableName, DatabaseMetaData databaseMetaData, String schemaPattern )
-                            throws SQLException {
+                                                                                                                        throws SQLException {
 
         ResultSet pkResultSet = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableName);
         while (pkResultSet.next()) {
@@ -838,8 +839,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                 sb.append(extractBooleanResultSetAttribute(columnInformation, "COLUMN_DEF", "default"));
             } else {
                 sb.append(
-                        extractTableAttributeValue(columnInformation, "COLUMN_DEF", "default", tableName,
-                                                   columnName));
+                          extractTableAttributeValue(columnInformation, "COLUMN_DEF", "default", tableName,
+                                                     columnName));
             }
             sb.append(extractTableAttributeValue(columnInformation, "IS_NULLABLE", "nullable", tableName, columnName));
             sb.append(extractTableAttributeValue(columnInformation, "COLUMN_SIZE", "size", tableName, columnName));
@@ -867,9 +868,9 @@ public abstract class AbstractDbProvider implements DbProvider {
                 StringBuilder sb = new StringBuilder();
                 String indexName = indexInformation.getString("INDEX_NAME");
                 if (!StringUtils.isNullOrEmpty(indexName)) {
-                    
+
                     sb.append("index_name=" + indexName + ", ");
-                    
+
                     String columnName = indexInformation.getString("COLUMN_NAME");
 
                     sb.append("column_name=" + columnName);

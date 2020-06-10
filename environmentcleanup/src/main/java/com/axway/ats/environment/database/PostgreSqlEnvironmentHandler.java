@@ -20,7 +20,7 @@ import com.axway.ats.core.dbaccess.*;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.dbaccess.postgresql.PostgreSqlColumnDescription;
-import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
@@ -47,7 +47,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
      * @param dbConnection the database connection
      */
     PostgreSqlEnvironmentHandler( DbConnPostgreSQL dbConnection,
-                                  PostgreSqlProvider dbProvider ) {
+                                  PostgreSqlDbProvider dbProvider ) {
 
         super(dbConnection, dbProvider);
     }

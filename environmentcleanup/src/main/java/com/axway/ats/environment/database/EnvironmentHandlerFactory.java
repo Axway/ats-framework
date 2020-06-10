@@ -25,7 +25,7 @@ import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
-import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.BackupHandler;
 import com.axway.ats.environment.database.model.RestoreHandler;
@@ -89,7 +89,7 @@ public class EnvironmentHandlerFactory {
             }
             case DbConnPostgreSQL.DATABASE_TYPE: {
                 DbConnPostgreSQL dbConnPostgreSQL = (DbConnPostgreSQL) dbConnection;
-                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlProvider(dbConnPostgreSQL));
+                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlDbProvider(dbConnPostgreSQL));
             }
             case DbConnCassandra.DATABASE_TYPE: {
                 DbConnCassandra cassandraConnection = (DbConnCassandra) dbConnection;
@@ -132,7 +132,7 @@ public class EnvironmentHandlerFactory {
             }
             case DbConnPostgreSQL.DATABASE_TYPE: {
                 DbConnPostgreSQL dbConnPostgreSQL = (DbConnPostgreSQL) dbConnection;
-                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlProvider(dbConnPostgreSQL));
+                return new PostgreSqlEnvironmentHandler(dbConnPostgreSQL, new PostgreSqlDbProvider(dbConnPostgreSQL));
             }
 
             case DbConnCassandra.DATABASE_TYPE: {
