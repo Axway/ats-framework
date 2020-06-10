@@ -774,10 +774,13 @@ public class SystemMonitor {
                 log.error(errorMessage + " on '" + monitoredHost + "'");
                 return response.getBodyAsJson().getString("error");
             }
-            return null;
+        } catch (Exception e) {
+            log.error("Could not perform monitoring operation!", e);
         } finally {
             helper.disconnect();
         }
+
+        return null;
     }
 
 }
