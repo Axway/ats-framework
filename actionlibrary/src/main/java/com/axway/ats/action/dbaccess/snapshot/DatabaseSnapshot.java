@@ -366,9 +366,11 @@ public class DatabaseSnapshot {
                                                     + "] snapshot is still not created");
             }
 
-            log.debug("Comparing snapshots [" + this.name + "] taken on "
-                      + DatabaseSnapshotUtils.dateToString(this.metadataTimestamp) + " and [" + that.name
-                      + "] taken on " + DatabaseSnapshotUtils.dateToString(that.metadataTimestamp));
+            if (log.isDebugEnabled()) {
+                log.debug("Comparing snapshots [" + this.name + "] taken on "
+                          + DatabaseSnapshotUtils.dateToString(this.metadataTimestamp) + " and [" + that.name
+                          + "] taken on " + DatabaseSnapshotUtils.dateToString(that.metadataTimestamp));
+            }
 
             this.equality = new DatabaseEqualityState(this.name, that.name);
 

@@ -86,8 +86,8 @@ public class DistributedLoadExecutor extends RemoteExecutor {
         // distribute the threading pattern for each agent host
         final List<ThreadingPattern> distributedPatterns = threadingPattern.distribute(maxHostCount);
         if (distributedPatterns.size() < maxHostCount) {
-            log.warn("Threading pattern cannot be distributed accross all agents, only the first "
-                     + distributedPatterns.size() + " agents will execute");
+            log.warn("Threading pattern cannot be distributed across all agents, only the first "
+                     + distributedPatterns.size() + " agents will execute actions");
         }
 
         // distribute the data configurators for each agent host
