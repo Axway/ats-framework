@@ -61,9 +61,9 @@
         <javax.mail.version>1.4.4</javax.mail.version>
         <!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
         <javax.activation.version>1.1</javax.activation.version>
-        <apache.xalan.version>2.7.1</apache.xalan.version>
+        <apache.xalan.version>2.7.2</apache.xalan.version>
         <!-- xercesImpl: (used by xalan) There is xalan 2.7 which depends on xercesImpl 2.9.0(we used 2.7.0 before). -->
-        <apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
+        <apache.xercesImpl.version>2.12.0</apache.xercesImpl.version>
 
         <!-- Needed for jTDS -->
         <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
