@@ -31,7 +31,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces
-			Java 8 class level artifacts -->
+            Java 8 class level artifacts -->
         <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -83,13 +83,13 @@
         <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
         <cglib.cglib.version>3.0</cglib.cglib.version>
         <org.javassist.version>3.20.0-GA</org.javassist.version>
-        <!-- TestNG version extended by ATS team. Used in TestHarness -->
+        <!-- TestNG version used in TestHarness -->
         <testng.version>6.10</testng.version>
         <!-- Used in TestHarness - data-driven tests -->
         <net.sourceforgejexcelapi.jxl.version>2.6.10</net.sourceforgejexcelapi.jxl.version>
 
         <!-- Used in ActionLibrary -->
-        <!-- Bouncycastle provider JDK6. Used in AactionLibrary -->
+        <!-- BouncyCastle security provider. Used in ActionLibrary -->
         <org.bouncycastle.version>1.57</org.bouncycastle.version>
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>

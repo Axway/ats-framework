@@ -57,7 +57,7 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.10</version>
+            <version>${testng.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
