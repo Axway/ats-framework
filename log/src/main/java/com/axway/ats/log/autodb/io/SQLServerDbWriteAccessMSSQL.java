@@ -1,12 +1,12 @@
 /*
  * Copyright 2019 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -77,14 +77,14 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
     @Override
     public boolean insertCheckpoint(
-                                     String name,
-                                     long startTimestamp,
-                                     long responseTime,
-                                     long transferSize,
-                                     String transferUnit,
-                                     int result,
-                                     int loadQueueId,
-                                     boolean closeConnection ) throws DatabaseAccessException {
+            String name,
+            long startTimestamp,
+            long responseTime,
+            long transferSize,
+            String transferUnit,
+            int result,
+            int loadQueueId,
+            boolean closeConnection ) throws DatabaseAccessException {
 
         try {
             if (isBatchMode) {
@@ -116,30 +116,30 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
     protected class DbCheckpointsCache {
 
-        private Connection                                   connection;
-        private int                                          cacheSize                     = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
-        private int                                          numberOfCachedCheckpoints     = 0;
+        private Connection connection;
+        private int        cacheSize                 = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
+        private int        numberOfCachedCheckpoints = 0;
 
-        private long                                         lastInsertCheckpointTimestamp = 0;
+        private long lastInsertCheckpointTimestamp = 0;
 
         /**
-         * the maximum amount of time that the cache will be held unflushed
+         * the maximum amount of time that the cache will be held not flushed
          * */
-        private long                                         maxCacheWaitTime              = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
-                                                                                                                                                               10));
+        private long maxCacheWaitTime = TimeUnit.SECONDS.toMillis(
+                AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT, 10));
 
         /*
          * { loadQueueId -> { checkpointName -> checkpoint summary } }
          * */
-        private Map<Integer, Map<String, CheckpointSummary>> checkpointSummaries           = new HashMap<>();
+        private Map<Integer, Map<String, CheckpointSummary>> checkpointSummaries = new HashMap<>();
 
         /*
          * { loadQueueId -> checkpoint insert data }
          * */
         // The checkpoint insert data is just a StringBuffer where checkpoint information is stored in CSV format
-        private Map<Integer, StringBuilder>                  checkpointsInsertData         = new HashMap<>();
+        private Map<Integer, StringBuilder> checkpointsInsertData = new HashMap<>();
 
-        private long                                         batchStartTime;
+        private long batchStartTime;
 
         public DbCheckpointsCache( Connection connection ) {
 
@@ -148,22 +148,29 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
         public void flush() throws DatabaseAccessException {
 
-            flushCheckpoints();
-            flushCheckpointSummaries();
+            boolean exceptionThrown = false;
+            try {
+                exceptionThrown = true;
+                flushCheckpoints();
+                flushCheckpointSummaries();
 
-            if (isMonitorEventsQueue) {
-                log.getLog4jLogger()
-                   .info("Flushed "
-                         + numberOfCachedCheckpoints + " checkpoints in "
-                         + (System.currentTimeMillis() - batchStartTime) + " ms");
+                exceptionThrown = false;
+                if (isMonitorEventsQueue) {
+                    log.getLog4jLogger()
+                       .info("Flushed " + numberOfCachedCheckpoints + " checkpoints in "
+                             + (System.currentTimeMillis() - batchStartTime) + " ms");
+                }
+            } finally {
+                // TODO - limit number of logged warnings
+                if (exceptionThrown) {
+                    log.warn("Could not flush " + numberOfCachedCheckpoints + " checkpoints (or summaries) into DB! ");
+                }
+                // cleanup cache
+                numberOfCachedCheckpoints = 0;
+                checkpointsInsertData.clear();
+                lastInsertCheckpointTimestamp = 0;
+                checkpointSummaries.clear();
             }
-
-            // cleanup cache
-            numberOfCachedCheckpoints = 0;
-            checkpointsInsertData.clear();
-            lastInsertCheckpointTimestamp = 0;
-            checkpointSummaries.clear();
-
         }
 
         public void setCacheSize( int cacheSize ) {
@@ -253,9 +260,10 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
             PreparedStatement preparedStatement = null;
             java.sql.ResultSet rs = null;
             try {
-                preparedStatement = connection.prepareStatement("SELECT checkpointSummaryId FROM tCheckpointsSummary WHERE name = '"
-                                                                + name + "' AND loadQueueId = " + loadQueueId
-                                                                + " ORDER BY name");
+                preparedStatement = connection.prepareStatement(
+                        "SELECT checkpointSummaryId FROM tCheckpointsSummary WHERE name = '"
+                        + name + "' AND loadQueueId = " + loadQueueId
+                        + " ORDER BY name");
                 rs = preparedStatement.executeQuery();
                 if (rs.next()) {
                     id = rs.getInt(1);
@@ -307,9 +315,9 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 // since wa want the SQL Server to handle the checkpoint ID, here we pass -1 as the first argument
                 loadQueueCheckpointsInsertData.append("-1," + checkpointSummaryId + "," + name + "," + responseTime
                                                       + ","
-                                                      + transferRate + "," + ( (StringUtils.isNullOrEmpty(transferUnit))
-                                                                                                                         ? " " // ''
-                                                                                                                         : transferUnit)
+                                                      + transferRate + "," + ((StringUtils.isNullOrEmpty(transferUnit))
+                                                                              ? " " // ''
+                                                                              : transferUnit)
                                                       + "," + result + ","
                                                       + new Timestamp(endTime));
                 loadQueueCheckpointsInsertData.append("\n");
@@ -367,15 +375,15 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                                                   checkpointSummary.numPassed, checkpointSummary.numFailed,
                                                   checkpointSummary.minResponseTime,
                                                   checkpointSummary.avgResponseTime,
-                                                  checkpointSummary.maxResponseTime, checkpointSummary.minTransferRate,
-                                                  checkpointSummary.avgTransferRate, checkpointSummary.maxTransferRate,
+                                                  checkpointSummary.maxResponseTime,
+                                                  checkpointSummary.minTransferRate,
+                                                  checkpointSummary.avgTransferRate,
+                                                  checkpointSummary.maxTransferRate,
                                                   false);
-
                     }
                 }
-
             } catch (Exception e) {
-                throw new DbException("Could not flush checkpoints summaries", e);
+                throw new DbException("Could not flush checkpoint summaries to the logging DB", e);
             }
 
         }
@@ -387,7 +395,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
             CallableStatement statement = null;
             try {
-                statement = connection.prepareCall("{ call sp_update_checkpoint_summary(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
+                statement = connection.prepareCall(
+                        "{ call sp_update_checkpoint_summary(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}");
                 statement.setInt(1, checkpointSummaryId);
                 statement.setInt(2, numPassed);
                 statement.setInt(3, numFailed);
@@ -413,18 +422,25 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
         private void calculateAverageValues( CheckpointSummary checkpointSummary ) {
 
-            if (checkpointSummary.avgTransferRate > 0) {
-                checkpointSummary.avgTransferRate /= checkpointSummary.numPassed;
+            if (checkpointSummary.numPassed == 0) {
+                // no need to update averages
+                String toStr = checkpointSummary.limitedToString();
+                if (toStr != null) {
+                    log.warn("Checkpoint summary without passed actions. Summary info: " + toStr);
+                }
             } else {
-                checkpointSummary.avgTransferRate = 0;
-            }
+                if (checkpointSummary.avgTransferRate > 0) {
+                    checkpointSummary.avgTransferRate /= checkpointSummary.numPassed;
+                } else {
+                    checkpointSummary.avgTransferRate = 0;
+                }
 
-            if (checkpointSummary.avgResponseTime > 0) {
-                checkpointSummary.avgResponseTime /= checkpointSummary.numPassed;
-            } else {
-                checkpointSummary.avgResponseTime = 0;
+                if (checkpointSummary.avgResponseTime > 0) {
+                    checkpointSummary.avgResponseTime /= checkpointSummary.numPassed;
+                } else {
+                    checkpointSummary.avgResponseTime = 0;
+                }
             }
-
         }
 
         private void flushCheckpoints() {
@@ -485,7 +501,8 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 if (sis != null) {
                     try {
                         sis.close();
-                    } catch (IOException e) {}
+                    } catch (IOException e) {
+                    }
                 }
             }
 

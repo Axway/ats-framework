@@ -1181,7 +1181,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     /**
      * Set the checkpoint log level
      *
-     * @param checkpointLogLevel
+     * @param newCheckpointLogLevel
      */
     public static void setCheckpointLogLevel(
                                               CheckpointLogLevel newCheckpointLogLevel ) {
@@ -1903,18 +1903,18 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private long                   maxCacheWaitTime               = TimeUnit.SECONDS.toMillis(AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
-                                                                                                                                          10));
+        private long maxCacheWaitTime = TimeUnit.SECONDS.toMillis(
+                AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT, 10));
 
-        private long                   cacheBirthTime;
-        private int                    maxNumberOfCachedEvents        = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
+        private long cacheBirthTime;
+        private int  maxNumberOfCachedEvents = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
 
-        protected Connection           connection;
+        protected Connection connection;
 
-        private CallableStatement      insertRunMessageStatement      = null;
-        private int                    numberCachedRunMessages;
+        private CallableStatement insertRunMessageStatement = null;
+        private int               numberCachedRunMessages;
 
-        private CallableStatement      insertSuiteMessageStatement    = null;
+        private CallableStatement      insertSuiteMessageStatement = null;
         private int                    numberCachedSuiteMessages;
 
         private CallableStatement      insertTestcaseMessageStatement = null;
@@ -1955,7 +1955,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         /**
          * Specify max number of events to be collected for batch mode.
          * Note that if invoked this should be done early enough before any DB insert operation
-         * Default value is {@link #MAX_CACHE_EVENTS_DEFAULT_VALUEX}
+         * Default value is {@link AbstractDbAccess#DEFAULT_CHUNK_SIZE}
          * @param maxNumberOfCachedEvents
          */
         public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
