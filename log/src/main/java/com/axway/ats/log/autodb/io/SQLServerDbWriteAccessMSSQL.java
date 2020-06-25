@@ -150,10 +150,11 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
             boolean exceptionThrown = false;
             try {
+                exceptionThrown = true; // in case of an exception just detect it. Do not catch it
                 flushCheckpoints();
                 flushCheckpointSummaries();
 
-                exceptionThrown = true;
+                exceptionThrown = false; // if here, then above methods did not throw exception
                 if (isMonitorEventsQueue) {
                     log.getLog4jLogger()
                        .info("Flushed " + numberOfCachedCheckpoints + " checkpoints in "
@@ -161,9 +162,10 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
                 }
             } finally {
                 if (exceptionThrown) {
-                    log.warn("Could not flush " + numberOfCachedCheckpoints + " checkpoints into DB! ");
+                    log.warn("Could not flush " + numberOfCachedCheckpoints
+                             + " checkpoints into DB. These will be skipped and exception will be caught on higher level! ");
                 }
-                // cleanup cache
+                // cleanup cache. Most probably this checkpoints set will cause DB fail again
                 numberOfCachedCheckpoints = 0;
                 checkpointsInsertData.clear();
                 lastInsertCheckpointTimestamp = 0;
