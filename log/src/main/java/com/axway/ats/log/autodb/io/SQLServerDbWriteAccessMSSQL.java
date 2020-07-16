@@ -150,11 +150,11 @@ public class SQLServerDbWriteAccessMSSQL extends SQLServerDbWriteAccess {
 
             boolean exceptionThrown = false;
             try {
-                exceptionThrown = true;
+                exceptionThrown = true; // precondition to detect exception without catching it
                 flushCheckpoints();
                 flushCheckpointSummaries();
 
-                exceptionThrown = false;
+                exceptionThrown = false; // above methods passed without throwing exception
                 if (isMonitorEventsQueue) {
                     log.getLog4jLogger()
                        .info("Flushed " + numberOfCachedCheckpoints + " checkpoints in "

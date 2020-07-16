@@ -2253,7 +2253,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             boolean gotError = false;
             try {
-                insertCheckpointStatement.executeBatch();
+                insertCheckpointStatement.executeBatch(); // TODO - check possible result including possible error statuses
 
                 // data sent to the DB, commit the transaction
                 connection.commit();
