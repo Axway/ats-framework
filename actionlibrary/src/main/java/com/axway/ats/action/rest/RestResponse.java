@@ -430,8 +430,10 @@ public class RestResponse {
          * 
          * There is no problem to call this code even if the response is already closed.
          */
-        response.close();
-
-        super.finalize();
+        try {
+            response.close();
+        } finally { // do not prevent further cleanup in case of exception
+            super.finalize();
+        }
     }
 }
