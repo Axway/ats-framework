@@ -150,7 +150,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                             throw new AgentException(ae.getMessage());
                         } catch (Exception e) {
-                            throw new AgentException(e.getMessage(), e);
+                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": " + e.getMessage(), e);
                         }
 
                         configuredAgents.add(atsAgent);
