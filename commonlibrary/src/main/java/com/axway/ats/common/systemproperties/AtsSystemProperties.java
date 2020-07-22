@@ -24,9 +24,16 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class AtsSystemProperties {
 
+    // Action library properties
+
+    /** Default polling interval for new process output in milliseconds */
+    @PublicAtsApi
+    public static final String  ACTION__PROCESS_OUTPUT_POLL_INTERVAL                              = "ats.action.process.output.polling.interval";
+    public static final int     ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT                      = 500; // ms
+
     // Agent properties
     @PublicAtsApi
-    private static final String DEFAULT_AGENT_PORT_KEY                                            = "ats.agent.default.port";
+    public static final String  DEFAULT_AGENT_PORT_KEY                                            = "ats.agent.default.port";
     @PublicAtsApi
     public static final int     DEFAULT_AGENT_PORT_VALUE                                          = 8089;
     @PublicAtsApi

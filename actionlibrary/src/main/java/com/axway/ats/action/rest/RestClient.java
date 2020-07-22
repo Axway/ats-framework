@@ -173,8 +173,6 @@ public class RestClient {
     /**
      * Constructor not specifying the target URI.
      * You have to specify one using the appropriate set method
-     *
-     * @param uri the target URI
      */
     @PublicAtsApi
     public RestClient() {

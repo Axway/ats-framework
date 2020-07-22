@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,13 +22,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.process.ProcessExecutorException;
@@ -42,35 +40,32 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                       = Logger.getLogger(LocalProcessExecutor.class);
+    private static final Logger log                            = Logger.getLogger(LocalProcessExecutor.class);
+    public static final  int    OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000; /* 1 hour */
+    private final static int    MAX_STRING_SIZE                = 100000;  // max chars used to limit process output
+    private final static String SKIPPED_CHARACTERS             = "... skipped characters ..."
+                                                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
+    private final static int    SKIPPED_CHARACTERS_LENGTH      = SKIPPED_CHARACTERS.length();
 
-    private final static int    MAX_STRING_SIZE           = 100000;                                      // max chars used to limit process output
-
-    private final static String SKIPPED_CHARACTERS        = "... skipped characters ..."
-                                                            + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
-    private final static int    SKIPPED_CHARACTERS_LENGTH = SKIPPED_CHARACTERS.length();
-
-    private List<String>        commandTokens;
-    private String              commandDescription;
+    private List<String> commandTokens;
+    private String       commandDescription;
 
     private ProcessOutputReader errorReaderThread;
     private ProcessOutputReader outputReaderThread;
-
     private String              standardOutputFile;
     private String              errorOutputFile;
-
     private boolean             logStandardOutput;
     private boolean             logErrorOutput;
 
-    private String              workDirectory;
+    private String workDirectory;
 
-    private Process             theProcess;
-    private ProcessBuilder      processBuilder;
+    private Process        theProcess;
+    private ProcessBuilder processBuilder;
 
-    private boolean             suppressLogMessages;
-    private boolean             doNotUseStandardInput;
+    private boolean suppressLogMessages;
+    private boolean doNotUseStandardInput;
 
-    private String              caller;
+    private String caller;
 
     public LocalProcessExecutor( String caller, String command, String... commandArguments ) {
 
@@ -111,8 +106,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         if (!suppressLogMessages) {
             log.info("Executing '" + commandDescription + "'. We will " + (waitForCompletion
-                                                                                             ? "wait"
-                                                                                             : "not wait")
+                                                                           ? "wait"
+                                                                           : "not wait")
                      + " for its completion");
         }
 
@@ -201,7 +196,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         if (startCommandSnippet == null || startCommandSnippet.length() < 2) {
 
-            throw new IllegalStateException("The process start command snippet is invalid. The minimum allowed length is 2 characters");
+            throw new IllegalStateException(
+                    "The process start command snippet is invalid. The minimum allowed length is 2 characters");
         }
 
         int numberOfKilled = 0;
@@ -228,9 +224,9 @@ public class LocalProcessExecutor implements IProcessExecutor {
             pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "cmd",
                                                  "/c",
                                                  "wmic process where (commandline like \"%"
-                                                       + startCommandSnippet
-                                                       + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
-                                                       + startCommandSnippet + "%\") call terminate <NUL");
+                                                 + startCommandSnippet
+                                                 + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
+                                                 + startCommandSnippet + "%\") call terminate <NUL");
             startParsingLine = 1;
         } else {
 
@@ -282,10 +278,11 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 int retries = 100;
                 // the loop will brake when the temporary file exists and the delete operation is successful
                 // or if the number of retries exceeded
-                while (! (f.exists() && f.delete()) && retries-- > 0) {
+                while (!(f.exists() && f.delete()) && retries-- > 0) {
                     Thread.sleep(10);
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         return numberOfKilled;
@@ -397,8 +394,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log output to corresponding log4j appenders
-     * @param logErrorOutput
+     * Log standard output also to the corresponding Log4j appenders
+     * @param logStandardOutput <code>true</code> - log the output read to the log4j too
      */
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
@@ -407,7 +404,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
     /**
      * Log error to corresponding log4j appenders
-     * @param logErrorOutput
+     * @param logErrorOutput - <code>true</code> - log the error output to the log4j too
      */
     public void setLogErrorOutput( boolean logErrorOutput ) {
 
@@ -450,25 +447,25 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
     class ProcessOutputReader extends Thread {
 
-        private final Logger        log;
+        private final Logger log;
 
-        private String              caller;
+        private String caller;
 
-        private static final int    READ_TIMEOUT = 60 * 1000;                  // in milliseconds
+        private static final int READ_TIMEOUT = 60 * 1000;                  // in milliseconds
 
-        private final StringBuilder content      = new StringBuilder();
+        private final StringBuilder content = new StringBuilder();
 
-        private BufferedWriter      bufWriterStream;
+        private BufferedWriter bufWriterStream;
 
-        private boolean             logOutput;
+        private boolean logOutput;
 
-        private InputStream         is;
+        private InputStream is;
 
-        private String              type;
+        private String type;
 
-        private Process             externalProcess;
+        private Process externalProcess;
 
-        private CountDownLatch      countdownLatchForExternalProcessCompletion;
+        private CountDownLatch countdownLatchForExternalProcessCompletion;
 
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
@@ -525,6 +522,15 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 String line = null;
                 String dataToLeave = null;
                 bufReaderStream = new BufferedReader(new InputStreamReader(is));
+                int pollingIntervalMs = AtsSystemProperties.getPropertyAsNonNegativeNumber(
+                        AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL, -1);
+                if (pollingIntervalMs < 0 || pollingIntervalMs > OUTPUT_POLLING_INTERVAL_MAX_MS) {
+                    pollingIntervalMs = AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT; // default value
+                } else { // explicitly set and acceptable value
+                    if (log.isDebugEnabled()) {
+                        log.debug("Setting process output polling interval to " + pollingIntervalMs + " ms.");
+                    }
+                }
 
                 while (true) {
 
@@ -535,7 +541,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
                         if (isExternalProcessOver()) {
                             // the external process is over, exit this thread
-                            log.debug("External process is over, stop reading its stream for " + type); // STANDARD or ERROR OUTPUT
+                            log.debug("External process is over, stop reading its stream for "
+                                      + type); // STANDARD or ERROR OUTPUT
                             return;
                         } else {
                             /*
@@ -544,7 +551,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                              *      If sleep time is too long - it may take a long after external process is over and the moment we exit this thread.
                              */
                             try {
-                                Thread.sleep(500);
+                                Thread.sleep(pollingIntervalMs);
                             } catch (InterruptedException ee) {
                                 // continue with next iteration
                             }
@@ -630,8 +637,9 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 } catch (InterruptedException e1) {
                     timeout = start + READ_TIMEOUT - System.currentTimeMillis();
                     if (timeout > 0) {
-                        log.warn("Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
-                                 + timeout + " ms");
+                        log.warn(
+                                "Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
+                                + timeout + " ms");
                     }
                 }
             } while (timeout > 0);
@@ -646,5 +654,61 @@ public class LocalProcessExecutor implements IProcessExecutor {
                                                    + " seconds as the external process was not over yet.");
             }
         }
+    }
+
+
+    public static void main( String[] args ) throws InterruptedException {
+
+        BasicConfigurator.configure();
+        System.setProperty(AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL, "1500");
+        System.out.println("Starting: "+ new Date());
+        //        LocalProcessExecutor lpe = new LocalProcessExecutor("Caller123",
+        //                                                            "/bin/bash", new String[] {"-c", "pwd && ./script.sh 4" });
+        /*LocalProcessExecutor lpe = new LocalProcessExecutor("Caller123",
+                                                            "/bin/bash", new String[] {"-c", "./script.sh 4" });
+        lpe.setWorkDirectory("/home/misc/wok/gitHub/ats-framework/corelibrary/");
+        lpe.execute(false);
+        System.out.println("Finished: "+ new Date());
+        System.out.println("Std output: "+ lpe.getStandardOutput());
+
+        System.out.println("Finished 2: "+ new Date());
+        System.out.println("Exit code: "+ lpe.getExitCode());
+        System.out.println("Err output: "+ lpe.getErrorOutput());*/
+
+        class MyProcess /*implements Runnable*/ extends Thread {
+            MyProcess(String name) {
+                super(name);
+            }
+            @Override public void run() {
+                log.info("Thread " + getName() + " started");
+
+                LocalProcessExecutor lpe = new LocalProcessExecutor("Caller123",
+                                                                    "/bin/bash", new String[] {"-c", "./script.sh 2" });
+                lpe.setWorkDirectory("/home/misc/wok/gitHub/ats-framework/corelibrary/");
+                lpe.execute(false);
+                //System.out.println("Finished: "+ new Date());
+                log.info("Std output: "+ lpe.getStandardOutput());
+
+                log.info("Finished 2: "+ new Date());
+                log.info("Exit code: "+ lpe.getExitCode());
+                log.info("Err output: "+ lpe.getErrorOutput());
+            }
+        }
+
+        int threadsBefore = Thread.activeCount();
+        log.info("Threads before: " + threadsBefore);
+        Thread[] threads = new Thread[15];
+        for (int i = 0; i < 15; i++) {
+            //
+            threads[i] = new MyProcess( "Process " + i);
+            threads[i].start();
+        }
+
+        for (int i  = 0; i < 7; i++) {
+            log.info("Threads after: " + Thread.activeCount());
+            Thread.sleep(1000);
+        }
+
+        log.info("Threads after: " + Thread.activeCount() + ", initially: " + threadsBefore);
     }
 }
