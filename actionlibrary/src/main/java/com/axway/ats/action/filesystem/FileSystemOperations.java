@@ -617,12 +617,13 @@ public class FileSystemOperations {
     /**
      * Sets mode for copy operations for the ATS Agent represented by current instance. <br>
      *     Such methods are ({@link #copyFileFrom(String, String)} and {@link #copyFileTo(String, String)}).
-     * @param copyPassiveMode if true then the agent does not want or is not able to open local ports for copy file
+     * @param copyPassiveMode <code>true</code> is used when the agent container is not able to open local ports for copy file
      *                        operations. Such case could be when agent is behind firewall or is in a container which
      *                        does not have exposed port range for file copy operations.
      *
      * @see com.axway.ats.action.ActionLibraryConfigurator#setCopyFileStartPort(int)
      * @see com.axway.ats.action.ActionLibraryConfigurator#setCopyFileEndPort(int)
+     * @since 4.0.7
      */
     @PublicAtsApi
     public void setCopyInPassiveMode( boolean copyPassiveMode ) {
