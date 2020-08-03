@@ -18,9 +18,13 @@ package com.axway.ats.core.dbaccess.postgresql;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -28,6 +32,8 @@ import org.apache.log4j.Logger;
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.IoUtils;
 
 /**
@@ -35,6 +41,23 @@ import com.axway.ats.core.utils.IoUtils;
  *
  */
 public class PostgreSqlDbProvider extends AbstractDbProvider {
+
+    /**
+     * All of the properties (their names) for the TABLE INDEXes
+     * */
+    public static class IndexProperties {
+
+        public static final String INDEX_NAME      = "index_name";      // result set index 6
+        public static final String COLUMN_NAME     = "column_name";     // result set index 9
+
+        /**
+         * Combines both INDEX_NAME and COLUMN_NAME. Format <strong>COLUMN_NAME=&ltvalue&gt, INDEX_NAME=&ltvalue&gt</strong>
+         * */
+        public static final String INDEX_UID       = "index_uid";
+        public static final String TYPE            = "type";            // result set index 7
+        public static final String COLUMN_POSITION = "column_position"; // result set index 8
+        public static final String IS_UNIQUE       = "IsUnique";        // result set index 4
+    }
 
     private static final Logger log               = Logger.getLogger(PostgreSqlDbProvider.class);
 
@@ -113,6 +136,86 @@ public class PostgreSqlDbProvider extends AbstractDbProvider {
         }
 
         return value;
+    }
+
+    @Override
+    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                       String catalog ) throws DbException {
+
+        Map<String, String> indexes = new HashMap<>();
+
+        ResultSet indexInformation = null;
+        try {
+            indexInformation = databaseMetaData.getIndexInfo(catalog, null, tableName, false, true);
+            ResultSetMetaData rsmd = indexInformation.getMetaData();
+            int colCount = rsmd.getColumnCount();
+            while (indexInformation.next()) {
+                StringBuilder indexInfo = new StringBuilder();
+
+                String indexUid = null;
+                String columnName = null;
+                String indexName = null;
+
+                boolean firstTime = true;
+                for (int i = 1; i <= colCount; i++) {
+                    String name = null;
+                    Object value = indexInformation.getObject(i);
+
+                    if (i == 4) {
+                        name = IndexProperties.IS_UNIQUE;
+                        Boolean valBool = (Boolean) value;
+                        if (valBool) {
+                            value = "NON_UNIQUE";
+                        } else {
+                            value = "UNIQUE";
+                        }
+                    } else if (i == 6) {
+                        name = IndexProperties.INDEX_NAME;
+                        indexName = (String) value;
+                        //continue;
+                    } else if (i == 7) {
+                        name = IndexProperties.TYPE;
+                    } else if (i == 8) {
+                        name = IndexProperties.COLUMN_POSITION;
+                    } else if (i == 9) {
+                        name = IndexProperties.COLUMN_NAME;
+                        columnName = (String) value;
+                        //continue;
+                    } else {
+                        // not supported property
+                        continue;
+                    }
+
+                    if (firstTime) {
+                        firstTime = false;
+                        indexInfo.append(name + "=" + value);
+                    } else {
+                        indexInfo.append(", " + name + "=" + value);
+                    }
+                }
+
+                if (columnName != null && indexName != null) {
+                    indexUid = "" + IndexProperties.COLUMN_NAME + "=" + columnName + ", " + IndexProperties.INDEX_NAME
+                               + "=" + indexName;
+                }
+
+                if (indexUid == null) {
+                    indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
+                    log.warn(IndexProperties.INDEX_UID
+                             + " column not found in query polling for index properties:\nWe will use the following as an index uid: "
+                             + indexUid);
+                }
+
+                indexes.put(indexUid, indexInfo.toString());
+
+            }
+        } catch (SQLException e) {
+            throw new DbException("Error extracting table indexes info", e);
+        } finally {
+            DbUtils.closeResultSet(indexInformation);
+        }
+
+        return indexes;
     }
 
 }

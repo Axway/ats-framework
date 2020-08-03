@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
 
 /**
  * This structure says how equal the snapshots are
@@ -336,11 +335,16 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getIndexesPresentInOneSnapshotOnlyAsStrings( String snapshot, String table ) {
 
-        List<String> result = new ArrayList<>();
+        List<String> result = null;
 
         Map<String, List<String>> indexesPerTable = indexPresentInOneSnapshotOnly.get(snapshot);
         if (indexesPerTable != null) {
             result = indexesPerTable.get(table);
+        }
+
+        if (result == null) {
+            // no indexes for that table, so return empty list
+            result = new ArrayList<>();
         }
 
         return result;
@@ -432,6 +436,48 @@ public class DatabaseEqualityState {
         rowsPerTable.add(rowValues);
     }
 
+    public void clearDifferentNumberOfRowsForTable( String tableName ) {
+
+        // check if the table have different rows
+        if (this.getDifferentNumberOfRows(firstSnapshotName, tableName) != null) {
+            this.differentNumberOfRows.get(firstSnapshotName).remove(tableName);
+            if (this.differentNumberOfRows.get(firstSnapshotName) == null
+                || this.differentNumberOfRows.get(firstSnapshotName).isEmpty()) {
+                this.differentNumberOfRows.remove(firstSnapshotName);
+            }
+        }
+        if (this.getDifferentNumberOfRows(secondSnapshotName, tableName) != null) {
+            this.differentNumberOfRows.get(secondSnapshotName).remove(tableName);
+            if (this.differentNumberOfRows.get(secondSnapshotName) == null
+                || this.differentNumberOfRows.get(secondSnapshotName).isEmpty()) {
+                this.differentNumberOfRows.remove(secondSnapshotName);
+            }
+        }
+    }
+
+    public void clearRowsPresentedInOneSnapshotOnly( String tableName ) {
+
+        if (this.rowPresentInOneSnapshotOnly.containsKey(firstSnapshotName)) {
+            if (this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).containsKey(tableName)) {
+                this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).remove(tableName);
+                if (this.rowPresentInOneSnapshotOnly.get(firstSnapshotName) == null
+                    || this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).isEmpty()) {
+                    this.rowPresentInOneSnapshotOnly.remove(firstSnapshotName);
+                }
+            }
+        }
+
+        if (this.rowPresentInOneSnapshotOnly.containsKey(secondSnapshotName)) {
+            if (this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).containsKey(tableName)) {
+                this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).remove(tableName);
+                if (this.rowPresentInOneSnapshotOnly.get(secondSnapshotName) == null
+                    || this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).isEmpty()) {
+                    this.rowPresentInOneSnapshotOnly.remove(secondSnapshotName);
+                }
+            }
+        }
+    }
+
     private List<String> breakIntoTables( Map<String, Map<String, List<String>>> entities, String snapshot ) {
 
         List<String> tables = new ArrayList<>();
@@ -451,6 +497,11 @@ public class DatabaseEqualityState {
         Map<String, List<String>> entitiesPerTable = entities.get(snapshot);
         if (entitiesPerTable != null) {
             List<String> allEntitiesAsStrings = entitiesPerTable.get(table);
+
+            if (allEntitiesAsStrings == null) {
+                // no entries for the provided table in the provided snapshot
+                return result;
+            }
 
             // cycle all entities
             for (String entityAsString : allEntitiesAsStrings) {

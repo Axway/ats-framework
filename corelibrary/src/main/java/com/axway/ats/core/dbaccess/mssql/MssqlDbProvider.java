@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,22 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class MssqlDbProvider extends AbstractDbProvider {
 
+    /**
+     * All of the properties (their names) for the TABLE INDEXes
+     * */
+    public static class IndexProperties {
+        public static final String INDEX_NAME           = "index_name";
+        public static final String COLUMN_NAME          = "column_name";
+        public static final String TYPE                 = "type";
+        public static final String COLUMN_POSITION      = "column_position";
+        public static final String DATASPACE_NAME       = "DataSpaceName";
+        public static final String DATASPACE_TYPE       = "DataSpaceType";
+        public static final String IS_PRIMARY_KEY       = "IsPrimaryKey";
+        public static final String IS_UNIQUE            = "IsUnique";
+        public static final String IS_DUPLICATED_KEY    = "IsDuplicateKey";
+        public static final String IS_UNIQUE_CONSTRAINT = "IsUniqueConstraint";
+    }
+    
     private static final Logger log = Logger.getLogger(MssqlDbProvider.class);
 
     /**
@@ -225,17 +241,18 @@ public class MssqlDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT 'column_name=' + columns.name + ', ' + 'index_name=' + indexes.name as column_and_index_name,")
-           .append("indexes.name AS index_name,")
-           .append("columns.name AS column_name,")
-           .append("indexes.type_desc AS type,")
-           .append("ind_col.index_column_id AS column_position,")
-           .append("ds.name AS DataSpaceName,")
-           .append("ds.type AS DataSpaceType,")
-           .append("indexes.is_primary_key AS IsPrimaryKey,")
-           .append("indexes.is_unique AS IsUnique,")
-           .append("indexes.ignore_dup_key AS IsDuplicateKey,")
-           .append("indexes.is_unique_constraint AS IsUniqueConstraint")
+        sql.append("SELECT '" + IndexProperties.COLUMN_NAME + "=' + columns.name + ', ' + '"
+                   + IndexProperties.INDEX_NAME + "=' + indexes.name as column_and_index_name,")
+           .append("indexes.name AS " + IndexProperties.INDEX_NAME + ",")
+           .append("columns.name AS " + IndexProperties.COLUMN_NAME + ",")
+           .append("indexes.type_desc AS " + IndexProperties.TYPE + ",")
+           .append("ind_col.index_column_id AS " + IndexProperties.COLUMN_POSITION + ",")
+           .append("ds.name AS " + IndexProperties.DATASPACE_NAME + ",")
+           .append("ds.type AS " + IndexProperties.DATASPACE_TYPE + ",")
+           .append("indexes.is_primary_key AS " + IndexProperties.IS_PRIMARY_KEY + ",")
+           .append("indexes.is_unique AS " + IndexProperties.IS_UNIQUE + ",")
+           .append("indexes.ignore_dup_key AS " + IndexProperties.IS_DUPLICATED_KEY + ",")
+           .append("indexes.is_unique_constraint AS " + IndexProperties.IS_UNIQUE_CONSTRAINT)
            .append(" FROM sys.indexes AS indexes,")
            .append("sys.data_spaces ds,")
            .append("sys.index_columns ind_col,")

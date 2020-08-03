@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,9 +42,7 @@ import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
-import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.validation.exceptions.ArrayEmptyException;
 import com.axway.ats.core.validation.exceptions.NumberValidationException;
 import com.axway.ats.core.validation.exceptions.ValidationException;
@@ -856,23 +854,26 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
     }
 
-    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+    protected abstract Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                                String catalog ) throws DbException;
+
+    /*protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
-
+    
         Map<String, String> indexes = new HashMap<>();
-
+    
         try {
             ResultSet indexInformation = databaseMetaData.getIndexInfo(catalog, null, tableName, true, true);
             while (indexInformation.next()) {
-
+    
                 StringBuilder sb = new StringBuilder();
                 String indexName = indexInformation.getString("INDEX_NAME");
                 if (!StringUtils.isNullOrEmpty(indexName)) {
-
+    
                     sb.append("index_name=" + indexName + ", ");
-
+    
                     String columnName = indexInformation.getString("COLUMN_NAME");
-
+    
                     sb.append("column_name=" + columnName);
                     sb.append(extractTableAttributeValue(indexInformation, "INDEX_QUALIFIER", "index catalog",
                                                          tableName, columnName));
@@ -885,7 +886,7 @@ public abstract class AbstractDbProvider implements DbProvider {
                                                          tableName, columnName));
                     sb.append(extractTableAttributeValue(indexInformation, "ORDINAL_POSITION", "sequence number",
                                                          tableName, columnName));
-
+    
                     // sb.append( extractIndexAttribute( indexInformation,
                     // "TABLE_NAME" ) );
                     // sb.append( extractResultSetAttribute( indexInformation,
@@ -900,9 +901,9 @@ public abstract class AbstractDbProvider implements DbProvider {
         } catch (SQLException e) {
             throw new DbException("Error extracting table indexes info", e);
         }
-
+    
         return indexes;
-    }
+    }*/
 
     private String extractBooleanResultSetAttribute( ResultSet resultSet, String attribute, String attributeNiceName ) {
 

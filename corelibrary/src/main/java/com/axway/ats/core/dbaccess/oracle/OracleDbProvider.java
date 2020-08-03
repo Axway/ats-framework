@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,22 @@ import com.axway.ats.core.utils.IoUtils;
  * Provides Oracle specific database queries.
  */
 public class OracleDbProvider extends AbstractDbProvider {
+
+    /**
+     * All of the properties (their names) for the TABLE INDEXes
+     * */
+    public static class IndexProperties {
+        /**
+         * The same as INDEX_UID
+         * */
+        public static final String COLUMN_AND_INDEX_NAME = "COLUMN_AND_INDEX_NAME";
+        public static final String INDEX_NAME            = "INDEX_NAME";
+        public static final String COLUMN_NAME           = "COLUMN_NAME";
+        public static final String INDEX_TYPE            = "INDEX_TYPE";
+        public static final String COLUMN_POSITION       = "COLUMN_POSITION";
+        public static final String UNIQUENESS            = "UNIQUENESS";
+        public static final String PARTITIONED           = "PARTITIONED";
+    }
 
     private static final Logger log = Logger.getLogger(OracleDbProvider.class);
 
@@ -184,7 +200,8 @@ public class OracleDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT 'COLUMN_NAME=' || ind_col.column_name || ', ' || 'INDEX_NAME=' || d_ind.index_name as column_and_index_name,")
+        sql.append("SELECT 'COLUMN_NAME=' || ind_col.column_name || ', ' || 'INDEX_NAME=' || d_ind.index_name as "
+                   + IndexProperties.COLUMN_AND_INDEX_NAME.toLowerCase() + ",")
            .append(" d_ind.index_name AS index_name,")
            .append(" ind_col.column_name,")
            .append(" d_ind.index_type,")
@@ -206,25 +223,27 @@ public class OracleDbProvider extends AbstractDbProvider {
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                
-                if ("column_and_index_name".equalsIgnoreCase(name)) {
+
+                if (IndexProperties.COLUMN_AND_INDEX_NAME.equalsIgnoreCase(name)) {
                     indexUid = value;
                 } else {
-                	if (name.equalsIgnoreCase("INDEX_NAME") || name.equalsIgnoreCase("COLUMN_NAME")) {
-                		continue;
-                	}
+                    // do not skip them, so the user can use both thing when comparing snapshots via IndexMatcher
+                    /*if (name.equalsIgnoreCase("INDEX_NAME") || name.equalsIgnoreCase("COLUMN_NAME")) {
+                        continue;
+                    }*/
                     if (firstTime) {
                         firstTime = false;
                         info.append(name + "=" + value);
                     } else {
-                    	info.append(", " + name + "=" + value);
+                        info.append(", " + name + "=" + value);
                     }
                 }
             }
 
             if (indexUid == null) {
                 indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn("index_and_column_name column not found in query polling for index properties:\nQuery: "
+                log.warn(IndexProperties.COLUMN_AND_INDEX_NAME
+                         + " column not found in query polling for index properties:\nQuery: "
                          + sql.toString() + "\nQuery result: " + valueList.toString()
                          + "\nWe will use the following as an index uid: " + indexUid);
             }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,7 +40,9 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class TableDescription {
 
-    private static Logger       log              = Logger.getLogger(TableDescription.class);
+    public static final String  INDEX_PROPERTIES_DELIMITER = ", ";
+
+    private static Logger       log                        = Logger.getLogger(TableDescription.class);
 
     // snapshot this table belongs to
     private String              snapshotName;
@@ -52,7 +54,7 @@ public class TableDescription {
     private String              schema;
 
     // primary key column
-    private String              primaryKeyColumn = "";
+    private String              primaryKeyColumn           = "";
 
     // description of all table columns
     private List<String>        columnDescriptions;
@@ -149,7 +151,7 @@ public class TableDescription {
      * @param equality
      */
     public void compare( TableDescription that, List<String> thisValuesList, List<String> thatValuesList,
-                         int thisNumberOfRows, int thatNumberOfRows, IndexNameMatcher nameComparator,
+                         int thisNumberOfRows, int thatNumberOfRows, IndexMatcher nameComparator,
                          DatabaseEqualityState equality ) {
 
         boolean tablesAreSame = true;
@@ -271,178 +273,210 @@ public class TableDescription {
         return true;
     }
 
-    private void checkIndexes( TableDescription that, IndexNameMatcher nameComparator,
+    private void checkIndexes( TableDescription that, IndexMatcher nameComparator,
                                DatabaseEqualityState equality ) {
 
         final Set<String> thisNames = this.indexes.keySet();
         final Set<String> thatNames = that.indexes.keySet();
 
-        // check if all indexes from THIS snapshot are present in THAT
-        for (String thisName : thisNames) {
-            String equivalentThatName = null;
-            Properties thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
-            Properties thatIndexProperties = null;
-            for (String thatName : thatNames) {
+        if (!thisNames.isEmpty()) {
 
-                thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
+            // check if all indexes from THIS snapshot are present in THAT
+            for (String thisName : thisNames) {
+                boolean propertiesAlreadyChecked = false;
+                String equivalentThatName = null;
+                Properties thisIndexProperties = toProperties(this.indexes.get(thisName), INDEX_PROPERTIES_DELIMITER);
+                Properties thatIndexProperties = null;
+                for (String thatName : thatNames) {
 
-                // check if both indexes are on the same column in the table
-                String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
-                if (thisIndexColumnName == null) {
-                    thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                    thatIndexProperties = toProperties(that.indexes.get(thatName), INDEX_PROPERTIES_DELIMITER);
+
+                    // check if both indexes are on the same column in the table
+                    String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
                     if (thisIndexColumnName == null) {
-                        thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                        thisIndexColumnName = thisIndexProperties.getProperty("column_name");
                         if (thisIndexColumnName == null) {
-                            // log warning
-                            logMissingColumnNameWarning(thisName);
+                            thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                            if (thisIndexColumnName == null) {
+                                // log warning
+                                logMissingColumnNameWarning(thisName);
+                            }
                         }
                     }
-                }
 
-                String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
-                if (thatIndexColumnName == null) {
-                    thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                    String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
                     if (thatIndexColumnName == null) {
-                        thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                        thatIndexColumnName = thatIndexProperties.getProperty("column_name");
                         if (thatIndexColumnName == null) {
-                            // log warning
-                            logMissingColumnNameWarning(thatName);
+                            thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                            if (thatIndexColumnName == null) {
+                                // log warning
+                                logMissingColumnNameWarning(thatName);
+                            }
                         }
                     }
-                }
 
-                if (!thisIndexColumnName.equals(thatIndexColumnName)) {
-                    continue;
-                }
+                    if (!thisIndexColumnName.equals(thatIndexColumnName)) {
+                        continue;
+                    }
 
-                String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
-                if (thisIndexName == null) {
-                    thisIndexName = thisIndexProperties.getProperty("index_name");
+                    String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
                     if (thisIndexName == null) {
-                        // MySQL specific case
-                        // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
-                        thisIndexName = thisName.split(", ")[1].split("=")[1];
+                        thisIndexName = thisIndexProperties.getProperty("index_name");
+                        if (thisIndexName == null) {
+                            // MySQL specific case
+                            // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                            thisIndexName = thisName.split(", ")[1].split("=")[1];
+                        }
                     }
-                }
 
-                String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
-                if (thatIndexName == null) {
-                    thatIndexName = thatIndexProperties.getProperty("index_name");
+                    String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
                     if (thatIndexName == null) {
-                        // MySQL specific case
-                        // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
-                        thatIndexName = thatName.split(", ")[1].split("=")[1];
+                        thatIndexName = thatIndexProperties.getProperty("index_name");
+                        if (thatIndexName == null) {
+                            // MySQL specific case
+                            // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                            thatIndexName = thatName.split(INDEX_PROPERTIES_DELIMITER)[1].split("=")[1];
+                        }
+                    }
+
+                    if (nameComparator.isSame(name,
+                                              thisIndexName,
+                                              thatIndexName)) {
+                        equivalentThatName = thatName;
+                        propertiesAlreadyChecked = false;
+                        break;
+                    }
+                    if (nameComparator.isSame(name, thisIndexProperties, thatIndexProperties)) {
+                        equivalentThatName = thatName;
+                        // since the user provided custom index matcher, 
+                        // and that matcher returned true from the method, 
+                        // where it is assumed that the index's properties are being compared, ATS WILL NOT check those properties again
+                        propertiesAlreadyChecked = true;
+                        break;
+
                     }
                 }
 
-                if (nameComparator.isSame(name,
-                                          thisIndexName,
-                                          thatIndexName)) {
-                    equivalentThatName = thatName;
-                    break;
-                }
-            }
-
-            if (equivalentThatName == null) {
-                // no index with same name
-                equality.addIndexPresentInOneSnapshotOnly(this.snapshotName, name, thisName,
-                                                          this.indexes.get(thisName));
-            } else {
-                // there is an index with same name, now check there attributes
-                if (!checkIndexesByAttributes(thisIndexProperties,
-                                              thisName,
-                                              thatIndexProperties,
-                                              equivalentThatName)) {
-                    //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
-                    // index with same name, has different attributes
+                if (equivalentThatName == null) {
+                    // no index with same name
                     equality.addIndexPresentInOneSnapshotOnly(this.snapshotName, name, thisName,
                                                               this.indexes.get(thisName));
+                } else {
+                    if (!propertiesAlreadyChecked) {
+                        // there is an index with same name, now check there attributes
+                        if (!checkIndexesByAttributes(thisIndexProperties,
+                                                      thisName,
+                                                      thatIndexProperties,
+                                                      equivalentThatName)) {
+                            //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
+                            // index with same name, has different attributes
+                            equality.addIndexPresentInOneSnapshotOnly(this.snapshotName, name, thisName,
+                                                                      this.indexes.get(thisName));
+                        }
+                    }
+
                 }
             }
         }
 
-        // check if all indexes from THAT snapshot are present in THIS
-        for (String thatName : thatNames) {
-            String equivalentThisName = null;
-            Properties thatIndexProperties = toProperties(that.indexes.get(thatName), ", ");
-            Properties thisIndexProperties = null;
-            for (String thisName : thisNames) {
+        if (!thatNames.isEmpty()) {
 
-                thisIndexProperties = toProperties(this.indexes.get(thisName), ", ");
+            // check if all indexes from THAT snapshot are present in THIS
+            for (String thatName : thatNames) {
+                boolean propertiesAlreadyChecked = false;
+                String equivalentThisName = null;
+                Properties thatIndexProperties = toProperties(that.indexes.get(thatName), INDEX_PROPERTIES_DELIMITER);
+                Properties thisIndexProperties = null;
+                for (String thisName : thisNames) {
 
-                // check if both indexes are on the same column in the table
-                String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
-                if (thisIndexColumnName == null) {
-                    thisIndexColumnName = thisIndexProperties.getProperty("column_name");
+                    thisIndexProperties = toProperties(this.indexes.get(thisName), INDEX_PROPERTIES_DELIMITER);
+
+                    // check if both indexes are on the same column in the table
+                    String thisIndexColumnName = thisIndexProperties.getProperty("COLUMN_NAME");
                     if (thisIndexColumnName == null) {
-                        thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                        thisIndexColumnName = thisIndexProperties.getProperty("column_name");
                         if (thisIndexColumnName == null) {
-                            // log warning
-                            logMissingColumnNameWarning(thisName);
+                            thisIndexColumnName = getIndexColumnNameFromIndexUid(thisName);
+                            if (thisIndexColumnName == null) {
+                                // log warning
+                                logMissingColumnNameWarning(thisName);
+                            }
                         }
                     }
-                }
 
-                String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
-                if (thatIndexColumnName == null) {
-                    thatIndexColumnName = thatIndexProperties.getProperty("column_name");
+                    String thatIndexColumnName = thatIndexProperties.getProperty("COLUMN_NAME");
                     if (thatIndexColumnName == null) {
-                        thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                        thatIndexColumnName = thatIndexProperties.getProperty("column_name");
                         if (thatIndexColumnName == null) {
-                            // log warning
-                            logMissingColumnNameWarning(thatName);
+                            thatIndexColumnName = getIndexColumnNameFromIndexUid(thatName);
+                            if (thatIndexColumnName == null) {
+                                // log warning
+                                logMissingColumnNameWarning(thatName);
+                            }
                         }
                     }
-                }
 
-                if (thisIndexColumnName != null && thatIndexColumnName != null) {
-                    if (!thisIndexColumnName.equals(thatIndexColumnName)) {
-                        continue;
+                    if (thisIndexColumnName != null && thatIndexColumnName != null) {
+                        if (!thisIndexColumnName.equals(thatIndexColumnName)) {
+                            continue;
+                        }
                     }
-                }
 
-                String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
-                if (thisIndexName == null) {
-                    thisIndexName = thisIndexProperties.getProperty("index_name");
+                    String thisIndexName = thisIndexProperties.getProperty("INDEX_NAME");
                     if (thisIndexName == null) {
-                        // MySQL specific case
-                        // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
-                        thisIndexName = thisName.split(", ")[1].split("=")[1];
+                        thisIndexName = thisIndexProperties.getProperty("index_name");
+                        if (thisIndexName == null) {
+                            // MySQL specific case
+                            // thisName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                            thisIndexName = thisName.split(INDEX_PROPERTIES_DELIMITER)[1].split("=")[1];
+                        }
                     }
-                }
 
-                String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
-                if (thatIndexName == null) {
-                    thatIndexName = thatIndexProperties.getProperty("index_name");
+                    String thatIndexName = thatIndexProperties.getProperty("INDEX_NAME");
                     if (thatIndexName == null) {
-                        // MySQL specific case
-                        // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
-                        thatIndexName = thatName.split(", ")[1].split("=")[1];
+                        thatIndexName = thatIndexProperties.getProperty("index_name");
+                        if (thatIndexName == null) {
+                            // MySQL specific case
+                            // thatName = <index uid="COLUMN_NAME=<some_value>, INDEX_NAME=<some_value>">
+                            thatIndexName = thatName.split(INDEX_PROPERTIES_DELIMITER)[1].split("=")[1];
+                        }
+                    }
+
+                    if (nameComparator.isSame(name,
+                                              thisIndexName,
+                                              thatIndexName)) {
+                        equivalentThisName = thisName;
+                        propertiesAlreadyChecked = false;
+                        break;
+                    }
+                    if (nameComparator.isSame(name, thisIndexProperties, thatIndexProperties)) {
+                        equivalentThisName = thisName;
+                        // since the user provided custom index matcher, 
+                        // and that matcher returned true from the method, 
+                        // where it is assumed that the index's properties are being compared, ATS WILL NOT check those properties again
+                        propertiesAlreadyChecked = true;
+                        break;
                     }
                 }
 
-                if (nameComparator.isSame(name,
-                                          thisIndexName,
-                                          thatIndexName)) {
-                    equivalentThisName = thisName;
-                    break;
-                }
-            }
-
-            if (equivalentThisName == null) {
-                // no index with same name
-                equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
-                                                          that.indexes.get(thatName));
-            } else {
-                // there is an index with same name, now check there attributes
-                if (!checkIndexesByAttributes(thisIndexProperties,
-                                              equivalentThisName,
-                                              thatIndexProperties,
-                                              thatName)) {
-                    //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
-                    // index with same name, has different attributes
+                if (equivalentThisName == null) {
+                    // no index with same name
                     equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
                                                               that.indexes.get(thatName));
+                } else {
+                    if (!propertiesAlreadyChecked) {
+                        // there is an index with same name, now check there attributes
+                        if (!checkIndexesByAttributes(thisIndexProperties,
+                                                      equivalentThisName,
+                                                      thatIndexProperties,
+                                                      thatName)) {
+                            //if (!this.indexes.get(thisName).equals(that.indexes.get(equivalentThatName))) {
+                            // index with same name, has different attributes
+                            equality.addIndexPresentInOneSnapshotOnly(that.snapshotName, name, thatName,
+                                                                      that.indexes.get(thatName));
+                        }
+                    }
                 }
             }
         }
@@ -475,24 +509,6 @@ public class TableDescription {
         }
 
         return null;
-    }
-
-    /**
-     * Create {@link java.util.Properties} object from String
-     * @param inputString the String, containing the properties in format key1=valDELIMITERkey2=val
-     * @param delimiter the delimiter used to separate each property
-     * */
-    private Properties toProperties( String inputString, String delimiter ) {
-
-        inputString = inputString.replace(delimiter, AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-        Properties properties = new Properties();
-        try {
-            properties.load(new StringReader(inputString));
-        } catch (IOException e) {
-            throw new RuntimeException("Unable to load java.util.Properties from java.lang.String using delimiter '"
-                                       + delimiter + "'", e);
-        }
-        return properties;
     }
 
     /**
@@ -657,5 +673,38 @@ public class TableDescription {
         }
 
         return instance;
+    }
+
+    /**
+     * Get the index properties as {@link Properties} object
+     * @param indexAndColumnName - for Oracle and SQL Server the value MUST be column_and_index_name=<value>, while for MySQL, it is INDEX_UID=<value>
+     * @return {@link Properties} object, containing all of the index properties
+     * @throws RuntimeException - if index with this indexAndColumnName, does not exist
+     * */
+    public Properties getIndexProperties( String indexAndColumnName ) {
+
+        if (this.indexes.containsKey(indexAndColumnName)) {
+            return toProperties(this.indexes.get(indexAndColumnName), INDEX_PROPERTIES_DELIMITER);
+        } else {
+            throw new RuntimeException("No such index with UID (index and column name) '" + indexAndColumnName + "'");
+        }
+    }
+
+    /**
+     * Create {@link java.util.Properties} object from String
+     * @param inputString the String, containing the properties in format key1=valDELIMITERkey2=val
+     * @param delimiter the delimiter used to separate each property
+     * */
+    private Properties toProperties( String inputString, String delimiter ) {
+
+        inputString = inputString.replace(delimiter, AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+        Properties properties = new Properties();
+        try {
+            properties.load(new StringReader(inputString));
+        } catch (IOException e) {
+            throw new RuntimeException("Unable to load java.util.Properties from java.lang.String using delimiter '"
+                                       + delimiter + "'", e);
+        }
+        return properties;
     }
 }

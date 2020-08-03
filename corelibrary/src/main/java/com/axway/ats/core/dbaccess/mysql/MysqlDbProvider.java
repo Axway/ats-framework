@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,23 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
  * MySQL implementation of the DB provider
  */
 public class MysqlDbProvider extends AbstractDbProvider {
+
+    /**
+     * All of the properties (their names) for the TABLE INDEXes
+     * */
+    public static class IndexProperties {
+        public static final String INDEX_UID    = "INDEX_UID";
+        public static final String INDEX_NAME   = "INDEX_NAME";
+        public static final String COLUMN_NAME  = "COLUMN_NAME";
+        public static final String NON_UNIQUE   = "NON_UNIQUE";
+        public static final String SEQ_IN_INDEX = "SEQ_IN_INDEX";
+        public static final String SUB_PART     = "SUB_PART";
+        public static final String PACKED       = "PACKED";
+        public static final String NULLABLE     = "NULLABLE";
+        public static final String INDEX_TYPE   = "INDEX_TYPE";
+        public static final String COLLATION    = "COLLATION";
+
+    }
 
     private static final Logger log                    = Logger.getLogger(MysqlDbProvider.class);
 
@@ -123,8 +140,15 @@ public class MysqlDbProvider extends AbstractDbProvider {
     protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
 
-    	String sql = "SELECT TABLE_NAME, CONCAT('COLUMN_NAME=', COLUMN_NAME, ', INDEX_NAME=', INDEX_NAME) AS INDEX_UID,NON_UNIQUE,SEQ_IN_INDEX,COLUMN_NAME,COLLATION,SUB_PART,PACKED,NULLABLE,INDEX_TYPE "
-                + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName + "'";
+        String sql = "SELECT TABLE_NAME, CONCAT('" + IndexProperties.COLUMN_NAME + "=', " + IndexProperties.COLUMN_NAME
+                     + ", ', " + IndexProperties.INDEX_NAME + "=', " + IndexProperties.INDEX_NAME + ") AS "
+                     + IndexProperties.INDEX_UID + "," + IndexProperties.NON_UNIQUE
+                     + "," + IndexProperties.SEQ_IN_INDEX
+                     + "," + IndexProperties.COLUMN_NAME + "," + IndexProperties.COLLATION + ","
+                     + IndexProperties.SUB_PART + "," + IndexProperties.PACKED + "," + IndexProperties.NULLABLE + ","
+                     + IndexProperties.INDEX_TYPE + " "
+                     + "FROM INFORMATION_SCHEMA.STATISTICS " + "WHERE TABLE_NAME='" + tableName
+                     + "' AND TABLE_SCHEMA = '" + dbConnection.getDb() + "'";
 
         String indexUid = null;
         Map<String, String> indexes = new HashMap<>();
@@ -134,7 +158,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
             for (DbRecordValue dbValue : valueList) {
                 String value = dbValue.getValueAsString();
                 String name = dbValue.getDbColumn().getColumnName();
-                if ("INDEX_UID".equalsIgnoreCase(name)) {
+                if (IndexProperties.INDEX_UID.equalsIgnoreCase(name)) {
                     indexUid = value;
                 } else {
                     if (firstTime) {
@@ -148,7 +172,8 @@ public class MysqlDbProvider extends AbstractDbProvider {
 
             if (indexUid == null) {
                 indexUid = "NULL_UID_FOUND_FOR_INDEX_OF_TABLE_" + tableName;
-                log.warn("INDEX_UID column not found in query polling for index properties:\nQuery: " + sql
+                log.warn("" + IndexProperties.INDEX_UID
+                         + " column not found in query polling for index properties:\nQuery: " + sql
                          + "\nQuery result: " + valueList.toString()
                          + "\nWe will use the following as an index uid: " + indexUid);
             }
