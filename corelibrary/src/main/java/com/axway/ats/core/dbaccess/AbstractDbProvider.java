@@ -41,6 +41,7 @@ import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
+import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.validation.exceptions.ArrayEmptyException;
@@ -52,15 +53,15 @@ import com.axway.ats.core.validation.exceptions.ValidationException;
  */
 public abstract class AbstractDbProvider implements DbProvider {
 
-    private static Logger                     log;
-    private static final int                  BYTE_BUFFER_SIZE = 1024;
-    private static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
+    private static Logger                       log;
+    private static final int                    BYTE_BUFFER_SIZE = 1024;
+    protected static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
 
-    protected DbConnection                    dbConnection;
+    protected DbConnection                      dbConnection;
 
-    private Connection                        connection;
+    private Connection                          connection;
 
-    protected String[]                        reservedWords    = new String[]{};
+    protected String[]                          reservedWords    = new String[]{};
 
     static {
         // TODO in Java 8 there is a way to get them without additional libraries or reflection
@@ -739,9 +740,15 @@ public abstract class AbstractDbProvider implements DbProvider {
         try {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
 
-            final String schemaPattern = (this instanceof OracleDbProvider
-                                                                           ? dbConnection.getUser()
-                                                                           : null);
+            // ORACLE -> The USER NAME is the TABLE SCHEMA
+            String schemaPattern = (this instanceof OracleDbProvider
+                                                                     ? dbConnection.getUser()
+                                                                     : null);
+
+            // MySQL -> The DB NAME is the TABLE SCHEMA
+            schemaPattern = (this instanceof MysqlDbProvider
+                                                             ? dbConnection.getDb()
+                                                             : null);
 
             ResultSet tablesResultSet = databaseMetaData.getTables(null, schemaPattern, null,
                                                                    new String[]{ "TABLE" });
@@ -914,8 +921,8 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
     }
 
-    private String extractTableAttributeValue( ResultSet resultSet, String attribute, String attributeNiceName,
-                                               String tableName, String columnName ) {
+    protected String extractTableAttributeValue( ResultSet resultSet, String attribute, String attributeNiceName,
+                                                 String tableName, String columnName ) {
 
         try {
             String result = resultSet.getString(attribute);

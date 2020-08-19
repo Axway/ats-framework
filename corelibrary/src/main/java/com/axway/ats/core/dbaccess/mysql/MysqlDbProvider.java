@@ -15,6 +15,7 @@
  */
 package com.axway.ats.core.dbaccess.mysql;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Blob;
@@ -106,15 +107,25 @@ public class MysqlDbProvider extends AbstractDbProvider {
         if (valueAsObject != null && valueAsObject.getClass().isArray()) {
             // we have an array of primitive data type
             // LONGBLOB types are returned as byte array and '1?' should be transformed to 0x313F
+
+            InputStream blobInputStream = null;
             if (! (valueAsObject instanceof byte[])) {
                 // FIXME other array types might be needed to be tracked in a different way 
                 log.warn("Array type that needs attention");
+            } else {
+                // we have byte[] array
+                // Despite working for both versions, more tests are needed, so just do it if the JDBC version is 8.xx.xx
+                if (DbConnMySQL.MYSQL_JDBS_8_DATASOURCE_CLASS_NAME.equals( ((DbConnMySQL) this.dbConnection).getDataSourceClassName())) {
+                    blobInputStream = new ByteArrayInputStream((byte[]) valueAsObject);
+                }
             }
 
             StringBuilder hexString = new StringBuilder();
             hexString.append("0x");
             // read the binary data from the stream and convert it to hex
-            InputStream blobInputStream = resultSet.getBinaryStream(index);
+            if (blobInputStream == null) {
+                blobInputStream = resultSet.getBinaryStream(index);
+            }
             hexString = addBinDataAsHexAndCloseStream(hexString, blobInputStream);
             value = hexString.toString();
 

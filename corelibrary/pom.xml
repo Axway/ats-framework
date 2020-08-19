@@ -17,14 +17,13 @@
         <!-- Apache FTP and FTPS Library -->
         <org.apache.commons.net.version>3.5</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, Error example: javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify -->
-        <mysql.mysql-connector-java.version>5.1.48</mysql.mysql-connector-java.version>
+        <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
         <!-- jTDS dependency is defined in parent pom.xml -->
         <com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
         <!-- Note that there is a possible issue to be monitored: Sometimes winp
             is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
         <org.jvnet.winp.version>1.23</org.jvnet.winp.version>
 
-        <org.dom4j.version>1.6.1</org.dom4j.version>
         <!-- PostgreSQL dependency is defined in parent pom.xml -->
         <!-- ExpectJ dependency is defined in parent pom.xml -->
     </properties>
@@ -96,7 +95,7 @@
             <version>${apache.xalan.version}</version>
         </dependency>
         <dependency>
-            <groupId>dom4j</groupId>
+            <groupId>org.dom4j</groupId>
             <artifactId>dom4j</artifactId>
             <version>${org.dom4j.version}</version>
             <exclusions>

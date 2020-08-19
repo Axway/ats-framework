@@ -1436,9 +1436,9 @@ public class Test_XmlText extends BaseTest {
         try {
 
             XmlText xml = new XmlText(file);
-
-            actualValue = xml.setAttribute("/vehicles", "new name", "new value").getAttribute("/vehicles",
-                                                                                              "new name");
+            
+            actualValue = xml.setAttribute("/vehicles", "new_name", "new value").getAttribute("/vehicles",
+                                                                                              "new_name");
 
         } catch (XMLException e) {
             log.error(e.getMessage());

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,8 @@ import org.junit.Test;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.BaseTest;
+import com.mysql.cj.jdbc.MysqlConnectionPoolDataSource;
 import com.mysql.jdbc.Driver;
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
 
 public class Test_DbConnMySQL extends BaseTest {
 

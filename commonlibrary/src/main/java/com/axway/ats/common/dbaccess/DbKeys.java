@@ -52,8 +52,9 @@ public class DbKeys {
     public static final String KEY_STORE_PASSWORD          = "javax.net.ssl.trustStorePassword";
 
     /**
+     * <strong>Applicable to SQL Server only.</strong><br>
      * Use this property to specify which driver to be used for DB IO.<br>
-     * Currently it is only applicable for SQL Server connections and the available values are {@link DbKeys#SQL_SERVER_DRIVER_JTDS} and {@link DbKeys#SQL_SERVER_DRIVER_MICROSOFT}
+     * The available values are {@link DbKeys#SQL_SERVER_DRIVER_JTDS} and {@link DbKeys#SQL_SERVER_DRIVER_MICROSOFT}
      * */
     @PublicAtsApi
     public static final String DRIVER                      = "DRIVER";
@@ -69,5 +70,21 @@ public class DbKeys {
      * */
     @PublicAtsApi
     public static final String SQL_SERVER_DRIVER_MICROSOFT = "MSSQL";
+    
+    /**
+     * <strong>Applicable to MySQL only and for MySQL JDBC connector version 8.xx.xx</strong><br>
+     * Most of the time ATS automatically sets the server's time zone, but if something is wrong with the returned time stamps/dates, this property/key is your friend.<br>
+     * Use this property to tell the MySQL connection what is the server's time zone.<br>
+     * Available formats are:
+     * <ul>
+     * <li>Named time zone, like Europe/Sofia</li>
+     * <li> GMT offset, like GMT[+|-][h]h:mm<br>
+     * <li>UTC (without offset)</li>
+     * If you have the offset in UTC, you can still use it, just replace UTC with GMT, so UTC+3 becomes GMT+03:00</li>
+     * </ul>
+     * If not sure, set it to UTC and see if everything, regarding TimeZone/DateTime SQL types, is working as expected.
+     * */
+    @PublicAtsApi
+    public static final String SERVER_TIMEZONE = "SERVER_TIMEZONE";
 
 }
