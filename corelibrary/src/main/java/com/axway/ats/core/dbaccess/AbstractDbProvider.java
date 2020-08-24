@@ -748,7 +748,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             // MySQL -> The DB NAME is the TABLE SCHEMA
             schemaPattern = (this instanceof MysqlDbProvider
                                                              ? dbConnection.getDb()
-                                                             : null);
+                                                             : schemaPattern);
 
             ResultSet tablesResultSet = databaseMetaData.getTables(null, schemaPattern, null,
                                                                    new String[]{ "TABLE" });
@@ -840,7 +840,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             sb.append(", type=" + type);
             sb.append(extractTableAttributeValue(columnInformation, "IS_AUTOINCREMENT", "auto increment", tableName,
                                                  columnName));
-            if (type.equalsIgnoreCase("BIT")) {
+            if ("BIT".equalsIgnoreCase(type)) {
                 sb.append(extractBooleanResultSetAttribute(columnInformation, "COLUMN_DEF", "default"));
             } else {
                 sb.append(
