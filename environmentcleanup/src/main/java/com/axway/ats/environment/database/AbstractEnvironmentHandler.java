@@ -19,6 +19,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Writer;
 import java.text.ParseException;
 import java.util.LinkedHashMap;
@@ -362,6 +363,31 @@ abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandl
     }
 
     protected abstract void writeDeleteStatements( Writer fileWriter ) throws IOException;
+
+    /**
+     * Get file contents from classpath
+     * @param scriptFileName Relative path is relative to the package of current class.
+     * @return String of  
+     */
+    protected String loadScriptFromClasspath( String scriptFileName ) {
+
+        String scriptContents = null;
+        try (InputStream is = this.getClass().getResourceAsStream(scriptFileName)) {
+            if (is != null) {
+                scriptContents = IoUtils.streamToString(is);
+            }
+        } catch (Exception e) {
+            if (e.getSuppressed() != null) { // possible close resources
+                Throwable[] suppressedExc = e.getSuppressed();
+                for (int i = 0; i < suppressedExc.length; i++) {
+                    log.warn("Suppressed exception [" + i + "] details", suppressedExc[i]);
+                }
+            }
+            throw new DbException("Could not load SQL server script needed for DB environment restore from classpath. Check "
+                                  + "location of " + scriptFileName + " file", e);
+        }
+        return scriptContents;
+    }
 
     /**
      * Release the database connection

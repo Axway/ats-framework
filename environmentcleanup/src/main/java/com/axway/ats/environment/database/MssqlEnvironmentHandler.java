@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -215,7 +214,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             String partitionColumnName = getPartitionColumnName(table);
             generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>",
                                                               " ON [" + partitionName + "]([" + partitionColumnName
-                                                                                                + "])");
+                                                                                                             + "])");
         } else {
             // if the table do not have to be partitioned
             // check if the table is on a filegroup
@@ -782,31 +781,6 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         for (String script : generateForeignKeysScripts) {
             executeUpdate(script, connection);
         }
-    }
-
-    /**
-     * Get file contents from classpath
-     * @param scriptFileName Relative path is relative to the package of current class.
-     * @return String of  
-     */
-    private String loadScriptFromClasspath( String scriptFileName ) {
-
-        String scriptContents = null;
-        try (InputStream is = this.getClass().getResourceAsStream(scriptFileName)) {
-            if (is != null) {
-                scriptContents = IoUtils.streamToString(is);
-            }
-        } catch (Exception e) {
-            if (e.getSuppressed() != null) { // possible close resources
-                Throwable[] suppressedExc = e.getSuppressed();
-                for (int i = 0; i < suppressedExc.length; i++) {
-                    LOG.warn("Suppressed exception [" + i + "] details", suppressedExc[i]);
-                }
-            }
-            throw new DbException("Could not load SQL server script needed for DB environment restore from classpath. Check "
-                                  + "location of " + scriptFileName + " file", e);
-        }
-        return scriptContents;
     }
 
     private Map<String, List<String>> getForeingKeys( String tableName,

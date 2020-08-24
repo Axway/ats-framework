@@ -207,7 +207,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     /**
      * Toggle whether to add the tables' content to the backup.
-     * @param skipTablesContent - true will add the content of the tables in the backup, false will not
+     * @param skipTablesContent - true will NOT add the content of the tables in the backup, false will do
      * */
     @PublicAtsApi
     public void setSkipTablesContent( boolean skipTablesContent ) {
