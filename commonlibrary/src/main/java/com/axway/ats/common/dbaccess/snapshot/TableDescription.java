@@ -677,7 +677,7 @@ public class TableDescription {
 
     /**
      * Get the index properties as {@link Properties} object
-     * @param indexAndColumnName - for Oracle and SQL Server the value MUST be column_and_index_name=<value>, while for MySQL, it is INDEX_UID=<value>
+     * @param indexAndColumnName - for Oracle and SQL Server the value MUST be column_and_index_name=<value>, for MySQL, it is INDEX_UID=<value> and for PostgreSQL -> index_uid=<value>
      * @return {@link Properties} object, containing all of the index properties
      * @throws RuntimeException - if index with this indexAndColumnName, does not exist
      * */

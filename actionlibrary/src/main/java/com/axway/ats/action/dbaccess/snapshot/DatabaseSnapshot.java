@@ -225,7 +225,7 @@ public class DatabaseSnapshot {
     /**
      * Allows skipping index in table that match all of the provided properties
      * @param table - the table name
-     * @param indexProperties - the index properties. For the index properties' names see {@link IndexProperties}
+     * @param indexProperties - the index properties. For the index properties' names see one of the [Oracle|Mssql|MySQL|Postgresql]DbProvider.IndexProperties , according to the database type
      * */
     @PublicAtsApi
     public void skipTableIndex( String table, Properties indexProperties ) {
@@ -281,7 +281,7 @@ public class DatabaseSnapshot {
      * when applied on both index names.<br><br>
      * 
      * 
-     * <b>Note:</b> If not used, the indexes are compared against their names as regular text, e.g. whether indexOneName == indexTwoName is true or false<br>
+     * <b>Note:</b> If not used, the indexes are compared against their names as regular text, e.g. whether indexOneName.equals(indexTwoName) is true or false<br>
      * Also note that if there are different properties for some indexes, 
      * use {@link DatabaseSnapshot#setIndexMatcher(IndexMatcher)} 
      * where you can skip the default comparison of index properties by overriding the {@link IndexMatcher#isSame(String, Properties, Properties)} method
@@ -375,13 +375,13 @@ public class DatabaseSnapshot {
     private void skipIndexes() {
 
         try {
-            for (TableDescription tableDesk : tables) {
-                if (tableDesk.getIndexes() == null || tableDesk.getIndexes().isEmpty()) {
+            for (TableDescription tableDesc : tables) {
+                if (tableDesc.getIndexes() == null || tableDesc.getIndexes().isEmpty()) {
                     // no indexes, so nothing to skip
                     continue;
                 }
 
-                String tableName = tableDesk.getName();
+                String tableName = tableDesc.getName();
                 if (!this.skipIndexesPerTable.containsKey(tableName)) {
                     // no indexes are to be skipped for this table
                     continue;
@@ -395,7 +395,7 @@ public class DatabaseSnapshot {
                 }
 
                 // begin skipping indexes
-                Map<String, String> loadedIndexes = tableDesk.getIndexes();
+                Map<String, String> loadedIndexes = tableDesc.getIndexes();
                 Map<String, String> finalIndexes = new HashMap<String, String>();
 
                 // iterate over each of the loaded indexes
@@ -407,7 +407,7 @@ public class DatabaseSnapshot {
                                                    + "' from table '" + tableName + "' has NO properties loaded!");
                     }
                     // get current index properties
-                    Properties indexProperties = tableDesk.getIndexProperties(indexKey);
+                    Properties indexProperties = tableDesc.getIndexProperties(indexKey);
 
                     // a set of properties that the user wants to be used in order to be able to check which index is to be skipped
                     Set<Properties> skippedIndexesProperties = this.skipIndexesPerTable.get(tableName);
@@ -417,7 +417,7 @@ public class DatabaseSnapshot {
                 }
 
                 //tableDesk.getIndexes().clear();
-                tableDesk.setIndexes(finalIndexes);
+                tableDesc.setIndexes(finalIndexes);
             }
         } catch (Exception e) {
             throw new RuntimeException("Error while skipping indexes", e);
@@ -457,8 +457,7 @@ public class DatabaseSnapshot {
                 } else {
                     // the user-provided index property is actually not found in the ones, obtained from DB.
                     // no reason to continue, so the index will not be skipped
-                    // maybe, log WARN, not error?!?
-                    log.error("Index property '" + key + "' is not supported for table index for database of type "
+                    log.warn("Index property '" + key + "' is not supported for table index for database of type "
                               + this.dbProvider.getDbConnection().getDbType() + "!");
                     found = false;
                     break;
@@ -473,6 +472,9 @@ public class DatabaseSnapshot {
         return false;
     }
 
+    /**
+     * @see DatabaseSnapshot#compare(DatabaseSnapshot, CompareOptions)
+     * */
     public void compare( DatabaseSnapshot that ) throws DatabaseSnapshotException {
 
         this.compare(that, null);
@@ -485,6 +487,7 @@ public class DatabaseSnapshot {
      * But if a snapshot was saved into a file, then its tables are loaded from the file, not from the database.
      * 
      * @param that the snapshot to compare to
+     * @param compareOptions - (optional) additional options that change the comparison. by default is null, so the compare is as-is (e.g. if there is an error, the comparison fails) 
      * @throws DatabaseSnapshotException
      */
     @PublicAtsApi

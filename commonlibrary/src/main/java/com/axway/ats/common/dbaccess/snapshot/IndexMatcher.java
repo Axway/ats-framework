@@ -24,13 +24,19 @@ import com.axway.ats.common.PublicAtsApi;
  * whether some table index names should be treated as<br>
  * same or not.<br>
  * <br><br>
- * It's been found that on MS SQL the index names contain<br>
+ * It's been found that on MS SQL/ Oracle the index names contain<br>
  * some randomly generated suffix. For example "... __3213E83F43E2A1B9".<br>
  * <br><br>
  * Using this interface you can point such index names as same as long<br>
  * as the leading name part is the same.<br>
  * <br><br>
  * Or if the name is not enough, you can compare each of the index's properties and determine if those indexes are the same one
+ * 
+ * The order of index  matching is:
+ * 1. Check only the indexes names ( isSame( String table, String firstName, String secondName ) ) and if there is a match, consider the indexes to be the same.
+ * 2. If the name-only check is false, use the properties-based check ( isSame( String table, Properties firstProperties, Properties secondProperties ) ) for final result.
+ * 
+ * This means, that when you are implementing your own IndexMatcher and you are interested only in using the property-based matching, you need to return false for the name-only check 
  */
 @PublicAtsApi
 public interface IndexMatcher {

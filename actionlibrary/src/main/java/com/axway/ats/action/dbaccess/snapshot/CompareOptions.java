@@ -85,7 +85,7 @@ public class CompareOptions {
      * 
      * @param tableName - the table name
      * @param minRows - the minimum number of the total unique rows in both snapshots. It must be positive number, LOWER or EQUAL to the maxRows
-     * @param minRows - the maximum number of the total unique rows in both snapshots. It must be positive number, GREATER or EQUAL to the minRows
+     * @param maxRows - the maximum number of the total unique rows in both snapshots. It must be positive number, GREATER or EQUAL to the minRows
      * @throws IllegalArgumentException if minRows is < 0, minRows > maxRows, maxRows < 0 or maxRows < minRows 
      * */
     @PublicAtsApi
@@ -93,11 +93,11 @@ public class CompareOptions {
 
         if (minRows < 0) {
             throw new IllegalArgumentException("min rows for table '" + tableName
-                                               + "' must be positive number, but was " + minRows);
+                                               + "' must be positive number, but is specified to " + minRows);
         }
         if (maxRows < 0) {
             throw new IllegalArgumentException("max rows for table '" + tableName
-                                               + "' must be positive number, but was " + maxRows);
+                                               + "' must be positive number, but is specified to " + maxRows);
         }
         if (minRows > maxRows) {
             throw new IllegalArgumentException("max rows (" + maxRows + ") for table '" + tableName
@@ -111,7 +111,7 @@ public class CompareOptions {
 
     /**
      * Whether to throw an error if one or more expected errors are not presented during snapshot comparison
-     * @param toggle  toggle exception throwing on missing expected error
+     * @param toggle toggle exception throwing on missing expected error. true by default
      * */
     @PublicAtsApi
     public void setFailOnMissingExpectedError( boolean toggle ) {
@@ -129,6 +129,12 @@ public class CompareOptions {
         return this.expectedTableDifferentNumberOfRows;
     }*/
 
+    /**
+     * Returns all of the user specified min/max for all tables, which should have UNIQUE rows per snapshot.<br>
+     * See {@link CompareOptions#setExpectedTableMissingRowsCount(String, int, int)} for more informnation
+     * @return map in the format { tableName => Pair(minRows, maxRows) }
+     * */
+    @PublicAtsApi
     public Map<String, Pair<Integer>> getExpectedTableMissingRows() {
 
         return this.expectedTableMissingRows;
