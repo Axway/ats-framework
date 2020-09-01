@@ -1045,7 +1045,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     /**
      * Start block for deferring constraint checks because of possible foreign key violations if the order of restore
-     * ( inserts) is not correct. Also this is only possible way if there are cyclic references between 2 tables.
+     * ( inserts) is not correct. Also this is the only possible way if there are cyclic references between 2 tables.
      * Disable ALL triggers is not preferred way.
      *
      * <p>For details you may check:
