@@ -178,7 +178,7 @@
         </dependency>
         <dependency>
             <groupId>net.java.dev.jna</groupId>
-            <artifactId>platform</artifactId>
+            <artifactId>jna-platform</artifactId>
             <version>${net.java.dev.jna.version}</version>
         </dependency>
         <!-- ProcessTalker dependencies -->

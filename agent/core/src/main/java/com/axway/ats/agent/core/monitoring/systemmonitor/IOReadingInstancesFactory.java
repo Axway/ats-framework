@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,15 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
-import org.hyperic.sigar.FileSystem;
 import org.hyperic.sigar.SigarException;
 
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IFileSystem;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.IoUtils;
 
 /**
@@ -42,10 +45,10 @@ public class IOReadingInstancesFactory {
                                                                     .equals(OperatingSystemType.SOLARIS);
 
     static ReadingInstance getReadBytesReadingInstance(
-                                                        SigarWrapper sigarWrapper,
-                                                        ReadingBean reading ) throws SigarException {
+                                                        ISystemInformation systemInfo,
+                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -57,12 +60,12 @@ public class IOReadingInstancesFactory {
             private List<String>      deviceNames;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
 
                 this.parameters = new HashMap<String, String>();
-                deviceNames = getDevicesForIoMonitoring(sigarWrapper, true);
+                deviceNames = getDevicesForIoMonitoring(systemInfo, true);
                 if (deviceNames.size() > 0) {
 
                     StringBuilder devicesList = new StringBuilder("Monitored devices: ");
@@ -96,13 +99,13 @@ public class IOReadingInstancesFactory {
                 return new BigDecimal(deltaReadBytes).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
             }
 
-            private long getReadBytes() throws SigarException {
+            private long getReadBytes() throws SystemInformationException {
 
                 long readBytes = 0L;
                 for (String devName : deviceNames) {
 
                     long newReadBytes = -1L;
-                    long rbytes = getReadWriteBytes(sigarWrapper, devName, true);
+                    long rbytes = getReadWriteBytes(systemInfo, devName, true);
                     newReadBytes = fixLongValue(fixOverflow(devName, rbytes));
                     if (newReadBytes == -1) {
                         return -1L;
@@ -115,10 +118,10 @@ public class IOReadingInstancesFactory {
     }
 
     static ReadingInstance getWriteBytesReadingInstance(
-                                                         SigarWrapper sigarWrapper,
-                                                         ReadingBean reading ) throws SigarException {
+                                                         ISystemInformation systemInfo,
+                                                         ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -130,10 +133,10 @@ public class IOReadingInstancesFactory {
             private List<String>      deviceNames;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 this.parameters = new HashMap<String, String>();
-                deviceNames = getDevicesForIoMonitoring(sigarWrapper, false);
+                deviceNames = getDevicesForIoMonitoring(systemInfo, false);
                 if (deviceNames.size() > 0) {
 
                     StringBuilder devicesList = new StringBuilder("Monitored devices: ");
@@ -168,13 +171,13 @@ public class IOReadingInstancesFactory {
                 return new BigDecimal(deltaWriteBytes).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
             }
 
-            private long getWriteBytes() throws SigarException {
+            private long getWriteBytes() throws SystemInformationException {
 
                 long writeBytes = 0L;
                 for (String devName : deviceNames) {
 
                     long newWriteBytes = -1L;
-                    long wbytes = getReadWriteBytes(sigarWrapper, devName, false);
+                    long wbytes = getReadWriteBytes(systemInfo, devName, false);
                     newWriteBytes = fixLongValue(fixOverflow(devName, wbytes));
                     if (newWriteBytes == -1) {
                         return -1L;
@@ -191,14 +194,14 @@ public class IOReadingInstancesFactory {
      * <p><em>Note</em>: For AIX for example a disk names should be returned.
      * As later Sigar invokes getDiskUsage(name). Check on Linux
      * </p>
-     * @param sigarWrapper
+     * @param systemInfo
      * @param readBytes
      * @return
      * @throws SigarException
      */
     private static List<String> getDevicesForIoMonitoring(
-                                                           SigarWrapper sigarWrapper,
-                                                           boolean readBytes ) throws SigarException {
+                                                           ISystemInformation systemInfo,
+                                                           boolean readBytes ) throws SystemInformationException {
 
         List<String> devices = new LinkedList<String>();
         StringBuilder problematicMounts = new StringBuilder();
@@ -221,7 +224,7 @@ public class IOReadingInstancesFactory {
                 String[] words = line.split("[\\s]+");
                 if (words.length > 0) {
                     LOG.trace(" Found disk: " + words[0]);
-                    if (getReadWriteBytes(sigarWrapper, words[0], readBytes) == -1) {
+                    if (getReadWriteBytes(systemInfo, words[0], readBytes) == -1) {
                         problematicMounts.append("'" + words[0] + "', ");
                     } else {
                         devices.add(words[0]);
@@ -229,10 +232,10 @@ public class IOReadingInstancesFactory {
                 }
             }
         } else {
-            FileSystem[] fslist = sigarWrapper.getSigarInstance().getFileSystemList();
+            IFileSystem[] fslist = systemInfo.listFileSystems();
             for (int i = 0; i < fslist.length; i++) {
-                if (fslist[i].getType() == FileSystem.TYPE_LOCAL_DISK) {
-                    if (getReadWriteBytes(sigarWrapper, fslist[i].getDevName(), readBytes) == -1) {
+                if (fslist[i].getType() == IFileSystem.Type.TYPE_LOCAL_DISK) {
+                    if (getReadWriteBytes(systemInfo, fslist[i].getDevName(), readBytes) == -1) {
                         problematicMounts.append("'" + fslist[i].getDevName() + "', ");
                     } else {
                         devices.add(fslist[i].getDevName());
@@ -253,18 +256,18 @@ public class IOReadingInstancesFactory {
     }
 
     private static long getReadWriteBytes(
-                                           SigarWrapper sigarWrapper,
+                                           ISystemInformation systemInfo,
                                            String devName,
                                            boolean readBytes ) {
 
         try {
             // TODO - device name is different from disk name on AIX. Probably on other OSes too. Check
             if (readBytes) {
-                return sigarWrapper.getSigarInstance().getDiskUsage(devName).getReadBytes();
+                return systemInfo.getDiskUsage(devName).getReadBytes();
             } else {
-                return sigarWrapper.getSigarInstance().getDiskUsage(devName).getWriteBytes();
+                return systemInfo.getDiskUsage(devName).getWriteBytes();
             }
-        } catch (SigarException se) {
+        } catch (Exception se) { // can be quite different since here we HAD SigarException
 
             if (IS_SOLARIS_OS) { // TODO - if this is observed always on SOLARIS then there is no need to cause exception always before that
 
@@ -320,10 +323,13 @@ public class IOReadingInstancesFactory {
                 }
             } else {
 
-                LOG.error("Unable to get " + (readBytes
-                                                        ? "Read"
-                                                        : "Write")
-                          + "Bytes on device '" + devName + "'", se);
+                if (!ExceptionUtils.containsMessage("Faulty device", se)) {
+                    LOG.error("Unable to get " + (readBytes
+                                                            ? "Read"
+                                                            : "Write")
+                              + "Bytes on device '" + devName + "'", se);
+                }
+
             }
         }
         return -1L;

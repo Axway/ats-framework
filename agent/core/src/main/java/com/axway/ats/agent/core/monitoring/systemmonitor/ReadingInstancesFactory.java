@@ -27,10 +27,10 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
-import org.hyperic.sigar.NetInterfaceStat;
-import org.hyperic.sigar.Sigar;
-import org.hyperic.sigar.SigarException;
 
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.INetworkInterfaceStat;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -65,8 +65,8 @@ public class ReadingInstancesFactory {
     private static Map<String, Integer>                   matchedProcessesIndexes;
 
     public static void init(
-                             SigarWrapper sigarWrapper,
-                             int pollingInterval ) throws UnsupportedReadingException, SigarException {
+                             ISystemInformation systemInfo,
+                             int pollingInterval ) throws UnsupportedReadingException, SystemInformationException {
 
         /*
          * We need to know the number of CPUs for some readings in some cases. For example
@@ -75,7 +75,7 @@ public class ReadingInstancesFactory {
          *      If we have 2 CPUs loaded on 20% and 40%, we will get 30% and 0.60 time usage for 1 second.
          *      We fix that to get get 30% and 0.30 time usage for 1 second.
          */
-        getNumberOfCPUs(sigarWrapper);
+        getNumberOfCPUs(systemInfo);
 
         // clean up the processes map
         matchedProcessesMap = new HashMap<String, Map<Long, MatchedProcess>>();
@@ -85,20 +85,13 @@ public class ReadingInstancesFactory {
 
         // On Solaris it takes a significant amount of time (around 1 minute) until Sigar iterates the
         // system processes for first time. We do it here, so the real polls are quick
-        Sigar sigar = sigarWrapper.getSigarInstance();
-        for (long pid : sigar.getProcList()) {
-            try {
-                sigar.getProcArgs(pid);
-            } catch (SigarException e) {
-                // some system processes can not be accessed
-            }
-        }
+        systemInfo.loadProcs();
     }
 
     public static List<ReadingInstance> createStaticReadingInstances(
-                                                                      SigarWrapper sigarWrapper,
+                                                                      ISystemInformation systemInfo,
                                                                       List<ReadingBean> readings ) throws UnsupportedReadingException,
-                                                                                                   SigarException {
+                                                                                                   SystemInformationException {
 
         List<ReadingInstance> readingInstances = new ArrayList<ReadingInstance>();
 
@@ -109,114 +102,114 @@ public class ReadingInstancesFactory {
 
             ReadingInstance readingInstance = null;
             if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__TOTAL)) {
-                readingInstance = getSwapTotal(sigarWrapper, reading);
+                readingInstance = getSwapTotal(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__USED)) {
-                readingInstance = getSwapUsed(sigarWrapper, reading);
+                readingInstance = getSwapUsed(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__FREE)) {
-                readingInstance = getSwapFree(sigarWrapper, reading);
+                readingInstance = getSwapFree(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__PAGES_IN)) {
-                readingInstance = getSwapPagesIn(sigarWrapper, reading);
+                readingInstance = getSwapPagesIn(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_VIRTUAL_MEMORY__PAGES_OUT)) {
-                readingInstance = getSwapPagesOut(sigarWrapper, reading);
+                readingInstance = getSwapPagesOut(systemInfo, reading);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_MEMORY__USED)) {
-                readingInstance = getMemoryUsed(sigarWrapper, reading);
+                readingInstance = getMemoryUsed(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_MEMORY__FREE)) {
-                readingInstance = getMemoryFree(sigarWrapper, reading);
+                readingInstance = getMemoryFree(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_MEMORY__ACTUAL_USED)) {
-                readingInstance = getMemoryActualUsed(sigarWrapper, reading);
+                readingInstance = getMemoryActualUsed(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_MEMORY__ACTUAL_FREE)) {
-                readingInstance = getMemoryActualFree(sigarWrapper, reading);
+                readingInstance = getMemoryActualFree(systemInfo, reading);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_IO__READ_BYTES_ALL_DEVICES)) {
-                readingInstance = getReadBytesAllLocalDevices(sigarWrapper, reading);
+                readingInstance = getReadBytesAllLocalDevices(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_IO__WRITE_BYTES_ALL_DEVICES)) {
-                readingInstance = getWriteBytesAllLocalDevices(sigarWrapper, reading);
+                readingInstance = getWriteBytesAllLocalDevices(systemInfo, reading);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_LOAD__LAST_MINUTE)) {
                 if (!IS_WINDOWS) {
-                    readingInstance = getLoadAverage1minute(sigarWrapper, reading);
+                    readingInstance = getLoadAverage1minute(systemInfo, reading);
                 }
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_LOAD__LAST_5_MINUTES)) {
                 if (!IS_WINDOWS) {
-                    readingInstance = getLoadAverage5minutes(sigarWrapper, reading);
+                    readingInstance = getLoadAverage5minutes(systemInfo, reading);
                 }
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_LOAD__LAST_15_MINUTES)) {
                 if (!IS_WINDOWS) {
-                    readingInstance = getLoadAverage15minutes(sigarWrapper, reading);
+                    readingInstance = getLoadAverage15minutes(systemInfo, reading);
                 }
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_USAGE__TOTAL)) {
-                readingInstance = getCpuUsageTotal(sigarWrapper, reading);
+                readingInstance = getCpuUsageTotal(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_USAGE__WAIT)) {
-                readingInstance = getCpuUsageWaitingForIO(sigarWrapper, reading);
+                readingInstance = getCpuUsageWaitingForIO(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_USAGE__KERNEL)) {
-                readingInstance = getCpuUsageRunningKernelCode(sigarWrapper, reading);
+                readingInstance = getCpuUsageRunningKernelCode(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_CPU_USAGE__USER)) {
-                readingInstance = getCpuUsageRunningUserCode(sigarWrapper, reading);
+                readingInstance = getCpuUsageRunningUserCode(systemInfo, reading);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETWORK_TRAFFIC)) {
-                List<ReadingInstance> readingsList = getNetworkTraffic(sigarWrapper, reading);
+                List<ReadingInstance> readingsList = getNetworkTraffic(systemInfo, reading);
                 readingInstances.addAll(readingsList);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__ACTIVE_CONNECTION_OPENINGS)) {
-                readingInstance = getNetstatActiveConnectionOpenings(sigarWrapper, reading);
+                readingInstance = getNetstatActiveConnectionOpenings(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__PASSIVE_CONNECTION_OPENINGS)) {
-                readingInstance = getNetstatPassiveConnectionOpenings(sigarWrapper, reading);
+                readingInstance = getNetstatPassiveConnectionOpenings(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__FAILED_CONNECTION_ATTEMPTS)) {
-                readingInstance = getNetstatFailedConnectionAttemtps(sigarWrapper, reading);
+                readingInstance = getNetstatFailedConnectionAttemtps(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__RESET_CONNECTIONS)) {
-                readingInstance = getNetstatResetConnections(sigarWrapper, reading);
+                readingInstance = getNetstatResetConnections(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__CURRENT_CONNECTIONS)) {
-                readingInstance = getNetstatCurrentConnections(sigarWrapper, reading);
+                readingInstance = getNetstatCurrentConnections(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__SEGMENTS_RECEIVED)) {
-                readingInstance = getNetstatSegmentsReceived(sigarWrapper, reading);
+                readingInstance = getNetstatSegmentsReceived(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__SEGMENTS_SENT)) {
-                readingInstance = getNetstatSegmentsSent(sigarWrapper, reading);
+                readingInstance = getNetstatSegmentsSent(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__SEGMENTS_RETRANSMITTED)) {
-                readingInstance = getNetstatSegmentsRetransmitter(sigarWrapper, reading);
+                readingInstance = getNetstatSegmentsRetransmitter(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__OUT_RESETS)) {
-                readingInstance = getNetstatOutResets(sigarWrapper, reading);
+                readingInstance = getNetstatOutResets(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_NETSTAT__IN_ERRORS)) {
-                readingInstance = getNetstatInErrors(sigarWrapper, reading);
+                readingInstance = getNetstatInErrors(systemInfo, reading);
             }
 
             else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__CLOSE)) {
-                readingInstance = getTcpClose(sigarWrapper, reading);
+                readingInstance = getTcpClose(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__LISTEN)) {
-                readingInstance = getTcpListen(sigarWrapper, reading);
+                readingInstance = getTcpListen(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__SYN_SENT)) {
-                readingInstance = getTcpSynSent(sigarWrapper, reading);
+                readingInstance = getTcpSynSent(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__SYN_RECEIVED)) {
-                readingInstance = getTcpSynReceived(sigarWrapper, reading);
+                readingInstance = getTcpSynReceived(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__ESTABLISHED)) {
-                readingInstance = getTcpEstablished(sigarWrapper, reading);
+                readingInstance = getTcpEstablished(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__CLOSE_WAIT)) {
-                readingInstance = getTcpCloseWait(sigarWrapper, reading);
+                readingInstance = getTcpCloseWait(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__LAST_ACK)) {
-                readingInstance = getTcpLastAck(sigarWrapper, reading);
+                readingInstance = getTcpLastAck(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__FIN_WAIT1)) {
-                readingInstance = getTcpFinWait1(sigarWrapper, reading);
+                readingInstance = getTcpFinWait1(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__FIN_WAIT2)) {
-                readingInstance = getTcpFinWait2(sigarWrapper, reading);
+                readingInstance = getTcpFinWait2(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__CLOSING)) {
-                readingInstance = getTcpClosing(sigarWrapper, reading);
+                readingInstance = getTcpClosing(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__TIME_WAIT)) {
-                readingInstance = getTcpTimeWait(sigarWrapper, reading);
+                readingInstance = getTcpTimeWait(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__BOUND)) {
-                readingInstance = getTcpBound(sigarWrapper, reading);
+                readingInstance = getTcpBound(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__IDLE)) {
-                readingInstance = getTcpIdle(sigarWrapper, reading);
+                readingInstance = getTcpIdle(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__TOTAL_INBOUND)) {
-                readingInstance = getTcpTotalInbound(sigarWrapper, reading);
+                readingInstance = getTcpTotalInbound(systemInfo, reading);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_TCP__TOTAL_OUTBOUND)) {
-                readingInstance = getTcpTotalOutbound(sigarWrapper, reading);
+                readingInstance = getTcpTotalOutbound(systemInfo, reading);
             }
 
             else {
@@ -231,15 +224,15 @@ public class ReadingInstancesFactory {
     }
 
     public static List<ReadingInstance> createOrUpdateDynamicReadingInstances(
-                                                                               SigarWrapper sigarWrapper,
+                                                                               ISystemInformation systemInfo,
                                                                                Map<String, ParentProcessReadingBean> parentProcessReadingInstances,
                                                                                List<ReadingBean> initialReadings,
                                                                                List<ReadingInstance> currentReadingInstances ) throws UnsupportedReadingException,
-                                                                                                                               SigarException {
+                                                                                                                               SystemInformationException {
 
         // update the list of matching processes now, this must be done as quickly as possible
         // as it happens prior to each polling
-        currentReadingInstances = updateProcessesMatchingMap(sigarWrapper.getSigarInstance(),
+        currentReadingInstances = updateProcessesMatchingMap(systemInfo,
                                                              initialReadings,
                                                              currentReadingInstances);
 
@@ -264,64 +257,64 @@ public class ReadingInstancesFactory {
              * some space on the database, and we know these values are never seen by the user.
              */
             if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_CPU__USAGE_USER)) {
-                List<ReadingInstance> readingsList = getProcessCpuUsageRunningUser(sigarWrapper,
+                List<ReadingInstance> readingsList = getProcessCpuUsageRunningUser(systemInfo,
                                                                                    reading,
                                                                                    parentProcess);
                 readingInstances.addAll(readingsList);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_CPU__USAGE_KERNEL)) {
-                List<ReadingInstance> readingsList = getProcessCpuUsageRunningKernel(sigarWrapper,
+                List<ReadingInstance> readingsList = getProcessCpuUsageRunningKernel(systemInfo,
                                                                                      reading,
                                                                                      parentProcess);
                 readingInstances.addAll(readingsList);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_CPU__USAGE_TOTAL)) {
-                List<ReadingInstance> readingsList = getProcessCpuUsageRunningTotal(sigarWrapper,
+                List<ReadingInstance> readingsList = getProcessCpuUsageRunningTotal(systemInfo,
                                                                                     reading,
                                                                                     parentProcess);
                 readingInstances.addAll(readingsList);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_MEMORY__VIRTUAL)) {
-                List<ReadingInstance> readingsList = getProcessVirtualMemory(sigarWrapper,
+                List<ReadingInstance> readingsList = getProcessVirtualMemory(systemInfo,
                                                                              reading,
                                                                              parentProcess);
                 readingInstances.addAll(readingsList);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_MEMORY__RESIDENT)) {
-                List<ReadingInstance> readingsList = getProcessResidentMemory(sigarWrapper,
+                List<ReadingInstance> readingsList = getProcessResidentMemory(systemInfo,
                                                                               reading,
                                                                               parentProcess);
                 readingInstances.addAll(readingsList);
             } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_MEMORY__SHARED)
                        && !IS_WINDOWS) {
-                List<ReadingInstance> readingsList = getProcessSharedMemory(sigarWrapper,
-                                                                            reading,
-                                                                            parentProcess);
-                readingInstances.addAll(readingsList);
-            } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_MEMORY__PAGE_FAULTS)) {
-                List<ReadingInstance> readingsList = getProcessMemoryPageFaults(sigarWrapper,
-                                                                                reading,
-                                                                                parentProcess);
-                readingInstances.addAll(readingsList);
-            } else {
-                // We do nothing here as for example we do not support Shared Memory on windows
-                // throw new UnsupportedReadingException( readingName );
-            }
+                           List<ReadingInstance> readingsList = getProcessSharedMemory(systemInfo,
+                                                                                       reading,
+                                                                                       parentProcess);
+                           readingInstances.addAll(readingsList);
+                       } else if (readingName.equalsIgnoreCase(SystemMonitorDefinitions.READING_PROCESS_MEMORY__PAGE_FAULTS)) {
+                           List<ReadingInstance> readingsList = getProcessMemoryPageFaults(systemInfo,
+                                                                                           reading,
+                                                                                           parentProcess);
+                           readingInstances.addAll(readingsList);
+                       } else {
+                           // We do nothing here as for example we do not support Shared Memory on windows
+                           // throw new UnsupportedReadingException( readingName );
+                       }
         }
         return readingInstances;
     }
 
     private static void getNumberOfCPUs(
-                                         SigarWrapper sigarWrapper ) throws SigarException {
+                                         ISystemInformation systemInfo ) throws SystemInformationException {
 
         if (numberOfCPUs == 0) {
 
-            numberOfCPUs = sigarWrapper.getSigarInstance().getCpuInfoList()[0].getTotalCores();
+            numberOfCPUs = systemInfo.getCpuCount();
             log.info("Detected " + numberOfCPUs + " CPUs");
         }
     }
 
     private static ReadingInstance getSwapTotal(
-                                                 SigarWrapper sigarWrapper,
-                                                 ReadingBean reading ) throws SigarException {
+                                                 ISystemInformation systemInfo,
+                                                 ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -330,7 +323,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -338,16 +331,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return (fixLongValue(sigarWrapper.swap.getTotal()) * normalizationFactor);
+                return (fixLongValue(systemInfo.getSwapTotal()) * normalizationFactor);
             }
         };
     }
 
     private static ReadingInstance getSwapUsed(
-                                                SigarWrapper sigarWrapper,
-                                                ReadingBean reading ) throws SigarException {
+                                                ISystemInformation systemInfo,
+                                                ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -356,7 +349,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -364,16 +357,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return (fixLongValue(sigarWrapper.swap.getUsed()) * normalizationFactor);
+                return (fixLongValue(systemInfo.getSwapUsed()) * normalizationFactor);
             }
         };
     }
 
     private static ReadingInstance getSwapFree(
-                                                SigarWrapper sigarWrapper,
-                                                ReadingBean reading ) throws SigarException {
+                                                ISystemInformation systemInfo,
+                                                ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -382,7 +375,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -390,16 +383,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.swap.getFree()) * normalizationFactor;
+                return fixLongValue(systemInfo.getSwapFree()) * normalizationFactor;
             }
         };
     }
 
     private static ReadingInstance getSwapPagesIn(
-                                                   SigarWrapper sigarWrapper,
-                                                   ReadingBean reading ) throws SigarException {
+                                                   ISystemInformation systemInfo,
+                                                   ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -410,16 +403,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.swap.getPageIn());
+                return fixLongValue(systemInfo.getSwapPageIn());
             }
         };
     }
 
     private static ReadingInstance getSwapPagesOut(
-                                                    SigarWrapper sigarWrapper,
-                                                    ReadingBean reading ) throws SigarException {
+                                                    ISystemInformation systemInfo,
+                                                    ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -430,16 +423,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.swap.getPageOut());
+                return fixLongValue(systemInfo.getSwapPageOut());
             }
         };
     }
 
     private static ReadingInstance getMemoryUsed(
-                                                  SigarWrapper sigarWrapper,
-                                                  ReadingBean reading ) throws SigarException {
+                                                  ISystemInformation systemInfo,
+                                                  ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -448,7 +441,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -456,7 +449,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                long newValue = fixLongValue(sigarWrapper.memory.getUsed());
+                long newValue = fixLongValue(systemInfo.getMemoryUsed());
                 if (newValue >= 0) {
                     return newValue * normalizationFactor;
                 } else {
@@ -467,10 +460,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getMemoryFree(
-                                                  SigarWrapper sigarWrapper,
-                                                  ReadingBean reading ) throws SigarException {
+                                                  ISystemInformation systemInfo,
+                                                  ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -479,7 +472,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -487,7 +480,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                long newValue = fixLongValue(sigarWrapper.memory.getFree());
+                long newValue = fixLongValue(systemInfo.getMemoryFree());
                 if (newValue >= 0) {
                     return newValue * normalizationFactor;
                 } else {
@@ -498,10 +491,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getMemoryActualUsed(
-                                                        SigarWrapper sigarWrapper,
-                                                        ReadingBean reading ) throws SigarException {
+                                                        ISystemInformation systemInfo,
+                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -510,7 +503,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -518,7 +511,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                long newValue = fixLongValue(sigarWrapper.memory.getActualUsed());
+                long newValue = fixLongValue(systemInfo.getMemoryActualUsed());
                 if (newValue >= 0) {
                     return newValue * normalizationFactor;
                 } else {
@@ -529,10 +522,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getMemoryActualFree(
-                                                        SigarWrapper sigarWrapper,
-                                                        ReadingBean reading ) throws SigarException {
+                                                        ISystemInformation systemInfo,
+                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -541,7 +534,7 @@ public class ReadingInstancesFactory {
             private static final long serialVersionUID = 1L;
 
             @Override
-            public void init() throws SigarException {
+            public void init() throws SystemInformationException {
 
                 applyMemoryNormalizationFactor();
             }
@@ -549,7 +542,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                long newValue = fixLongValue(sigarWrapper.memory.getActualFree());
+                long newValue = fixLongValue(systemInfo.getMemoryActualFree());
                 if (newValue >= 0) {
                     return newValue * normalizationFactor;
                 } else {
@@ -560,25 +553,25 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getReadBytesAllLocalDevices(
-                                                                SigarWrapper sigarWrapper,
-                                                                ReadingBean reading ) throws SigarException {
+                                                                ISystemInformation systemInfo,
+                                                                ReadingBean reading ) throws SystemInformationException {
 
-        return IOReadingInstancesFactory.getReadBytesReadingInstance(sigarWrapper, reading);
+        return IOReadingInstancesFactory.getReadBytesReadingInstance(systemInfo, reading);
 
     }
 
     private static ReadingInstance getWriteBytesAllLocalDevices(
-                                                                 SigarWrapper sigarWrapper,
-                                                                 ReadingBean reading ) throws SigarException {
+                                                                 ISystemInformation systemInfo,
+                                                                 ReadingBean reading ) throws SystemInformationException {
 
-        return IOReadingInstancesFactory.getWriteBytesReadingInstance(sigarWrapper, reading);
+        return IOReadingInstancesFactory.getWriteBytesReadingInstance(systemInfo, reading);
     }
 
     private static ReadingInstance getLoadAverage1minute(
-                                                          SigarWrapper sigarWrapper,
-                                                          ReadingBean reading ) throws SigarException {
+                                                          ISystemInformation systemInfo,
+                                                          ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -589,7 +582,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                double dValue = fixDoubleValue(sigarWrapper.loadAvrg.getLastMinute());
+                double dValue = fixDoubleValue(systemInfo.getLoadAvrgLastMinute());
 
                 // return a float with 2 digits after the decimal point
                 return new BigDecimal(dValue).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
@@ -598,10 +591,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getLoadAverage5minutes(
-                                                           SigarWrapper sigarWrapper,
-                                                           ReadingBean reading ) throws SigarException {
+                                                           ISystemInformation systemInfo,
+                                                           ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -612,7 +605,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                double dValue = fixDoubleValue(sigarWrapper.loadAvrg.getLastFiveMinutes());
+                double dValue = fixDoubleValue(systemInfo.getLoadAvrgLastFiveMinutes());
 
                 // return a float with 2 digits after the decimal point
                 return new BigDecimal(dValue).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
@@ -621,10 +614,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getLoadAverage15minutes(
-                                                            SigarWrapper sigarWrapper,
-                                                            ReadingBean reading ) throws SigarException {
+                                                            ISystemInformation systemInfo,
+                                                            ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -635,7 +628,7 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                double dValue = fixDoubleValue(sigarWrapper.loadAvrg.getLast15Minutes());
+                double dValue = fixDoubleValue(systemInfo.getLoadAvrgLast15Minutes());
 
                 // return a float with 2 digits after the decimal point
                 return new BigDecimal(dValue).setScale(2, BigDecimal.ROUND_DOWN).floatValue();
@@ -644,10 +637,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getCpuUsageWaitingForIO(
-                                                            SigarWrapper sigarWrapper,
-                                                            ReadingBean reading ) throws SigarException {
+                                                            ISystemInformation systemInfo,
+                                                            ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -658,16 +651,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixDoubleValueInPercents(sigarWrapper.cpuPerc.getWait());
+                return fixDoubleValueInPercents(systemInfo.getCpuPercWait());
             }
         };
     }
 
     private static ReadingInstance getCpuUsageRunningKernelCode(
-                                                                 SigarWrapper sigarWrapper,
-                                                                 ReadingBean reading ) throws SigarException {
+                                                                 ISystemInformation systemInfo,
+                                                                 ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -678,16 +671,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixDoubleValueInPercents(sigarWrapper.cpuPerc.getSys());
+                return fixDoubleValueInPercents(systemInfo.getCpuPercSys());
             }
         };
     }
 
     private static ReadingInstance getCpuUsageRunningUserCode(
-                                                               SigarWrapper sigarWrapper,
-                                                               ReadingBean reading ) throws SigarException {
+                                                               ISystemInformation systemInfo,
+                                                               ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -698,16 +691,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixDoubleValueInPercents(sigarWrapper.cpuPerc.getUser());
+                return fixDoubleValueInPercents(systemInfo.getCpuPercUser());
             }
         };
     }
 
     private static ReadingInstance getCpuUsageTotal(
-                                                     SigarWrapper sigarWrapper,
-                                                     ReadingBean reading ) throws SigarException {
+                                                     ISystemInformation systemInfo,
+                                                     ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -718,20 +711,20 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixDoubleValueInPercents(sigarWrapper.cpuPerc.getSys()
-                                                + sigarWrapper.cpuPerc.getUser()
-                                                + sigarWrapper.cpuPerc.getWait());
+                return fixDoubleValueInPercents(systemInfo.getCpuPercSys()
+                                                + systemInfo.getCpuPercUser()
+                                                + systemInfo.getCpuPercWait());
             }
         };
     }
 
     private static List<ReadingInstance> getNetworkTraffic(
-                                                            SigarWrapper sigarWrapper,
-                                                            ReadingBean reading ) throws SigarException {
+                                                            ISystemInformation systemInfo,
+                                                            ReadingBean reading ) throws SystemInformationException {
 
         List<ReadingInstance> readingInstancesList = new ArrayList<ReadingInstance>();
 
-        String[] ifNames = sigarWrapper.getSigarInstance().getNetInterfaceList();
+        String[] ifNames = systemInfo.listNetworkInterface();
         // if there are more than one IP addresses on a single interface, Sigar will show these interface names so many times
         Set<String> uniqueIfNames = new HashSet<String>(Arrays.asList(ifNames));
         for (final String ifName : uniqueIfNames) {
@@ -744,8 +737,8 @@ public class ReadingInstancesFactory {
                 continue;
             }
 
-            final long txBytes = sigarWrapper.getSigarInstance().getNetInterfaceStat(ifName).getTxBytes();
-            readingInstancesList.add(new ReadingInstance(sigarWrapper,
+            final long txBytes = systemInfo.getNetworkInterfaceStat(ifName).getTxBytes();
+            readingInstancesList.add(new ReadingInstance(systemInfo,
                                                          String.valueOf(reading.getDbId()),
                                                          reading.getMonitorName(),
                                                          reading.getName() + " " + ifName + " TX data",
@@ -754,7 +747,7 @@ public class ReadingInstancesFactory {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void init() throws SigarException {
+                public void init() throws SystemInformationException {
 
                     applyMemoryNormalizationFactor();
 
@@ -762,10 +755,10 @@ public class ReadingInstancesFactory {
                 }
 
                 @Override
-                public float poll() throws SigarException {
+                public float poll() throws SystemInformationException {
 
-                    NetInterfaceStat ifstat = this.sigarWrapper.getSigarInstance()
-                                                               .getNetInterfaceStat(ifName);
+                    INetworkInterfaceStat ifstat = this.systemInfo
+                                                                  .getNetworkInterfaceStat(ifName);
 
                     long txBytes = fixLongValue(fixOverflow(getName(), ifstat.getTxBytes()));
                     double result;
@@ -782,8 +775,8 @@ public class ReadingInstancesFactory {
                 }
             });
 
-            final long rxBytes = sigarWrapper.getSigarInstance().getNetInterfaceStat(ifName).getRxBytes();
-            readingInstancesList.add(new ReadingInstance(sigarWrapper,
+            final long rxBytes = systemInfo.getNetworkInterfaceStat(ifName).getRxBytes();
+            readingInstancesList.add(new ReadingInstance(systemInfo,
                                                          String.valueOf(reading.getDbId()),
                                                          reading.getMonitorName(),
                                                          reading.getName() + " " + ifName + " RX data",
@@ -792,7 +785,7 @@ public class ReadingInstancesFactory {
                 private static final long serialVersionUID = 1L;
 
                 @Override
-                public void init() throws SigarException {
+                public void init() throws SystemInformationException {
 
                     applyMemoryNormalizationFactor();
 
@@ -800,10 +793,9 @@ public class ReadingInstancesFactory {
                 }
 
                 @Override
-                public float poll() throws SigarException {
+                public float poll() throws SystemInformationException {
 
-                    NetInterfaceStat ifstat = this.sigarWrapper.getSigarInstance()
-                                                               .getNetInterfaceStat(ifName);
+                    INetworkInterfaceStat ifstat = this.systemInfo.getNetworkInterfaceStat(ifName);
                     long rxBytes = fixLongValue(fixOverflow(getName(), ifstat.getRxBytes()));
                     double result;
                     if (rxBytes >= 0) {
@@ -826,10 +818,10 @@ public class ReadingInstancesFactory {
     }
 
     private static ReadingInstance getNetstatActiveConnectionOpenings(
-                                                                       SigarWrapper sigarWrapper,
-                                                                       ReadingBean reading ) throws SigarException {
+                                                                       ISystemInformation systemInfo,
+                                                                       ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -840,16 +832,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getActiveOpens());
+                return fixLongValue(systemInfo.getTcpActiveOpens());
             }
         };
     }
 
     private static ReadingInstance getNetstatPassiveConnectionOpenings(
-                                                                        SigarWrapper sigarWrapper,
-                                                                        ReadingBean reading ) throws SigarException {
+                                                                        ISystemInformation systemInfo,
+                                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -860,16 +852,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getPassiveOpens());
+                return fixLongValue(systemInfo.getTcpPassiveOpens());
             }
         };
     }
 
     private static ReadingInstance getNetstatFailedConnectionAttemtps(
-                                                                       SigarWrapper sigarWrapper,
-                                                                       ReadingBean reading ) throws SigarException {
+                                                                       ISystemInformation systemInfo,
+                                                                       ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -880,16 +872,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getAttemptFails());
+                return fixLongValue(systemInfo.getTcpAttemptFails());
             }
         };
     }
 
     private static ReadingInstance getNetstatResetConnections(
-                                                               SigarWrapper sigarWrapper,
-                                                               ReadingBean reading ) throws SigarException {
+                                                               ISystemInformation systemInfo,
+                                                               ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -900,16 +892,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getEstabResets());
+                return fixLongValue(systemInfo.getTcpEstabResets());
             }
         };
     }
 
     private static ReadingInstance getNetstatCurrentConnections(
-                                                                 SigarWrapper sigarWrapper,
-                                                                 ReadingBean reading ) throws SigarException {
+                                                                 ISystemInformation systemInfo,
+                                                                 ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -920,16 +912,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getCurrEstab());
+                return fixLongValue(systemInfo.getTcpCurrEstab());
             }
         };
     }
 
     private static ReadingInstance getNetstatSegmentsReceived(
-                                                               SigarWrapper sigarWrapper,
-                                                               ReadingBean reading ) throws SigarException {
+                                                               ISystemInformation systemInfo,
+                                                               ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -940,16 +932,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getInSegs());
+                return fixLongValue(systemInfo.getTcpInSegs());
             }
         };
     }
 
     private static ReadingInstance getNetstatSegmentsSent(
-                                                           SigarWrapper sigarWrapper,
-                                                           ReadingBean reading ) throws SigarException {
+                                                           ISystemInformation systemInfo,
+                                                           ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -960,16 +952,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getOutSegs());
+                return fixLongValue(systemInfo.getTcpOutSegs());
             }
         };
     }
 
     private static ReadingInstance getNetstatSegmentsRetransmitter(
-                                                                    SigarWrapper sigarWrapper,
-                                                                    ReadingBean reading ) throws SigarException {
+                                                                    ISystemInformation systemInfo,
+                                                                    ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -980,16 +972,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getRetransSegs());
+                return fixLongValue(systemInfo.getTcpRetransSegs());
             }
         };
     }
 
     private static ReadingInstance getNetstatOutResets(
-                                                        SigarWrapper sigarWrapper,
-                                                        ReadingBean reading ) throws SigarException {
+                                                        ISystemInformation systemInfo,
+                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1000,16 +992,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getOutRsts());
+                return fixLongValue(systemInfo.getTcpOutRsts());
             }
         };
     }
 
     private static ReadingInstance getNetstatInErrors(
-                                                       SigarWrapper sigarWrapper,
-                                                       ReadingBean reading ) throws SigarException {
+                                                       ISystemInformation systemInfo,
+                                                       ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1020,16 +1012,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.tcp.getInErrs());
+                return fixLongValue(systemInfo.getTcpInErrs());
             }
         };
     }
 
     private static ReadingInstance getTcpClose(
-                                                SigarWrapper sigarWrapper,
-                                                ReadingBean reading ) throws SigarException {
+                                                ISystemInformation systemInfo,
+                                                ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1040,16 +1032,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpClose());
+                return fixLongValue(systemInfo.getNetstatTcpClose());
             }
         };
     }
 
     private static ReadingInstance getTcpListen(
-                                                 SigarWrapper sigarWrapper,
-                                                 ReadingBean reading ) throws SigarException {
+                                                 ISystemInformation systemInfo,
+                                                 ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1060,16 +1052,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpListen());
+                return fixLongValue(systemInfo.getNetstatTcpListen());
             }
         };
     }
 
     private static ReadingInstance getTcpSynSent(
-                                                  SigarWrapper sigarWrapper,
-                                                  ReadingBean reading ) throws SigarException {
+                                                  ISystemInformation systemInfo,
+                                                  ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1080,16 +1072,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpSynSent());
+                return fixLongValue(systemInfo.getNetstatTcpSynSent());
             }
         };
     }
 
     private static ReadingInstance getTcpSynReceived(
-                                                      SigarWrapper sigarWrapper,
-                                                      ReadingBean reading ) throws SigarException {
+                                                      ISystemInformation systemInfo,
+                                                      ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1100,16 +1092,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpSynRecv());
+                return fixLongValue(systemInfo.getNetstatTcpSynRecv());
             }
         };
     }
 
     private static ReadingInstance getTcpEstablished(
-                                                      SigarWrapper sigarWrapper,
-                                                      ReadingBean reading ) throws SigarException {
+                                                      ISystemInformation systemInfo,
+                                                      ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1120,16 +1112,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpEstablished());
+                return fixLongValue(systemInfo.getNetstatTcpEstablished());
             }
         };
     }
 
     private static ReadingInstance getTcpCloseWait(
-                                                    SigarWrapper sigarWrapper,
-                                                    ReadingBean reading ) throws SigarException {
+                                                    ISystemInformation systemInfo,
+                                                    ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1140,16 +1132,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpCloseWait());
+                return fixLongValue(systemInfo.getNetstatTcpCloseWait());
             }
         };
     }
 
     private static ReadingInstance getTcpLastAck(
-                                                  SigarWrapper sigarWrapper,
-                                                  ReadingBean reading ) throws SigarException {
+                                                  ISystemInformation systemInfo,
+                                                  ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1160,16 +1152,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpLastAck());
+                return fixLongValue(systemInfo.getNetstatTcpLastAck());
             }
         };
     }
 
     private static ReadingInstance getTcpFinWait1(
-                                                   SigarWrapper sigarWrapper,
-                                                   ReadingBean reading ) throws SigarException {
+                                                   ISystemInformation systemInfo,
+                                                   ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1180,16 +1172,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpFinWait1());
+                return fixLongValue(systemInfo.getNetstatTcpFinWait1());
             }
         };
     }
 
     private static ReadingInstance getTcpFinWait2(
-                                                   SigarWrapper sigarWrapper,
-                                                   ReadingBean reading ) throws SigarException {
+                                                   ISystemInformation systemInfo,
+                                                   ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1200,16 +1192,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpFinWait2());
+                return fixLongValue(systemInfo.getNetstatTcpFinWait2());
             }
         };
     }
 
     private static ReadingInstance getTcpClosing(
-                                                  SigarWrapper sigarWrapper,
-                                                  ReadingBean reading ) throws SigarException {
+                                                  ISystemInformation systemInfo,
+                                                  ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1220,16 +1212,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpClosing());
+                return fixLongValue(systemInfo.getNetstatTcpClosing());
             }
         };
     }
 
     private static ReadingInstance getTcpTimeWait(
-                                                   SigarWrapper sigarWrapper,
-                                                   ReadingBean reading ) throws SigarException {
+                                                   ISystemInformation systemInfo,
+                                                   ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1240,16 +1232,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpTimeWait());
+                return fixLongValue(systemInfo.getNetstatTcpTimeWait());
             }
         };
     }
 
     private static ReadingInstance getTcpBound(
-                                                SigarWrapper sigarWrapper,
-                                                ReadingBean reading ) throws SigarException {
+                                                ISystemInformation systemInfo,
+                                                ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1260,16 +1252,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpBound());
+                return fixLongValue(systemInfo.getNetstatTcpBound());
             }
         };
     }
 
     private static ReadingInstance getTcpIdle(
-                                               SigarWrapper sigarWrapper,
-                                               ReadingBean reading ) throws SigarException {
+                                               ISystemInformation systemInfo,
+                                               ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1280,16 +1272,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpIdle());
+                return fixLongValue(systemInfo.getNetstatTcpIdle());
             }
         };
     }
 
     private static ReadingInstance getTcpTotalInbound(
-                                                       SigarWrapper sigarWrapper,
-                                                       ReadingBean reading ) throws SigarException {
+                                                       ISystemInformation systemInfo,
+                                                       ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1300,16 +1292,16 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpInboundTotal());
+                return fixLongValue(systemInfo.getNetstatTcpInboundTotal());
             }
         };
     }
 
     private static ReadingInstance getTcpTotalOutbound(
-                                                        SigarWrapper sigarWrapper,
-                                                        ReadingBean reading ) throws SigarException {
+                                                        ISystemInformation systemInfo,
+                                                        ReadingBean reading ) throws SystemInformationException {
 
-        return new ReadingInstance(sigarWrapper,
+        return new ReadingInstance(systemInfo,
                                    String.valueOf(reading.getDbId()),
                                    reading.getMonitorName(),
                                    reading.getName(),
@@ -1320,15 +1312,15 @@ public class ReadingInstancesFactory {
             @Override
             public float poll() {
 
-                return fixLongValue(sigarWrapper.netstat.getTcpOutboundTotal());
+                return fixLongValue(systemInfo.getNetstatTcpOutboundTotal());
             }
         };
     }
 
     private static List<ReadingInstance> getProcessCpuUsageRunningUser(
-                                                                        SigarWrapper sigarWrapper,
+                                                                        ISystemInformation systemInfo,
                                                                         ReadingBean reading,
-                                                                        ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                        ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1349,7 +1341,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "1");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1363,18 +1355,18 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             this.lastLongValue = fixLongValue(fixOverflow(getName(),
-                                                                          sigarWrapper.getProcessCpuTimeRunningUser(processInfo.getPid()),
+                                                                          systemInfo.getProcessCpuTimeRunningUser(processInfo.getPid()),
                                                                           ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
                             long userTime = fixLongValue(fixOverflow(getName(),
-                                                                     sigarWrapper.getProcessCpuTimeRunningUser(processInfo.getPid()),
+                                                                     systemInfo.getProcessCpuTimeRunningUser(processInfo.getPid()),
                                                                      ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                             double deltaUserTime;
                             if (userTime > 0) {
@@ -1411,9 +1403,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessCpuUsageRunningKernel(
-                                                                          SigarWrapper sigarWrapper,
+                                                                          ISystemInformation systemInfo,
                                                                           ReadingBean reading,
-                                                                          ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                          ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1434,7 +1426,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "2");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1448,18 +1440,18 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             this.lastLongValue = fixLongValue(fixOverflow(getName(),
-                                                                          sigarWrapper.getProcessCpuTimeRunningKernel(processInfo.getPid()),
+                                                                          systemInfo.getProcessCpuTimeRunningKernel(processInfo.getPid()),
                                                                           ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
                             long kernelTime = fixLongValue(fixOverflow(getName(),
-                                                                       sigarWrapper.getProcessCpuTimeRunningKernel(processInfo.getPid()),
+                                                                       systemInfo.getProcessCpuTimeRunningKernel(processInfo.getPid()),
                                                                        ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                             double deltaKernelTime;
                             if (kernelTime > 0) {
@@ -1497,9 +1489,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessCpuUsageRunningTotal(
-                                                                         SigarWrapper sigarWrapper,
+                                                                         ISystemInformation systemInfo,
                                                                          ReadingBean reading,
-                                                                         ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                         ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1520,7 +1512,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "3");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1534,18 +1526,18 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             this.lastLongValue = fixLongValue(fixOverflow(getName(),
-                                                                          sigarWrapper.getProcessCpuTimeRunningTotal(processInfo.getPid()),
+                                                                          systemInfo.getProcessCpuTimeRunningTotal(processInfo.getPid()),
                                                                           ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
                             long totalTime = fixLongValue(fixOverflow(getName(),
-                                                                      sigarWrapper.getProcessCpuTimeRunningTotal(processInfo.getPid()),
+                                                                      systemInfo.getProcessCpuTimeRunningTotal(processInfo.getPid()),
                                                                       ReadingInstance.CPU_PROCESS_OVERFLOW_VALUE));
                             double deltaTotalTime;
                             if (totalTime > 0) {
@@ -1582,9 +1574,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessVirtualMemory(
-                                                                  SigarWrapper sigarWrapper,
+                                                                  ISystemInformation systemInfo,
                                                                   ReadingBean reading,
-                                                                  ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                  ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1605,7 +1597,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "5");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1619,15 +1611,15 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             applyMemoryNormalizationFactor();
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
-                            float result = toFloatWith2DecimalDigits(sigarWrapper.getProcessVirtualMemory(processInfo.getPid()));
+                            float result = toFloatWith2DecimalDigits(systemInfo.getProcessVirtualMemory(processInfo.getPid()));
 
                             addValueToParentProcess(result);
                             return result;
@@ -1640,9 +1632,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessResidentMemory(
-                                                                   SigarWrapper sigarWrapper,
+                                                                   ISystemInformation systemInfo,
                                                                    ReadingBean reading,
-                                                                   ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                   ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1663,7 +1655,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "6");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1677,15 +1669,15 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             applyMemoryNormalizationFactor();
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
-                            float result = toFloatWith2DecimalDigits(sigarWrapper.getProcessResidentMemory(processInfo.getPid()));
+                            float result = toFloatWith2DecimalDigits(systemInfo.getProcessResidentMemory(processInfo.getPid()));
                             addValueToParentProcess(result);
                             return result;
                         }
@@ -1697,9 +1689,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessSharedMemory(
-                                                                 SigarWrapper sigarWrapper,
+                                                                 ISystemInformation systemInfo,
                                                                  ReadingBean reading,
-                                                                 ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                 ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1720,7 +1712,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "7");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1734,15 +1726,15 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             applyMemoryNormalizationFactor();
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
-                            float result = toFloatWith2DecimalDigits(sigarWrapper.getProcessSharedMemory(processInfo.getPid()));
+                            float result = toFloatWith2DecimalDigits(systemInfo.getProcessSharedMemory(processInfo.getPid()));
                             addValueToParentProcess(result);
                             return result;
                         }
@@ -1754,9 +1746,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> getProcessMemoryPageFaults(
-                                                                     SigarWrapper sigarWrapper,
+                                                                     ISystemInformation systemInfo,
                                                                      ReadingBean reading,
-                                                                     ParentProcessReadingBean parentProcess ) throws SigarException {
+                                                                     ParentProcessReadingBean parentProcess ) throws SystemInformationException {
 
         String readingProcessPattern = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_RECOGNITION_PATTERN);
 
@@ -1777,7 +1769,7 @@ public class ReadingInstancesFactory {
                     Map<String, String> parameters = constructProcessParametersMap(processInfo,
                                                                                    readingProcessPattern,
                                                                                    "8");
-                    readingInstancesList.add(new ReadingInstance(sigarWrapper,
+                    readingInstancesList.add(new ReadingInstance(systemInfo,
                                                                  parentProcess,
                                                                  String.valueOf(reading.getDbId()),
                                                                  processInfo.getPid(),
@@ -1791,18 +1783,18 @@ public class ReadingInstancesFactory {
                         private static final long serialVersionUID = 1L;
 
                         @Override
-                        public void init() throws SigarException {
+                        public void init() throws SystemInformationException {
 
                             this.lastLongValue = fixLongValue(fixOverflow(getName(),
-                                                                          sigarWrapper.getProcessMemoryPageFaults(processInfo.getPid()),
+                                                                          systemInfo.getProcessMemoryPageFaults(processInfo.getPid()),
                                                                           ReadingInstance.MEMORYPAGEFAULTS_PROCESS_OVERFLOW_VALUE));
                         }
 
                         @Override
-                        public float poll() throws SigarException {
+                        public float poll() throws SystemInformationException {
 
                             long memoryPageFaults = fixLongValue(fixOverflow(getName(),
-                                                                             sigarWrapper.getProcessMemoryPageFaults(processInfo.getPid()),
+                                                                             systemInfo.getProcessMemoryPageFaults(processInfo.getPid()),
                                                                              ReadingInstance.MEMORYPAGEFAULTS_PROCESS_OVERFLOW_VALUE));
                             double deltaMemoryPageFaults;
                             if (memoryPageFaults != -1) {
@@ -1840,9 +1832,9 @@ public class ReadingInstancesFactory {
     }
 
     private static List<ReadingInstance> updateProcessesMatchingMap(
-                                                                     Sigar sigar,
+                                                                     ISystemInformation systemInfo,
                                                                      List<ReadingBean> initialProcessReadings,
-                                                                     List<ReadingInstance> currentReadingInstances ) throws SigarException {
+                                                                     List<ReadingInstance> currentReadingInstances ) throws SystemInformationException {
 
         // remember to user process regex and alias
         Map<String, Pattern> processPatterns = new HashMap<String, Pattern>();
@@ -1865,12 +1857,12 @@ public class ReadingInstancesFactory {
         Set<Long> finishedProcessesIds = new HashSet<Long>(matchedProcessesIds);
 
         // iterate all system processes and remember the ones we want to monitor
-        for (long pid : sigar.getProcList()) {
+        for (long pid : systemInfo.getProcList()) {
             // check if we know this process from a previous poll, we do not want to add it again
             if (!matchedProcessesIds.contains(pid)) {
 
                 // we try to match a process by its start command
-                String processStartCommand = constructProcessStartCommand(sigar, pid);
+                String processStartCommand = constructProcessStartCommand(systemInfo, pid);
                 if (processStartCommand != null && !processStartCommand.isEmpty()) {
 
                     String processUsername = null;
@@ -1889,8 +1881,8 @@ public class ReadingInstancesFactory {
                             if (processUsername == null) {
                                 // we still do not know the user of this process
                                 try {
-                                    processUsername = sigar.getProcCredName(pid).getUser();
-                                } catch (SigarException e) {
+                                    processUsername = systemInfo.getProcessInformation(pid).getUser();
+                                } catch (Exception e) { // SystemInformationException was here before
                                     // a specific username is required, but we can not get the info about this process
                                     isExpectedProcessUsername = false;
                                 }
@@ -1999,18 +1991,20 @@ public class ReadingInstancesFactory {
     }
 
     private static String constructProcessStartCommand(
-                                                        Sigar sigar,
+                                                        ISystemInformation systemInfo,
                                                         long pid ) {
 
         StringBuilder startCommand = new StringBuilder();
         try {
-            String[] processArgs = sigar.getProcArgs(pid);
-            for (String arg : processArgs) {
-                startCommand.append(arg);
-                startCommand.append(" ");
+            String[] processArgs = systemInfo.getProcArgs(pid);
+            if (processArgs != null) {
+                for (String arg : processArgs) {
+                    startCommand.append(arg);
+                    startCommand.append(" ");
+                }
             }
             return startCommand.toString();
-        } catch (SigarException e) {
+        } catch (Exception e) { // SigarException was here before
             // some system processes can not be accessed
             return null;
         }

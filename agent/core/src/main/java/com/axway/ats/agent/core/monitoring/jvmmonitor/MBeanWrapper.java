@@ -15,8 +15,11 @@
  */
 package com.axway.ats.agent.core.monitoring.jvmmonitor;
 
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -34,10 +37,14 @@ import com.axway.ats.core.monitoring.MonitorConfigurationException;
  */
 public class MBeanWrapper {
 
-    private static final Logger   log = Logger.getLogger(MBeanWrapper.class);
+    private static final Logger    log        = Logger.getLogger(MBeanWrapper.class);
 
-    private MBeanServerConnection connection;
-    private int                   jvmPort;
+    private static Set<ObjectName> mBeanNames = null;
+
+    private static Object          lock       = new Object();
+
+    private MBeanServerConnection  connection;
+    private int                    jvmPort;
 
     MBeanWrapper( int jvmPort ) throws MonitorConfigurationException {
 
@@ -87,6 +94,44 @@ public class MBeanWrapper {
 
         Iterator<ObjectName> it = mBeanNames.iterator();
         return it.next();
+    }
+
+    Set<ObjectName> getObjectNames( String regex, boolean oneEntry ) {
+
+        Set<ObjectName> names = new HashSet<ObjectName>();
+        try {
+            if (mBeanNames == null) {
+                synchronized (lock) {
+                    if (mBeanNames == null) {
+                        mBeanNames = Collections.synchronizedSet(connection.queryNames(null, null));
+                    }
+                }
+            }
+
+            Iterator<ObjectName> it = mBeanNames.iterator();
+            while (it.hasNext()) {
+                ObjectName name = it.next();
+                if (Pattern.matches(regex, name.getCanonicalName())) {
+                    names.add(name);
+                }
+            }
+
+        } catch (Exception e) {
+            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
+                                    + regex;
+            log.error(errorMsg, e);
+            throw new MonitorConfigurationException(errorMsg, e);
+        }
+
+        if (oneEntry && names.size() != 1) {
+            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
+                                    + regex + ". We expected to find 1, but found " + names
+                                    + " MBean names.";
+            log.error(errorMsg);
+            throw new MonitorConfigurationException(errorMsg);
+        }
+
+        return names;
     }
 
     /**
