@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ public class RestClient {
 
     private boolean                   requestFilterAlreadyRegistered     = false;
 
-    private boolean                   bufferResponse                     = false;
+    private boolean                   bufferResponse                     = true;
 
     private boolean                   invalidateClient                   = true;
 
@@ -1223,9 +1223,10 @@ public class RestClient {
      * Whether the response body will be buffered <strong>immediately</strong> after the HTTP request is executed by 
      * the RestClient. 
      * <ul>
-     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br>
-     *      If possible, RestClient will still <strong>try</strong> to buffer the response body (if not too big),  
-     *      but this will happen only <strong>after</strong> explicit usage of getBodyAsXYZ() method in test code. </li>
+     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered. <br>
+     *      This could be useful when developer expects very large response.
+     *      One drawback of this technique is that there should be exactly one invokation of method like getBodyAsXYZ()
+     *      to consume the body. </li>
      *  <li>If <code>true</code> then body will be consumed and buffered automatically. This allows usage of the 
      *      RestClient without explicitly (in your code) to have to consume the (whole) response body. One such case is if 
      *      you verify only the returned HTTP status code or the headers.<br>
@@ -1233,14 +1234,13 @@ public class RestClient {
      *      provider.</li>
      * </ul> 
      * 
-     * @param bufferResponse - true/false with behavior explained above.
+     * @param bufferResponse - true/false with behavior explained above. Default is true.
      * 
      */
     @PublicAtsApi
     public RestClient setBufferResponse( boolean bufferResponse ) {
 
         this.bufferResponse = bufferResponse;
-
         return this;
     }
 
@@ -1754,14 +1754,14 @@ public class RestClient {
         if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY
              && response.getContentLength() != -1) {
             // log response body
-            if (response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE) {
+            if (response.getContentLength() <= RestResponse.RESPONSE_SIZE_BIG_WARN) {
                 responseMessage.append("Body: " + response.getBodyAsString() + "\n");
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
                 responseMessage.append("Body: "
                                        + response.getBodyAsString()
                                                  .substring(0,
-                                                            RestResponse.MAX_RESPONSE_SIZE)
+                                                            RestResponse.RESPONSE_SIZE_BIG_WARN)
                                        + "... [Response body truncated.]" + "\n");
             }
         }

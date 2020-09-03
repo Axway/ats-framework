@@ -75,7 +75,7 @@ public class JsonText {
      * Constructor which accepts the text content
      * 
      * @param jsonText the content
-     * @throws JsonException
+     * @throws JsonException exception in case of an parsing error
      */
     @PublicAtsApi
     public JsonText( String jsonText ) throws JsonException {
