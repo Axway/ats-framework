@@ -230,7 +230,7 @@ public class AtsDbLoggerUtilities {
             } catch (Exception e) {
                 logger.error("Error while reading response for file attach", e);
             }
-            logger.warn("File attach error for file " + fileLocation);
+            logger.error("File attach error for file " + fileLocation);
             return false;
         } else {
             logger.info("Successfully attached \"" + fileLocation + "\" to testcase with ID \"" + testcaseId + "\"");
@@ -246,16 +246,16 @@ public class AtsDbLoggerUtilities {
             cc.setRequestMethod("HEAD");
 
             if (cc.getResponseCode() != 200) {
-                logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right. Check TestExplorer's "
+                logger.error(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right. Check TestExplorer's "
                             + "context name, HTTP port and host/IP. Details: Connect successful but test HEAD request "
                             + "received HTTP status code " + cc.getResponseCode() + " instead of expected 200 (OK).");
                 return false;
             }
         } catch (MalformedURLException mue) {
-            logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is malformed", mue);
+            logger.error(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is malformed", mue);
             return false;
         } catch (IOException ioe) {
-            logger.warn(currentErrMsgPrefix + ". Check request to URL \"" + url + "\" failed", ioe);
+            logger.error(currentErrMsgPrefix + ". Check request to URL \"" + url + "\" failed", ioe);
             return false;
         }
         return true;
