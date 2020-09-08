@@ -246,7 +246,9 @@ public class AtsDbLoggerUtilities {
             cc.setRequestMethod("HEAD");
 
             if (cc.getResponseCode() != 200) {
-                logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right");
+                logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right. Check TestExplorer's "
+                            + "context name, HTTP port and host/IP. Details: Connect successful but test HEAD request "
+                            + "received HTTP status code " + cc.getResponseCode() + " instead of expected 200 (OK).");
                 return false;
             }
         } catch (MalformedURLException mue) {
