@@ -37,14 +37,16 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
- * A representation of a REST response
+ * A representation of a response generated from {@link RestClient} request
  */
 @PublicAtsApi
 public class RestResponse {
 
     private static final Logger LOG = Logger.getLogger(RestResponse.class);
 
-    public static final int RESPONSE_SIZE_BIG_WARN = 104857600; // 100MB
+    public static final int     RESPONSE_SIZE_BIG_WARN           = 104857600; // 100MB
+    private static      boolean BIG_RESPONSE_SIZE_WARNING_LOGGED = false; // flag to log warning only once
+
     private Response response;
     private boolean  bufferResponse; // whether response should be buffered
 
@@ -413,11 +415,17 @@ public class RestResponse {
          * Note that length of -1 could be indication of a very large chunked body.
          */
         if (bufferResponse) {
-            if (response.getLength() >= 0 && response.getLength() < RESPONSE_SIZE_BIG_WARN) {
-                LOG.warn(
-                        "Expected response with big size. Buffering response is not recommended as it might crash JVM if "
-                        + "it could not allocate so much new memory. It is recommended to use "
-                        + "RestClient#setBufferResponse(false)");
+            if (response.getLength() >= RESPONSE_SIZE_BIG_WARN) {
+                if (!BIG_RESPONSE_SIZE_WARNING_LOGGED) {
+                    // TODO: add request URI as it might help identifying request if info logging level (location
+                    //  tracing) is not allowed
+                    LOG.warn(
+                            "Expected RestClient response with big size. Buffering huge responses is not recommended as "
+                            + "it might crash the JVM if it could not allocate so much new memory. It is recommended "
+                            + "to use RestClient#setBufferResponse(false). In the future similar warnings will not be "
+                            + "logged.");
+                    BIG_RESPONSE_SIZE_WARNING_LOGGED = true;
+                }
             }
             response.bufferEntity();
         }
