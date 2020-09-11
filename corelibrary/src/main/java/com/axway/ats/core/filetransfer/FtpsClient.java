@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -202,7 +202,7 @@ public class FtpsClient extends AbstractFileTransferClient {
             this.ftpsConnection.connect(hostname, this.port);
             // login to the host
             if (!this.ftpsConnection.login(userName, password)) {
-                throw new Exception("Invallid username and/or password. ");
+                throw new Exception("Invalid username and/or password. ");
             }
             // set transfer mode
             if (this.transferMode == TransferMode.ASCII) {
@@ -214,7 +214,9 @@ public class FtpsClient extends AbstractFileTransferClient {
                     throw new Exception("Unable to set transfer mode to BINARY");
                 }
             }
-
+            // initial fix - always use passive mode
+            // Currently not working: int replyCode = this.ftpsConnection.pasv();
+            this.ftpsConnection.enterLocalPassiveMode();
         } catch (Exception e) {
             String errMessage = "Unable to connect to  " + hostname + " on port " + this.port
                                 + " using username " + userName + " and password " + password;
