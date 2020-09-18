@@ -25,7 +25,6 @@ import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
-import org.apache.log4j.BasicConfigurator;
 
 import java.util.Map;
 
