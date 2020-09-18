@@ -1,12 +1,12 @@
 /*
  * Copyright 2017-2020 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,31 +43,28 @@ import com.mysql.cj.conf.PropertyDefinitions.DatabaseTerm;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger       log                                = Logger.getLogger(DbConnMySQL.class);
+    private static Logger log = Logger.getLogger(DbConnMySQL.class);
 
-    public static final String  MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
-    public static final String  MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
-
+    public static final  String MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
+    public static final  String MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
     /**
      * Default DB port
      */
-    public static final int     DEFAULT_PORT                       = 3306;
-
+    public static final  int    DEFAULT_PORT                       = 3306;
     /**
      * The JDBC MySQL prefix string
      */
     private static final String JDBC_MYSQL_PREFIX                  = "jdbc:mysql://";
-
-    public static final String  DATABASE_TYPE                      = "MYSQL";
+    public static final  String DATABASE_TYPE                      = "MYSQL";
 
     /**
      * The connection URL
      */
-    private String              url;
+    private String url;
+    private String serverTimeZone;
 
-    private String              serverTimeZone;
-
-    private static String       dataSourceClassName                = null;
+    private static String  dataSourceClassName         = null;
+    private static boolean serverTimeZoneWarningLogged = false;
 
     /**
      * Constructor
@@ -149,7 +146,10 @@ public class DbConnMySQL extends DbConnection {
         }
 
         if (StringUtils.isNullOrEmpty(this.serverTimeZone)) {
-            log.warn("No server timezone specified. This can lead to an exception!");
+            if (!serverTimeZoneWarningLogged) {
+                log.warn("No server timezone specified. This can lead to an exception!");
+                serverTimeZoneWarningLogged = true;
+            }
         }
     }
 
@@ -197,7 +197,8 @@ public class DbConnMySQL extends DbConnection {
         if (mysqlDataSourceClass == null) {
             // actually it is tested with these versions, but 6.xx.xx maybe also be used with the 5.1.xx logic
             StringBuilder sb = new StringBuilder();
-            sb.append("Could not load any MySQL datasource class. Check if your classpath contains either mysql-connector-java.jar with version 5.1.xx or 8.xx.xx\n")
+            sb.append(
+                    "Could not load any MySQL datasource class. Check if your classpath contains either mysql-connector-java.jar with version 5.1.xx or 8.xx.xx\n")
               .append("Exception are:")
               .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql8Exception, "MySQL JDBC 8.xx exception"))
               .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql5Exception, "MySQL JDBC 5.1.xx exception"));
