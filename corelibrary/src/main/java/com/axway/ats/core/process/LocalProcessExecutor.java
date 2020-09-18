@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -433,6 +433,16 @@ public class LocalProcessExecutor implements IProcessExecutor {
     public String getEnvVariable( String variableName ) {
 
         return this.processBuilder.environment().get(variableName);
+    }
+
+    /**
+     * Map of current environment to be used by child process. If process is not started yet, it could be modified
+     * depending on underlying implementation.
+     * @return key:value map of process environment (case-sensitive usually)
+     */
+    public Map<String, String> getEnvVariables() {
+
+        return this.processBuilder.environment();
     }
 
     /**

@@ -22,6 +22,8 @@ import com.axway.ats.common.process.ProcessExecutorException;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.process.model.IProcessExecutor;
 
+import java.util.Map;
+
 public class RemoteProcessExecutor implements IProcessExecutor {
 
     private String                    atsAgent;
@@ -196,6 +198,16 @@ public class RemoteProcessExecutor implements IProcessExecutor {
 
         try {
             return this.remoteProcessOperations.getEnvVariable(internalId, variableName);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
+        }
+    }
+
+    @Override
+    public Map<String, String> getEnvVariables() {
+
+        try {
+            return this.remoteProcessOperations.getEnvVariables(internalId);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }

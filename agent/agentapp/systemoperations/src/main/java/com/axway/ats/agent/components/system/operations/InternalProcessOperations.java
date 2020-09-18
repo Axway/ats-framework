@@ -21,6 +21,9 @@ import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.core.process.LocalProcessExecutor;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class InternalProcessOperations extends CallerRelatedAction {
 
     private static final String OBJECT_KEY_PREFIX = CallerRelatedInfoRepository.KEY_PROCESS_EXECUTOR;
@@ -183,6 +186,17 @@ public class InternalProcessOperations extends CallerRelatedAction {
         LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
                                                                                          + internalProcessId);
         return processExecutor.getEnvVariable(variableName);
+    }
+
+    @Action( name = "Internal Process Operations get Env Variables")
+    public Map<String,String> getEnvVariables(
+            @Parameter( name = "internalProcessId") String internalProcessId) {
+
+        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                                                         + internalProcessId);
+        Map<String,String> mapInt = processExecutor.getEnvVariables(); // some internal impl, not serializable
+        HashMap<String,String> hMap = new HashMap<>(mapInt); // clone and serializable
+        return hMap;
     }
 
     @Action( name = "Internal Process Operations is Standard Output Fully Read")

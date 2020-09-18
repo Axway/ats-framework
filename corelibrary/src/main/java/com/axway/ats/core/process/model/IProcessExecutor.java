@@ -15,6 +15,7 @@
  */
 package com.axway.ats.core.process.model;
 
+import java.util.Map;
 public interface IProcessExecutor {
 
     /**
@@ -108,7 +109,7 @@ public interface IProcessExecutor {
 
     /**
      * Log output to corresponding log4j appenders
-     * @param logErrorOutput
+     * @param logStandardOutput
      */
     public void setLogStandardOutput(
                                       boolean logStandardOutput );
@@ -133,4 +134,6 @@ public interface IProcessExecutor {
 
     public String getEnvVariable(
                                   String variableName );
+
+    public Map<String,String> getEnvVariables();
 }

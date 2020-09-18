@@ -25,6 +25,9 @@ import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
+import org.apache.log4j.BasicConfigurator;
+
+import java.util.Map;
 
 /**
  * Used for running a system processes. <br>
@@ -324,7 +327,7 @@ public class ProcessExecutor {
     /**
      * Route the standard output to the log4j system
      *
-     * @param logErrorOutput
+     * @param logStandardOutput
      */
     @PublicAtsApi
     public void setLogStandardOutput( boolean logStandardOutput ) {
@@ -382,16 +385,28 @@ public class ProcessExecutor {
 
     /**
      * Get the value of environment variable.
-     * Will return null in case there is no such variable
+     * Environment could be get (and set) before actual start of the process
      *
      * @param variableName name of the environment variable
-     * @return the value of the environment variable
+     * @return the value of the environment variable. Will return null in case there is no such variable.
      */
     @PublicAtsApi
     public String getEnvVariable( String variableName ) {
 
-        checkIfProcessIsStarted();
+        // environment could be get (and set) before actual start of the process
         return this.processExecutor.getEnvVariable(variableName);
+    }
+
+    /**
+     * Get all the environment variables as Map.
+     * Environment could be get before and after execution of the process
+     *
+     * @return the key:value Map containing current environment (of started or not yet started process))
+     */
+    @PublicAtsApi
+    public Map<String, String> getEnvVariables() {
+
+        return this.processExecutor.getEnvVariables();
     }
 
     private IProcessExecutor getOperationsImplementationFor( String atsAgent, String command,
@@ -409,4 +424,5 @@ public class ProcessExecutor {
         if (!isProcessAlreadyStarted)
             throw new ProcessExecutorException("You first need to start the process with execute(boolean) method!");
     }
+
 }
