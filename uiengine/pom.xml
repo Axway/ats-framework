@@ -19,7 +19,7 @@
     <properties>
         <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
         <selenium-htmlunit-driver.version>2.36.0</selenium-htmlunit-driver.version>
-        <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)
+        <selenium-supported.browser.versions>Firefox 79, Chrome 84, Edge 85, IE 11, Safari 5.1+
         </selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
