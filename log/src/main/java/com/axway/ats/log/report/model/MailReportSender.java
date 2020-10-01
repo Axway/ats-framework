@@ -28,8 +28,10 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import com.axway.ats.log.report.exceptions.MailReportPropertyException;
 import org.apache.log4j.Logger;
 
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.report.exceptions.MailReportSendException;
 import com.axway.ats.log.report.model.ReportConfigurator;
 
@@ -58,8 +60,9 @@ public class MailReportSender {
 
     /**
      * Email the report
+     * @throws MailReportPropertyException in case of detected property configuration issue
      */
-    public void send() {
+    public void send() throws MailReportPropertyException {
 
         log.info("Sending log mail report");
 
@@ -71,6 +74,11 @@ public class MailReportSender {
         String[] addressesCc = reportConfigurator.getAddressesCc();
         String[] addressesBcc = reportConfigurator.getAddressesBcc();
         String addressFrom = reportConfigurator.getAddressFrom();
+        
+        // Basic server name validation
+        if (StringUtils.isNullOrEmpty(smtpServerName)) {
+            throw new MailReportPropertyException("SMTP mail server name is empty. Do you have defined values in /ats.report.properties file (in the classpath)");
+        }
 
         // Attaching to default Session
         Properties mailProperties = new Properties();
