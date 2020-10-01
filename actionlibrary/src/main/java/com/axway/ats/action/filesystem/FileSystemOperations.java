@@ -508,7 +508,7 @@ public class FileSystemOperations {
      * Copies the contents of a file from the local host (Test Executor) to a new file on the atsAgent host
      *
      * @param fromFile the source file to copy
-     * @param toFile the destination file to copy to
+     * @param toFile the destination file to copy to. Absolute path is expected
      */
     @PublicAtsApi
     public void copyFileTo( @Validate( name = "fromFile", type = ValidationType.STRING_NOT_EMPTY ) String fromFile,
@@ -921,7 +921,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Replaces specific text in file. Supports regular expressions
+     * Replaces specific text in file. Supports regular expressions.<br />
+     * Note that replacement is performed line by line. If you want to replace multiple lines at once you should use the 
+     * method accepting map - {@link #replaceTextInFile(String, Map, boolean)} 
      *
      * @param filePath the file to work with
      * @param searchText the text to replace
@@ -948,7 +950,8 @@ public class FileSystemOperations {
     }
 
     /**
-     * Replaces specific texts in file. Supports regular expressions
+     * Replaces specific texts in file. Supports regular expressions.<br />
+     * Replacement is done line by line, so each regular expression should match text on single line.
      *
      * @param filePath the file to work with
      * @param searchTokens a map in the form <text to replace, replacement text>
