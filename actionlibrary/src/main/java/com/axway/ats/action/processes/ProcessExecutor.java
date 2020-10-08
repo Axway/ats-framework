@@ -364,7 +364,7 @@ public class ProcessExecutor {
      * @param variableName name of the environment variable. Generally upper case name is preferred but all supported
      *                     chars in name depends on the underlying OS
      * @param variableValue new value of the environment variable
-     * @return old value of variable existed before
+     * @return old value of variable existed before. If not - returns null.
      */
     @PublicAtsApi
     public String setEnvVariable( String variableName, String variableValue ) {
@@ -375,7 +375,7 @@ public class ProcessExecutor {
     /**
      * Removes environment variable. Support depends on the JVM and OS used
      * @param variableName the name of the environment variable. Upper case is preferred but naming depends on the underlying OS support
-     * @return old value if variable already existed
+     * @return The old value if variable already existed. If not - returns null.
      */
     public String removeEnvVariable( String variableName ) {
 
