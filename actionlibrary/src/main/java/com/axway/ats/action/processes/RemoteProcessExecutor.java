@@ -169,12 +169,19 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     }
 
     @Override
-    public void setEnvVariable(
-                                String variableName,
-                                String variableValue ) {
+    public String setEnvVariable(String variableName, String variableValue ) {
 
         try {
-            this.remoteProcessOperations.setEnvVariable(internalId, variableName, variableValue);
+            return this.remoteProcessOperations.setEnvVariable(internalId, variableName, variableValue);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
+        }
+    }
+
+    @Override public String removeEnvVariable( String variableName ) {
+
+        try {
+            return this.remoteProcessOperations.removeEnvVariable(internalId, variableName);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }

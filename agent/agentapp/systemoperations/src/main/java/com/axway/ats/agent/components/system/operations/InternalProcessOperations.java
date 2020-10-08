@@ -157,14 +157,24 @@ public class InternalProcessOperations extends CallerRelatedAction {
     }
 
     @Action( name = "Internal Process Operations set Env Variable")
-    public void setEnvVariable(
+    public String setEnvVariable(
                                 @Parameter( name = "internalProcessId") String internalProcessId,
                                 @Parameter( name = "variableName") String variableName,
                                 @Parameter( name = "variableValue") String variableValue ) {
 
         LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
                                                                                          + internalProcessId);
-        processExecutor.setEnvVariable(variableName, variableValue);
+        return processExecutor.setEnvVariable(variableName, variableValue);
+    }
+
+    @Action( name = "Internal Process Operations remove Env Variable")
+    public String removeEnvVariable(
+            @Parameter( name = "internalProcessId") String internalProcessId,
+            @Parameter( name = "variableName") String variableName) {
+
+        LocalProcessExecutor processExecutor = (LocalProcessExecutor) dataRepo.getObject(OBJECT_KEY_PREFIX
+                                                                                         + internalProcessId);
+        return processExecutor.removeEnvVariable(variableName);
     }
 
     @Action( name = "Internal Process Operations append To Env Variable")

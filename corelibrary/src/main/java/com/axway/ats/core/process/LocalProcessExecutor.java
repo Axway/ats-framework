@@ -416,9 +416,14 @@ public class LocalProcessExecutor implements IProcessExecutor {
         this.workDirectory = workDirectory;
     }
 
-    public void setEnvVariable( String variableName, String variableValue ) {
+    public String setEnvVariable( String variableName, String variableValue ) {
 
-        this.processBuilder.environment().put(variableName, variableValue);
+        return this.processBuilder.environment().put(variableName, variableValue);
+    }
+
+    public String removeEnvVariable( String variableName ) {
+
+        return this.processBuilder.environment().remove(variableName);
     }
 
     public void appendToEnvVariable( String variableName, String variableValueToAppend ) {
