@@ -15,41 +15,61 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.oshi.OshiSystemInformation;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.sigar.SigarSystemInformation;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.reflect.ReflectionUtils;
 
 /**
  * Use this class to obtain {@link ISystemInformation} instance.</br>
  * */
 public class SystemInformationFactory {
 
-    private static final Logger LOG               = Logger.getLogger(SystemInformationFactory.class);
+    private static Map<String, String> MONITORING_PROVIDERS_MAP;
 
-    public static final String  SIGAR_SYSTEM_INFO = SigarSystemInformation.class.getName();
-    public static final String  OSHI_SYSTEM_INFO  = OshiSystemInformation.class.getName();
+    static {
+        MONITORING_PROVIDERS_MAP = new HashMap<String, String>();
+        MONITORING_PROVIDERS_MAP.put("oshi", OshiSystemInformation.class.getName());
+        MONITORING_PROVIDERS_MAP.put("sigar", SigarSystemInformation.class.getName());
+    }
+
+    private static final Logger LOG = Logger.getLogger(SystemInformationFactory.class);
 
     /**
      * Depending on the System property {@link AtsSystemProperties.SYSTEM_INFORMATION_CLASS}, a {@link ISystemInformation} will be returned.</br>
      * */
     public synchronized static ISystemInformation get() {
 
-        String className = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.SYSTEM_INFORMATION_CLASS,
-                                                                   SIGAR_SYSTEM_INFO);
+        String providerName = AtsSystemProperties.getPropertyAsString(AtsSystemProperties.SYSTEM_MONITORING_PROVIDER,
+                                                                      "sigar");
 
-        LOG.info("System information class is: '" + className + "'");
-
-        if (className.equals(SIGAR_SYSTEM_INFO)) {
-            return new SigarSystemInformation();
-        } else if (className.equals(OSHI_SYSTEM_INFO)) {
-            return new OshiSystemInformation();
-        } else {
-            throw new UnsupportedOperationException("Class '" + className
-                                                    + "' is not supported as implementation for system information gathering class");
+        if (!MONITORING_PROVIDERS_MAP.containsKey(providerName)) {
+            throw new UnsupportedOperationException("Provider '" + providerName
+                                                    + "' is not supported as implementation for system information/monitoring provider. Currently available once are: "
+                                                    + Arrays.toString(MONITORING_PROVIDERS_MAP.keySet()
+                                                                                              .toArray(new String[MONITORING_PROVIDERS_MAP.size()])));
         }
+
+        LOG.info("System information/monitoring provider will be: '" + providerName + "'");
+
+        ISystemInformation providerInstance = null;
+        try {
+            Class<?> clazz = Class.forName(MONITORING_PROVIDERS_MAP.get(providerName));
+            providerInstance = (ISystemInformation) clazz.getConstructors()[0].newInstance(new Object[] {});
+        } catch (Exception e) {
+            throw new SystemInformationException("Error while initializing monitoring provider '" + providerName + "'",
+                                                 e);
+        }
+
+        return providerInstance;
 
     }
 

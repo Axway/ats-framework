@@ -89,7 +89,6 @@ public class SigarSystemInformation implements ISystemInformation {
     public void refresh() {
 
         if (this.sigar == null) {
-            // TODO should an error/warn message be logged?
             return;
         }
 
@@ -124,7 +123,7 @@ public class SigarSystemInformation implements ISystemInformation {
     public int getCpuCount() {
 
         try {
-            // What do we want to do here? Getting the cores per CPU, all CPUs, or all Cored?!?!
+            // What do we want to do here? Getting the cores per CPU, all CPUs, or all Cores?!?!
             return this.sigar.getCpuInfoList()[0].getTotalCores();
         } catch (Exception e) {
             throw new SystemInformationException("Error obtaining CPU count", e);
@@ -609,7 +608,7 @@ public class SigarSystemInformation implements ISystemInformation {
                                             long pid ) {
 
         log.error("Unable to collect data about process with ID " + pid
-                  + ". We will not be monitoring this process anymore!");
+                  + ". Such process will not be monitored anymore!");
         faultyProcesses.add(pid);
     }
 

@@ -191,7 +191,7 @@ public class IOReadingInstancesFactory {
 
     /**
      * Get device names for monitoring - disk(AIX) or logical volume names
-     * <p><em>Note</em>: For AIX for example a disk names should be returned.
+     * <p><em>Note for Sigar</em>: For AIX for example a disk names should be returned.
      * As later Sigar invokes getDiskUsage(name). Check on Linux
      * </p>
      * @param systemInfo

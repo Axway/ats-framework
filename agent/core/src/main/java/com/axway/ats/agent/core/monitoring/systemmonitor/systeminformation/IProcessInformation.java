@@ -19,22 +19,46 @@ public interface IProcessInformation {
 
     long getPid();
 
+    /**
+     * @return the number of milliseconds the process has executed in usermode.
+     * */
     long getCpuUser();
 
+    /**
+     * @return the number of milliseconds the process has executed in usermode.
+     * */
     long getCpuKernel();
 
+    /**
+     * @return the total number of milliseconds the process has executed in all modes (user, kernel, etc).
+     * */
     long getCpuTotal();
 
+    /**
+     * @return the VM size in bytes
+     * */
     long getVirtualMemory();
 
+    /**
+     * @return the Resident memory size in bytes
+     * */
     long getResidentMemory();
 
+    /**
+     * @return the VM size in bytes
+     * */
     long getSharedMemory();
 
     String[] getArguments();
 
+    /**
+     * @return the number of memory page faults
+     * */
     long getMemoryPageFaults();
 
+    /**
+     * @return the user name
+     * */
     String getUser();
 
 }

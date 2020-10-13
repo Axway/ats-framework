@@ -331,6 +331,7 @@ public class AtsJvmMonitor extends PerformanceMonitor {
 
                 applyMemoryNormalizationFactor();
 
+                // Java 7/8 returns the Bean name as type,name, while java 9+ name,type so here we check for both formats
                 mBeanName = mbeanWrapper.getObjectNames(".*(type=MemoryPool,name=.*Old Gen.*)|.*(name=.*Old Gen.*,type=MemoryPool).*", true).iterator().next();
             }
 
@@ -396,6 +397,9 @@ public class AtsJvmMonitor extends PerformanceMonitor {
                                       0) {
             private static final long serialVersionUID = 1L;
 
+            /**
+             * This is set of all of the ObjectName(s) (Beans) that represent the heap size
+             * */
             Set<ObjectName>           heaps            = null;
 
             @Override

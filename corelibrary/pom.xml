@@ -171,6 +171,7 @@
             <artifactId>cassandra-driver-core</artifactId>
             <version>${com.datastax.cassandra.driver.version}</version>
         </dependency>
+        <!-- RegistryOperations requires these two (jna) dependency -->
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna</artifactId>
