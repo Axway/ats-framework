@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -60,8 +58,7 @@
 										<unescape>true</unescape>
 										<token>%AGENT_HOME%</token>
 										<!-- next tag must be on single line -->
-										<value>%AGENT_HOME%\n\n@SET JAVA_HOME=%AGENT_HOME%/jre\n@SET
-											PATH=%JAVA_HOME%/bin;%PATH%</value>
+										<value>%AGENT_HOME%\n\n@SET JAVA_HOME=%AGENT_HOME%/jre\n@SET PATH=%JAVA_HOME%/bin;%PATH%</value>
 									</replacement>
 								</replacements>
 							</configuration>
@@ -79,9 +76,7 @@
 										<unescape>true</unescape>
 										<token># parse the input arguments</token>
 										<!-- next tag must be on single line -->
-										<value># overwrite JAVA_HOME and PATH
-											environments\nJAVA_HOME=\\$SCRIPTPATH/jre\nPATH=\\$JAVA_HOME/bin:\\$PATH\n\n#
-											parse the input arguments</value>
+										<value># overwrite JAVA_HOME and PATH environments\nJAVA_HOME=\\$SCRIPTPATH/jre\nPATH=\\$JAVA_HOME/bin:\\$PATH\n\n# parse the input arguments</value>
 									</replacement>
 								</replacements>
 							</configuration>
@@ -266,8 +261,8 @@
 			<artifactId>webservices-api</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- <dependency> TODO Check <groupId>javassist</groupId> <artifactId>javassist</artifactId> 
-			<version>3.12.1.GA</version> </dependency> -->
+        <!-- <dependency> TODO Check <groupId>javassist</groupId> <artifactId>javassist</artifactId> <version>3.12.1.GA</version> 
+            </dependency> -->
 	</dependencies>
 
 </project>
