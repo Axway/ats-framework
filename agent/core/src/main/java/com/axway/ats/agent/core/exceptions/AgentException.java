@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 package com.axway.ats.agent.core.exceptions;
+
+import com.axway.ats.core.utils.StringUtils;
 
 @SuppressWarnings( "serial")
 public class AgentException extends Exception {
@@ -30,12 +32,12 @@ public class AgentException extends Exception {
 
     public AgentException( String message ) {
 
-        super(message);
+        super(StringUtils.escapeNonPrintableAsciiCharacters(message));
     }
 
     public AgentException( String message,
                            Throwable cause ) {
 
-        super(message, cause);
+        super(StringUtils.escapeNonPrintableAsciiCharacters(message), cause);
     }
 }

@@ -16,6 +16,7 @@
 package com.axway.ats.harness.config;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.utils.HostUtils;
 
@@ -271,6 +272,13 @@ public class TestBox extends Box {
         box.setDbPass(password);
         box.setDbType(dbType);
         return box;
+    }
+
+    @PublicAtsApi
+    public DbConnection asDbConnection() {
+
+        return DatabaseProviderFactory.createDbConnection(dbType, host, dbPort, dbName, dbUser, dbPass);
+
     }
 
     @Override
