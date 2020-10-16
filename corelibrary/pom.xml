@@ -15,7 +15,7 @@
 
     <properties>
         <!-- Apache FTP and FTPS Library. TODO: update to latest v3.7 -->
-        <org.apache.commons.net.version>3.5</org.apache.commons.net.version>
+        <org.apache.commons.net.version>3.7.1</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, Error example: javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify -->
         <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
         <!-- jTDS dependency is defined in parent pom.xml -->

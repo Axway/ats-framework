@@ -243,14 +243,14 @@ public class TestBox extends Box {
         return newBox;
     }
 
-    /**
+    /**<strong>INTERNAL<strong> method. Could be changed without notice
      * Create TestBox from {@link DbConnection} object<br>
      * Note that any custom properties from the connection (except the port value) will not be transfered to the TestBox
      * 
      * @param dbConnection - the db connection or null if the dbConnection parameter is null
      * */
 
-    @PublicAtsApi
+    //@PublicAtsApi
     public static TestBox fromDbConnection( DbConnection dbConnection ) {
 
         if (dbConnection == null) {
@@ -274,7 +274,9 @@ public class TestBox extends Box {
         return box;
     }
 
-    @PublicAtsApi
+    //@PublicAtsApi
+    /**<strong>INTERNAL<strong> method. Could be changed without notice
+     * */
     public DbConnection asDbConnection() {
 
         return DatabaseProviderFactory.createDbConnection(dbType, host, dbPort, dbName, dbUser, dbPass);

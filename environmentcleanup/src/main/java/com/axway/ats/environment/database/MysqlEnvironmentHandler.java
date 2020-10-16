@@ -108,6 +108,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     // remove the OEL marker
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
                     if (sql.toString().trim().startsWith("INSERT INTO")) {
+                        // This line escapes non-printable string chars. Hex data is already escaped as 0xABC without backslash(\)
                         String insertQuery = sql.toString().replace("\\0x", "\\");
                         updateStatement = connection.prepareStatement(insertQuery);
                     } else {
