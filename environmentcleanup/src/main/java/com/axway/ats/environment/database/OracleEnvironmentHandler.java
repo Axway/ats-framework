@@ -54,6 +54,9 @@ import com.axway.ats.environment.database.model.DbTable;
 
 class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
+    // The MAX value for a binary column that will not fail an INSERT statement 
+    private static final int MAX_BINARY_COLUMN_INSERT_LENGTH = 4000;
+
     // Class that contains table constraint creation and enable statements
     // Currently only foreign key is taken into consideration
     class TableConstraints {
@@ -236,8 +239,36 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
                         if (column.isTypeBinary()) {
                             String varName = VAR_PREFIX + (variableIndex++);
+                            String origValue = ((String) recordValue.getValue());
+                            long length = origValue.length();
                             stmtBlockBuilder.append(INDENTATION + varName + " := " + fieldValue + ";"
                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
+                                                    + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            String binaryMethod = "to_" + column.getType().toLowerCase();
+                            if (length > MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                                int currentBinaryIdx = 0;
+                                while (currentBinaryIdx <= length) {
+                                    if (currentBinaryIdx + MAX_BINARY_COLUMN_INSERT_LENGTH <= length) {
+                                        stmtBlockBuilder.append(INDENTATION + "dbms_lob.append(" + varName + ","
+                                                                + binaryMethod + "('"
+                                                                + origValue.substring(currentBinaryIdx,
+                                                                                      currentBinaryIdx + MAX_BINARY_COLUMN_INSERT_LENGTH)
+                                                                + "'));" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                                        currentBinaryIdx += MAX_BINARY_COLUMN_INSERT_LENGTH;
+                                    } else {
+                                        stmtBlockBuilder.append(INDENTATION + "dbms_lob.append(" + varName + ","
+                                                                + binaryMethod + "('"
+                                                                + origValue.substring(currentBinaryIdx,
+                                                                                      (int) (currentBinaryIdx
+                                                                                             + (length
+                                                                                                - currentBinaryIdx)))
+                                                                + "'));" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                                        // safely break the loop here
+                                        break;
+                                    }
+                                }
+                            }
                             insertStatement.append(varName);
                         } else {
                             insertStatement.append(fieldValue);
@@ -414,13 +445,38 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             insertStatement.append(fieldValue);
             insertStatement.append("','YYYY-MM-DD hh24:mi:ss.FF')");
         } else if ("BLOB".equals(typeInUpperCase)) {
-            insertStatement.append("to_blob('");
-            insertStatement.append(fieldValue);
-            insertStatement.append("')");
+            //Get the binary type length
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                insertStatement.append("to_blob('");
+                insertStatement.append(fieldValue);
+                insertStatement.append("')");
+            } else {
+                // just create empty blob, which will be populated later via append
+                insertStatement.append("empty_blob()");
+            }
+
         } else if ("CLOB".equals(typeInUpperCase)) {
-            insertStatement.append("to_clob('");
-            insertStatement.append(fieldValue.replace("'", "''"));
-            insertStatement.append("')");
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                insertStatement.append("to_clob('");
+                insertStatement.append(fieldValue.replace("'", "''"));
+                insertStatement.append("')");
+            } else {
+                // just create empty clob, which will be populated later via append
+                insertStatement.append("empty_clob()");
+            }
+        } else if ("NCLOB".equals(typeInUpperCase)) {
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                insertStatement.append("to_nclob('");
+                insertStatement.append(fieldValue.replace("'", "''"));
+                insertStatement.append("')");
+            } else {
+                // just create empty nclob, which will be populated later via append
+                // Note that, yes, use empty_clob(), not empty_nclob(), since the later does not exist
+                insertStatement.append("empty_clob()");
+            }
         } else {
             insertStatement.append("'");
             insertStatement.append(fieldValue.replace("'", "''"));
