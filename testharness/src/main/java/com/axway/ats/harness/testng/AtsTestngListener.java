@@ -139,13 +139,15 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 } else if (!currentSuiteName.equals(testResult.getTestClass()
                                                               .getRealClass()
                                                               .getSimpleName())) {
-
                     endSuite(); // end previously started suite
                     startSuite(testResult); // start new suite
-
                 }
 
-            } else if (method.getTestMethod().isBeforeMethodConfiguration()) { // check if method is @BeforeMethod
+            } else if (method.getTestMethod().isBeforeTestConfiguration()) {
+                logger.info("Start @BeforeTest: " + testResult.getTestClass().getRealClass() + "@"
+                            + method.getTestMethod().getMethodName() + "'");
+            } else if (method.getTestMethod().isBeforeMethodConfiguration()) {
+                // check if method is @BeforeMethod
 
                 if (currentSuiteName == null) {
 
@@ -185,6 +187,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                     logger.startAfterClass();
                 }
 
+            } else if (method.getTestMethod().isAfterTestConfiguration()) { // check if method is @AfterTest
+
+                logger.startAfterSuite();
+                logger.info("[TestNG]: Start @AfterTest" + testResult.getTestClass().getRealClass() + "@"
+                            + method.getTestMethod().getMethodName() + "'");
+                logger.endAfterSuite();
             } else if (method.getTestMethod().isAfterSuiteConfiguration()) { // check if method is @AfterSuite
 
                 logger.startAfterSuite();
@@ -229,6 +237,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
 
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
+
+            if (method.getTestMethod().isBeforeTestConfiguration()) {
+                logger.info(
+                        "End @BeforeTest: " + testResult.getTestClass().getRealClass() + "@" + method.getTestMethod()
+                                                                                                     .getMethodName());
+            }
 
             if (method.getTestMethod().isBeforeMethodConfiguration()) { // check if method is @BeforeMethod
 
@@ -307,22 +321,43 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 logger.updateTestcase(-1, null, null, null, null, null, lastTestcaseResult);
 
             } else if (method.getTestMethod().isAfterSuiteConfiguration()) { // check if method is @AfterSuite
+                if (testResult.getStatus() == ITestResult.FAILURE) {
+
+                    // log the Throwable object from the @AfterMethod
+                    logger.error(testResult.getThrowable().getMessage(), testResult.getThrowable());
+
+                }
 
                 logger.endAfterSuite();
 
             } else if (method.getTestMethod().isAfterClassConfiguration()) { // check if method is @AfterClass
+                if (testResult.getStatus() == ITestResult.FAILURE) {
 
+                    // log the Throwable object from the @AfterMethod
+                    logger.error(testResult.getThrowable().getMessage(), testResult.getThrowable());
+                }
                 if (currentSuiteName != null) {
 
                     endSuite();
 
                 } else {
-
                     // the event was received after a suite is already ended
                     // which means that we only have to clear the after class mode
                     logger.endAfterClass();
                 }
 
+            } else if (method.getTestMethod().isAfterTestConfiguration()) { // check if method is @AfterTest
+
+                logger.startAfterSuite();
+                logger.info("[TestNG]:End @Aftertest" + testResult.getTestClass().getRealClass() + "@"
+                            + method.getTestMethod().getMethodName() + "'");
+
+                if (testResult.getStatus() == ITestResult.FAILURE) {
+
+                    // log the Throwable object from the @AfterTest
+                    logger.error(testResult.getThrowable().getMessage(), testResult.getThrowable());
+                }
+                logger.endAfterSuite();
             }
         } else if (method.isTestMethod()) {
 
