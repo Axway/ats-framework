@@ -254,7 +254,7 @@ agent_version() {
 }
 
 cd "$SCRIPTPATH"
-mkdir -p -m 777 logs
+mkdir -p -m 775 logs
 
 case $COMMAND in
     'start')
