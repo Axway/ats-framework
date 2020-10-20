@@ -78,7 +78,7 @@
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-        <junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock
+        <junit.version>4.13.1</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock
             >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
         <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
