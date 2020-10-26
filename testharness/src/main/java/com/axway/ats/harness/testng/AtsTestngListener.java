@@ -98,7 +98,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     static {
         IS_TRACE_ENABLED = AtsSystemProperties.getPropertyAsBoolean(
-                AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION, false);
+                                                                    AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION,
+                                                                    false);
         ATS_LOGGER = new AtsConsoleLogger(AtsTestngListener.class);
     }
 
@@ -352,7 +353,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             } else if (method.getTestMethod().isAfterTestConfiguration()) { // check if method is @AfterTest
 
                 logger.startAfterSuite();
-                logger.info("[TestNG]:End @AfterTest '" + testResult.getTestClass().getRealClass() + "@"
+                logger.info("[TestNG]: End @AfterTest '" + testResult.getTestClass().getRealClass() + "@"
                             + method.getTestMethod().getMethodName() + "'");
 
                 if (testResult.getStatus() == ITestResult.FAILURE) {
@@ -835,7 +836,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
         sendTestEndEventToAgents();
 
-        if (configurationError(context)) {
+        if (configurationError(testResult, context)) {
             // test is skipped due to configuration error
             logger.info(MSG__TEST_SKIPPED_CONFIGURATION, testResult.getThrowable());
         } else if (dependencyError(testResult, context)) {
@@ -936,7 +937,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         return false;
     }
 
-    private boolean configurationError( ITestContext context ) {
+    private boolean configurationError( ITestResult result, ITestContext context ) {
+
+        // First check if this result (which is the result of the current configuration method) has throwable.
+        // If that is the case, then this configuration method (Before/AfterXYZ) failed
+        if (result.getThrowable() != null) {
+            logger.fatal("Configuration failed!", result.getThrowable());
+            return true;
+        }
+
+        // This configuration method was OK. This means, that something other failed before it.
 
         // check if this is a configuration issue
         List<ITestResult> failedConfigurations = Arrays.asList(context.getFailedConfigurations()
