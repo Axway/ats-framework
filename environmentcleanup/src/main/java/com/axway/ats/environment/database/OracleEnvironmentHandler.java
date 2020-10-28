@@ -426,7 +426,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
      * Extracts the specific value for INSERT statement, considering it's type and the specifics associated with it
      * If value is too big for one-time get then initial/default value is returned. And later it is accumulated with
      *  more statements.
-     *  Specific cases: DATE with locale format, BLOB/CLOB for insert into pieces.
+     *  Specific cases: DATE types will be extracted as to_date(<STRING_REPRESENTATION_OF_THE_SQL_VALUE>).
+     *  The same is true for TIMESTAMP (only the function to_timestamp is used).
+     *  BLOB/CLOB/NCLOB can be returned as: to_blob|clob|nclob or empty_blob|clob if their value is more than 4k characters long.
      */
     private StringBuilder extractValue( ColumnDescription column, String fieldValue ) throws ParseException {
 
