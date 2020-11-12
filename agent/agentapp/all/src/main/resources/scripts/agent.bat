@@ -5,6 +5,16 @@
 @SETLOCAL EnableDelayedExpansion
 
 :: (Optional) Java and JVM runtime options
+
+::Example -> set JAVA_OPTS=%JAVA_OPTS% -Dmy.prop1=abc -Dmy.prop2=cba
+
+::Example -> set JAVA_OPTS=%JAVA_OPTS% "-Dmy.prop1=abc" "-Dmy.prop2=cba"
+
+::Example -> set JAVA_OPTS=%JAVA_OPTS% -Dmy.prop1="abc" -Dmy.prop2="cba"
+
+::Example added through CMD -> agent.bat start -java_opts "-Dprop1=abc"
+
+::Example added through CMD -> agent.bat start -java_opts "-Dprop1=abc" -java_opts "-Dprop2=cba"
 @SET JAVA_OPTS=%JAVA_OPTS%
 
 :: the Agent port
