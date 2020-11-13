@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # (Optional) Java and JVM runtime options
+#Example : export JAVA_OPTS="$JAVA_OPTS -Dmy.prop1=ABC -Dmy.prop2=CBA"
 JAVA_OPTS="$JAVA_OPTS"
 # the Agent port
 PORT=8089
