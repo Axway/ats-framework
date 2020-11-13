@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.axway.ats.core.log.AtsConsoleLogger;
 import org.testng.IInvokedMethod;
 import org.testng.IInvokedMethodListener2;
 import org.testng.ISuite;
@@ -42,10 +41,12 @@ import org.testng.ISuiteListener;
 import org.testng.ITestContext;
 import org.testng.ITestResult;
 import org.testng.annotations.Test;
+import org.testng.xml.XmlSuite;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.TestcaseStateEventsDispacher;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.HostUtils;
@@ -55,7 +56,6 @@ import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.model.TestCaseResult;
-import org.testng.xml.XmlSuite;
 
 public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener2 {
 
@@ -966,7 +966,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             logCondition(method, testResult, MSG__TEST_END);
             if (testResult.getStatus() == ITestResult.FAILURE) {
 
-                // log the Throwable object from the @AfterMethod
+                // log the Throwable object from the @AfterClass
                 logger.fatal(testResult.getThrowable().getMessage(), testResult.getThrowable());
             }
             if (currentSuiteName != null) {
