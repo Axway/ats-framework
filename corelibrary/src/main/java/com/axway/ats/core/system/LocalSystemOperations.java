@@ -356,7 +356,7 @@ public class LocalSystemOperations implements ISystemOperations {
             FileAppender fileAppender = FileAppender.newBuilder().setLayout(patternLayout).withFileName(filepath).build();
             final LoggerContext context = LoggerContext.getContext(false);
             final Configuration config = context.getConfiguration();
-            // fileAppender.start(); Is this needed?!?
+            fileAppender.start();
             config.addAppender(fileAppender);
             // context.getRootLogger().addAppender(config.getAppender(fa.getName())); Is this needed?!?
             // context.updateLoggers(); Is this needed?!?
