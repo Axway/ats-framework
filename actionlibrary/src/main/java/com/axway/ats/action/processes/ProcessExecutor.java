@@ -55,8 +55,9 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor(
+            @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -71,7 +72,7 @@ public class ProcessExecutor {
      * @param command the command to run
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ command });
@@ -91,9 +92,10 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor(
+            @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command,
+            @Validate( name = "commandArguments", type = ValidationType.NONE ) String[] commandArguments ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -109,8 +111,8 @@ public class ProcessExecutor {
      * @param commandArguments command arguments
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command,
+                            @Validate( name = "commandArguments", type = ValidationType.NONE ) String[] commandArguments ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ command, commandArguments });
@@ -192,8 +194,8 @@ public class ProcessExecutor {
      */
     @PublicAtsApi
     public static int
-            killExternalProcess( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                                 @Validate( name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY) String startCommandSnippet ) {
+    killExternalProcess( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+                         @Validate( name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY ) String startCommandSnippet ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -357,15 +359,27 @@ public class ProcessExecutor {
     }
 
     /**
-     * Set environment variable prior to running the process
+     * Set environment variable. Should be used prior to the actual execute (start) of the process
      *
-     * @param variableName name of the environment variable
+     * @param variableName name of the environment variable. Generally upper case name is preferred but all supported
+     *                     chars in name depends on the underlying OS
      * @param variableValue new value of the environment variable
+     * @return old value of variable existed before. If not - returns null.
      */
     @PublicAtsApi
-    public void setEnvVariable( String variableName, String variableValue ) {
+    public String setEnvVariable( String variableName, String variableValue ) {
 
-        this.processExecutor.setEnvVariable(variableName, variableValue);
+        return this.processExecutor.setEnvVariable(variableName, variableValue);
+    }
+
+    /**
+     * Removes environment variable. Support depends on the JVM and OS used
+     * @param variableName the name of the environment variable. Upper case is preferred but naming depends on the underlying OS support
+     * @return The old value if variable already existed. If not - returns null.
+     */
+    public String removeEnvVariable( String variableName ) {
+
+        return this.processExecutor.removeEnvVariable(variableName);
     }
 
     /**

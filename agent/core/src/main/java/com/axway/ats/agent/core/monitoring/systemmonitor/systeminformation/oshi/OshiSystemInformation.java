@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,50 +52,66 @@ public class OshiSystemInformation implements ISystemInformation {
 
     /**
      * Oshi needs different ticks to calculate CPU-related data. This means that ATS needs to wait a little between getting two ticks readings.<br>
-     * This system property is used to specify this wait time and by default is <strong>500ms</strong>
+     * This system property is used to specify this wait time (in milliseconds) and by default is <strong>500ms</strong>
      * Anything less causes wrong data, so this is the minimum time required.
      * */
-    public static final String      CPU_TICK_INTERVAL_MS    = "oshi.cpu.ticks.interval.ms";
+    public static final String      CPU_TICK_INTERVAL_MS                = "oshi.cpu.ticks.interval.ms";
     /**
      * Iterating over all processes each poll is too slow,<br>
      * so by default ATS load all currently running (in state, different than INVALID ) only once per the whole monitoring session.<br>
      * This means that if a process appears after ATS already cached the process PIDs, this process will not be monitored at all.<br>
      * If you want to always iterate over all of the processes, use this system property with true for a value<br>,
-     * but note that this is very slow operation, so you will have to increase your monitor pooling interval alot
+     * but note that this is very slow operation, so you will have to increase your monitor pooling interval a lot
      *  
      * */
-    public static final String      PROCESS_USE_CACHED_PIDS = "oshi.process.use.cached.pids";
 
-    private static final Logger     log                     = LogManager.getLogger(OshiSystemInformation.class);
+    //public static final String      PROCESS_USE_CACHED_PIDS             = "oshi.process.use.cached.pids";
 
-    private SystemInfo              systemInfo              = null;
-    public HardwareAbstractionLayer hal                     = null;
-    public OperatingSystem          os                      = null;
+    /**
+     * Since iterating all of the processes is very slow operation, use this property to specify interval (in milliseconds) for this kind of operation.<br/>
+     * Default one is {@link OshiSystemInformation#DEFAULT_PROCESS_PIDS_CACHE_LIFETIME}
+     * */
+    public static final String      PROCESS_PIDS_CACHE_LIFETIME         = "oshi.process.pids.lifetime";
+    /**
+     * 60000 milliseconds
+     * */
+    public static final long        DEFAULT_PROCESS_PIDS_CACHE_LIFETIME = TimeUnit.MINUTES.toMillis(1);
 
-    private CentralProcessor        cpu                     = null;
+    private static final Logger     log                                 = LogManager.getLogger(OshiSystemInformation.class);
 
-    private GlobalMemory            gm                      = null;
-    private VirtualMemory           vm                      = null;
+    private SystemInfo              systemInfo                          = null;
+    public HardwareAbstractionLayer hal                                 = null;
+    public OperatingSystem          os                                  = null;
 
-    private InternetProtocolStats   protocolStats           = null;
+    private CentralProcessor        cpu                                 = null;
 
-    private long[]                  prevTicks               = null;
+    private GlobalMemory            gm                                  = null;
+    private VirtualMemory           vm                                  = null;
 
-    private long[]                  currTicks               = null;
+    private InternetProtocolStats   protocolStats                       = null;
 
-    private long                    prevTickTime            = -1;
+    private long[]                  prevTicks                           = null;
+
+    private long[]                  currTicks                           = null;
+
+    private long                    prevTickTime                        = -1;
+
+    /**
+     * Keep track when was the last time ATS polls for all of the available processes
+     * */
+    private long                    previousPidsPollingTimestamp        = -1;
 
     /*
      *  This maps holds the faulty processes, so we do not poll them anymore
      */
-    private List<Long>              faultyProcesses         = new ArrayList<Long>();
+    private Set<Long>               faultyProcesses                     = new HashSet<Long>();
 
     /*
      *  This maps holds the faulty devices, so we do not poll them anymore
      */
-    private List<String>            faultyDevices           = new ArrayList<String>();
+    private Set<String>             faultyDevices                       = new HashSet<String>();
 
-    private Set<Long>               cachedPids              = new HashSet<>();
+    private Set<Long>               cachedPids                          = new HashSet<>();
 
     public OshiSystemInformation() {
 
@@ -532,9 +549,14 @@ public class OshiSystemInformation implements ISystemInformation {
     @Override
     public long[] getProcList() {
 
-        boolean useCashedProcesses = AtsSystemProperties.getPropertyAsBoolean(PROCESS_USE_CACHED_PIDS, true);
+        /*boolean useCashedProcesses = AtsSystemProperties.getPropertyAsBoolean(PROCESS_USE_CACHED_PIDS, true);*/
+        long processPidsCacheLifetime = AtsSystemProperties.getPropertyAsNonNegativeNumber(PROCESS_PIDS_CACHE_LIFETIME,
+                                                                                           (int) DEFAULT_PROCESS_PIDS_CACHE_LIFETIME);
         List<OSProcess> procs = null;
-        if (useCashedProcesses) {
+
+        long currTime = System.currentTimeMillis();
+
+        if (previousPidsPollingTimestamp != -1 && currTime - previousPidsPollingTimestamp < processPidsCacheLifetime) {
             long[] pids = new long[this.cachedPids.size()];
             int i = 0;
             Iterator<Long> it = this.cachedPids.iterator();
@@ -543,6 +565,7 @@ public class OshiSystemInformation implements ISystemInformation {
             }
             return pids;
         } else {
+            previousPidsPollingTimestamp = currTime;
             procs = this.os.getProcesses();
             long[] pids = new long[procs.size()];
             for (int i = 0; i < procs.size(); i++) {
@@ -699,7 +722,7 @@ public class OshiSystemInformation implements ISystemInformation {
                                             long pid ) {
 
         log.error("Unable to collect data about process with ID " + pid
-                  + ". We will not be monitoring this process anymore!");
+                  + ". No further monitoring will be done for this process!");
         faultyProcesses.add(pid);
     }
 
@@ -713,7 +736,7 @@ public class OshiSystemInformation implements ISystemInformation {
                                           String devName ) {
 
         log.error("Unable to collect data about device with name " + devName
-                  + ". We will not be monitoring this device anymore!");
+                  + ". No further monitoring will be done for this device!");
         faultyDevices.add(devName);
     }
 

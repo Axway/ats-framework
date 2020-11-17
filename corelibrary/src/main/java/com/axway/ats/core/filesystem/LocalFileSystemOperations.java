@@ -1003,10 +1003,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     @Override
-    public void renameFile(
-            String sourceFile,
-            String destinationFile,
-            boolean overwrite ) {
+    public void renameFile( String sourceFile, String destinationFile, boolean overwrite ) {
 
         File oldFile = new File(sourceFile);
         File newFile = new File(destinationFile);
@@ -2911,7 +2908,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             String dstFilePath ) throws Exception {
 
         // workaround for relative file name w/o any path. Otherwise - File.getParentFile() returns null and NPE occurs
-        if (!dstFilePath.contains(File.separator)) {
+        if (!dstFilePath.contains("\\") && !dstFilePath.contains("/")) {
             dstFilePath = "." + File.separator + dstFilePath;
         }
         File dstFile = new File(dstFilePath);

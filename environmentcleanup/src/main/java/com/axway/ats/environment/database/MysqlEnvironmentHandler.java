@@ -43,6 +43,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.utils.IoUtils;
+import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
@@ -103,9 +104,17 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 }
                 if (line.endsWith(EOL_MARKER)) {
 
+                    PreparedStatement updateStatement = null;
+
                     // remove the OEL marker
                     sql.delete(sql.length() - EOL_MARKER.length(), sql.length());
-                    PreparedStatement updateStatement = connection.prepareStatement(sql.toString());
+                    if (sql.toString().trim().startsWith("INSERT INTO")) {
+                        // This line escapes non-printable string chars. Hex data is already escaped as 0xABC without backslash(\)
+                        String insertQuery = sql.toString().replace("\\0x", "\\");
+                        updateStatement = connection.prepareStatement(insertQuery);
+                    } else {
+                        updateStatement = connection.prepareStatement(sql.toString());
+                    }
 
                     //catch the exception and roll back, otherwise we are locked
                     try {
@@ -226,7 +235,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             } finally {
                 DbUtils.closeConnection(connection);
             }
-            
+
         } /*else if (!this.deleteStatementsInserted) {
             writeDeleteStatements(fileWriter);
           }*/
@@ -291,7 +300,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 insertStatement.delete(insertStatement.length() - 1, insertStatement.length());
                 insertStatement.append(insertEnd);
 
-                fileWriter.write(insertStatement.toString());
+                fileWriter.write(StringUtils.escapeNonPrintableAsciiCharacters(insertStatement.toString()));
                 fileWriter.flush();
             }
         }
@@ -320,6 +329,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) throws IOException {
+
         // Empty. Delete and lock are handled per table in writeTableToFile 
     }
 

@@ -41,7 +41,7 @@ public class InternalComponentException extends AgentException {
 
         this.componentName = componentName;
         this.actionName = actionName;
-        this.exceptionMessage = getStackTrace(cause);
+        this.exceptionMessage = StringUtils.escapeNonPrintableAsciiCharacters(getStackTrace(cause));
 
         // remember the Agent host
         this.hostIp = HostUtils.getLocalHostIP();
@@ -56,7 +56,7 @@ public class InternalComponentException extends AgentException {
 
         this.componentName = componentName;
         this.actionName = actionName;
-        this.exceptionMessage = exceptionMessage;
+        this.exceptionMessage = StringUtils.escapeNonPrintableAsciiCharacters(exceptionMessage);
     }
 
     /**

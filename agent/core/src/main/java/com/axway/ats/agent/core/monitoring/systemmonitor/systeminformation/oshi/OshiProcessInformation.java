@@ -15,18 +15,42 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.oshi;
 
+import java.util.concurrent.TimeUnit;
+
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IProcessInformation;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 import oshi.software.os.OSProcess;
 
 public class OshiProcessInformation implements IProcessInformation {
 
-    private OSProcess internalImplementation = null;
+    private OSProcess          internalImplementation            = null;
+
+    private long               previousUpdateAttributesTimestamp = -1;
+
+    /**
+     * Use this property to specify the update interval (in milliseconds) for the process information.<br/>
+     * Default one is {@link OshiProcessInformation#DEFAULT_UPDATE_INTERVAL}
+     * */
+    public static final String UPDATE_INTERVAL                   = "oshi.process.update.interval";
+    /**
+     * 1000 ms
+     * */
+    public static final long   DEFAULT_UPDATE_INTERVAL           = TimeUnit.SECONDS.toMillis(1);
+
+    private static final long  updateIntervalMillis;
+
+    static {
+        // for now, keep this property private
+        updateIntervalMillis = AtsSystemProperties.getPropertyAsNonNegativeNumber(UPDATE_INTERVAL,
+                                                                                  (int) TimeUnit.SECONDS.toMillis(DEFAULT_UPDATE_INTERVAL));
+
+    }
 
     public OshiProcessInformation( OSProcess proc ) {
 
         this.internalImplementation = proc;
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
     }
 
     @Override
@@ -38,44 +62,44 @@ public class OshiProcessInformation implements IProcessInformation {
     @Override
     public long getCpuUser() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.internalImplementation.getUserTime();
     }
 
     @Override
     public long getCpuKernel() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.internalImplementation.getKernelTime();
     }
 
     @Override
     public long getCpuTotal() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.getCpuUser() + this.getCpuKernel();
     }
 
     @Override
     public long getVirtualMemory() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.internalImplementation.getVirtualSize();
     }
 
     @Override
     public long getResidentMemory() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.internalImplementation.getResidentSetSize();
     }
 
     @Override
     public long getSharedMemory() {
 
-        this.internalImplementation.updateAttributes();
+        //updateAttributes();
         //throw new RuntimeException("Not implemented!");
-        return 0;
+        return -1;
     }
 
     @Override
@@ -87,7 +111,7 @@ public class OshiProcessInformation implements IProcessInformation {
     @Override
     public long getMemoryPageFaults() {
 
-        this.internalImplementation.updateAttributes();
+        updateAttributes();
         return this.internalImplementation.getMajorFaults() + this.internalImplementation.getMinorFaults();
     }
 
@@ -95,6 +119,18 @@ public class OshiProcessInformation implements IProcessInformation {
     public String getUser() {
 
         return this.internalImplementation.getUser();
+    }
+
+    private void updateAttributes() {
+
+        long currentTime = System.currentTimeMillis();
+
+        if (previousUpdateAttributesTimestamp == -1
+            || currentTime - previousUpdateAttributesTimestamp > TimeUnit.MINUTES.toMillis(updateIntervalMillis)) {
+            this.internalImplementation.updateAttributes();
+            this.previousUpdateAttributesTimestamp = currentTime;
+        }
+
     }
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -118,14 +118,14 @@ public class MBeanWrapper {
             }
 
         } catch (Exception e) {
-            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
+            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched pattern is "
                                     + regex;
             log.error(errorMsg, e);
             throw new MonitorConfigurationException(errorMsg, e);
         }
 
         if (oneEntry && names.size() != 1) {
-            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched patter is "
+            final String errorMsg = "Error getting the names of MBeans on the monitored JVM application. Searched pattern is "
                                     + regex + ". We expected to find 1, but found " + names
                                     + " MBean names.";
             log.error(errorMsg);

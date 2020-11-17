@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,134 +24,133 @@ import org.junit.Test;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.testng.TestOptions;
-import com.axway.ats.harness.testng.dataproviders.ExcelParser;
 import com.axway.ats.harness.testng.exceptions.DataProviderException;
 
-@TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = "ExcelParser.xlsx")
+@TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER, dataFile = "ExcelParser.xlsx" )
 public class Test_ExcelParser_xlsx extends BaseTest {
 
     private static final String EXCEL_FILE_PATH = "src/test/resources/ExcelParser.xlsx";
 
-    public static final String  TEST_CASE_START = "TEST_CASE_START";
+    public static final String TEST_CASE_START = "TEST_CASE_START";
 
-    public static final String  TEST_CASE_END   = "TEST_CASE_END";
+    public static final String TEST_CASE_END = "TEST_CASE_END";
 
-    public static final String  STRING_TOKEN    = "STRING";
+    public static final String STRING_TOKEN = "STRING";
 
-    public static final String  MULTIPLY        = "MULTIPLY";
+    public static final String MULTIPLY = "MULTIPLY";
 
-    private ExcelParser         parser;
+    private ExcelParser parser;
 
     /**
      * Test class used through reflection
      */
-    @SuppressWarnings( "unused")
+    @SuppressWarnings( "unused" )
     private static class Methods {
 
         public void method(
-                            Object parameter1 ) {
+                Object parameter1 ) {
 
         }
 
         //these are the methods that we are going to use for test purposes
         public void stringParseMethod(
 
-                                       String parameter1 ) {
+                String parameter1 ) {
 
         }
 
         public void booleanParseMethod(
 
-                                        boolean parameter1 ) {
+                boolean parameter1 ) {
 
         }
 
         public void doubleParseMethod(
-                                       double parameter1 ) {
+                double parameter1 ) {
 
         }
 
         public void intParseMethod(
-                                    int parameter1 ) {
+                int parameter1 ) {
 
         }
 
         public void longParseMethod(
-                                     long parameter1 ) {
+                long parameter1 ) {
 
         }
 
         public void shortParseMethod(
-                                      short parameter1 ) {
+                short parameter1 ) {
 
         }
 
         public void byteParseMethod(
-                                     byte parameter1 ) {
+                byte parameter1 ) {
 
         }
 
         public void charParseMethod(
-                                     char parameter1 ) {
+                char parameter1 ) {
 
         }
 
         public void floatParseMethod(
-                                      float parameter1 ) {
+                float parameter1 ) {
 
         }
 
         public void numberParseMethod(
-                                       Number parameter1 ) {
+                Number parameter1 ) {
 
         }
 
         public void dateParseMethod(
-                                     Date parameter1 ) {
+                Date parameter1 ) {
 
         }
 
         public void nullParseMethod(
-                                     Object parameter1 ) {
+                Object parameter1 ) {
 
         }
 
         public void nullParseMethodNegative(
-                                             int parameter1 ) {
+                int parameter1 ) {
 
         }
 
         public void cartesianMethod(
-                                     int parameter1,
-                                     float parameter2,
-                                     String parameter3 ) {
+                int parameter1,
+                float parameter2,
+                String parameter3 ) {
 
         }
 
         public void multiParamMethod(
-                                      int parameter1,
-                                      float parameter2,
-                                      String parameter3,
-                                      long parameter4 ) {
+                int parameter1,
+                float parameter2,
+                String parameter3,
+                long parameter4 ) {
 
         }
 
         public void setSheetName(
-                                  String parameter1,
-                                  int parameter2 ) {
+                String parameter1,
+                int parameter2 ) {
 
         }
 
         public void paramTypeDiffers(
-                                      int parameter1,
-                                      String parameter2 ) {
+                int parameter1,
+                String parameter2 ) {
 
         }
 
     }
 
     private Method findMethodByNameOnly(
-                                         String methodName ) throws NoSuchMethodException {
+            String methodName ) throws NoSuchMethodException {
 
         for (Method classMethod : Methods.class.getDeclaredMethods()) {
             if (classMethod.getName().equals(methodName)) {
@@ -164,23 +163,23 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //BOOLEAN
     @Test
-    @TestOptions( dataSheet = "TestBoolean")
+    @TestOptions( dataSheet = "TestBoolean" )
     public void booleanCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestBoolean");
 
         Object[][] data = parser.getDataBlock(findMethodByNameOnly("booleanParseMethod"));
 
-        Assert.assertEquals(data[0][0], false); // TODO: replace order to match (expected value , actual value)
-        Assert.assertEquals(data[1][0], false);
-        Assert.assertEquals(data[2][0], false);
-        Assert.assertEquals(data[3][0], true);
-        Assert.assertEquals(data[4][0], true);
-        Assert.assertEquals(data[5][0], true);
+        Assert.assertEquals(false, data[0][0]);
+        Assert.assertEquals(false, data[1][0]);
+        Assert.assertEquals(false, data[2][0]);
+        Assert.assertEquals(true, data[3][0]);
+        Assert.assertEquals(true, data[4][0]);
+        Assert.assertEquals(true, data[5][0]);
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestBooleanNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestBooleanNegative" )
     public void booleanCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestBooleanNegative");
@@ -190,25 +189,25 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //BYTE
     @Test
-    @TestOptions( dataSheet = "TestByte")
+    @TestOptions( dataSheet = "TestByte" )
     public void byteCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestByte");
 
         Object[][] data = parser.getDataBlock(findMethodByNameOnly("byteParseMethod"));
 
-        Assert.assertEquals(data[0][0], (byte) 0);
-        Assert.assertEquals(data[1][0], (byte) 123);
-        Assert.assertEquals(data[2][0], (byte) 127);
-        Assert.assertEquals(data[3][0], (byte) 126);
-        Assert.assertEquals(data[4][0], (byte) -128);
-        Assert.assertEquals(data[5][0], (byte) -127);
-        Assert.assertEquals(data[6][0], (byte) 2);
+        Assert.assertEquals((byte) 0, data[0][0]);
+        Assert.assertEquals((byte) 123, data[1][0]);
+        Assert.assertEquals((byte) 127, data[2][0]);
+        Assert.assertEquals((byte) 126, data[3][0]);
+        Assert.assertEquals((byte) -128, data[4][0]);
+        Assert.assertEquals((byte) -127, data[5][0]);
+        Assert.assertEquals((byte) 2, data[6][0]);
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestByteNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestByteNegative" )
     public void byteCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestByteNegative");
@@ -218,25 +217,25 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //SHORT
     @Test
-    @TestOptions( dataSheet = "TestShort")
+    @TestOptions( dataSheet = "TestShort" )
     public void shortCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestShort");
 
         Object[][] data = parser.getDataBlock(findMethodByNameOnly("shortParseMethod"));
 
-        Assert.assertEquals(data[0][0], (short) 0);
-        Assert.assertEquals(data[1][0], (short) 12345);
-        Assert.assertEquals(data[2][0], (short) 32767);
-        Assert.assertEquals(data[3][0], (short) 32766);
-        Assert.assertEquals(data[4][0], (short) -32768);
-        Assert.assertEquals(data[5][0], (short) -32767);
-        Assert.assertEquals(data[6][0], (short) 2);
+        Assert.assertEquals((short) 0, data[0][0]);
+        Assert.assertEquals((short) 12345, data[1][0]);
+        Assert.assertEquals((short) 32767, data[2][0]);
+        Assert.assertEquals((short) 32766, data[3][0]);
+        Assert.assertEquals((short) -32768, data[4][0]);
+        Assert.assertEquals((short) -32767, data[5][0]);
+        Assert.assertEquals((short) 2, data[6][0]);
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestShortNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestShortNegative" )
     public void shortCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestShortNegative");
@@ -246,25 +245,25 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //INT
     @Test
-    @TestOptions( dataSheet = "TestInt")
+    @TestOptions( dataSheet = "TestInt" )
     public void intCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestInt");
 
         Object[][] data = parser.getDataBlock(findMethodByNameOnly("intParseMethod"));
 
-        Assert.assertEquals(data[0][0], 0);
-        Assert.assertEquals(data[1][0], 1234567890);
-        Assert.assertEquals(data[2][0], 2147483647);
-        Assert.assertEquals(data[3][0], 2147483646);
-        Assert.assertEquals(data[4][0], -2147483648);
-        Assert.assertEquals(data[5][0], -2147483647);
-        Assert.assertEquals(data[6][0], 2);
+        Assert.assertEquals(0, data[0][0]);
+        Assert.assertEquals(1234567890, data[1][0]);
+        Assert.assertEquals(2147483647, data[2][0]);
+        Assert.assertEquals(2147483646, data[3][0]);
+        Assert.assertEquals(-2147483648, data[4][0]);
+        Assert.assertEquals(-2147483647, data[5][0]);
+        Assert.assertEquals(2, data[6][0]);
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestIntNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestIntNegative" )
     public void intCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestIntNegative");
@@ -274,25 +273,25 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //LONG
     @Test
-    @TestOptions( dataSheet = "TestLong")
+    @TestOptions( dataSheet = "TestLong" )
     public void longCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestLong");
 
         Object[][] data = parser.getDataBlock(findMethodByNameOnly("longParseMethod"));
 
-        Assert.assertEquals(data[0][0], 0L);
-        Assert.assertEquals(data[1][0], 1234567890123456789L);
-        Assert.assertEquals(data[2][0], 9223372036854775807L);
-        Assert.assertEquals(data[3][0], 9223372036854775806L);
-        Assert.assertEquals(data[4][0], -9223372036854775808L);
-        Assert.assertEquals(data[5][0], -9223372036854775807L);
-        Assert.assertEquals(data[6][0], 2L);
+        Assert.assertEquals(0L, data[0][0]);
+        Assert.assertEquals(1234567890123456789L, data[1][0]);
+        Assert.assertEquals(9223372036854775807L, data[2][0]);
+        Assert.assertEquals(9223372036854775806L, data[3][0]);
+        Assert.assertEquals(-9223372036854775808L, data[4][0]);
+        Assert.assertEquals(-9223372036854775807L, data[5][0]);
+        Assert.assertEquals(2L, data[6][0]);
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestLongNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestLongNegative" )
     public void longCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestLongNegative");
@@ -302,7 +301,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //FLOAT
     @Test
-    @TestOptions( dataSheet = "TestFloat")
+    @TestOptions( dataSheet = "TestFloat" )
     public void floatCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestFloat");
@@ -321,8 +320,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestFloatNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestFloatNegative" )
     public void floatCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestFloatNegative");
@@ -332,7 +331,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //DOUBLE
     @Test
-    @TestOptions( dataSheet = "TestDouble")
+    @TestOptions( dataSheet = "TestDouble" )
     public void doubleCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestDouble");
@@ -353,7 +352,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //DOUBLE
     @Test
-    @TestOptions( dataSheet = "TestNumber")
+    @TestOptions( dataSheet = "TestNumber" )
     public void numberCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestNumber");
@@ -370,8 +369,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestDoubleNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestDoubleNegative" )
     public void doubleCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestDoubleNegative");
@@ -381,7 +380,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //CHAR
     @Test
-    @TestOptions( dataSheet = "TestChar")
+    @TestOptions( dataSheet = "TestChar" )
     public void charCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestChar");
@@ -396,8 +395,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestCharNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestCharNegative" )
     public void charCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestCharNegative");
@@ -407,7 +406,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //STRING
     @Test
-    @TestOptions( dataSheet = "TestString")
+    @TestOptions( dataSheet = "TestString" )
     public void stringCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestString");
@@ -424,7 +423,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     //DATE
     @Test
-    @TestOptions( dataSheet = "TestDate")
+    @TestOptions( dataSheet = "TestDate" )
     public void dateCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestDate");
@@ -434,8 +433,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestDateNegative")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestDateNegative" )
     public void dateCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestDateNegative");
@@ -444,7 +443,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
     }
 
     @Test
-    @TestOptions( dataSheet = "TestNull")
+    @TestOptions( dataSheet = "TestNull" )
     public void nullCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestNull");
@@ -469,8 +468,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
 
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "TestNull")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "TestNull" )
     public void nullCellParsingNegative() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "TestNull");
@@ -478,40 +477,40 @@ public class Test_ExcelParser_xlsx extends BaseTest {
         parser.getDataBlock(findMethodByNameOnly("nullParseMethodNegative"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "DuplicateStartCell")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "DuplicateStartCell" )
     public void duplicateStartCell() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "DuplicateStartCell");
         parser.getDataBlock(findMethodByNameOnly("method"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "DuplicateEndCell")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "DuplicateEndCell" )
     public void duplicateEndCell() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "DuplicateEndCell");
         parser.getDataBlock(findMethodByNameOnly("method"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "NoStartCell")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "NoStartCell" )
     public void noStartCell() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "NoStartCell");
         parser.getDataBlock(findMethodByNameOnly("method"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "NoEndCell")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "NoEndCell" )
     public void noEndCell() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "NoEndCell");
         parser.getDataBlock(findMethodByNameOnly("method"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "WrongOrderStartEnd")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "WrongOrderStartEnd" )
     public void wrongOrderOnStartingAndEndingCells() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "WrongOrderStartEnd");
@@ -519,7 +518,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
     }
 
     @Test
-    @TestOptions( dataSheet = "SingleCell")
+    @TestOptions( dataSheet = "SingleCell" )
     public void singleCell() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "SingleCell");
@@ -529,16 +528,16 @@ public class Test_ExcelParser_xlsx extends BaseTest {
         Assert.assertEquals("Value", data[0][0]);
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "Sheet1")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "Sheet1" )
     public void nonExistingSheet() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "Sheet1");
         parser.getDataBlock(findMethodByNameOnly("method"));
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "DiffParamNumber")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "DiffParamNumber" )
     public void differentNumberOfParameters() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "DiffParamNumber");
@@ -546,7 +545,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
     }
 
     @Test
-    @TestOptions( dataSheet = "CartesianCellParsing")
+    @TestOptions( dataSheet = "CartesianCellParsing" )
     public void cartesianCellParsing() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "CartesianCellParsing");
@@ -602,7 +601,7 @@ public class Test_ExcelParser_xlsx extends BaseTest {
     }
 
     @Test
-    @TestOptions( dataSheet = "SetSheetName1")
+    @TestOptions( dataSheet = "SetSheetName1" )
     public void setSheetName() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "SetSheetName1");
@@ -616,8 +615,8 @@ public class Test_ExcelParser_xlsx extends BaseTest {
         Assert.assertEquals(222, data[0][1]);
     }
 
-    @Test( expected = DataProviderException.class)
-    @TestOptions( dataSheet = "ParameterTypeDiffers")
+    @Test( expected = DataProviderException.class )
+    @TestOptions( dataSheet = "ParameterTypeDiffers" )
     public void parameterTypeDiffers() throws Exception {
 
         parser = new ExcelParser(IoUtils.readFile(EXCEL_FILE_PATH), "ParameterTypeDiffers");

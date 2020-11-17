@@ -110,7 +110,7 @@ class DatabaseSnapshotBackupUtils {
                                                              snapshot.skipRowsPerTable, null, null);
             for (String values : valuesList) {
                 Element rowNode = doc.createElement(DatabaseSnapshotUtils.NODE_ROW);
-                rowNode.setTextContent(values);
+                rowNode.setTextContent(StringUtils.escapeNonPrintableAsciiCharacters(values));
 
                 tableNode.appendChild(rowNode);
             }

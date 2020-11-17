@@ -122,9 +122,15 @@ public class AtsSystemProperties {
     public static final String USER_CURRENT_DIR                                                  = System.getProperty("user.dir");
 
     /**
-     * Which class, that implements com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation to be used for gathering system information during monitoring
+     * Specify which monitoring provider to used.<br/>
+     * Currently the available once are:<br/>
+     * <ol>
+     *  <li><strong>sigar</strong> (default one)</li>
+     *  <li><strong>oshi</strong></li>
+     * </ol>
+     * 
      * */
-    public static final String SYSTEM_INFORMATION_CLASS                                          = "ats.system.information.class";
+    public static final String SYSTEM_MONITORING_PROVIDER                                          = "ats.system.monitoring.provider";
 
     /**
      * @return the default ATS agent port number

@@ -19,6 +19,7 @@ import org.hyperic.sigar.ProcCpu;
 import org.hyperic.sigar.ProcMem;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IProcessInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 
 public class SigarProcessInformation implements IProcessInformation {
 
@@ -30,10 +31,15 @@ public class SigarProcessInformation implements IProcessInformation {
 
     public SigarProcessInformation( String procUser, String[] procArgs, ProcCpu procCpu, ProcMem procMem, long pid ) {
 
+        checkIsNotNull(pid, "pid is null");
         this.pid = pid;
+        checkIsNotNull(procCpu, "process cpu is null");
         this.cpu = procCpu;
+        checkIsNotNull(procCpu, "process memory is null");
         this.mem = procMem;
+        checkIsNotNull(procCpu, "process user is null");
         this.user = procUser;
+        checkIsNotNull(procCpu, "process args are null");
         this.args = procArgs;
     }
 
@@ -95,6 +101,13 @@ public class SigarProcessInformation implements IProcessInformation {
     public String getUser() {
 
         return this.user;
+    }
+
+    private void checkIsNotNull( Object obj, String errorMessage ) {
+
+        if (obj == null) {
+            throw new SystemInformationException(errorMessage);
+        }
     }
 
 }

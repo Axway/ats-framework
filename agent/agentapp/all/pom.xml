@@ -240,6 +240,23 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
+			<groupId>com.github.oshi</groupId>
+			<artifactId>oshi-core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Needed by Oshi -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<!-- Default provider for slfj4 -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
 			<groupId>org.glassfish.metro</groupId>
 			<artifactId>webservices-api</artifactId>
 			<scope>provided</scope>

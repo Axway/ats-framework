@@ -1171,7 +1171,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     }
 
     /**
-     * Get the checkpoint log level
+     * Get the current {@link CheckpointLogLevel} log level
      */
     public static CheckpointLogLevel getCheckpointLogLevel() {
 
@@ -1179,9 +1179,13 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     }
 
     /**
-     * Set the checkpoint log level
+     * Set the checkpoint log level. Default is {@link CheckpointLogLevel#SHORT}
      *
-     * @param newCheckpointLogLevel
+     *
+     * @param newCheckpointLogLevel Options are {@link CheckpointLogLevel#FULL} - logging every single action into the
+     *                               DB. <em>Note</em> that this might rapidly grow your DB. <br />
+     *                               For {@link CheckpointLogLevel#SHORT} only total summary (aggregated status) is
+     *                               updated.
      */
     public static void setCheckpointLogLevel(
                                               CheckpointLogLevel newCheckpointLogLevel ) {

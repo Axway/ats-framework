@@ -78,7 +78,7 @@ public class SftpClient extends AbstractFileTransferClient {
 
     private static final Logger                 log                                 = LogManager.getLogger( SftpClient.class );
 
-    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
+    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in FileTransferClient class";
 
     public static final String                  SFTP_USERNAME                       = "SFTP_USERNAME";
     public static final String                  SFTP_CIPHERS                        = "SFTP_CIPHERS";

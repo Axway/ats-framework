@@ -25,6 +25,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.common.performance.monitor.PerformanceMonitor;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
@@ -54,8 +55,9 @@ public class AtsSystemMonitor extends PerformanceMonitor {
         try {
             this.systemInfo = SystemInformationFactory.get();
         } catch (Exception e) {
-            log.error("Error initializing the System Information impl", e);
-            throw new Exception("Error initializing the System Information impl", e);
+            String errorMessage = "Error initializing the provider of system information. System monitoring will not work.";
+            log.error(errorMessage, e);
+            throw new SystemInformationException(errorMessage, e);
         }
 
         List<ReadingBean> staticReadings = new ArrayList<ReadingBean>();
@@ -64,7 +66,7 @@ public class AtsSystemMonitor extends PerformanceMonitor {
             if (!reading.isDynamicReading()) {
                 staticReadings.add(reading);
             } else {
-                // check if this process has parent
+                // check if this process has a parent
                 String parentProcessName = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME);
                 if (parentProcessName != null) {
                     final String parentProcessId = parentProcessName + "-" + reading.getName();

@@ -15,6 +15,10 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation;
 
+/**
+ * Interface that should be implemented by any class that wants to act as a monitoring provider<br>
+ * <strong>Note</strong> that each of the implementation classes <strong>must</strong> have only one constructor with no arguments
+ * */
 public interface ISystemInformation {
 
     void refresh();
@@ -53,10 +57,19 @@ public interface ISystemInformation {
 
     double getLoadAvrgLast15Minutes();
 
+    /**
+     * @return then CPU wait in % since the last poll
+     * */
     double getCpuPercWait();
 
+    /**
+     * @return then CPU SYS in % since the last poll
+     * */
     double getCpuPercSys();
 
+    /**
+     * @return then CPU USER in % since the last poll
+     * */
     double getCpuPercUser();
 
     String[] listNetworkInterface();

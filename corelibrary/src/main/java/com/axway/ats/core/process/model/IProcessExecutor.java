@@ -124,9 +124,22 @@ public interface IProcessExecutor {
     public void setWorkDirectory(
                                   String workDirectory );
 
-    public void setEnvVariable(
+    /**
+     * Sets value to provided environment variable name
+     * @param variableName the name of the environment variable. Upper case is preferred but naming depends on the underlying OS support
+     * @param variableValue value of the environment variable
+     * @return old value if variable already existed
+     */
+    public String setEnvVariable(
                                 String variableName,
                                 String variableValue );
+
+    /**
+     * Removes environment variable. Support depends on the JVM and OS used
+     * @param variableName the name of the environment variable. Upper case is preferred but naming depends on the underlying OS support
+     * @return old value if variable already existed
+     */
+    public String removeEnvVariable( String variableName );
 
     public void appendToEnvVariable(
                                      String variableName,

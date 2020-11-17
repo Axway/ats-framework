@@ -242,10 +242,5 @@
             <artifactId>jersey-hk2</artifactId>
             <version>${org.glassfish.jersey.inject.version}</version>
         </dependency> -->
-		<dependency>
-			<groupId>com.github.oshi</groupId>
-			<artifactId>oshi-core</artifactId>
-			<version>${oshi.version}</version>
-		</dependency>
 	</dependencies>
 </project>

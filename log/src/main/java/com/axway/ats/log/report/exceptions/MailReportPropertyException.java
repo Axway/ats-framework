@@ -26,12 +26,22 @@ package com.axway.ats.log.report.exceptions;
 public class MailReportPropertyException extends RuntimeException {
 
     /**
-     * @param arg0
-     * @param arg1
+     * Indicate mail report configuration property error
+     * @param message details of the error
+     * @param exCause exception cause
      */
-    public MailReportPropertyException( String arg0,
-                                        Throwable arg1 ) {
+    public MailReportPropertyException( String message,
+                                        Throwable exCause ) {
 
-        super(arg0, arg1);
+        super(message, exCause);
+    }
+
+    /**
+     * Indicate mail report configuration property error
+     * @param message details of the error
+     */
+    public MailReportPropertyException( String message ) {
+
+        super(message);
     }
 }

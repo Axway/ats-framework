@@ -29,6 +29,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.validation.exceptions.ArrayEmptyException;
 import com.axway.ats.core.validation.exceptions.NumberValidationException;
@@ -831,6 +833,9 @@ public abstract class AbstractDbProvider implements DbProvider {
         // about the specified table in all DBs.
         // We can use an method overriding instead of checking this instance
         // type.
+        
+        // Map to hold the table's columns in sorted (natural-order) manner. Special case for PostgreSQL.
+        Map<String, String> columns = null;
         ResultSet columnInformation = databaseMetaData.getColumns(null, schemaPattern, tableName, "%");
         while (columnInformation.next()) {
             StringBuilder sb = new StringBuilder();
@@ -858,8 +863,24 @@ public abstract class AbstractDbProvider implements DbProvider {
             // "ORDINAL_POSITION", "sequence number" ) );
             // sb.append( ", source data type=" + sqlTypeToString(
             // columnInformation.getShort( "SOURCE_DATA_TYPE" ) ) );
-            columnDescription.add(sb.toString());
+            if (this.dbConnection instanceof DbConnPostgreSQL) {
+                if (columns == null) {
+                    columns = new HashMap<String, String>();
+                }
+                columns.put(columnName, sb.toString());
+            } else {
+                columnDescription.add(sb.toString());
+            }
         }
+
+        if (columns != null) {
+            List<String> sortedKeySet = new ArrayList<>(columns.keySet());
+            Collections.sort(sortedKeySet);
+            for (String key : sortedKeySet) {
+                columnDescription.add(columns.get(key));
+            }
+        }
+
     }
 
     protected abstract Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,

@@ -55,6 +55,9 @@ import com.axway.ats.environment.database.model.DbTable;
 
 class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
+    // The MAX value for a binary column that will not fail an INSERT statement 
+    private static final int MAX_BINARY_COLUMN_INSERT_LENGTH = 4000;
+
     // Class that contains table constraint creation and enable statements
     // Currently only foreign key is taken into consideration
     class TableConstraints {
@@ -84,9 +87,9 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
     @Override
     protected List<ColumnDescription> getColumnsToSelect(
-                                                          DbTable table,
-                                                          String userName ) throws DbException,
-                                                                            ColumnHasNoDefaultValueException {
+            DbTable table,
+            String userName ) throws DbException,
+                                     ColumnHasNoDefaultValueException {
 
         // TODO Implementation might be replaced with JDBC DatabaseMetaData.getColumns() but should be verified
         // with default column values
@@ -120,7 +123,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             if (!table.getColumnsToExclude().contains(columnName)) {
 
                 ColumnDescription colDescription = new OracleColumnDescription(columnName,
-                                                                               (String) columnMetaData.get("DATA_TYPE"));
+                                                                               (String) columnMetaData.get(
+                                                                                       "DATA_TYPE"));
 
                 columnsToSelect.add(colDescription);
             } else {
@@ -137,10 +141,10 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
     @Override
     protected void writeTableToFile(
-                                     List<ColumnDescription> columns,
-                                     DbTable table,
-                                     DbRecordValuesList[] records,
-                                     Writer fileWriter ) throws IOException, ParseException {
+            List<ColumnDescription> columns,
+            DbTable table,
+            DbRecordValuesList[] records,
+            Writer fileWriter ) throws IOException, ParseException {
 
         // TODO : exclusive table locks START
 
@@ -235,10 +239,39 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                         // extract the value depending on the column type
                         String fieldValue = extractValue(column, (String) recordValue.getValue()).toString();
 
-                        if (column.isTypeBinary()) {
+                        if (column.isTypeBinary()) { // BLOB, CLOB, NCLOB
                             String varName = VAR_PREFIX + (variableIndex++);
+                            String origValue = ((String) recordValue.getValue());
+                            long length = origValue.length();
                             stmtBlockBuilder.append(INDENTATION + varName + " := " + fieldValue + ";"
                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
+                                                    + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            String binaryMethod = "to_" + column.getType().toLowerCase();
+                            if (length > MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                                int currentBinaryIdx = 0;
+                                while (currentBinaryIdx <= length) {
+                                    if (currentBinaryIdx + MAX_BINARY_COLUMN_INSERT_LENGTH <= length) {
+                                        stmtBlockBuilder.append(INDENTATION + "dbms_lob.append(" + varName + ","
+                                                                + binaryMethod + "('"
+                                                                + origValue.substring(currentBinaryIdx,
+                                                                                      currentBinaryIdx
+                                                                                      + MAX_BINARY_COLUMN_INSERT_LENGTH)
+                                                                + "'));" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                                        currentBinaryIdx += MAX_BINARY_COLUMN_INSERT_LENGTH;
+                                    } else {
+                                        stmtBlockBuilder.append(INDENTATION + "dbms_lob.append(" + varName + ","
+                                                                + binaryMethod + "('"
+                                                                + origValue.substring(currentBinaryIdx,
+                                                                                      (int) (currentBinaryIdx
+                                                                                             + (length
+                                                                                                - currentBinaryIdx)))
+                                                                + "'));" + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                                        // safely break the loop here
+                                        break;
+                                    }
+                                }
+                            }
                             insertStatement.append(varName);
                         } else {
                             insertStatement.append(fieldValue);
@@ -368,7 +401,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     private boolean containsBinaryTypes(
-                                         List<ColumnDescription> columns ) {
+            List<ColumnDescription> columns ) {
 
         for (ColumnDescription column : columns) {
             if (column.isTypeBinary()) {
@@ -390,45 +423,75 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
         return "";
     }
 
-    // extracts the specific value, considering it's type and the specifics associated with it
-    private StringBuilder extractValue(
-                                        ColumnDescription column,
-                                        String fieldValue ) throws ParseException {
+    /**
+     * Extracts the specific value for INSERT statement, considering it's type and the specifics associated with it
+     * If value is too big for one-time get then initial/default value is returned. And later it is accumulated with
+     *  more statements.
+     *  Specific cases: DATE types will be extracted as to_date(<STRING_REPRESENTATION_OF_THE_SQL_VALUE>).
+     *  The same is true for TIMESTAMP (only the function to_timestamp is used).
+     *  BLOB/CLOB/NCLOB can be returned as: to_blob|clob|nclob or empty_blob|clob if their value is more than 4k characters long.
+     */
+    private StringBuilder extractValue( ColumnDescription column, String fieldValue ) throws ParseException {
 
         if (fieldValue == null) {
             return new StringBuilder("NULL");
         }
 
-        StringBuilder insertStatement = new StringBuilder();
+        StringBuilder exportedValueForAssignment = new StringBuilder();
 
         String typeInUpperCase = column.getType().toUpperCase();
         if ("DATE".equals(typeInUpperCase)) {
             SimpleDateFormat inputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.0");
             SimpleDateFormat outputDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-            insertStatement.append("to_date('");
-            insertStatement.append(outputDateFormat.format(inputDateFormat.parse(fieldValue)));
-            insertStatement.append("','YYYY-MM-DD hh24:mi:ss')");
+            exportedValueForAssignment.append("to_date('");
+            exportedValueForAssignment.append(outputDateFormat.format(inputDateFormat.parse(fieldValue)));
+            exportedValueForAssignment.append("','YYYY-MM-DD hh24:mi:ss')");
 
         } else if (typeInUpperCase.startsWith("TIMESTAMP")) {
-            insertStatement.append("to_timestamp('");
-            insertStatement.append(fieldValue);
-            insertStatement.append("','YYYY-MM-DD hh24:mi:ss.FF')");
+            exportedValueForAssignment.append("to_timestamp('");
+            exportedValueForAssignment.append(fieldValue);
+            exportedValueForAssignment.append("','YYYY-MM-DD hh24:mi:ss.FF')");
         } else if ("BLOB".equals(typeInUpperCase)) {
-            insertStatement.append("to_blob('");
-            insertStatement.append(fieldValue);
-            insertStatement.append("')");
+            //Get the binary type length
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                exportedValueForAssignment.append("to_blob('");
+                exportedValueForAssignment.append(fieldValue);
+                exportedValueForAssignment.append("')");
+            } else {
+                // just create empty blob, which will be populated later via append
+                exportedValueForAssignment.append("empty_blob()");
+            }
+
         } else if ("CLOB".equals(typeInUpperCase)) {
-            insertStatement.append("to_clob('");
-            insertStatement.append(fieldValue.replace("'", "''"));
-            insertStatement.append("')");
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                exportedValueForAssignment.append("to_clob('");
+                exportedValueForAssignment.append(fieldValue.replace("'", "''"));
+                exportedValueForAssignment.append("')");
+            } else {
+                // just create empty clob, which will be populated later via append
+                exportedValueForAssignment.append("empty_clob()");
+            }
+        } else if ("NCLOB".equals(typeInUpperCase)) {
+            long length = fieldValue.length();
+            if (length <= MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                exportedValueForAssignment.append("to_nclob('");
+                exportedValueForAssignment.append(fieldValue.replace("'", "''"));
+                exportedValueForAssignment.append("')");
+            } else {
+                // just create empty nclob, which will be populated later via append
+                // Note that, yes, use empty_clob(), not empty_nclob(), since the later does not exist
+                exportedValueForAssignment.append("empty_clob()");
+            }
         } else {
-            insertStatement.append("'");
-            insertStatement.append(fieldValue.replace("'", "''"));
-            insertStatement.append("'");
+            exportedValueForAssignment.append("'");
+            exportedValueForAssignment.append(fieldValue.replace("'", "''"));
+            exportedValueForAssignment.append("'");
         }
 
-        return insertStatement;
+        return exportedValueForAssignment;
     }
 
     /**
@@ -668,8 +731,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                 }
             } catch (SQLException e) {
                 throw new DbException(
-                                      "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                      + e.getMessage(), e);
+                        "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                        + e.getMessage(), e);
             } finally {
                 DbUtils.closeStatement(stmnt);
             }
@@ -699,8 +762,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             }
         } catch (SQLException e) {
             throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                  + e.getMessage(), e);
+                    "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                    + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
         }
@@ -745,8 +808,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             return tableForeignKey;
         } catch (SQLException e) {
             throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                  + e.getMessage(), e);
+                    "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                    + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
         }
@@ -772,8 +835,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             return createTableScript;
         } catch (SQLException e) {
             throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                  + e.getMessage(), e);
+                    "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                    + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
         }
@@ -800,8 +863,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             return createTableScript;
         } catch (SQLException e) {
             throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                  + e.getMessage(), e);
+                    "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                    + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
         }
@@ -818,8 +881,8 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
             stmnt.executeUpdate();
         } catch (SQLException e) {
             throw new DbException(
-                                  "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                  + e.getMessage(), e);
+                    "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                    + e.getMessage(), e);
         } finally {
             DbUtils.closeStatement(stmnt);
         }

@@ -1,6 +1,7 @@
 #!/bin/sh
 
 # (Optional) Java and JVM runtime options
+#Example : export JAVA_OPTS="$JAVA_OPTS -Dmy.prop1=ABC -Dmy.prop2=CBA"
 JAVA_OPTS="$JAVA_OPTS"
 # the Agent port
 PORT=8089
@@ -254,7 +255,7 @@ agent_version() {
 }
 
 cd "$SCRIPTPATH"
-mkdir -p -m 777 logs
+mkdir -p -m 775 logs
 
 case $COMMAND in
     'start')
