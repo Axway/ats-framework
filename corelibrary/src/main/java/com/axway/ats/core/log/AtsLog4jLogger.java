@@ -18,6 +18,7 @@ package com.axway.ats.core.log;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 
 /**
  * Logger sending messages through Log4j
@@ -51,7 +52,9 @@ public class AtsLog4jLogger extends AbstractAtsLogger {
     public void setLevel(
                           String level ) {
 
-        log.setLevel(Level.toLevel(level));
+        Configurator.setLevel(log.getName(), Level.toLevel(level));
+        // or this ? -> Configurator.setAllLevels(log.getName(), Level.toLevel(level));
+        //log.setLevel(Level.toLevel(level));
     }
 
     @Override

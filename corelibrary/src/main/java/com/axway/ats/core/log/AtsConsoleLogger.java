@@ -34,16 +34,16 @@ public class AtsConsoleLogger {
      * Current level of the logger. Used for alternative logging when there is ATS Log4J blocking event like StartRun.
      * If it is null, the LogManager.getRootLogger().getLevel() value is used
      * */
-    private static      Level  level                      = null;
+    private static Level       level                      = null;
 
-    private Class<?> callingClass;
+    private Class<?>           callingClass;
 
-    private String[] classNameTokens;
-    private String   classNamePrefix; // one-time calculated class location prefix
+    private String[]           classNameTokens;
+    private String             classNamePrefix;                                 // one-time calculated class location prefix
 
-    private StringBuilder sb = new StringBuilder();
+    private StringBuilder      sb                         = new StringBuilder();
 
-    private Logger logger;
+    private Logger             logger;
 
     /**
      * Construct new AtsConsoleLogger
@@ -173,9 +173,9 @@ public class AtsConsoleLogger {
     private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
-            return Level.toLevel(level).isGreaterOrEqual(AtsConsoleLogger.level);
+            return Level.toLevel(level).isMoreSpecificThan(AtsConsoleLogger.level);
         } else {
-            return LogManager.getRootLogger().isEnabledFor(Level.toLevel(level));
+            return LogManager.getRootLogger().getLevel().isMoreSpecificThan(Level.toLevel(level));
         }
 
     }

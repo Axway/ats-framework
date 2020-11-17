@@ -192,6 +192,10 @@
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
                 </exclusion>
+                <exclusion>
+                	<groupId>log4j</groupId>
+                	<artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
