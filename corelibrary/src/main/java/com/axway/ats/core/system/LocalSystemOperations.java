@@ -38,13 +38,18 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.FileAppender;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter.Result;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.AbstractAppender;
+import org.apache.logging.log4j.core.appender.FileAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;
@@ -315,19 +320,27 @@ public class LocalSystemOperations implements ISystemOperations {
 
     public void setAtsDbAppenderThreshold( Level threshold ) {
 
-        Logger rootLogger = LogManager.getRootLogger();
-        Enumeration<Appender> appenders = rootLogger.getAllAppenders();
-        while (appenders.hasMoreElements()) {
-            Appender appender = appenders.nextElement();
-            if (appender != null) {
-                if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
-                    ((AppenderSkeleton) appender).setThreshold(threshold);
-                }
-                if (appender.getClass().getName().equals("com.axway.ats.log.appenders.PassiveDbAppender")) {
-                    String callerId = ThreadsPerCaller.getCaller();
-                    String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller", true);
-                    if (callerId != null && callerId.equals(passiveDbAppenderCaller)) {
-                        ((AppenderSkeleton) appender).setThreshold(threshold);
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        Map<String, Appender> appenders = config.getAppenders();
+        if (appenders != null && appenders.size() > 0) {
+            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
+                Appender appender = entry.getValue();
+                if (appender != null) {
+                    if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
+                        //((AppenderSkeleton) appender).setThreshold(threshold);
+                        ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold, Result.ACCEPT,
+                                                                                             Result.DENY));
+                    }
+                    if (appender.getClass().getName().equals("com.axway.ats.log.appenders.PassiveDbAppender")) {
+                        String callerId = ThreadsPerCaller.getCaller();
+                        String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller",
+                                                                                                true);
+                        if (callerId != null && callerId.equals(passiveDbAppenderCaller)) {
+                            ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold,
+                                                                                                 Result.ACCEPT,
+                                                                                                 Result.DENY));
+                        }
                     }
                 }
             }
@@ -337,8 +350,17 @@ public class LocalSystemOperations implements ISystemOperations {
     public void attachFileAppender( String filepath, String messageFormatPattern ) {
 
         try {
+            // rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
             Logger rootLogger = LogManager.getRootLogger();
-            rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
+            PatternLayout patternLayout = PatternLayout.newBuilder().withPattern(messageFormatPattern).build();
+            FileAppender fileAppender = FileAppender.newBuilder().setLayout(patternLayout).withFileName(filepath).build();
+            final LoggerContext context = LoggerContext.getContext(false);
+            final Configuration config = context.getConfiguration();
+            // fileAppender.start(); Is this needed?!?
+            config.addAppender(fileAppender);
+            // context.getRootLogger().addAppender(config.getAppender(fa.getName())); Is this needed?!?
+            // context.updateLoggers(); Is this needed?!?
+
         } catch (Exception e) {
             throw new RuntimeException("Could not attach file appender '" + filepath + "'", e);
         }

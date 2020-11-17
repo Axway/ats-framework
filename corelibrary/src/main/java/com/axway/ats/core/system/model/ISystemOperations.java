@@ -16,7 +16,7 @@
 package com.axway.ats.core.system.model;
 
 import org.apache.logging.log4j.Level;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;
