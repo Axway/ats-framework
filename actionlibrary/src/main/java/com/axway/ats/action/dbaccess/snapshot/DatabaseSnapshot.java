@@ -25,7 +25,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,7 +53,7 @@ import com.axway.ats.harness.config.TestBox;
  */
 public class DatabaseSnapshot {
 
-    private static Logger            log                         = Logger.getLogger(DatabaseSnapshot.class);
+    private static Logger            log                         = LogManager.getLogger(DatabaseSnapshot.class);
 
     // the snapshot name
     String                           name;

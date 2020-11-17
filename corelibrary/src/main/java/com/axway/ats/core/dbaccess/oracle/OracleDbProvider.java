@@ -26,7 +26,8 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.DbColumn;
@@ -58,7 +59,7 @@ public class OracleDbProvider extends AbstractDbProvider {
         public static final String PARTITIONED           = "PARTITIONED";
     }
 
-    private static final Logger log = Logger.getLogger(OracleDbProvider.class);
+    private static final Logger log = LogManager.getLogger(OracleDbProvider.class);
 
     /**
      * Constructor to create authenticated connection to a database.

@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.monitoring.MonitoringException;
 
@@ -30,7 +31,7 @@ import com.axway.ats.core.monitoring.MonitoringException;
  */
 public class MonitoringContext {
 
-    private static final Logger log = Logger.getLogger(MonitoringContext.class);
+    private static final Logger log = LogManager.getLogger(MonitoringContext.class);
 
     // the singleton instance
     private static MonitoringContext instance;

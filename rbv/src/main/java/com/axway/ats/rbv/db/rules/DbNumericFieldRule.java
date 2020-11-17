@@ -15,7 +15,8 @@
  */
 package com.axway.ats.rbv.db.rules;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.db.DbMetaData;
@@ -24,7 +25,7 @@ import com.axway.ats.rbv.model.RbvException;
 
 public class DbNumericFieldRule extends DbFieldsRule {
 
-    private static final Logger log = Logger.getLogger(DbNumericFieldRule.class);
+    private static final Logger log = LogManager.getLogger(DbNumericFieldRule.class);
 
     public DbNumericFieldRule( String tableName,
                                String fieldName,

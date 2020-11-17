@@ -24,7 +24,8 @@ import java.util.logging.Level;
 import io.appium.java_client.remote.AutomationName;
 import io.appium.java_client.remote.IOSMobileCapabilityType;
 import io.appium.java_client.remote.MobileCapabilityType;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -52,7 +53,7 @@ import io.appium.java_client.ios.IOSDriver;
 @PublicAtsApi
 public class MobileDriver extends UiDriver {
 
-    private static final Logger log = Logger.getLogger(MobileDriver.class);
+    private static final Logger log = LogManager.getLogger(MobileDriver.class);
 
     @PublicAtsApi
     public static final String DEVICE_ANDROID_EMULATOR = "Android Emulator";

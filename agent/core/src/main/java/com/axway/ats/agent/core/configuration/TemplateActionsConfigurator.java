@@ -19,7 +19,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
@@ -31,7 +32,7 @@ public class TemplateActionsConfigurator implements Configurator {
 
     private static final long   serialVersionUID                        = 1L;
 
-    private static final Logger log                                     = Logger.getLogger(TemplateActionsConfigurator.class);
+    private static final Logger log                                     = LogManager.getLogger(TemplateActionsConfigurator.class);
 
     private static final String SETTINGS_FILENAME                       = "ats.agent.properties";
 

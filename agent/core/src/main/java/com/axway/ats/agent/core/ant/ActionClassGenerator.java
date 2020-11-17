@@ -35,7 +35,8 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.tools.ant.BuildException;
 import org.xml.sax.SAXException;
@@ -57,7 +58,7 @@ class ActionClassGenerator {
         BasicConfigurator.configure(new ConsoleAppender(layout));
     }
 
-    private static final Logger               log            = Logger.getLogger(ActionClassGenerator.class);
+    private static final Logger               log            = LogManager.getLogger(ActionClassGenerator.class);
 
     private final static String               LINE_SEPARATOR = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 

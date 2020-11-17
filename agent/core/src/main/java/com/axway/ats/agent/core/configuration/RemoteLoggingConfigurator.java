@@ -22,8 +22,9 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Category;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
@@ -71,7 +72,7 @@ public class RemoteLoggingConfigurator implements Configurator {
          */
 
         // look for the DB appender
-        Category log = Logger.getLogger("com.axway.ats");
+        Category log = LogManager.getLogger("com.axway.ats");
         boolean dbAppenderIsProcessed = false;
         while (log != null && !dbAppenderIsProcessed) {
 
@@ -127,7 +128,7 @@ public class RemoteLoggingConfigurator implements Configurator {
         }
 
         // look for any user loggers
-        Enumeration<Logger> allLoggers = Logger.getRootLogger().getLoggerRepository().getCurrentLoggers();
+        Enumeration<Logger> allLoggers = LogManager.getRootLogger().getLoggerRepository().getCurrentLoggers();
         while (allLoggers.hasMoreElements()) {
             Logger logger = allLoggers.nextElement();
 
@@ -150,7 +151,7 @@ public class RemoteLoggingConfigurator implements Configurator {
         if (needsToConfigureDbAppender) {
             //first get all appenders in the root category and apply the filter
             //which will deny logging of system events
-            Logger rootLogger = Logger.getRootLogger();
+            Logger rootLogger = LogManager.getRootLogger();
             Enumeration<Appender> appenders = rootLogger.getAllAppenders();
             while (appenders.hasMoreElements()) {
                 Appender appender = appenders.nextElement();
@@ -163,9 +164,9 @@ public class RemoteLoggingConfigurator implements Configurator {
             //attach the appender to the logging system
             Category log;
             if ("root".equals(appenderLogger)) {
-                log = Logger.getRootLogger();
+                log = LogManager.getRootLogger();
             } else {
-                log = Logger.getLogger(appenderLogger);
+                log = LogManager.getLogger(appenderLogger);
             }
 
             log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
@@ -190,7 +191,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                  * not as the next code will obtain it(in case logger exists) or will create it 
                  * and then will set its level
                  */
-                Logger.getLogger(userLogger.getKey())
+                LogManager.getLogger(userLogger.getKey())
                       .setLevel(Level.toLevel(userLogger.getValue()));
             }
         }
@@ -218,7 +219,7 @@ public class RemoteLoggingConfigurator implements Configurator {
 
         needsToConfigureUserLoggers = false;
         for (Entry<String, Integer> userLogger : otherLoggerLevels.entrySet()) {
-            Enumeration<Logger> allLoggers = Logger.getRootLogger().getLoggerRepository().getCurrentLoggers();
+            Enumeration<Logger> allLoggers = LogManager.getRootLogger().getLoggerRepository().getCurrentLoggers();
 
             boolean loggerAlreadyExists = false;
             boolean loggerLevelIsDifferent = false;
@@ -269,7 +270,7 @@ public class RemoteLoggingConfigurator implements Configurator {
             // there is a DB appender and it is out-of-date
 
             //remove the filter which will deny logging of system events
-            Logger rootLogger = Logger.getRootLogger();
+            Logger rootLogger = LogManager.getRootLogger();
             Enumeration<Appender> appenders = rootLogger.getAllAppenders();
             while (appenders.hasMoreElements()) {
                 Appender appender = appenders.nextElement();
@@ -283,9 +284,9 @@ public class RemoteLoggingConfigurator implements Configurator {
 
             Category log;
             if ("root".equals(appenderLogger)) {
-                log = Logger.getRootLogger();
+                log = LogManager.getRootLogger();
             } else {
-                log = Logger.getLogger(appenderLogger);
+                log = LogManager.getLogger(appenderLogger);
             }
 
             Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());

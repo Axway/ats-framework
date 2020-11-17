@@ -21,7 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.jvmmonitor.AtsJvmMonitor;
 import com.axway.ats.agent.core.monitoring.systemmonitor.AtsSystemMonitor;
@@ -41,12 +42,12 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
-    private static Logger            log                         = Logger.getLogger(AtsSystemMonitoringAgent.class);
+    private static Logger            log                         = LogManager.getLogger(AtsSystemMonitoringAgent.class);
 
     /*
      * Skip checking in db appender is attached, because we are on the agent and not the executor.
      * */
-    private static AtsDbLogger       dblog                       = AtsDbLogger.getLogger(AtsSystemMonitoringAgent.class.getName(), true);
+    private static AtsDbLogger       dblog                       = AtsDbLogManager.getLogger(AtsSystemMonitoringAgent.class.getName(), true);
 
     private static final int         MAX_LENGTH_STATISTIC_IDS    = 950;
     private static final int         MAX_LENGTH_STATISTIC_VALUES = 7950;
@@ -165,7 +166,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
     class MonitoringThread extends Thread {
 
-        private Logger                  log = Logger.getLogger(MonitoringThread.class);
+        private Logger                  log = LogManager.getLogger(MonitoringThread.class);
 
         private final int               pollInterval;
         private long                    executorTimeOffset;

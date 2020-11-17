@@ -21,7 +21,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.action.ActionMethod;
 import com.axway.ats.agent.core.action.ActionMethodContainer;
@@ -45,7 +46,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class ComponentActionMap {
 
-    private static final Logger                        log = Logger.getLogger(ComponentActionMap.class);
+    private static final Logger                        log = LogManager.getLogger(ComponentActionMap.class);
 
     private String                                     componentName;
     private Class<? extends InitializationHandler>     initializationHandler;

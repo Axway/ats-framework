@@ -18,14 +18,15 @@ package com.axway.ats.core.filetransfer.model.ftp;
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.commons.net.ftp.FTPCmd;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 
 public class SynchronizationFtpTransferListener implements ProtocolCommandListener, TransferListener {
 
-    private static final Logger       log                 = Logger.getLogger(SynchronizationFtpTransferListener.class);
+    private static final Logger       log                 = LogManager.getLogger(SynchronizationFtpTransferListener.class);
 
     /**
      * The consequent progress event on which the transfer will pause

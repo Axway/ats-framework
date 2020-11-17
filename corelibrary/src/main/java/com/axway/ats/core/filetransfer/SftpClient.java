@@ -40,7 +40,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.commons.net.util.Base64;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
@@ -75,7 +76,7 @@ public class SftpClient extends AbstractFileTransferClient {
     private SftpFileTransferProgressMonitor     debugProgressMonitor                = null;
     private SynchronizationSftpTransferListener synchronizationSftpTransferListener = null;
 
-    private static final Logger                 log                                 = Logger.getLogger( SftpClient.class );
+    private static final Logger                 log                                 = LogManager.getLogger( SftpClient.class );
 
     private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
 

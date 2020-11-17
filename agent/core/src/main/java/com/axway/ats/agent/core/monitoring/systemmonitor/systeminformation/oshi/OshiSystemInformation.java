@@ -21,7 +21,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IDiskUsage;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IFileSystem;
@@ -64,7 +65,7 @@ public class OshiSystemInformation implements ISystemInformation {
      * */
     public static final String      PROCESS_USE_CACHED_PIDS = "oshi.process.use.cached.pids";
 
-    private static final Logger     log                     = Logger.getLogger(OshiSystemInformation.class);
+    private static final Logger     log                     = LogManager.getLogger(OshiSystemInformation.class);
 
     private SystemInfo              systemInfo              = null;
     public HardwareAbstractionLayer hal                     = null;

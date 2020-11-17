@@ -20,7 +20,8 @@ import java.util.List;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -104,7 +105,7 @@ public class AtsDbLogger {
     @PublicAtsApi
     public static synchronized AtsDbLogger getLogger( String name ) {
 
-        return new AtsDbLogger(Logger.getLogger(name), false);
+        return new AtsDbLogger(LogManager.getLogger(name), false);
     }
 
     @PublicAtsApi
@@ -123,7 +124,7 @@ public class AtsDbLogger {
     public static synchronized AtsDbLogger getLogger(
                                                       String name, boolean skipAppenderCheck ) {
 
-        return new AtsDbLogger(Logger.getLogger(name), skipAppenderCheck);
+        return new AtsDbLogger(LogManager.getLogger(name), skipAppenderCheck);
     }
 
     /**
@@ -875,7 +876,7 @@ public class AtsDbLogger {
 
         GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
 
-        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+        Enumeration<Appender> appenders = LogManager.getRootLogger().getAllAppenders();
         while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
 

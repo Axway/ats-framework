@@ -36,7 +36,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.system.OperatingSystemType;
 
@@ -45,7 +46,7 @@ import com.axway.ats.common.system.OperatingSystemType;
  */
 public class ClasspathUtils {
 
-    private static final Logger       log              = Logger.getLogger(ClasspathUtils.class);
+    private static final Logger       log              = LogManager.getLogger(ClasspathUtils.class);
 
     /**
      * A map containing all jars found in the classpath: <jar simple name, <list

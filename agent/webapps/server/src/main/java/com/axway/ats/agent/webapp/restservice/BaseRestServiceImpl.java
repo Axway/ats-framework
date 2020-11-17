@@ -35,7 +35,7 @@ public class BaseRestServiceImpl {
     */
 
     /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
-    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
+    private AtsDbLogger                       dbLog    = AtsDbLogManager.getLogger(BaseRestServiceImpl.class.getName(),
                                                                                true);
 
     public static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());

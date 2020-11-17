@@ -15,7 +15,8 @@
  */
 package com.axway.ats.action.filetransfer;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.http.FileTransferHttpClient;
 import com.axway.ats.common.filetransfer.FileTransferException;
@@ -31,7 +32,7 @@ import com.axway.ats.core.filetransfer.model.IFileTransferClient;
  */
 public class ClientFactory {
 
-    private static Logger        log     = Logger.getLogger( ClientFactory.class );
+    private static Logger        log     = LogManager.getLogger( ClientFactory.class );
 
     private static ClientFactory factory = null;
 

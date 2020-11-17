@@ -21,7 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
 import com.axway.ats.common.performance.monitor.PerformanceMonitor;
@@ -34,7 +35,7 @@ import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
  */
 public class AtsSystemMonitor extends PerformanceMonitor {
 
-    private static final Logger                   log                           = Logger.getLogger(AtsSystemMonitor.class);
+    private static final Logger                   log                           = LogManager.getLogger(AtsSystemMonitor.class);
 
     private ISystemInformation                    systemInfo;
 

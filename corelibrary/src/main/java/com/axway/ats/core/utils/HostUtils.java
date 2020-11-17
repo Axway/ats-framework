@@ -27,8 +27,9 @@ import java.net.UnknownHostException;
 import java.util.*;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
@@ -37,7 +38,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class HostUtils {
 
-    private static final Logger log = Logger.getLogger(HostUtils.class);
+    private static final Logger log = LogManager.getLogger(HostUtils.class);
 
     public static final String LOCAL_HOST_NAME     = "localhost";
     public static final String LOCAL_HOST_IPv4     = "127.0.0.1";

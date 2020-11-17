@@ -18,7 +18,8 @@ package com.axway.ats.uiengine;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Cookie;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -38,7 +39,7 @@ import com.axway.ats.core.utils.IoUtils;
 @Deprecated
 public class PhantomJsDriver extends AbstractRealBrowserDriver {
 
-    private static Logger         log                        = Logger.getLogger(PhantomJsDriver.class);
+    private static Logger         log                        = LogManager.getLogger(PhantomJsDriver.class);
 
     /**
      * <pre>

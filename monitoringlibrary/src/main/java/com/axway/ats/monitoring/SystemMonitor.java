@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
@@ -49,7 +50,7 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class SystemMonitor {
 
-    private static final Logger log = Logger.getLogger(SystemMonitor.class);
+    private static final Logger log = LogManager.getLogger(SystemMonitor.class);
 
     /** All CPU related statistics */
     @PublicAtsApi

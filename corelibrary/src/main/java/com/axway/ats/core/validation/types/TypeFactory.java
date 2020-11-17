@@ -15,7 +15,8 @@
  */
 package com.axway.ats.core.validation.types;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.validation.ValidationType;
 
@@ -29,7 +30,7 @@ import com.axway.ats.core.validation.ValidationType;
  */
 public class TypeFactory {
     private static TypeFactory  factory            = null;
-    private static Logger       log                = Logger.getLogger(TypeFactory.class);
+    private static Logger       log                = LogManager.getLogger(TypeFactory.class);
     private static final String UNSUPPORTED_TYPE   = "The factory has encountered an unsupported validation type. ";
     private static final String ARGUMENTS_REQUIRED = "This validation type requires arguments to be passed. ";
 

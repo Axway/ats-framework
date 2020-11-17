@@ -19,7 +19,8 @@ package com.axway.ats.log.appenders;
 import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
@@ -161,7 +162,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public static PassiveDbAppender getCurrentInstance(
                                                         String caller ) {
 
-        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+        Enumeration<Appender> appenders = LogManager.getRootLogger().getAllAppenders();
         while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
 

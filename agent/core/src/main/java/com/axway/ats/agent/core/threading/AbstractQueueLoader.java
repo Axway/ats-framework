@@ -52,7 +52,7 @@ public abstract class AbstractQueueLoader implements QueueLoader {
                                                                NoCompatibleMethodFoundException {
 
         /** Skip check whether db appender is attached **/
-        this.log = AtsDbLogger.getLogger(this.getClass().getName(), true);
+        this.log = AtsDbLogManager.getLogger(this.getClass().getName(), true);
 
         this.queueName = queueName;
         this.startPattern = startPattern;

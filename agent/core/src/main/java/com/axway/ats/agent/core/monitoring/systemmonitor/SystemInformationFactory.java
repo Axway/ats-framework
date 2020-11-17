@@ -15,7 +15,8 @@
  */
 package com.axway.ats.agent.core.monitoring.systemmonitor;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.oshi.OshiSystemInformation;
@@ -27,7 +28,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  * */
 public class SystemInformationFactory {
 
-    private static final Logger LOG               = Logger.getLogger(SystemInformationFactory.class);
+    private static final Logger LOG               = LogManager.getLogger(SystemInformationFactory.class);
 
     public static final String  SIGAR_SYSTEM_INFO = SigarSystemInformation.class.getName();
     public static final String  OSHI_SYSTEM_INFO  = OshiSystemInformation.class.getName();

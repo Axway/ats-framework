@@ -15,7 +15,7 @@
  */
 package com.axway.ats.log.model;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 /**
  * This class adds one custom level to the log4j predefined levels

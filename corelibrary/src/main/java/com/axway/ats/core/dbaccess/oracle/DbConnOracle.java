@@ -23,7 +23,8 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
@@ -38,7 +39,7 @@ import oracle.jdbc.pool.OracleDataSource;
  */
 public class DbConnOracle extends DbConnection {
 
-    private static Logger       log              = Logger.getLogger(DbConnOracle.class);
+    private static Logger       log              = LogManager.getLogger(DbConnOracle.class);
 
     /**
      * Default DB protocol

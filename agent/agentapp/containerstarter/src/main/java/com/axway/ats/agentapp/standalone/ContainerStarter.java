@@ -34,8 +34,9 @@ import java.util.Map;
 
 import org.apache.log4j.DailyRollingFileAppender;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.jetty.server.Connector;
@@ -51,7 +52,7 @@ import com.axway.ats.agentapp.standalone.utils.ThreadUtils;
 
 public class ContainerStarter {
 
-    private static final Logger log                      = Logger.getLogger(ContainerStarter.class);
+    private static final Logger log                      = LogManager.getLogger(ContainerStarter.class);
     private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                // NOTE: on change sync with ATSSystemProperties
     private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                    // NOTE: on change sync with ATSSystemProperties
 
@@ -384,7 +385,7 @@ public class ContainerStarter {
         String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";
         PatternLayout layout = new PatternLayout("%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n");
 
-        Logger rootLogger = Logger.getRootLogger();
+        Logger rootLogger = LogManager.getRootLogger();
         FileAppender attachedAppender = null;
         if (pattern != null && !pattern.trim().isEmpty()) {
             pattern = pattern.trim().toLowerCase();
@@ -416,7 +417,7 @@ public class ContainerStarter {
         rootLogger.addAppender(attachedAppender);
 
         // adding filter for Jetty messages
-        Logger mortbayLogger = Logger.getLogger("org.mortbay");
+        Logger mortbayLogger = LogManager.getLogger("org.mortbay");
         mortbayLogger.setAdditivity(false);
         mortbayLogger.setLevel(Level.ERROR);
         mortbayLogger.addAppender(attachedAppender);

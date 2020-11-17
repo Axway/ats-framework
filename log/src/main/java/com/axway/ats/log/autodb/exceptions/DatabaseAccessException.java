@@ -17,7 +17,8 @@ package com.axway.ats.log.autodb.exceptions;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -25,7 +26,7 @@ import com.axway.ats.core.log.AtsConsoleLogger;
 @SuppressWarnings( "serial")
 public class DatabaseAccessException extends LoggingException {
 
-    private static final Logger           log        = Logger.getLogger(DatabaseAccessException.class);
+    private static final Logger           log        = LogManager.getLogger(DatabaseAccessException.class);
 
     private static final AtsConsoleLogger consoleLog = new AtsConsoleLogger(DatabaseAccessException.class);
 

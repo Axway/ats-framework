@@ -21,8 +21,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.dbaccess.DbKeys;
@@ -183,8 +184,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
-                    Level level = Logger.getRootLogger().getLevel();
-                    Logger.getRootLogger().setLevel(Level.OFF);
+                    Level level = LogManager.getRootLogger().getLevel();
+                    LogManager.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.setLevel(level);
 
@@ -197,7 +198,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                     //this event has already been through the queue
 
                     /*Revert Logger's level*/
-                    Logger.getRootLogger().setLevel(level);
+                    LogManager.getRootLogger().setLevel(level);
                     AtsConsoleLogger.setLevel(level);
 
                     return;
@@ -212,15 +213,15 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
-                    level = Logger.getRootLogger().getLevel();
-                    Logger.getRootLogger().setLevel(Level.OFF);
+                    level = LogManager.getRootLogger().getLevel();
+                    LogManager.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.setLevel(level);
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     /*Revert Logger's level*/
-                    Logger.getRootLogger().setLevel(level);
+                    LogManager.getRootLogger().setLevel(level);
                     AtsConsoleLogger.setLevel(level);
 
                     //this event has already been through the queue
@@ -431,7 +432,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public static ActiveDbAppender getCurrentInstance() {
 
         if (instance == null) {
-            Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+            Enumeration<Appender> appenders = LogManager.getRootLogger().getAllAppenders();
             while (appenders.hasMoreElements()) {
                 Appender appender = appenders.nextElement();
 

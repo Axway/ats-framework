@@ -15,7 +15,8 @@
  */
 package com.axway.ats.agent.core.ant.component.agenttest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.ant.component.agenttest.FirstActionClass;
 import com.axway.ats.agent.core.model.Action;
@@ -31,14 +32,14 @@ public class FirstActionClass {
     public void action1( @Parameter(name = "value") int value ) {
 
         ACTION_VALUE = value;
-        Logger.getLogger( FirstActionClass.class ).info( ( Object ) "Method action 1 has been executed" );
+        LogManager.getLogger( FirstActionClass.class ).info( ( Object ) "Method action 1 has been executed" );
     }
 
     @Action(name = "action array")
     public int action1( @Parameter(name = "value", validation = ValidationType.NUMBER_CONSTANT, args = { "VALID_CONSTANTS" }) int[] values ) {
 
         ACTION_VALUE = values[values.length - 1];
-        Logger.getLogger( FirstActionClass.class ).info( ( Object ) "Method action array has been executed" );
+        LogManager.getLogger( FirstActionClass.class ).info( ( Object ) "Method action array has been executed" );
         return ACTION_VALUE;
     }
 

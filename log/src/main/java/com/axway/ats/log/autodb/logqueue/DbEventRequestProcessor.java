@@ -30,8 +30,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.apache.log4j.spi.ThrowableInformation;
 
@@ -1230,7 +1231,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
     }
 
-    private int convertMsgLevel( org.apache.log4j.Level level ) {
+    private int convertMsgLevel( org.apache.logging.log4j.Level level ) {
 
         switch (level.toInt()) {
             case Level.FATAL_INT:

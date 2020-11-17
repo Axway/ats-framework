@@ -22,7 +22,8 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
@@ -45,7 +46,7 @@ import com.axway.ats.config.exceptions.NoSuchPropertyException;
 public class ConfigurationRepository {
 
     //the logger instance
-    private static final Logger                  log = Logger.getLogger(ConfigurationRepository.class);
+    private static final Logger                  log = LogManager.getLogger(ConfigurationRepository.class);
 
     //the singleton instance
     private static final ConfigurationRepository instance;

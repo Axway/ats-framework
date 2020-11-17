@@ -15,7 +15,8 @@
  */
 package com.axway.ats.core.filetransfer.model.ftp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
@@ -27,7 +28,7 @@ import com.jcraft.jsch.SftpProgressMonitor;
  */
 public class SynchronizationSftpTransferListener implements SftpProgressMonitor, TransferListener {
 
-    private static final Logger       log                 = Logger.getLogger(SynchronizationSftpTransferListener.class);
+    private static final Logger       log                 = LogManager.getLogger(SynchronizationSftpTransferListener.class);
 
     /**
      * The consequent progress event on which the transfer will pause

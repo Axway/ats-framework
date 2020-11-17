@@ -20,7 +20,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.log4j.Priority;
 
 import com.axway.ats.common.dbaccess.DbKeys;

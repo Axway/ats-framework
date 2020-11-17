@@ -19,7 +19,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * This singleton instance keeps all the additional actions that are pending after restoring 
@@ -31,7 +32,7 @@ import org.apache.log4j.Logger;
  */
 public class AdditionalActionsQueue {
 
-    private static final Logger           log = Logger.getLogger(AdditionalActionsQueue.class);
+    private static final Logger           log = LogManager.getLogger(AdditionalActionsQueue.class);
 
     private static AdditionalActionsQueue instance;
 

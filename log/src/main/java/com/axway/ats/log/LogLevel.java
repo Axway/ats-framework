@@ -15,7 +15,7 @@
  */
 package com.axway.ats.log;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 import com.axway.ats.common.PublicAtsApi;
 

@@ -29,7 +29,8 @@ import javax.security.auth.login.LoginContext;
 import javax.security.auth.login.LoginException;
 
 import org.apache.commons.io.HexDump;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.ietf.jgss.GSSContext;
 import org.ietf.jgss.GSSException;
 
@@ -46,7 +47,7 @@ public class GssClient {
     // and all service tickets in its private credentials cache.    
     protected Subject           subject;
 
-    private static final Logger log = Logger.getLogger(GssClient.class);
+    private static final Logger log = LogManager.getLogger(GssClient.class);
 
     public GssClient( String clientPrincipalName, String clientPrincipalPassword, File keytab,
                       File krb5ConfFile ) {

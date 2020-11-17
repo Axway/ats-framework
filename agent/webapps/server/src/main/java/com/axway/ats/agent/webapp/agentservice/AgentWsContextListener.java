@@ -22,7 +22,8 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.MainComponentLoader;
 import com.axway.ats.agent.core.configuration.AgentConfigurator;
@@ -37,7 +38,7 @@ import com.axway.ats.core.utils.ClasspathUtils;
  */
 public class AgentWsContextListener implements ServletContextListener {
 
-    private static final Logger log = Logger.getLogger(AgentWsContextListener.class);
+    private static final Logger log = LogManager.getLogger(AgentWsContextListener.class);
 
     /*
      * (non-Javadoc)

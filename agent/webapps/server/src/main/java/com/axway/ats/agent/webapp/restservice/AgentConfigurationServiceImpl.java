@@ -30,8 +30,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Category;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.apache.log4j.Priority;
 
@@ -58,7 +59,7 @@ import com.axway.ats.log.autodb.TestCaseState;
 public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
     /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
-    protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName(), true);
+    protected AtsDbLogger     dbLog                 = AtsDbLogManager.getLogger(AgentConfigurationServiceImpl.class.getName(), true);
 
     private static int        lastRunId             = -1;
 
@@ -110,7 +111,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                      */
                     dbLog.debug("Remove previously attached PassiveDbAppender for caller '" + caller
                                 + "'.");
-                    Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
+                    LogManager.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
                     attachPassiveDbAppender(newAppenderConfiguration, dbConnectionPojo.getTimestamp());
                     dbLog.debug("Successfully attached new PassiveDbAppender for caller '" + caller + "'.");
                 }
@@ -144,7 +145,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         final String caller = getCaller(request, basePojo, false);
         ThreadsPerCaller.registerThread(caller);
         try {
-            Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
+            LogManager.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -312,7 +313,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         attachedAppender.activateOptions();
 
         // attach the appender to the logging system
-        Category log = Logger.getRootLogger();
+        Category log = LogManager.getRootLogger();
 
         log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
         log.addAppender(attachedAppender);

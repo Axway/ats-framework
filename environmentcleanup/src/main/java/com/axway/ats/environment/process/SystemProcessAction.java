@@ -15,7 +15,8 @@
  */
 package com.axway.ats.environment.process;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.process.LocalProcessExecutor;
@@ -26,7 +27,7 @@ import com.axway.ats.environment.EnvironmentCleanupException;
 @PublicAtsApi
 public class SystemProcessAction extends AdditionalAction {
 
-    private static final Logger log = Logger.getLogger(SystemProcessAction.class);
+    private static final Logger log = LogManager.getLogger(SystemProcessAction.class);
 
     private String              shellCommand;
 

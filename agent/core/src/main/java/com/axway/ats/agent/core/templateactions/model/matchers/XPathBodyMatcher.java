@@ -17,7 +17,8 @@ package com.axway.ats.agent.core.templateactions.model.matchers;
 
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Node;
 
 import com.axway.ats.agent.core.templateactions.exceptions.InvalidMatcherException;
@@ -26,7 +27,7 @@ import com.axway.ats.agent.core.templateactions.model.matchers.mode.TemplateBody
 
 public class XPathBodyMatcher extends ResponseMatcher {
 
-    private static final Logger       log              = Logger.getLogger(XPathBodyMatcher.class);
+    private static final Logger       log              = LogManager.getLogger(XPathBodyMatcher.class);
 
     private static final long         serialVersionUID = 1;
 

@@ -19,7 +19,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.objects.MimePackage;
 import com.axway.ats.action.objects.model.NoSuchMimePartException;
@@ -31,7 +32,7 @@ import com.axway.ats.rbv.rules.AbstractRule;
 
 public class MimePartRule extends AbstractRule {
 
-    private static Logger log = Logger.getLogger(MimePartRule.class);
+    private static Logger log = LogManager.getLogger(MimePartRule.class);
 
     private long          expectedChecksum;
     private int           partIndex;

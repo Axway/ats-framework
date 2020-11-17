@@ -37,7 +37,8 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.asn1.ASN1EncodableVector;
 import org.bouncycastle.asn1.ASN1ObjectIdentifier;
 import org.bouncycastle.asn1.cms.AttributeTable;
@@ -83,7 +84,7 @@ import com.sun.mail.util.BASE64DecoderStream;
 
 public class SMimePackageEncryptor implements PackageEncryptor {
 
-    private static final Logger  LOG                           = Logger.getLogger(SMimePackageEncryptor.class);
+    private static final Logger  LOG                           = LogManager.getLogger(SMimePackageEncryptor.class);
 
     public static final String   CONTENT_TYPE_MULTIPART_SIGNED = "multipart/signed";
 

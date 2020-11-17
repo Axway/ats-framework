@@ -27,7 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.core.dbaccess.ColumnDescription;
@@ -50,7 +51,7 @@ import com.axway.ats.environment.database.model.RestoreHandler;
  */
 abstract class AbstractEnvironmentHandler implements BackupHandler, RestoreHandler {
 
-    private static final Logger    log                        = Logger.getLogger(AbstractEnvironmentHandler.class);
+    private static final Logger    log                        = LogManager.getLogger(AbstractEnvironmentHandler.class);
     protected static final String  ERROR_CREATING_BACKUP      = "Could not create backup in file ";
     protected static final String  ERROR_RESTORING_BACKUP     = "Could not restore backup from file ";
     private static final String    DAMAGED_BACKUP_FILE_SUFFIX = "_damaged";

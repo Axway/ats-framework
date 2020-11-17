@@ -52,7 +52,8 @@ import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -72,7 +73,7 @@ import com.axway.ats.core.utils.IoUtils;
  */
 public class HttpClient {
 
-    static final Logger         log                                     = Logger.getLogger(HttpClient.class);
+    static final Logger         log                                     = LogManager.getLogger(HttpClient.class);
     public static final Logger  logTimer                                = NetworkingStopWatch.logTimer;
     private static final String FORMAT_PROXY                            = "The Agent template proxy format is http://<host-or-IP>:<port>";
 

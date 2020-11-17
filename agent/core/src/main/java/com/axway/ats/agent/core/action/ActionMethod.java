@@ -23,7 +23,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.exceptions.ActionExecutionException;
 import com.axway.ats.agent.core.exceptions.InternalComponentException;
@@ -42,7 +43,7 @@ import com.axway.ats.core.validation.types.TypeFactory;
  */
 public class ActionMethod {
 
-    private static final Logger log                                         = Logger.getLogger(ActionMethod.class);
+    private static final Logger log                                         = LogManager.getLogger(ActionMethod.class);
 
     protected String            componentName;
     protected String            actionName;                                                                        // as defined by the user in the name attribute of the Action annotation

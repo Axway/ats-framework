@@ -17,7 +17,7 @@ package com.axway.ats.action.system;
 
 import org.apache.log4j.FileAppender;
 import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.log4j.Priority;
 
 import com.axway.ats.action.filesystem.RemoteFileSystemOperations;

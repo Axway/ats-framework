@@ -92,7 +92,8 @@ import org.apache.http.impl.cookie.BasicClientCookie;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.SSLContexts;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
@@ -277,7 +278,7 @@ public class HttpClient {
      */
     boolean                           isChain                         = false;
 
-    private static final Logger       log                             = Logger.getLogger(HttpClient.class);
+    private static final Logger       log                             = LogManager.getLogger(HttpClient.class);
 
     /**
      * Constructor.

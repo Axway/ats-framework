@@ -46,7 +46,8 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathFactory;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xml.serializer.OutputPropertiesFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -74,7 +75,7 @@ import com.axway.ats.core.filesystem.LocalFileSystemOperations;
  */
 public class XmlUtilities {
 
-    private static final Logger   log                              = Logger.getLogger(XmlUtilities.class);
+    private static final Logger   log                              = LogManager.getLogger(XmlUtilities.class);
 
     public static final int       MAX_RESPONSE_BODY_BYTES_TO_PRINT = 512 * 1024;
 

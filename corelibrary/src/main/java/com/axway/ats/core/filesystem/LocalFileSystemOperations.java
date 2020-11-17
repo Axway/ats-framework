@@ -78,7 +78,8 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
 import com.axway.ats.common.filesystem.FileMatchInfo;
@@ -100,7 +101,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class LocalFileSystemOperations implements IFileSystemOperations {
 
-    private static final Logger log = Logger.getLogger(LocalFileSystemOperations.class);
+    private static final Logger log = LogManager.getLogger(LocalFileSystemOperations.class);
 
     static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
 

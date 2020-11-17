@@ -28,7 +28,8 @@ import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 import javax.management.openmbean.CompositeData;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.performance.monitor.PerformanceMonitor;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
@@ -41,7 +42,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class AtsJvmMonitor extends PerformanceMonitor {
 
-    private static final Logger       log              = Logger.getLogger(AtsJvmMonitor.class);
+    private static final Logger       log              = LogManager.getLogger(AtsJvmMonitor.class);
 
     // the key is the jvm port, the values are the mbeans
     private Map<String, MBeanWrapper> mbeanWrappers    = new HashMap<String, MBeanWrapper>();

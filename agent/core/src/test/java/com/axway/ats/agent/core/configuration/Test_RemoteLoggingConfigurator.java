@@ -19,8 +19,9 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
@@ -34,8 +35,8 @@ public class Test_RemoteLoggingConfigurator {
     @After
     public void tearDown() {
 
-        Logger.getLogger(loggerName).removeAllAppenders();
-        Logger.getRootLogger().removeAllAppenders();
+        LogManager.getLogger(loggerName).removeAllAppenders();
+        LogManager.getRootLogger().removeAllAppenders();
     }
 
     @AfterClass
@@ -61,7 +62,7 @@ public class Test_RemoteLoggingConfigurator {
         appender.setUser("test");
         appender.setPassword("test");
 
-        Logger log = Logger.getRootLogger();
+        Logger log = LogManager.getRootLogger();
         log.addAppender(appender);
 
         //construct the configurator - an appender is present
@@ -86,7 +87,7 @@ public class Test_RemoteLoggingConfigurator {
         appender.setUser("test");
         appender.setPassword("test");
 
-        Logger log = Logger.getRootLogger();
+        Logger log = LogManager.getRootLogger();
         log.addAppender(appender);
 
         //construct the configurator - an appender is present
@@ -130,7 +131,7 @@ public class Test_RemoteLoggingConfigurator {
         appender.setUser("test");
         appender.setPassword("test");
 
-        Logger log = Logger.getRootLogger();
+        Logger log = LogManager.getRootLogger();
         log.addAppender(appender);
 
         //construct the configurator - an appender is present
@@ -155,7 +156,7 @@ public class Test_RemoteLoggingConfigurator {
         appender.setUser("test");
         appender.setPassword("test");
 
-        Logger log = Logger.getLogger(loggerName);
+        Logger log = LogManager.getLogger(loggerName);
         log.addAppender(appender);
 
         //construct the configurator - an appender is present
@@ -199,7 +200,7 @@ public class Test_RemoteLoggingConfigurator {
         appender.setUser("test");
         appender.setPassword("test");
 
-        Logger log = Logger.getLogger(loggerName);
+        Logger log = LogManager.getLogger(loggerName);
         log.addAppender(appender);
 
         //construct the configurator - an appender is present
@@ -222,20 +223,20 @@ public class Test_RemoteLoggingConfigurator {
         // Then we will check if there is change in the level of known loggers
 
         // add a new logger, but no level is specified, we will disregard it
-        Logger.getLogger("fake.logger");
+        LogManager.getLogger("fake.logger");
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
         assertFalse(remoteLoggingConfig.needsApplying());
 
         // add logger and set its level
-        Logger.getLogger("fake.logger").setLevel(Level.INFO);
+        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
         // read the log4j configuration and remember that custom logger
         remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
         // set same level on same logger, not change is made
-        Logger.getLogger("fake.logger").setLevel(Level.INFO);
+        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
         assertFalse(remoteLoggingConfig.needsApplying());
 
         // change logger level, this is a significant change
-        Logger.getLogger("fake.logger").setLevel(Level.DEBUG);
+        LogManager.getLogger("fake.logger").setLevel(Level.DEBUG);
         assertTrue(remoteLoggingConfig.needsApplying());
     }
 
@@ -243,19 +244,19 @@ public class Test_RemoteLoggingConfigurator {
     public void tesApplyUserLoggerLevels() {
 
         // set the level
-        Logger.getLogger("fake.logger").setLevel(Level.INFO);
+        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
 
         // read the configuration and remember the level
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         // change the level in log4j
-        Logger.getLogger("fake.logger").setLevel(Level.DEBUG);
-        assertTrue(Logger.getLogger("fake.logger").getLevel().equals(Level.DEBUG));
+        LogManager.getLogger("fake.logger").setLevel(Level.DEBUG);
+        assertTrue(LogManager.getLogger("fake.logger").getLevel().equals(Level.DEBUG));
         assertTrue(remoteLoggingConfig.needsApplying());
 
         // apply the remembered level
         remoteLoggingConfig.apply();
-        assertTrue(Logger.getLogger("fake.logger").getLevel().equals(Level.INFO));
+        assertTrue(LogManager.getLogger("fake.logger").getLevel().equals(Level.INFO));
     }
 
     @Test

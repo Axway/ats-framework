@@ -22,7 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -41,7 +42,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  *
  */
 public abstract class AbstractActionObject {
-    private final static Logger    log         = Logger.getLogger(AbstractActionObject.class);
+    private final static Logger    log         = LogManager.getLogger(AbstractActionObject.class);
 
     protected XmlUtilities         xmlUtilities;
 

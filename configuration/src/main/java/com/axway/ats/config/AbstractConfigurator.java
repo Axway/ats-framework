@@ -17,7 +17,8 @@ package com.axway.ats.config;
 
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
@@ -37,7 +38,7 @@ public abstract class AbstractConfigurator {
     public AbstractConfigurator() {
 
         //create the logger instance
-        log = Logger.getLogger(this.getClass());
+        log = LogManager.getLogger(this.getClass());
 
         // Get the instance of the configuration repository.
         // It is our only entry point for getting and setting properties

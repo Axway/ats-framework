@@ -21,13 +21,14 @@ import java.lang.reflect.Field;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.environment.EnvironmentUnit;
 
 public class BaseTest {
-    private final static Logger LOG = Logger.getLogger(BaseTest.class);
+    private final static Logger LOG = LogManager.getLogger(BaseTest.class);
 
     static {
         ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));

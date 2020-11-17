@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
@@ -59,7 +60,7 @@ public class DatabaseReadingsRepository {
                                           String monitoredHost,
                                           List<ReadingBean> readings ) throws DatabaseAccessException {
 
-        Logger log = Logger.getLogger(DatabaseReadingsRepository.class);
+        Logger log = LogManager.getLogger(DatabaseReadingsRepository.class);
 
         String caller = ThreadsPerCaller.getCaller();
 

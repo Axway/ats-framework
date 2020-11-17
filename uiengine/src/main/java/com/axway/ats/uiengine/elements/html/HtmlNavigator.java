@@ -15,7 +15,8 @@
  */
 package com.axway.ats.uiengine.elements.html;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
@@ -28,7 +29,7 @@ import com.axway.ats.uiengine.exceptions.ElementNotFoundException;
 @PublicAtsApi
 public class HtmlNavigator {
 
-    private static Logger        log                = Logger.getLogger(HtmlNavigator.class);
+    private static Logger        log                = LogManager.getLogger(HtmlNavigator.class);
 
     private static HtmlNavigator instance;
 

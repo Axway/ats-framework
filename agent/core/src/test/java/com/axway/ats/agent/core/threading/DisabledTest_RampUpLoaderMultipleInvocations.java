@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -41,7 +42,7 @@ import com.axway.ats.agent.core.threading.patterns.RampUpPattern;
 
 public class DisabledTest_RampUpLoaderMultipleInvocations extends BaseTest {
 
-    static Logger                      log        = Logger.getLogger( DisabledTest_RampUpLoaderMultipleInvocations.class );
+    static Logger                      log        = LogManager.getLogger( DisabledTest_RampUpLoaderMultipleInvocations.class );
     private static final String        QUEUE_NAME = "test 1";
 
     private static List<ActionRequest> actionRequests;

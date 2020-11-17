@@ -23,7 +23,8 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Store;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.rbv.RbvConfigurator;
 import com.axway.ats.rbv.model.RbvStorageException;
@@ -43,7 +44,7 @@ import com.axway.ats.rbv.storage.Storage;
  */
 public class ImapStorage implements Storage {
 
-    static Logger            log                = Logger.getLogger(ImapStorage.class);
+    static Logger            log                = LogManager.getLogger(ImapStorage.class);
 
     public final static long CONNECTION_TIMEOUT = 10000;
     public final static long TIMEOUT            = 60000;

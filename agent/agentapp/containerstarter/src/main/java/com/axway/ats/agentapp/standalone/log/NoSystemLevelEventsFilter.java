@@ -15,7 +15,7 @@
  */
 package com.axway.ats.agentapp.standalone.log;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.spi.LoggingEvent;
 

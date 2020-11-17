@@ -20,7 +20,8 @@ import static org.junit.Assert.assertEquals;
 
 import java.lang.reflect.Method;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
 import com.axway.ats.config.exceptions.ConfigurationException;
@@ -34,7 +35,7 @@ import com.axway.ats.harness.testng.exceptions.DataProviderException;
  */
 public class Test_AtsDataProvider extends BaseTest {
 
-    Logger sLog = Logger.getLogger(Test_AtsDataProvider.class);
+    Logger sLog = LogManager.getLogger(Test_AtsDataProvider.class);
 
     /**
      * @throws NoSuchMethodException

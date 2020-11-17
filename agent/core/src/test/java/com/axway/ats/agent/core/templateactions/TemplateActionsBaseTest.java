@@ -35,7 +35,8 @@ import java.util.Map;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.powermock.reflect.Whitebox;
 
@@ -50,7 +51,7 @@ import com.axway.ats.core.utils.IoUtils;
 
 public class TemplateActionsBaseTest extends BaseTest {
 
-    protected static final Logger log                 = Logger.getLogger( TemplateActionsBaseTest.class );
+    protected static final Logger log                 = LogManager.getLogger( TemplateActionsBaseTest.class );
 
     protected static final String TEST_COMPONENT_NAME = "agentTestComponent";
 

@@ -23,7 +23,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.dbaccess.model.DatabaseCell;
 import com.axway.ats.action.dbaccess.model.DatabaseRow;
@@ -51,7 +52,7 @@ import com.axway.ats.harness.config.TestBox;
 @PublicAtsApi
 public class DatabaseOperations {
 
-    private final Logger log = Logger.getLogger(DatabaseOperations.class);
+    private final Logger log = LogManager.getLogger(DatabaseOperations.class);
 
     protected DbProvider dbProvider;
 

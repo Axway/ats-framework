@@ -15,8 +15,9 @@
  */
 package com.axway.ats.core.log;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Logger sending messages through Log4j
@@ -29,15 +30,15 @@ public class AtsLog4jLogger extends AbstractAtsLogger {
 
         if (callingClass == null) {
             // this will probably never happen, as our code gives calling class when initializing log4j logger
-            log = Logger.getLogger("ATS Logger");
+            log = LogManager.getLogger("ATS Logger");
         } else {
-            log = Logger.getLogger(callingClass);
+            log = LogManager.getLogger(callingClass);
         }
     }
 
     private AtsLog4jLogger( String callingClassName ) {
 
-        log = Logger.getLogger(callingClassName);
+        log = LogManager.getLogger(callingClassName);
     }
 
     @Override

@@ -27,7 +27,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.process.ProcessExecutorException;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -40,7 +41,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                            = Logger.getLogger(LocalProcessExecutor.class);
+    private static final Logger log                            = LogManager.getLogger(LocalProcessExecutor.class);
     public static final  int    OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000; /* 1 hour */
     private final static int    MAX_STRING_SIZE                = 100000;  // max chars used to limit process output
     private final static String SKIPPED_CHARACTERS             = "... skipped characters ..."
@@ -480,7 +481,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
 
-            log = Logger.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
+            log = LogManager.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
 
             this.caller = caller;
 

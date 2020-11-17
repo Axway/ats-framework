@@ -41,8 +41,9 @@ import javax.imageio.ImageIO;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.FileAppender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.common.system.OperatingSystemType;
@@ -58,7 +59,7 @@ import com.axway.ats.core.utils.HostUtils;
 
 public class LocalSystemOperations implements ISystemOperations {
 
-    private static final Logger                  log                         = Logger.getLogger(LocalSystemOperations.class);
+    private static final Logger                  log                         = LogManager.getLogger(LocalSystemOperations.class);
 
     private static final String                  DATE_FORMAT                 = "MM/dd/yy HH:mm:ss";
 
@@ -314,7 +315,7 @@ public class LocalSystemOperations implements ISystemOperations {
 
     public void setAtsDbAppenderThreshold( Level threshold ) {
 
-        Logger rootLogger = Logger.getRootLogger();
+        Logger rootLogger = LogManager.getRootLogger();
         Enumeration<Appender> appenders = rootLogger.getAllAppenders();
         while (appenders.hasMoreElements()) {
             Appender appender = appenders.nextElement();
@@ -336,7 +337,7 @@ public class LocalSystemOperations implements ISystemOperations {
     public void attachFileAppender( String filepath, String messageFormatPattern ) {
 
         try {
-            Logger rootLogger = Logger.getRootLogger();
+            Logger rootLogger = LogManager.getRootLogger();
             rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
         } catch (Exception e) {
             throw new RuntimeException("Could not attach file appender '" + filepath + "'", e);

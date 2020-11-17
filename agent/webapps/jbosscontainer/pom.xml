@@ -178,8 +178,8 @@
             <scope>provided</scope> <!-- Do not include it in WAR as JBoss should have running WS environment -->
         </dependency>
         <dependency> <!-- Exclude. Relying that this is configured on server and not on app. level -->
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency> <!-- Needed for jaxws-rt -->

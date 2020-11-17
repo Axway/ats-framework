@@ -20,7 +20,8 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -36,7 +37,7 @@ import com.axway.ats.environment.EnvironmentUnit;
 @PublicAtsApi
 public class DirectoryEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger log = Logger.getLogger(DirectoryEnvironmentUnit.class);
+    private static final Logger log = LogManager.getLogger(DirectoryEnvironmentUnit.class);
 
     // directory to be processed. Source for backup or destination for restore
     private String              origDirName;

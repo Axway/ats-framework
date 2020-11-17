@@ -19,7 +19,8 @@ import java.io.Serializable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.context.ThreadContext;
 import com.axway.ats.agent.core.templateactions.exceptions.XmlUtilitiesException;
@@ -68,7 +69,7 @@ public abstract class ResponseMatcher implements Serializable {
                                             String valueToMatch,
                                             String text ) throws XmlUtilitiesException {
 
-        Logger log = Logger.getLogger(this.getClass());
+        Logger log = LogManager.getLogger(this.getClass());
 
         // apply the current user parameters
         valueToMatch = XmlUtilities.applyUserParameters(valueToMatch);

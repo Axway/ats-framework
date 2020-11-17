@@ -17,7 +17,8 @@ package com.axway.ats.core.registry;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.registry.model.IRegistryOperations;
 import com.axway.ats.common.registry.RegistryOperationsException;
@@ -30,7 +31,7 @@ import com.sun.jna.platform.win32.WinReg;
  */
 public class LocalRegistryOperations implements IRegistryOperations {
 
-    private static final Logger log                 = Logger.getLogger(LocalRegistryOperations.class);
+    private static final Logger log                 = LogManager.getLogger(LocalRegistryOperations.class);
 
     public static String        HKEY_CLASSES_ROOT   = "HKEY_CLASSES_ROOT";
     public static String        HKEY_CURRENT_USER   = "HKEY_CURRENT_USER";

@@ -21,7 +21,8 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.ConfigurationManager;
 import com.axway.ats.agent.core.configuration.ConfigurationSettings;
@@ -37,7 +38,7 @@ import com.axway.ats.core.utils.HostUtils;
  */
 public class MainComponentLoader {
 
-    private static Logger               log = Logger.getLogger(MainComponentLoader.class);
+    private static Logger               log = LogManager.getLogger(MainComponentLoader.class);
     private static MainComponentLoader  instance;
 
     // hold the future of the scheduled hot deployment monitor
