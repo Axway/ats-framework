@@ -24,7 +24,7 @@ public class BaseTest {
 
     static {
         PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
-        ConsoleAppender appender = ConsoleAppender.newBuilder().setLayout(layout).build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
 
         //init log4j
         //BasicConfigurator.configure(appender);
@@ -33,6 +33,6 @@ public class BaseTest {
         appender.start();
         config.addAppender(appender);
         // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        // context.updateLoggers(); Is this needed?!?
+        context.updateLoggers(); // TODO needed
     }
 }

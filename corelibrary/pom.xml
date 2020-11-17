@@ -194,14 +194,14 @@
                     <artifactId>jsch</artifactId>
                 </exclusion>
                 <exclusion>
-                	<groupId>org.apache.logging.log4j</groupId>
-                	<artifactId>log4j-core</artifactId>
-                </exclusion>
-                <exclusion>
-                	<groupId>log4j</groupId>
-                	<artifactId>log4j</artifactId>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+        <dependency> <!-- Needed for expectj. Replacement of log4j:log4j:1.2.x -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
         </dependency>
         <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
             <groupId>com.jcraft</groupId>
