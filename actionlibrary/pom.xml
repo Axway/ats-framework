@@ -73,6 +73,13 @@
       <groupId>com.axway.ats.framework.agent</groupId>
       <artifactId>ats-agent-core</artifactId>
       <version>${project.version}</version>
+      <exclusions>
+        <!-- Remove exclusion after agent core is migrated to log4j2-->
+      	<exclusion> 
+      		<groupId>log4j</groupId>
+      		<artifactId>log4j</artifactId>
+      	</exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>com.axway.ats.framework.agent.webapp</groupId>
@@ -84,6 +91,13 @@
       <artifactId>ats-agent-systemoperations</artifactId>
       <version>${project.version}</version>
       <classifier>client</classifier>
+      <exclusions>
+        <!-- Remove exclusion after agent core is migrated to log4j2-->
+      	<exclusion>
+      		<groupId>log4j</groupId>
+      		<artifactId>log4j</artifactId>
+      	</exclusion>
+      </exclusions>
     </dependency>
 
     <!-- external dependencies -->

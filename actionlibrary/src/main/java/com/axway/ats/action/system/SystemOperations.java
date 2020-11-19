@@ -27,12 +27,9 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.log4j.FileAppender;
-import org.apache.log4j.Layout;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -83,9 +80,7 @@ public class SystemOperations {
      * </p>
      */
     @PublicAtsApi
-    public SystemOperations( @Validate(
-            name = "atsAgent",
-            type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent ) {
+    public SystemOperations( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -116,9 +111,7 @@ public class SystemOperations {
      */
     @PublicAtsApi
     public String getSystemProperty(
-                                     @Validate(
-                                             name = "propertyName",
-                                             type = ValidationType.NOT_NULL) String propertyName ) {
+                                     @Validate( name = "propertyName", type = ValidationType.NOT_NULL) String propertyName ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ propertyName });
@@ -206,9 +199,7 @@ public class SystemOperations {
      */
     @PublicAtsApi
     public void createScreenshot(
-                                  @Validate(
-                                          name = "filePath",
-                                          type = ValidationType.STRING_NOT_EMPTY) String filePath ) {
+                                  @Validate( name = "filePath", type = ValidationType.STRING_NOT_EMPTY) String filePath ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ filePath });
@@ -342,12 +333,8 @@ public class SystemOperations {
      *                            If not sure what to use, use this one:<br>
      * <strong><code>%-5p %d{HH:mm:ss:SSS} %c{2}: %m%n</code></strong>
      */
-    public void attachFileAppender( @Validate(
-            name = "filepath",
-            type = ValidationType.NOT_NULL) String filepath,
-                                    @Validate(
-                                            name = "layout",
-                                            type = ValidationType.NOT_NULL) String messageFormatPattern ) {
+    public void attachFileAppender( @Validate( name = "filepath", type = ValidationType.NOT_NULL) String filepath,
+                                    @Validate( name = "layout", type = ValidationType.NOT_NULL) String messageFormatPattern ) {
 
         ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         operations.attachFileAppender(filepath, messageFormatPattern);
@@ -359,9 +346,7 @@ public class SystemOperations {
      * */
     @PublicAtsApi
     public void
-            setAtsDbAppenderThreshold( @Validate(
-                    name = "threshold",
-                    type = ValidationType.NOT_NULL) Level threshold ) {
+            setAtsDbAppenderThreshold( @Validate( name = "threshold", type = ValidationType.NOT_NULL) Level threshold ) {
 
         ISystemOperations operations = getOperationsImplementationFor(atsAgent);
         operations.setAtsDbAppenderThreshold(threshold);
