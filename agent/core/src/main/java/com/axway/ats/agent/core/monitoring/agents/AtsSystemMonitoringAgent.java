@@ -47,7 +47,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     /*
      * Skip checking in db appender is attached, because we are on the agent and not the executor.
      * */
-    private static AtsDbLogger       dblog                       = AtsDbLogManager.getLogger(AtsSystemMonitoringAgent.class.getName(), true);
+    private static AtsDbLogger       dblog                       = AtsDbLogger.getLogger(AtsSystemMonitoringAgent.class.getName(), true);
 
     private static final int         MAX_LENGTH_STATISTIC_IDS    = 950;
     private static final int         MAX_LENGTH_STATISTIC_VALUES = 7950;

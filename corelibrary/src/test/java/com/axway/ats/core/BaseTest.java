@@ -33,6 +33,6 @@ public class BaseTest {
         appender.start();
         config.addAppender(appender);
         // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO needed
+        context.updateLoggers();
     }
 }

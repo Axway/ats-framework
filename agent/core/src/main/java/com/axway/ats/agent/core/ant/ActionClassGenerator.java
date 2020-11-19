@@ -33,11 +33,12 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.tools.ant.BuildException;
 import org.xml.sax.SAXException;
 
@@ -54,8 +55,22 @@ import com.axway.ats.core.utils.StringUtils;
 class ActionClassGenerator {
 
     static {
-        PatternLayout layout = new PatternLayout("%m%n");
-        BasicConfigurator.configure(new ConsoleAppender(layout));
+//        PatternLayout layout = new PatternLayout("%m%n");
+//        BasicConfigurator.configure(new ConsoleAppender(layout));
+
+        PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout
+                .newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
+
+        //init log4j
+        //BasicConfigurator.configure(appender);
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
+        context.updateLoggers(); // TODO needed
+
     }
 
     private static final Logger               log            = LogManager.getLogger(ActionClassGenerator.class);

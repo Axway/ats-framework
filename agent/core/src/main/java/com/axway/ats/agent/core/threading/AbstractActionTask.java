@@ -111,7 +111,9 @@ public abstract class AbstractActionTask implements Runnable {
 
     /**
      * @param caller the remote caller
-     * @param actionInvokers list of action invokers
+     * @param queueName name of the Load queue
+     * @param threadsManager manager of threads
+     * @param itManager iterations
      * @param listeners
      * @throws ActionExecutionException
      * @throws NoCompatibleMethodFoundException
@@ -133,7 +135,7 @@ public abstract class AbstractActionTask implements Runnable {
          * Skip checking in db appender is attached, because we are on the agent and not the executor.
          * Also we want for actions to be executed on the agent even if data will not be sent to ATS Log database
          * */
-        this.log = AtsDbLogManager.getLogger(this.getClass().getName(), true);
+        this.log = AtsDbLogger.getLogger(this.getClass().getName(), true);
 
         PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
         if (dbAppender != null) {

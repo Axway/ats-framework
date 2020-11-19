@@ -45,7 +45,7 @@ public class RemoteLoggingConfigurator implements Configurator {
     private DbAppenderConfiguration appenderConfiguration;
     private String                  appenderLogger;
 
-    private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
+    private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG.intLevel();
 
     // list of other logger levels defined by the user in their log4j configuration file
     private Map<String, Integer>    otherLoggerLevels = new HashMap<String, Integer>();
@@ -72,7 +72,7 @@ public class RemoteLoggingConfigurator implements Configurator {
          */
 
         // look for the DB appender
-        Category log = LogManager.getLogger("com.axway.ats");
+        Logger log = LogManager.getLogger("com.axway.ats");
         boolean dbAppenderIsProcessed = false;
         while (log != null && !dbAppenderIsProcessed) {
 
@@ -97,7 +97,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                         atsDbLogLevel = customLogLevel.toInt();
                     } else if (log.getLevel() != null) {
                         // user specified the log level in log4j configuration file
-                        atsDbLogLevel = log.getLevel().toInt();
+                        atsDbLogLevel = log.getLevel().intLevel();
 
                     }
 
