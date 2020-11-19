@@ -51,7 +51,7 @@ public class AtsJunitTestListener extends RunListener {
      * skip checking whether ActiveDbAppender is attached in order for test execution to proceed
      * Note that additional check in each of the methods check once again whether that appender is attached
      * */
-    private static final AtsDbLogger logger                           = AtsDbLogManager.getLogger("com.axway.ats", true);
+    private static final AtsDbLogger logger                           = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private static final String      MSG__TEST_PASSED                 = "[JUnit]: TEST PASSED";
 

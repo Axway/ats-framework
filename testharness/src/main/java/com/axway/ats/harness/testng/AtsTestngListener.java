@@ -62,7 +62,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /** Skip checking whether ActiveDbAppender is attached.
      *  This is done in order to enable execution of tests when that appender is not attached/presented
      * */
-    private static final AtsDbLogger logger = AtsDbLogManager.getLogger("com.axway.ats", true);
+    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
 
     private static final String MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
     private static final String MSG__TEST_FAILED                      = "[TestNG]: TEST FAILED";
