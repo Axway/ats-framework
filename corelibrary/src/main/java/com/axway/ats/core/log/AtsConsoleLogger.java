@@ -173,9 +173,9 @@ public class AtsConsoleLogger {
     private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
-            return Level.toLevel(level).isMoreSpecificThan(AtsConsoleLogger.level);
+            return Level.toLevel(level).isLessSpecificThan(AtsConsoleLogger.level); // or isMore?!?
         } else {
-            return LogManager.getRootLogger().getLevel().isMoreSpecificThan(Level.toLevel(level));
+            return LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.toLevel(level)); // or isMore?!?
         }
 
     }

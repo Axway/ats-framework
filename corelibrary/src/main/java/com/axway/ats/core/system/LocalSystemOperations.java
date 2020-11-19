@@ -323,12 +323,13 @@ public class LocalSystemOperations implements ISystemOperations {
         final LoggerContext context = LoggerContext.getContext(false);
         final Configuration config = context.getConfiguration();
         Map<String, Appender> appenders = config.getAppenders();
+        // there is a method called -> context.getConfiguration().getAppender(java.lang.String name)
+        // maybe we should use this one to obtain Active and Passive DB appenders?
         if (appenders != null && appenders.size() > 0) {
             for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
                 Appender appender = entry.getValue();
                 if (appender != null) {
                     if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
-                        //((AppenderSkeleton) appender).setThreshold(threshold);
                         ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold, Result.ACCEPT,
                                                                                              Result.DENY));
                     }
@@ -350,8 +351,6 @@ public class LocalSystemOperations implements ISystemOperations {
     public void attachFileAppender( String filepath, String messageFormatPattern ) {
 
         try {
-            // rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
-            Logger rootLogger = LogManager.getRootLogger();
             PatternLayout patternLayout = PatternLayout.newBuilder().withPattern(messageFormatPattern).build();
             FileAppender fileAppender = FileAppender.newBuilder().setLayout(patternLayout).withFileName(filepath).build();
             final LoggerContext context = LoggerContext.getContext(false);
@@ -359,7 +358,7 @@ public class LocalSystemOperations implements ISystemOperations {
             fileAppender.start();
             config.addAppender(fileAppender);
             // context.getRootLogger().addAppender(config.getAppender(fa.getName())); Is this needed?!?
-            // context.updateLoggers(); Is this needed?!?
+            context.updateLoggers();
 
         } catch (Exception e) {
             throw new RuntimeException("Could not attach file appender '" + filepath + "'", e);
