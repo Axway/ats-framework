@@ -23,18 +23,11 @@ import org.apache.logging.log4j.Level;
  * for starting runs, groups, test cases, etc.
  * This level is higher than the FATAL level, so it is always enabled
  */
-@SuppressWarnings( "serial")
-public class SystemLogLevel extends Level {
+public class SystemLogLevel {
 
-    public final static int            SYSTEM_INT = Level.FATAL_INT + 10000;
-    public final static SystemLogLevel SYSTEM     = new SystemLogLevel(SYSTEM_INT, "SYSTEM", 6);
-
-    SystemLogLevel( int level,
-                    String levelStr,
-                    int syslogEquivalent ) {
-
-        super(level, levelStr, syslogEquivalent);
-    }
+    public final static String SYSTEM_NAME = "SYSTEM";
+    public final static int    SYSTEM_INT  = Level.FATAL.intLevel() + 10000;
+    public final static Level  SYSTEM      = Level.forName(SYSTEM_NAME, SYSTEM_INT);
 
     /**
     Convert the string passed as argument to a level. If the
@@ -65,12 +58,20 @@ public class SystemLogLevel extends Level {
                                  int val,
                                  Level defaultLevel ) {
 
-        switch (val) {
-            case SYSTEM_INT:
-                return SystemLogLevel.SYSTEM;
-            default:
-                return Level.toLevel(val, defaultLevel);
+        return (val == SYSTEM_INT)
+                                   ? SystemLogLevel.SYSTEM
+                                   : Level.toLevel(convertyIntValToName(val), defaultLevel);
+    }
+
+    private static String convertyIntValToName( int val ) {
+
+        Level[] levels = Level.values();
+        for (Level lvl : levels) {
+            if (lvl.intLevel() == val) {
+                return lvl.name();
+            }
         }
+        return null; // no problem, log4j2 handles null value for level name
     }
 
     /**
@@ -87,7 +88,7 @@ public class SystemLogLevel extends Level {
 
         String s = sArg.toUpperCase();
 
-        if ("SYSTEM".equals(s)) {
+        if (SYSTEM_NAME.equals(s)) {
             return SystemLogLevel.SYSTEM;
         } else {
             return Level.toLevel(sArg, defaultLevel);

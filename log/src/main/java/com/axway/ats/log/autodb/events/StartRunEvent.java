@@ -18,7 +18,6 @@
  */
 package com.axway.ats.log.autodb.events;
 
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.log.autodb.logqueue.LifeCycleState;

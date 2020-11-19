@@ -21,7 +21,8 @@ package com.axway.ats.log.autodb.logqueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.spi.LoggingEvent;
+
+import org.apache.logging.log4j.core.LogEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
@@ -97,7 +98,7 @@ public class QueueLoggerThread extends Thread {
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {
                     LoggingException le = (LoggingException) e;
-                    LoggingEvent event = logEventRequest.getEvent();
+                    LogEvent event = logEventRequest.getEvent();
                     if (event instanceof AbstractLoggingEvent) {
                         AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
                         LoggingEventType eventType = dbAppenderEvent.getEventType();

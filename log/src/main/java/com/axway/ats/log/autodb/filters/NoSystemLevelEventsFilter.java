@@ -15,21 +15,20 @@
  */
 package com.axway.ats.log.autodb.filters;
 
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 
 import com.axway.ats.log.model.SystemLogLevel;
 
-public class NoSystemLevelEventsFilter extends Filter {
+public class NoSystemLevelEventsFilter extends AbstractFilter {
 
     @Override
-    public int decide(
-                       LoggingEvent loggingEvent ) {
+    public Result filter( LogEvent event ) {
 
-        if (loggingEvent.getLevel().toInt() == SystemLogLevel.SYSTEM_INT) {
-            return DENY;
-        }
+        return (event.getLevel().intLevel() == SystemLogLevel.SYSTEM_INT)
+                                                                          ? Result.DENY
+                                                                          : Result.NEUTRAL;
 
-        return NEUTRAL;
     }
+
 }

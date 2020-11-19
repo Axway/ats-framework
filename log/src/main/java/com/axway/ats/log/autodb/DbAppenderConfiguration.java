@@ -21,39 +21,39 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 import org.apache.logging.log4j.Level;
-import org.apache.log4j.Priority;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 import com.axway.ats.log.autodb.io.AbstractDbAccess;
+import com.axway.ats.log.model.SystemLogLevel;
 
 /**
  * Hold the configuration data for this db appender
  */
 public class DbAppenderConfiguration implements Serializable {
 
-    private static final long  serialVersionUID                      = 4786587768915142179L;
+    private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
-    private String             host;
-    private String             port;
-    private String             database;
-    private String             user;
-    private String             password;
-    private String             mode                                  = "";
-    private String             driver                                = DbKeys.SQL_SERVER_DRIVER_JTDS;
-    private String             chunkSize;
+    private String            host;
+    private String            port;
+    private String            database;
+    private String            user;
+    private String            password;
+    private String            mode                                  = "";
+    private String            driver                                = DbKeys.SQL_SERVER_DRIVER_JTDS;
+    private String            chunkSize;
 
     // the capacity of our logging queue
-    private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
-    private String             maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
+    private static final int  DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private String            maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
 
     //are checkpoints enabled
-    private boolean            enableCheckpoints                     = true;
+    private boolean           enableCheckpoints                     = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    transient private Priority loggingThreshold;
+    private Level   loggingThreshold;
 
     public String getHost() {
 
@@ -176,13 +176,13 @@ public class DbAppenderConfiguration implements Serializable {
         this.enableCheckpoints = enableCheckpoints;
     }
 
-    public Priority getLoggingThreshold() {
+    public Level getLoggingThreshold() {
 
         return loggingThreshold;
     }
 
     public void setLoggingThreshold(
-                                     Priority loggingThreshold ) {
+                                     Level loggingThreshold ) {
 
         this.loggingThreshold = loggingThreshold;
     }
@@ -316,7 +316,7 @@ public class DbAppenderConfiguration implements Serializable {
 
         s.defaultReadObject();
         int levelInt = s.readInt();
-        loggingThreshold = Level.toLevel(levelInt);
+        loggingThreshold = SystemLogLevel.toLevel(levelInt);
     }
 
     /**
@@ -332,7 +332,7 @@ public class DbAppenderConfiguration implements Serializable {
             // should be set in RemoteLoggingConfiguration
             throw new IllegalStateException("Logging level should not be null");
         }
-        s.writeInt(loggingThreshold.toInt());
+        s.writeInt(loggingThreshold.intLevel());
     }
 
 }

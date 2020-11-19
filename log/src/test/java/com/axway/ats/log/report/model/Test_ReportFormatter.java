@@ -28,9 +28,6 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.axway.ats.log.autodb.entities.Suite;
 import com.axway.ats.log.report.exceptions.ReportFormatterException;
-import com.axway.ats.log.report.model.ReportFormatter;
-import com.axway.ats.log.report.model.RunWrapper;
-import com.axway.ats.log.report.model.SuiteWrapper;
 
 @RunWith( PowerMockRunner.class)
 public class Test_ReportFormatter {

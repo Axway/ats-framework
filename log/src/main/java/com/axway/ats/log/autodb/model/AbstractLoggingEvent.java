@@ -16,9 +16,9 @@
 package com.axway.ats.log.autodb.model;
 
 import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.impl.Log4jLogEvent;
+import org.apache.logging.log4j.message.SimpleMessage;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.log.autodb.exceptions.IncorrectProcessorStateException;
@@ -31,7 +31,7 @@ import com.axway.ats.log.model.SystemLogLevel;
  * This is the base class for all database-related logging events
  */
 @SuppressWarnings( "serial")
-public abstract class AbstractLoggingEvent extends LoggingEvent {
+public abstract class AbstractLoggingEvent extends Log4jLogEvent {
 
     /**
      * Type of the event
@@ -42,6 +42,8 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
      * Event time
      */
     private long                   timestamp;
+    
+    private Logger logger;
 
     /**
      * Constructor
@@ -56,8 +58,10 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                  String message,
                                  LoggingEventType eventType ) {
 
-        super(loggerFQCN, logger, SystemLogLevel.SYSTEM, message, null);
+        //super(loggerFQCN, logger, SystemLogLevel.SYSTEM, message, null);
+        super(logger.getName(), null, loggerFQCN, SystemLogLevel.SYSTEM, new SimpleMessage(message), null, null);
 
+        this.logger = logger;
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
 
@@ -82,8 +86,9 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
                                  Throwable trowable,
                                  LoggingEventType eventType ) {
 
-        super(loggerFQCN, logger, level, message, trowable);
+        super(logger.getName(), null, loggerFQCN, SystemLogLevel.SYSTEM, new SimpleMessage(message), null, trowable);
 
+        this.logger = logger;
         this.eventType = eventType;
         this.timestamp = System.currentTimeMillis();
 
@@ -93,8 +98,10 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
     private void cacheSourceLocation() {
 
         if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION, false)) {
+            // this will specify that this event should have a source information
+            this.setIncludeLocation(true);
             // this call will cache the source location of the event
-            this.getLocationInformation();
+            this.getSource();
         }
 
     }
@@ -159,6 +166,13 @@ public abstract class AbstractLoggingEvent extends LoggingEvent {
             }
         }
     }
+    
+    public Logger getLogger() {
+        
+        return logger;
+    }
+    
+    
 
     /**
      * Get the expected lifecycle state of the processor, for this event

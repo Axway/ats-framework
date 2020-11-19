@@ -20,14 +20,12 @@ import static org.junit.Assert.assertTrue;
 import org.apache.logging.log4j.Level;
 import org.junit.Test;
 
-import com.axway.ats.log.model.SystemLogLevel;
-
 public class Test_SystemLogLevel {
 
     @Test
     public void testSystemLevel() {
 
-        assertTrue(SystemLogLevel.SYSTEM_INT > Level.FATAL_INT);
+        assertTrue(SystemLogLevel.SYSTEM_INT > Level.FATAL.intLevel());
     }
 
     @Test
