@@ -74,7 +74,7 @@ public class TemplateActionMethod extends ActionMethod {
         // Intentionally get logger from AbstractActionTask class so use the same logger for action start/end checkpoints.
         // Otherwise if using current class and changing additivity flag of TemplateActionMethod to false will disable checkpoint logging
         // Also skip check whether db appender is attached
-        this.autoLogger = AtsDbLogManager.getLogger(AbstractActionTask.class.getName(), true);
+        this.autoLogger = AtsDbLogger.getLogger(AbstractActionTask.class.getName(), true);
 
         if (ActiveDbAppender.getCurrentInstance() != null) {
             isLoggingInBatchMode = ActiveDbAppender.getCurrentInstance().isBatchMode();

@@ -18,7 +18,11 @@ package com.axway.ats.core.log;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
  * Logger sending messages through Log4j
@@ -26,6 +30,24 @@ import org.apache.logging.log4j.core.config.Configurator;
 public class AtsLog4jLogger extends AbstractAtsLogger {
 
     private final Logger log;
+
+    /**
+     * Useful for test logging. Mostly could be set in (static blocks of) BaseTest classes of unit tests.
+     * This is separate non-logger specific utility method
+     */
+    public static void setLog4JConsoleLoggingOnly() {
+        PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
+
+        //init log4j
+        //BasicConfigurator.configure(appender);
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
+        context.updateLoggers();
+    }
 
     public AtsLog4jLogger( Class<?> callingClass ) {
 

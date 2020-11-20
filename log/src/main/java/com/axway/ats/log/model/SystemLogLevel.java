@@ -31,7 +31,7 @@ public class SystemLogLevel {
 
     /**
     Convert the string passed as argument to a level. If the
-    conversion fails, then this method returns {@link #DEBUG}. 
+    conversion fails, then this method returns {@link Level#DEBUG}.
     */
     public static Level toLevel(
                                  String sArg ) {
@@ -41,7 +41,7 @@ public class SystemLogLevel {
 
     /**
       Convert an integer passed as argument to a level. If the
-      conversion fails, then this method returns {@link #DEBUG}.
+      conversion fails, then this method returns {@link Level#DEBUG}.
     
     */
     public static Level toLevel(

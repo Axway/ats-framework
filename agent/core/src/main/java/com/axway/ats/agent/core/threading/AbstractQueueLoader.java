@@ -51,8 +51,8 @@ public abstract class AbstractQueueLoader implements QueueLoader {
                          List<QueueLoaderListener> listeners ) throws NoSuchActionException,
                                                                NoCompatibleMethodFoundException {
 
-        /** Skip check whether db appender is attached **/
-        this.log = AtsDbLogManager.getLogger(this.getClass().getName(), true);
+        /** Skip check whether DB appender is attached **/
+        this.log = AtsDbLogger.getLogger(this.getClass().getName(), true);
 
         this.queueName = queueName;
         this.startPattern = startPattern;
