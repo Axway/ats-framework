@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,14 @@
 package com.axway.ats.log.appenders;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
@@ -29,13 +32,13 @@ import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
-import com.axway.ats.log.autodb.DbEventRequestProcessor;
-import com.axway.ats.log.autodb.EventProcessorState;
-import com.axway.ats.log.autodb.PGDbReadAccess;
-import com.axway.ats.log.autodb.SQLServerDbReadAccess;
 import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.io.PGDbReadAccess;
+import com.axway.ats.log.autodb.io.SQLServerDbReadAccess;
+import com.axway.ats.log.autodb.logqueue.DbEventRequestProcessor;
+import com.axway.ats.log.autodb.logqueue.EventProcessorState;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
@@ -45,7 +48,7 @@ import com.axway.ats.log.autodb.model.IDbReadAccess;
  * AtsDbLogger</p>
  * It is used only on the Test Executor side and not on ATS Agents.
  */
- 
+
 public class ActiveDbAppender extends AbstractDbAppender {
 
     private static ActiveDbAppender   instance                                 = null;
@@ -131,7 +134,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
     /**
      * Get {@link IDbReadAccess} using the appender's db configuration
      * 
-     * @throws DatabaseAccessException
+     * @throws DatabaseAccessException In case of DB error
      */
     public IDbReadAccess obtainDbReadAccessObject() throws DatabaseAccessException {
 
@@ -150,9 +153,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
             if (mssqlException == null) {
 
+                Map<String, Object> props = new HashMap<>();
+                props.put(DbKeys.DRIVER, appenderConfig.getDriver().toUpperCase());
                 dbConnection = new DbConnSQLServer(appenderConfig.getHost(), Integer.parseInt(appenderConfig.getPort()),
                                                    appenderConfig.getDatabase(), appenderConfig.getUser(),
-                                                   appenderConfig.getPassword(), null);
+                                                   appenderConfig.getPassword(), props);
 
                 // create the db access layer
                 dbReadAccess = new SQLServerDbReadAccess((DbConnSQLServer) dbConnection);
@@ -238,6 +243,26 @@ public class ActiveDbAppender extends AbstractDbAppender {
     public void setPassword( String password ) {
 
         appenderConfig.setPassword(password);
+    }
+    
+    public String getDriver() {
+
+        return appenderConfig.getDriver();
+    }
+
+    public void setDriver( String driver ) {
+
+        appenderConfig.setDriver(driver);
+    }
+
+    public String geChunkSize() {
+
+        return appenderConfig.getChunkSize();
+    }
+
+    public void setChunkSize( String chunkSize ) {
+
+        appenderConfig.setChunkSize(chunkSize);
     }
 
     /**

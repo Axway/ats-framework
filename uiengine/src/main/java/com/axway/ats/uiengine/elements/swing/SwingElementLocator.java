@@ -519,8 +519,8 @@ public class SwingElementLocator {
      * For internal use
      * @param driver Swing driver
      * @param windowTitle if null look for any visible window
-     * @param isDialog
-     * @return the {@link ContainerFinxture}
+     * @param isDialog should the search be for dialog windows
+     * @return the {@link ContainerFixture}
      */
     public static WindowFixture<?> getWindowFixture(
                                                      SwingDriverInternal driver,
@@ -528,7 +528,7 @@ public class SwingElementLocator {
                                                      boolean isDialog ) throws ElementNotFoundException {
 
         WindowFixture<?> windowFixture = driver.getWindowFixture();
-        Robot robot = null;
+        Robot robot;
         if (windowFixture != null) {
             // use the current robot instance
             robot = windowFixture.robot;
@@ -613,7 +613,7 @@ public class SwingElementLocator {
                                                 SwingDriverInternal driver ) {
 
         ContainerFixture<?> containerFixture = driver.getActiveContainerFixture();
-        Robot robot = null;
+        Robot robot;
         if (containerFixture != null) {
             // use the current robot instance
             robot = containerFixture.robot;

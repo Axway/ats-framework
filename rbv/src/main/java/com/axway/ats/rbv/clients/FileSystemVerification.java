@@ -46,8 +46,8 @@ import com.axway.ats.rbv.model.RbvException;
  * <p>Note that <code>check</code> methods add rules for match whereas actual rules
  * evaluation is done in one of the methods with <code>verify</code> prefix.</p>
  *
- * <br/>
- * <b>User guide</b> pages related to this class:<br/>
+ * <br>
+ * <b>User guide</b> pages related to this class:<br>
  * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
  * <a href="https://axway.github.io/ats-framework/File-system-verifications.html">File system verification details</a>
@@ -190,8 +190,8 @@ public class FileSystemVerification extends VerificationSkeleton {
     }
 
     /**
-     * Add rule to check if the file is formated in the way that ASCII armor files are
-     * formated. This would mean that it should have the following properties:
+     * Add rule to check if the file is formatted in the way that ASCII armor files are
+     * formatted. This would mean that it should have the following properties:
      * <ul>
      *  <li> a "-----BEGIN PGP MESSAGE-----" message </li>
      *  <li> no line longer than 65 characters </li>
@@ -203,7 +203,7 @@ public class FileSystemVerification extends VerificationSkeleton {
      * the two strings are present and that each line is shorter than 65 characters.
      * However this solution should work for most of the cases</b>
      *
-     * @param isAsciiArmour true if we would expect the file to be formated this way
+     * @param isAsciiArmour true if we would expect the file to be formatted this way
      * @throws RbvException thrown on error
      */
     @PublicAtsApi

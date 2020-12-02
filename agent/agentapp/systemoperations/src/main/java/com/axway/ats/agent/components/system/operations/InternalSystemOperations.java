@@ -15,6 +15,9 @@
  */
 package com.axway.ats.agent.components.system.operations;
 
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.ActionRequestInfo;
@@ -174,5 +177,18 @@ public class InternalSystemOperations {
     public void logDuplicatedJars() {
 
         localSystemOperations.logDuplicatedJars();
+    }
+
+    @Action( name = "Internal System Operations set Ats Db Appender Threshold")
+    public void setAtsDbAppenderThreshold( @Parameter( name = "threshold") Level threshold ) {
+
+        localSystemOperations.setAtsDbAppenderThreshold(threshold);
+    }
+
+    @Action( name = "Internal System Operations attach File Appender")
+    public void attachFileAppender( @Parameter( name = "filepath") String filepath,
+                                    @Parameter( name = "messageFormatPattern") String messageFormatPattern ) {
+
+        localSystemOperations.attachFileAppender(filepath, messageFormatPattern);
     }
 }

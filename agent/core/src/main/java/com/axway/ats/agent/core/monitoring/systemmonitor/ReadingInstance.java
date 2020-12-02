@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.hyperic.sigar.SigarException;
-
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.SharedReadingBean;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
@@ -73,23 +73,22 @@ public abstract class ReadingInstance extends SharedReadingBean {
     // It is not easy to prove in reality this value
     public static final long         MEMORYPAGEFAULTS_PROCESS_OVERFLOW_VALUE = OVERFLOW_VALUE / 10000;
 
-    // the Sigar instance we use underline
-    protected SigarWrapper           sigarWrapper;
+    protected ISystemInformation     systemInfo;
 
-    public ReadingInstance( SigarWrapper sigarWrapper,
+    public ReadingInstance( ISystemInformation systemInfo,
                             String dbId,
                             String monitorClass,
                             String name,
                             String unit,
-                            float normalizationFactor ) throws SigarException {
+                            float normalizationFactor ) throws SystemInformationException {
 
-        this(sigarWrapper, null, dbId, 0, monitorClass, name, unit, null, normalizationFactor);
+        this(systemInfo, null, dbId, 0, monitorClass, name, unit, null, normalizationFactor);
     }
 
     /**
      * This constructor is currently used for monitoring processes
      */
-    public ReadingInstance( SigarWrapper sigarWrapper,
+    public ReadingInstance( ISystemInformation systemInfo,
                             ParentProcessReadingBean parentProcess,
                             String dbId,
                             long pid,
@@ -97,14 +96,14 @@ public abstract class ReadingInstance extends SharedReadingBean {
                             String name,
                             String unit,
                             Map<String, String> parameters,
-                            float normalizationFactor ) throws SigarException {
+                            float normalizationFactor ) throws SystemInformationException {
 
         super(monitorClass, name, unit, normalizationFactor);
 
         this.parentProcess = parentProcess;
         this.dbId = Integer.parseInt(dbId);
         this.pid = pid;
-        this.sigarWrapper = sigarWrapper;
+        this.systemInfo = systemInfo;
 
         setParameters(parameters);
 
@@ -120,7 +119,7 @@ public abstract class ReadingInstance extends SharedReadingBean {
         init();
     }
 
-    public void init() throws SigarException {
+    public void init() throws SystemInformationException {
 
     }
 

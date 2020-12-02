@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,8 @@ import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
-import com.axway.ats.log.autodb.DbAccessFactory;
-import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
+import com.axway.ats.log.autodb.io.DbAccessFactory;
+import com.axway.ats.log.autodb.io.SQLServerDbWriteAccess;
 
 /**
  * Allows retrieving static info about a machine

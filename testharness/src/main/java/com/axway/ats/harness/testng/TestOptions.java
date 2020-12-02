@@ -57,9 +57,9 @@ public @interface TestOptions {
 
     /**
      * Specifies the max number of times a test can be run. It can be applied on test method
-     * or it containing class or some of the parent classes</br>
+     * or it containing class or some of the parent classes<br>
      * 
-     * Meaningful values are numbers above 1</br>
+     * Meaningful values are numbers above 1<br>
      * 
      * <b>Note:</b> It takes effect if a Retry Analyzer is specified for a test.
      * @return

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.axway.ats.framework</groupId>
@@ -10,6 +10,7 @@
     <name>ATS-Framework</name>
     <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
     <url>https://github.com/Axway/ats-framework</url>
+
 
     <modules>
         <module>commonlibrary</module>
@@ -31,7 +32,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
         <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces
-			Java 8 class level artifacts -->
+            Java 8 class level artifacts -->
         <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -61,9 +62,9 @@
         <javax.mail.version>1.4.4</javax.mail.version>
         <!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
         <javax.activation.version>1.1</javax.activation.version>
-        <apache.xalan.version>2.7.1</apache.xalan.version>
+        <apache.xalan.version>2.7.2</apache.xalan.version>
         <!-- xercesImpl: (used by xalan) There is xalan 2.7 which depends on xercesImpl 2.9.0(we used 2.7.0 before). -->
-        <apache.xercesImpl.version>2.10.0</apache.xercesImpl.version>
+        <apache.xercesImpl.version>2.12.0</apache.xercesImpl.version>
 
         <!-- Needed for jTDS -->
         <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
@@ -77,19 +78,19 @@
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-        <junit.version>4.12
-        </junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
+        <junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock
+            >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
         <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
         <cglib.cglib.version>3.0</cglib.cglib.version>
         <org.javassist.version>3.20.0-GA</org.javassist.version>
-        <!-- TestNG version extended by ATS team. Used in TestHarness -->
+        <!-- TestNG version used in TestHarness -->
         <testng.version>6.10</testng.version>
         <!-- Used in TestHarness - data-driven tests -->
         <net.sourceforgejexcelapi.jxl.version>2.6.10</net.sourceforgejexcelapi.jxl.version>
 
         <!-- Used in ActionLibrary -->
-        <!-- Bouncycastle provider JDK6. Used in AactionLibrary -->
+        <!-- BouncyCastle security provider. Used in ActionLibrary -->
         <org.bouncycastle.version>1.57</org.bouncycastle.version>
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
@@ -102,11 +103,16 @@
         <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
         <com.jcraft.jsch.version>0.1.54</com.jcraft.jsch.version>
 
-        <net.java.dev.jna.version>3.4.0
+        <!-- Used in Action/Core libraries and agentapp all -->
+        <org.dom4j.version>2.1.3</org.dom4j.version>
+
+        <net.java.dev.jna.version>5.6.0
         </net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
         <commons-compress.version>1.19</commons-compress.version>
         <gson.version>2.8.6</gson.version> <!-- Java 9-11 compatibility and fixes -->
         <ats-expectj.version>2.0.8</ats-expectj.version>
+        <!-- Oshi (Monitoring library) version -->
+        <oshi.version>5.3.0</oshi.version>
     </properties>
 
     <build>
@@ -190,7 +196,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Travis CI plugin serverId must be the same as in settings.xml-->
+            <!-- Travis CI plugin serverId must be the same as in settings.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -212,7 +218,7 @@
                     <source>8</source>
                     <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are treated as warnings -->
                     <!-- due to being not available in JDK 7, building it via it, will cause build error -->
-                    <!--<additionalparam>-Xdoclint:none</additionalparam>-->
+                    <!--<additionalparam>-Xdoclint:none</additionalparam> -->
                     <additionalJOption>-Xdoclint:none</additionalJOption>
                     <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
                     <failOnWarnings>false</failOnWarnings>
@@ -517,7 +523,7 @@
         <profile>
             <id>fast</id>
             <!-- Use this profile with "mvn goal -P fast" if you want quick build
-                 without running tests and generating JavaDoc -->
+                without running tests and generating JavaDoc -->
             <properties>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
                 <!-- Uncomment this if you want to compile tests but not to run them <skipTests>true</skipTests> -->

@@ -27,7 +27,7 @@ import com.jcraft.jsch.Session;
 /**
  * An SSH client class
  *
- * <br/><br/>
+ * <br><br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/SSH-Operations.html">page</a>
  * related to this class

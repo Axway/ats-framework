@@ -172,7 +172,7 @@ public class ReportConfigurator extends AbstractConfigurator {
         return testExplorerWebPath;
     }
 
-    public void setTestExplorerWebPAth(
+    public void setTestExplorerWebPath(
                                         String testExplorerWebPath ) {
 
         this.testExplorerWebPath = testExplorerWebPath;

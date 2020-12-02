@@ -81,7 +81,7 @@ public class MobileElement<T> extends UiElement {
             if (webElement == null) {
                 return null;
             } else {
-            return MobileElementFinder.findElement(appiumDriver, this).getAttribute(attribute);
+                return MobileElementFinder.findElement(appiumDriver, this).getAttribute(attribute);
             }
         } catch (Exception e) {
             throw new MobileOperationException(this, "getAttributeValue", e);
@@ -232,7 +232,7 @@ public class MobileElement<T> extends UiElement {
                         // https://discuss.appium.io/t/scroll-to-swipe-action-in-ios-8/4220/29 May not work to scroll to specific cell in table view
                         element.findElement(MobileBy.IosUIAutomation(".scrollToElementWithPredicate(\"name CONTAINS '" +
                                                                      getElementProperty("name") + "'\")"));
-                }
+                    }
                 } else {
                     throw new Exception("scrollTo() not supported yet for element without name property");
                 }

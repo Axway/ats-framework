@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2020 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,21 +37,23 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.StringUtils;
 
 /**
- * A representation of a REST response
+ * A representation of a response generated from {@link RestClient} request
  */
 @PublicAtsApi
 public class RestResponse {
 
-    private static final Logger log               = Logger.getLogger(RestResponse.class);
+    private static final Logger LOG = Logger.getLogger(RestResponse.class);
 
-    public static final int     MAX_RESPONSE_SIZE = 10485760;                            //10MB
+    public static final int     RESPONSE_SIZE_BIG_WARN           = 104857600; // 100MB
+    private static      boolean BIG_RESPONSE_SIZE_WARNING_LOGGED = false; // flag to log warning only once
 
-    private Response            response;
+    private Response response;
+    private boolean  bufferResponse; // whether response should be buffered
 
     RestResponse( Response response, boolean bufferResponse ) {
 
         this.response = response;
-
+        this.bufferResponse = bufferResponse;
         if (bufferResponse) {
             checkResponseBodyStatus();
         }
@@ -141,7 +143,7 @@ public class RestResponse {
 
             return new JsonText(jsonText.trim());
         } else {
-            log.warn("JSON response is empty, we return a null " + JsonText.class.getSimpleName()
+            LOG.warn("JSON response is empty, we return a null " + JsonText.class.getSimpleName()
                      + " object");
             return null;
         }
@@ -151,7 +153,7 @@ public class RestResponse {
      * Return the response body as XML text
      *
      * @return the body as XML text
-     * @throws XMLException 
+     * @throws XMLException
      */
     @PublicAtsApi
     public XmlText getBodyAsXml() throws XMLException {
@@ -163,7 +165,7 @@ public class RestResponse {
 
             return new XmlText(xmlText.trim());
         } else {
-            log.warn("JSON response is empty, we return a null " + XmlText.class.getSimpleName()
+            LOG.warn("JSON response is empty, we return a null " + XmlText.class.getSimpleName()
                      + " object");
             return null;
         }
@@ -172,7 +174,7 @@ public class RestResponse {
     /**
      * Return the body as an InputStream. 
      * The user is responsible for closing the returned stream.
-     * 
+     *
      * @return the body as an InputStream
      */
     @PublicAtsApi
@@ -258,10 +260,10 @@ public class RestResponse {
 
     /**
      * Verify that the response contains header exact value.
-     * 
+     *
      * @param header header name Header name search is case insensitive
      * @param value header value Header value search is case sensitive 
-     * @return 
+     * @return
      */
     @PublicAtsApi
     public RestResponse verifyHeader( String header, String value ) {
@@ -284,8 +286,8 @@ public class RestResponse {
     /**
      * Verify JSON key with its value
      * Be sure to use the right case, the search is case sensitive
-     * 
-     * @param key  key name
+     *
+     * @param keyPath  key name
      * @param value key value 
      * @return
      */
@@ -308,7 +310,7 @@ public class RestResponse {
     /**
      * Verify part of the response body 
      * Be sure to use the right case, the search is case sensitive
-     * 
+     *
      * @param responseBodyPart response body part, to be verified 
      * @return
      */
@@ -329,9 +331,9 @@ public class RestResponse {
     /**
      * Verify the exact response body 
      * Be sure to use the right case, the search is case sensitive
-     * 
+     *
      * @param body response body to be verified
-     * @return
+     * @return reference to the same object to allow method chaining
      */
     @PublicAtsApi
     public RestResponse verifyBodyMatch( String body ) {
@@ -351,9 +353,9 @@ public class RestResponse {
     /**
      * Verify response body by REGEX
      * Be sure to use the right case, the search is case sensitive
-     * 
+     *
      * @param responseBodyRegex REGEX that should verify the response body
-     * @return
+     * @return reference to the same object to allow method chaining
      */
     @PublicAtsApi
     public RestResponse verifyBodyRegex( String responseBodyRegex ) {
@@ -372,9 +374,9 @@ public class RestResponse {
 
     /**
      * Verify response status code
-     * 
-     * @param statusCode
-     * @return
+     *
+     * @param statusCode expected HTTP status code of the response
+     * @return reference to the same object to allow method chaining
      */
     @PublicAtsApi
     public RestResponse verifyStatusCode( int statusCode ) {
@@ -389,9 +391,9 @@ public class RestResponse {
     /**
      * Verify response status message.  
      * Be sure to use the right case, the search is case sensitive
-     * 
+     *
      * @param statusMessage message contained in the response status message
-     * @return
+     * @return reference to the same object to allow method chaining
      */
     @PublicAtsApi
     public RestResponse verifyStatusMessage( String statusMessage ) {
@@ -406,14 +408,25 @@ public class RestResponse {
 
     private void checkResponseBodyStatus() {
 
-        /* Next code prevents java.lang.IllegalStateException: Entity input stream has already been closed. 
-         * 
+        /* Next code prevents java.lang.IllegalStateException: Entity input stream has already been closed.
+         *
          * It is unsafe to do this on very large bodies as it may need too much memory.
          * So we restrict the max size.
          * Note that length of -1 could be indication of a very large chunked body.
-        */
-        if ("chunked".equals(response.getHeaderString("Transfer-Encoding"))
-            || (response.getLength() >= 0 && response.getLength() < MAX_RESPONSE_SIZE)) {
+         */
+        if (bufferResponse) {
+            if (response.getLength() >= RESPONSE_SIZE_BIG_WARN) {
+                if (!BIG_RESPONSE_SIZE_WARNING_LOGGED) {
+                    // TODO: add request URI as it might help identifying request if info logging level (location
+                    //  tracing) is not allowed
+                    LOG.warn(
+                            "Expected RestClient response with big size. Buffering huge responses is not recommended as "
+                            + "it might crash the JVM if it could not allocate so much new memory. It is recommended "
+                            + "to use RestClient#setBufferResponse(false). In the future similar warnings will not be "
+                            + "logged.");
+                    BIG_RESPONSE_SIZE_WARNING_LOGGED = true;
+                }
+            }
             response.bufferEntity();
         }
     }
@@ -424,14 +437,16 @@ public class RestResponse {
         /* In many cases the user just inspects the response status code or headers without reading the response entity.
          * This leads to memory leaks because the buffered entity data is not released.
          * Here we make an effort to release that memory.
-         * 
+         *
          * In cases the response entity is given to the user as a stream, we leave the user the
          * responsibility for closing that stream.
-         * 
+         *
          * There is no problem to call this code even if the response is already closed.
          */
-        response.close();
-
-        super.finalize();
+        try {
+            response.close();
+        } finally { // do not prevent further cleanup in case of exception
+            super.finalize();
+        }
     }
 }

@@ -15,6 +15,7 @@
  */
 package com.axway.ats.rbv.filesystem;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -191,7 +192,11 @@ public class FileSystemFolder implements Matchable {
         if (StringUtils.isNullOrEmpty(fileName)) {
             description = "folder '" + path + "'";
         } else {
-            description = "file '" + path + fileName + "'";
+            if (path.endsWith("\\") || path.endsWith("/")) {
+                description = "file '" + path + fileName + "'";
+            } else {
+                description = "file '" + path + IoUtils.normalizeDirPath(File.separator) + fileName + "'";
+            }
         }
 
         if (atsAgent.equals(FileSystemStorage.LOCAL_AGENT)) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,9 +42,10 @@ import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
+import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
+import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.utils.IoUtils;
-import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.core.validation.exceptions.ArrayEmptyException;
 import com.axway.ats.core.validation.exceptions.NumberValidationException;
 import com.axway.ats.core.validation.exceptions.ValidationException;
@@ -53,18 +55,18 @@ import com.axway.ats.core.validation.exceptions.ValidationException;
  */
 public abstract class AbstractDbProvider implements DbProvider {
 
-    private static Logger                     log;
-    private static final int                  BYTE_BUFFER_SIZE = 1024;
-    private static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
+    private static Logger                       log;
+    private static final int                    BYTE_BUFFER_SIZE = 1024;
+    protected static final Map<Integer, String> SQL_COLUMN_TYPES = new HashMap<Integer, String>();
 
-    protected DbConnection                    dbConnection;
+    protected DbConnection                      dbConnection;
 
-    private Connection                        connection;
+    private Connection                          connection;
 
-    protected String[]                        reservedWords    = new String[]{};
+    protected String[]                          reservedWords    = new String[]{};
 
     static {
-        // TODO in jdk8 there is a way to get them without additional libraries or reflection
+        // TODO in Java 8 there is a way to get them without additional libraries or reflection
         // http://stackoverflow.com/a/30444747
         for (Field field : Types.class.getFields()) {
             try {
@@ -302,11 +304,8 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Inserts a row in the given table.
      *
-     * @param tableName
-     * @param colums
-     * @param values This param must look like this: "'string_value', int_value, .."
-     * @param config
-     * @param log the log object
+     * @param tableName name
+     * @param columns map of column:value pairs
      *
      * @return The inserted rows, 0 or 1
      */
@@ -345,7 +344,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Executes a given SQL update statement and returns number of updated rows
      * @param query the SQL query to execute
-     * <br/><b>Note: </b>The SQL query must content inside any needed parameter escaping.
+     * <br><b>Note: </b>The SQL query must content inside any needed parameter escaping.
      * @return the number of rows affected
      * @throws DbException
      */
@@ -371,7 +370,7 @@ public abstract class AbstractDbProvider implements DbProvider {
 
     /**
      * @param tableName         the name of the table
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
@@ -385,7 +384,7 @@ public abstract class AbstractDbProvider implements DbProvider {
      * @param tableName         the name of the table
      * @param columnNameWhere   the column name for the where statement
      * @param whereValue        the where value for the where statement
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
@@ -400,7 +399,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * @param tableName         the name of the table
      * @param whereCondition    the where condition ( without the WHERE keyword )
-     * @return                  returns the number of the rows that
+     * @return returns the number of the rows that
      *                          match the where statement as a int. Returns 0 if there is
      *                          an error or the rowcount is 0
      */
@@ -538,15 +537,15 @@ public abstract class AbstractDbProvider implements DbProvider {
      *
      * @param data the byte array
      * @param size the number of bytes to read
-     * @return a HEX string representing the binary data
+     * @return a HEX string representing the binary data. Currently in upper case.
      */
     protected String bytesToHex( byte[] data, int size ) {
 
-        StringBuffer buf = new StringBuffer();
+        StringBuilder buf = new StringBuilder();
         for (int i = 0; i < size; i++) {
             String hexString = Integer.toHexString(data[i] & 0xFF);
             if (hexString.length() == 1) {
-                buf.append("0");
+                buf.append("0"); // add leading zero if number is too short ( 1 hex digit)
             }
 
             buf.append(hexString);
@@ -743,9 +742,15 @@ public abstract class AbstractDbProvider implements DbProvider {
         try {
             DatabaseMetaData databaseMetaData = connection.getMetaData();
 
-            final String schemaPattern = (this instanceof OracleDbProvider
-                                                                           ? dbConnection.getUser()
-                                                                           : null);
+            // ORACLE -> The USER NAME is the TABLE SCHEMA
+            String schemaPattern = (this instanceof OracleDbProvider
+                                                                     ? dbConnection.getUser()
+                                                                     : null);
+
+            // MySQL -> The DB NAME is the TABLE SCHEMA
+            schemaPattern = (this instanceof MysqlDbProvider
+                                                             ? dbConnection.getDb()
+                                                             : schemaPattern);
 
             ResultSet tablesResultSet = databaseMetaData.getTables(null, schemaPattern, null,
                                                                    new String[]{ "TABLE" });
@@ -775,8 +780,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                 table.setName(tableName);
                 table.setSchema(tablesResultSet.getString("TABLE_SCHEM"));
 
-                table.setPrimaryKeyColumn(exctractPrimaryKeyColumn(tableName, databaseMetaData,
-                                                                   schemaPattern));
+                table.setPrimaryKeyColumn(extractPrimaryKeyColumn(tableName, databaseMetaData,
+                                                                  schemaPattern));
                 table.setIndexes(extractTableIndexes(tableName, databaseMetaData,
                                                      connection.getCatalog()));
 
@@ -796,7 +801,7 @@ public abstract class AbstractDbProvider implements DbProvider {
     /**
      * Each provider can put restrictions on the types of tables to be processed
      *
-     * @param tablesResultSet
+     * @param tableResultSet
      * @param dbName
      * @param tableName
      * @return
@@ -806,8 +811,8 @@ public abstract class AbstractDbProvider implements DbProvider {
         return true;
     }
 
-    private String exctractPrimaryKeyColumn( String tableName, DatabaseMetaData databaseMetaData, String schemaPattern )
-                                                                                                                         throws SQLException {
+    private String extractPrimaryKeyColumn( String tableName, DatabaseMetaData databaseMetaData, String schemaPattern )
+                                                                                                                        throws SQLException {
 
         ResultSet pkResultSet = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableName);
         while (pkResultSet.next()) {
@@ -827,6 +832,9 @@ public abstract class AbstractDbProvider implements DbProvider {
         // about the specified table in all DBs.
         // We can use an method overriding instead of checking this instance
         // type.
+        
+        // Map to hold the table's columns in sorted (natural-order) manner. Special case for PostgreSQL.
+        Map<String, String> columns = null;
         ResultSet columnInformation = databaseMetaData.getColumns(null, schemaPattern, tableName, "%");
         while (columnInformation.next()) {
             StringBuilder sb = new StringBuilder();
@@ -837,7 +845,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             sb.append(", type=" + type);
             sb.append(extractTableAttributeValue(columnInformation, "IS_AUTOINCREMENT", "auto increment", tableName,
                                                  columnName));
-            if (type.equalsIgnoreCase("BIT")) {
+            if ("BIT".equalsIgnoreCase(type)) {
                 sb.append(extractBooleanResultSetAttribute(columnInformation, "COLUMN_DEF", "default"));
             } else {
                 sb.append(
@@ -854,25 +862,47 @@ public abstract class AbstractDbProvider implements DbProvider {
             // "ORDINAL_POSITION", "sequence number" ) );
             // sb.append( ", source data type=" + sqlTypeToString(
             // columnInformation.getShort( "SOURCE_DATA_TYPE" ) ) );
-            columnDescription.add(sb.toString());
+            if (this.dbConnection instanceof DbConnPostgreSQL) {
+                if (columns == null) {
+                    columns = new HashMap<String, String>();
+                }
+                columns.put(columnName, sb.toString());
+            } else {
+                columnDescription.add(sb.toString());
+            }
         }
+
+        if (columns != null) {
+            List<String> sortedKeySet = new ArrayList<>(columns.keySet());
+            Collections.sort(sortedKeySet);
+            for (String key : sortedKeySet) {
+                columnDescription.add(columns.get(key));
+            }
+        }
+
     }
 
-    protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+    protected abstract Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
+                                                                String catalog ) throws DbException;
+
+    /*protected Map<String, String> extractTableIndexes( String tableName, DatabaseMetaData databaseMetaData,
                                                        String catalog ) throws DbException {
-
+    
         Map<String, String> indexes = new HashMap<>();
-
+    
         try {
             ResultSet indexInformation = databaseMetaData.getIndexInfo(catalog, null, tableName, true, true);
             while (indexInformation.next()) {
-
+    
                 StringBuilder sb = new StringBuilder();
                 String indexName = indexInformation.getString("INDEX_NAME");
                 if (!StringUtils.isNullOrEmpty(indexName)) {
+    
+                    sb.append("index_name=" + indexName + ", ");
+    
                     String columnName = indexInformation.getString("COLUMN_NAME");
-
-                    sb.append("name=" + columnName);
+    
+                    sb.append("column_name=" + columnName);
                     sb.append(extractTableAttributeValue(indexInformation, "INDEX_QUALIFIER", "index catalog",
                                                          tableName, columnName));
                     sb.append(", type=" + SQL_COLUMN_TYPES.get(indexInformation.getInt("TYPE")));
@@ -884,7 +914,7 @@ public abstract class AbstractDbProvider implements DbProvider {
                                                          tableName, columnName));
                     sb.append(extractTableAttributeValue(indexInformation, "ORDINAL_POSITION", "sequence number",
                                                          tableName, columnName));
-
+    
                     // sb.append( extractIndexAttribute( indexInformation,
                     // "TABLE_NAME" ) );
                     // sb.append( extractResultSetAttribute( indexInformation,
@@ -899,9 +929,9 @@ public abstract class AbstractDbProvider implements DbProvider {
         } catch (SQLException e) {
             throw new DbException("Error extracting table indexes info", e);
         }
-
+    
         return indexes;
-    }
+    }*/
 
     private String extractBooleanResultSetAttribute( ResultSet resultSet, String attribute, String attributeNiceName ) {
 
@@ -912,8 +942,8 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
     }
 
-    private String extractTableAttributeValue( ResultSet resultSet, String attribute, String attributeNiceName,
-                                               String tableName, String columnName ) {
+    protected String extractTableAttributeValue( ResultSet resultSet, String attribute, String attributeNiceName,
+                                                 String tableName, String columnName ) {
 
         try {
             String result = resultSet.getString(attribute);

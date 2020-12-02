@@ -44,7 +44,7 @@ import com.axway.ats.harness.config.TestBox;
 /**
  * This class allows the user to execute general database operations.
  *
- * <br/><br/>
+ * <br><br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/Database-Operations.html">page</a>
  * related to this class
@@ -141,7 +141,7 @@ public class DatabaseOperations {
     }
 
     /**
-     * Gets some data from a database table. </br>
+     * Gets some data from a database table. <br>
      * It constructs a SQL query based on the input arguments.
      *
      * @param tableName the table to query
@@ -174,7 +174,7 @@ public class DatabaseOperations {
     }
 
     /**
-     * Gets some data from a database table. </br>
+     * Gets some data from a database table. <br>
      * <em>Note</em> that client may need to inspect returned type of each value and
      * optionally convert it to get value in specific format.
      *
@@ -260,7 +260,7 @@ public class DatabaseOperations {
 
     /**
      *
-     * Gets a single value from a database table. </br>
+     * Gets a single value from a database table. <br>
      * It constructs a SQL query based on the input arguments. It returns the first value of the first returned row.
      *
      * <p><strong>Note</strong>: If the selected DB object is array - BLOB, LONG BLOB ... we return it this way:
@@ -299,7 +299,7 @@ public class DatabaseOperations {
     }
 
     /**
-     * Gets a single value from a database. </br>
+     * Gets a single value from a database. <br>
      * It returns the first value of the first returned row.
      *
      * <p><strong>Note</strong>: If the selected DB object is array - BLOB, LONG BLOB ... we return it this way:
@@ -447,7 +447,7 @@ public class DatabaseOperations {
      *
      * @param tableName the table we will delete in
      * @param whereClause the where clause, pass 'null' if want to delete all table values.
-     * <br/><b>Note: </b>The where clause must content inside any needed parameter escaping.
+     * <br><b>Note: </b>The where clause must content inside any needed parameter escaping.
      * @return the number of deleted rows
      */
     @PublicAtsApi

@@ -29,7 +29,7 @@ import com.axway.ats.core.utils.StringUtils;
  * Main class for comparing file system sets (of directories and contained files)
  * for changes like different attributes, some file/dir. missing or added, etc.
  *
- * <br/><br/>
+ * <br><br>
  * <a href="https://axway.github.io/ats-framework/File-System-Snapshots.html">Here</a>
  * is related <b>user guide</b> page related to this class
  */
@@ -238,8 +238,8 @@ public class FileSystemSnapshot {
      *
      * @param rootDirectoryAlias the alias of the root directory
      * @param relativeFilePath path to this file relative to the path of directory with specified alias
-     * @param skipRules specifies which file attributes to be skipped.<br/>
-     *                  Use one of the FileSystemSnapshot.SKIP_* constants<br/>
+     * @param skipRules specifies which file attributes to be skipped.<br>
+     *                  Use one of the FileSystemSnapshot.SKIP_* constants<br>
      *                  This is an optional parameter - if not used, the whole file will be skipped
      */
     @PublicAtsApi
@@ -253,8 +253,8 @@ public class FileSystemSnapshot {
      *
      * @param rootDirectoryAlias the alias of the root directory
      * @param relativeFilePath path to this file relative to the root directory
-     * @param skipRules specifies which file attributes to be skipped.<br/>
-     *                  Use one of the FileSystemSnapshot.SKIP_* constants<br/>
+     * @param skipRules specifies which file attributes to be skipped.<br>
+     *                  Use one of the FileSystemSnapshot.SKIP_* constants<br>
      *                  This is an optional parameter - if not used, the whole file will be skipped
      */
     @PublicAtsApi
@@ -264,14 +264,14 @@ public class FileSystemSnapshot {
     }
 
     /**
-     * Explicitly request to check some file attribute. <br/>
+     * Explicitly request to check some file attribute. <br>
      * Example: Globally you have disabled checking the files' last modification time, but using this
      * method you can override this setting for some particular files
      *
      * @param rootDirectoryAlias the alias of the root directory
      * @param relativeFilePath path to this file relative to the directory with provided alias
-     * @param checkRules specifies which file attributes to be checked.<br/>
-     *                   Use one of the FileSystemSnapshot.CHECK_* constants<br/>
+     * @param checkRules specifies which file attributes to be checked.<br>
+     *                   Use one of the FileSystemSnapshot.CHECK_* constants<br>
      *                   This is an optional parameter - if not used, the all supported attributes will be checked
      */
     @PublicAtsApi
@@ -324,7 +324,7 @@ public class FileSystemSnapshot {
      * Load a snapshot from a local file
      *
      * @param newSnapshotName the name of the new snapshot
-     * </br>Pass null or empty string if want to use the snapshot name as saved in the file,
+     * <br>Pass null or empty string if want to use the snapshot name as saved in the file,
      * or provide a new name here
      * @param sourceFile the source file
      * @return the new snapshot instance
@@ -352,10 +352,10 @@ public class FileSystemSnapshot {
 
     /**
      * Load a snapshot from the remote host as specified when creating this instance.
-     * </br><b>Note:</b> It will throw an error if this is a local instance.
+     * <br><b>Note:</b> It will throw an error if this is a local instance.
      *
      * @param newSnapshotName the name of the new snapshot
-     * </br>Pass null or empty string if want to use the snapshot name as saved in the file,
+     * <br>Pass null or empty string if want to use the snapshot name as saved in the file,
      * or provide a new name here
      * @param sourceFile the source file
      * @return the new snapshot instance
@@ -393,7 +393,7 @@ public class FileSystemSnapshot {
 
     /**
      * Save a snapshot on the remote host as specified when creating this instance.
-     * </br><b>Note:</b> It will throw an error if this is a local instance.
+     * <br><b>Note:</b> It will throw an error if this is a local instance.
      * @param backupFile the backup file name
      */
     @PublicAtsApi

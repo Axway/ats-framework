@@ -26,10 +26,10 @@ import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 import com.axway.ats.log.appenders.PassiveDbAppender;
-import com.axway.ats.log.autodb.DbAccessFactory;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
-import com.axway.ats.log.autodb.SQLServerDbWriteAccess;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
+import com.axway.ats.log.autodb.io.DbAccessFactory;
+import com.axway.ats.log.autodb.io.SQLServerDbWriteAccess;
 
 /**
  * Keeps info about all readings that are already populated to the DB.
@@ -68,12 +68,12 @@ public class DatabaseReadingsRepository {
         if (dbApp != null) {
             DbAppenderConfiguration dbAppConf = dbApp.getAppenderConfig();
             if (dbAppConf != null) {
-                dbAppConfString = dbAppConf.toString();
+                dbAppConfString = dbAppConf.toString(); // or obtainDbConnectionHash(); Not sure what is right!
             } else {
-                return; // for some reason the current appender has no db configuration. so we just return
+                return; // for some reason the current appender has no db configuration. so just return
             }
         } else {
-            return; // for some reason there is no PassiveDbAppender for this caller. so we just return
+            return; // for some reason there is no PassiveDbAppender for this caller. so just return
         }
 
         knownReadingBeans = knownReadingBeansPerDatabaseConfiguration.get(dbAppConfString);
@@ -146,11 +146,27 @@ public class DatabaseReadingsRepository {
         }
     }
 
+    private String obtainDbConnectionHash() {
+
+        DbAppenderConfiguration dbAppenderConfiguration = PassiveDbAppender.getCurrentInstance()
+                                                                           .getAppenderConfig();
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append(dbAppenderConfiguration.getHost() + "|__|" + dbAppenderConfiguration.getPort() + "|__|"
+                  + dbAppenderConfiguration.getDatabase());
+
+        return sb.toString();
+    }
+
     private int getDbIdForReading( Map<String, Integer> knownReadingBeans,
                                    ReadingBean reading ) {
 
         String mapKey = reading.getDescription();
         Integer dbId = knownReadingBeans.get(mapKey);
+        /*FIXME: ATS is caching readings for each database, that was created on the Agent, but if one of those databases is recreated, and the agent is not restarted,
+         * the cached reading is NOT invalidated
+         */
         return (dbId != null)
                               ? dbId
                               : -1;

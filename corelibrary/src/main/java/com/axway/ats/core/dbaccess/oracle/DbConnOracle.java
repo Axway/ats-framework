@@ -292,7 +292,10 @@ public class DbConnOracle extends DbConnection {
         if (this.timeout == null) {
             this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
         }
-        dataSource.setLoginTimeout(this.timeout);
+        if (this.timeout > 0) {
+            dataSource.setLoginTimeout(this.timeout);
+        }
+
     }
 
     @Override

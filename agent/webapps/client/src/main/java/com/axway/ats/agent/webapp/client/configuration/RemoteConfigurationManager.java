@@ -59,8 +59,8 @@ public class RemoteConfigurationManager {
         // get the ATS Agent version
         String agentVersion = (String) restHelper.executeRequest(atsAgent, "agent/properties", "POST",
                                                                  "{\"callerId\":\"" + callerId + "\",\"operation\":\""
-                                                                                                      + AgentPropertiesRestEntryPoint.GET_ATS_VERSION_OPERATION
-                                                                                                      + "\"}",
+                                                                                                       + AgentPropertiesRestEntryPoint.GET_ATS_VERSION_OPERATION
+                                                                                                       + "\"}",
                                                                  "ats_version",
                                                                  String.class);
 
@@ -88,6 +88,8 @@ public class RemoteConfigurationManager {
                    .append(":")
                    .append(restHelper.serializeJavaObject(configurators))
                    .append("}");
+
+        log.info("Pushing DB log configuration to ATS Agent " + atsAgent + "");
 
         // configure the agent
         restHelper.executeRequest(atsAgent, "agent/configurations", "PUT",

@@ -18,6 +18,8 @@ package com.axway.ats.agent.webapp.restservice.api.actions;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.ClassUtils;
+
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.google.gson.Gson;
 
@@ -167,7 +169,7 @@ public class ActionPojo {
         for (int i = 0; i < argumentsValues.length; i++) {
             String value = argumentsValues[i];
             String className = argumentsTypes[i];
-            Class<?> actualClass = Class.forName(className);
+            Class<?> actualClass = ClassUtils.getClass(className);
             Object actualValue = gson.fromJson(value, actualClass);
             actualArgs.add(actualValue);
         }

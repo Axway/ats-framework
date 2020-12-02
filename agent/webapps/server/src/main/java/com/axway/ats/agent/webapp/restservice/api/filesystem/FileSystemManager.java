@@ -670,6 +670,32 @@ public class FileSystemManager {
 
     }
 
+    public synchronized static void sendFileFrom( String callerId, long resourceId, String fromFileName,
+                                                  String toFileName,
+                                                  String machineIP, int port,
+                                                  boolean failOnError ) throws NoSuchActionException,
+                                                                        NoCompatibleMethodFoundException,
+                                                                        NoSuchComponentException,
+                                                                        ClassNotFoundException, InstantiationException,
+                                                                        IllegalAccessException,
+                                                                        IllegalArgumentException,
+                                                                        InvocationTargetException {
+
+        ActionPojo pojo = new ActionPojo(callerId,
+                                         resourceId,
+                                         COMPONENT_NAME,
+                                         "Internal File System Operations send File From",
+                                         new String[]{ String.class.getName(), String.class.getName(),
+                                                       String.class.getName(), int.class.getName(),
+                                                       boolean.class.getName() },
+                                         new String[]{ GSON.toJson(fromFileName), GSON.toJson(toFileName),
+                                                       GSON.toJson(machineIP), GSON.toJson(port),
+                                                       GSON.toJson(failOnError) });
+
+        ResourcesManager.executeOverResource(pojo);
+
+    }
+
     public synchronized static String constructDestinationFilePath( String callerId, long resourceId,
                                                                     String srcFileName,
                                                                     String dstFilePath ) throws NoSuchActionException,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,12 @@ package com.axway.ats.core.dbaccess.mssql;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.sql.Driver;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
+import javax.management.ReflectionException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -29,7 +33,9 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.reflect.ReflectionUtils;
 import com.axway.ats.core.utils.StringUtils;
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
 /**
  * <p>Connection descriptor for MSSQL databases.</p>
@@ -41,7 +47,7 @@ import com.axway.ats.core.utils.StringUtils;
  * <ul>
  *  <li>"JTDS" - default</li>
  *  <li>"JNetDirect" - to use JNetDirect's JSQLConnect driver</li>
- *  <li>"MSSQL" - to use the official Microsoft SQL driver</li>
+ *  <li>"MSSQL" - to use Official Microsoft SQL Server driver (Note that additional Maven dependency is needed)</li>
  * </ul>
  * <strong>Note</strong> that both MSSQL and JNetDirect have to be added to the class path if you want to use them. ATS does not include them by default
  * </p>
@@ -50,62 +56,62 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class DbConnSQLServer extends DbConnection {
 
-    private static final AtsConsoleLogger      log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
+    private static final AtsConsoleLogger log                                   = new AtsConsoleLogger(DbConnSQLServer.class);
 
-    private static final String                JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
+    public static final String            JDBC_DRIVER_VENDOR_KEY                = "com.axway.automation.ats.logdbdriver";
     /**
      * The key for configuring JDBC MsSQL URL prefix string
      */
-    private static final String                JDBC_PREFIX_KEY                       = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix";
+    private static final String           JDBC_PREFIX_KEY                       = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix";
     /**
      * The key to configure MsSQL JDBC driver class
      */
-    private static final String                JDBC_DRIVER_CLASS_KEY                 = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class";
+    private static final String           JDBC_DRIVER_CLASS_KEY                 = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class";
     /**
      * The key to configure MsSQL JDBC date source class
      */
-    private static final String                JDBC_DATASOURCE_CLASS_KEY             = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class";
+    private static final String           JDBC_DATASOURCE_CLASS_KEY             = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class";
 
     // jTDS driver settings which are used by default
-    private static final String                DEFAULT_JDBC_DRIVER_PREFIX            = "jdbc:jtds:sqlserver://";
-    private static final String                DEFAULT_JDBC_DRIVER_CLASS_NAME        = "net.sourceforge.jtds.jdbc.Driver";                                  // JNetDirect com.jnetdirect.jsql.JSQLDriver
-    private static final String                DEFAULT_JDBC_DATASOURCE_CLASS_NAME    = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+    private static final String           DEFAULT_JDBC_DRIVER_PREFIX            = "jdbc:jtds:sqlserver://";
+    private static final String           DEFAULT_JDBC_DRIVER_CLASS_NAME        = "net.sourceforge.jtds.jdbc.Driver";                                  // JNetDirect com.jnetdirect.jsql.JSQLDriver
+    private static final String           DEFAULT_JDBC_DATASOURCE_CLASS_NAME    = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
     // JNetDirect driver settings which are used by default
-    private static final String                JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
-    private static final String                JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
-    private static final String                JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
+    private static final String           JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
+    private static final String           JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
+    private static final String           JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
     // MSSQL driver settings which are used by default
-    private static final String                MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:sqlserver://";
-    private static final String                MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-    private static final String                MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
+    private static final String           MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:sqlserver://";
+    private static final String           MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+    private static final String           MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
 
     /**
      * Default DB port
      */
-    public static final int                    DEFAULT_PORT                          = 1433;
+    public static final int               DEFAULT_PORT                          = 1433;
 
     /**
      * The connection URL
      */
-    private StringBuilder                      url                                   = new StringBuilder();
+    private StringBuilder                 url                                   = new StringBuilder();
 
-    private BasicDataSource                    ds;
+    private DataSource                    ds;
 
-    private Boolean                            useSSL;
+    private Boolean                       useSSL;
 
     /**
      * The JDBC driver prefix to construct URL.
      * For example: "jdbc:JSQLConnect://" for JNetDirect or
      * "jdbc:jtds:sqlserver://" for jTDS
      */
-    private static String                      jdbcDriverPrefix                      = null;
+    private String                        jdbcDriverPrefix                      = null;
 
     /**
      * The JDBC driver class as String
      * For example: "com.jnetdirect.jsql.JSQLDriver" for JNetDirect or
      *   "net.sourceforge.jtds.jdbc.Driver" for jTDS
      */
-    private static Class<? extends Driver>     jdbcDriverClass                       = null;
+    private Class<? extends Driver>       jdbcDriverClass                       = null;
 
     /**
      * The JDBC class for DataSource
@@ -115,9 +121,9 @@ public class DbConnSQLServer extends DbConnection {
      *  <li>"com.jnetdirect.jsql.JSQLPoolingDataSource" for JNetDirect</li>
      * </ul>
      */
-    private static Class<? extends DataSource> jdbcDataSourceClass                   = null;
+    private Class<? extends DataSource>   jdbcDataSourceClass                   = null;
 
-    public static final String                 DATABASE_TYPE                         = "MSSQL";
+    public static final String            DATABASE_TYPE                         = "MSSQL";
 
     /**
      * Constructor
@@ -129,7 +135,9 @@ public class DbConnSQLServer extends DbConnection {
      */
     public DbConnSQLServer( String host, String db, String user, String password ) {
 
-        this(host, db, user, password, null);
+        // since the Collections.singletonMap() returns map that cannot be modified (read-only), we use the single map to create another read-write map
+        this(host, db, user, password,
+             new HashMap<String, Object>(Collections.singletonMap(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS)));
     }
 
     /**
@@ -196,6 +204,10 @@ public class DbConnSQLServer extends DbConnection {
                                       + System.getProperty(JDBC_DRIVER_CLASS_KEY) + "\".");
             }
         }
+        /*if (MSSQL_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
+            // force usage of TLSv1.2
+            url.append(";sslProtocol=TLSv1.2");
+        }*/
     }
 
     @Override
@@ -248,7 +260,7 @@ public class DbConnSQLServer extends DbConnection {
                 log.info("Max number of active connections is "
                          + maxTotal);
             }
-            ds.setMaxTotal(maxTotal);
+            ((BasicDataSource) ds).setMaxTotal(maxTotal);
 
             // wait time for new connection
             Integer maxWaitMillis = AtsSystemProperties.getPropertyAsNumber("dbcp.maxWaitMillis");
@@ -259,13 +271,13 @@ public class DbConnSQLServer extends DbConnection {
                          + maxWaitMillis
                          + " msec");
             }
-            ds.setMaxWaitMillis(maxWaitMillis);
+            ((BasicDataSource) ds).setMaxWaitMillis(maxWaitMillis);
 
             String logAbandoned = System.getProperty("dbcp.logAbandoned");
             if (logAbandoned != null && ("true".equalsIgnoreCase(logAbandoned))
                 || "1".equalsIgnoreCase(logAbandoned)) {
                 String removeAbandonedTimeoutString = System.getProperty("dbcp.removeAbandonedTimeout");
-                int removeAbandonedTimeout = (int) ds.getMaxWaitMillis() / (2 * 1000);
+                int removeAbandonedTimeout = (int) ((BasicDataSource) ds).getMaxWaitMillis() / (2 * 1000);
                 if (!StringUtils.isNullOrEmpty(removeAbandonedTimeoutString)) {
                     removeAbandonedTimeout = Integer.parseInt(removeAbandonedTimeoutString);
                 }
@@ -274,23 +286,22 @@ public class DbConnSQLServer extends DbConnection {
                          + removeAbandonedTimeout
                          + " sec");
                 // log not closed connections
-                ds.setLogAbandoned(true); // issue stack trace of not closed connection
-                ds.setAbandonedUsageTracking(true);
-                ds.setLogExpiredConnections(true);
-                ds.setRemoveAbandonedTimeout(removeAbandonedTimeout);
-                ds.setRemoveAbandonedOnBorrow(true);
-                ds.setRemoveAbandonedOnMaintenance(true);
-                ds.setAbandonedLogWriter(new PrintWriter(System.err));
+                ((BasicDataSource) ds).setLogAbandoned(true); // issue stack trace of not closed connection
+                ((BasicDataSource) ds).setAbandonedUsageTracking(true);
+                ((BasicDataSource) ds).setLogExpiredConnections(true);
+                ((BasicDataSource) ds).setRemoveAbandonedTimeout(removeAbandonedTimeout);
+                ((BasicDataSource) ds).setRemoveAbandonedOnBorrow(true);
+                ((BasicDataSource) ds).setRemoveAbandonedOnMaintenance(true);
+                ((BasicDataSource) ds).setAbandonedLogWriter(new PrintWriter(System.err));
             }
-            ds.setValidationQuery("SELECT 1");
-            ds.setDriverClassName(getDriverClass().getName());
-            ds.setUsername(user);
-            ds.setPassword(password);
-            ds.setUrl(getURL());
+            ((BasicDataSource) ds).setValidationQuery("SELECT 1");
+            ((BasicDataSource) ds).setDriverClassName(getDriverClass().getName());
+            ((BasicDataSource) ds).setUsername(user);
+            ((BasicDataSource) ds).setPassword(password);
+            ((BasicDataSource) ds).setUrl(getURL());
             applyTimeout();
             return ds;
         } else if (jdbcDataSourceClass.getName().equals(JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME)) {
-            DataSource ds = null;
             try {
                 ds = jdbcDataSourceClass.newInstance();
                 // FIXME these methods are not standard so error might occur with non-tested driver
@@ -307,14 +318,31 @@ public class DbConnSQLServer extends DbConnection {
                 }
                 setDatabase.invoke(ds, this.db);
                 applyTimeout();
-
+            } catch (Exception e) {
+                throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
+                                      + "' for use", e);
+            }
+            return ds;
+        } else if (jdbcDataSourceClass.getName().equals(MSSQL_JDBC_DATASOURCE_CLASS_NAME)) {
+            try {
+                ds = new SQLServerDataSource();
+                ((SQLServerDataSource) ds).setServerName(this.host);
+                ((SQLServerDataSource) ds).setPortNumber(this.port);
+                ((SQLServerDataSource) ds).setDatabaseName(this.db);
+                ((SQLServerDataSource) ds).setUser(this.user);
+                ((SQLServerDataSource) ds).setPassword(this.password);
+                ((SQLServerDataSource) ds).setEncrypt(false); // do not encrypt the traffic/connection
+                ((SQLServerDataSource) ds).setSSLProtocol("TLSv1.2"); // force usage of TLSv1.2, even if the connection will not be encrypted
+                ((SQLServerDataSource) ds).setTrustServerCertificate(true); // trust the server certificate
+                ((SQLServerDataSource) ds).setIntegratedSecurity(false);
+                ((SQLServerDataSource) ds).setURL(this.getURL()); // if the previous properties (encrypt, ssl protocol, etc) are specified in the URL, the URL values will be used
+                applyTimeout();
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
                                       + "' for use", e);
             }
             return ds;
         } else {
-            DataSource ds = null;
             try {
                 ds = jdbcDataSourceClass.newInstance();
                 // FIXME these methods are not standard so error might occur with non-tested driver
@@ -325,6 +353,14 @@ public class DbConnSQLServer extends DbConnection {
                 Method setDatabase = null;
                 setDatabase = jdbcDataSourceClass.getMethod("setDatabaseName", String.class);
                 setDatabase.invoke(ds, this.db);
+                try {
+                    Method setUrl = jdbcDataSourceClass.getMethod("setUrl", String.class);
+                    setUrl.invoke(ds, this.url.toString());
+                } catch (NoSuchMethodException nsme) {
+                    // The method name could differ in the different drivers
+                    Method setURL = jdbcDataSourceClass.getMethod("setURL", String.class);
+                    setURL.invoke(ds, this.url.toString());
+                }
                 applyTimeout();
             } catch (Exception e) {
                 throw new DbException("Error while configuring data source '" + jdbcDataSourceClass.getName()
@@ -347,13 +383,17 @@ public class DbConnSQLServer extends DbConnection {
                 // no timeout was specified, use the one from the system property or the default one
                 this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
+            
+            if (this.timeout < 0) {
+                return;
+            }
 
             sb.append("connectTimeout=" + this.timeout + ";");
             sb.append("socketTimeout=" + this.timeout + ";");
             sb.append("loginTimeout=" + this.timeout + ";");
 
             if (sb.length() > 0) {
-                ds.setConnectionProperties(sb.toString());
+                ((BasicDataSource) ds).setConnectionProperties(sb.toString());
             }
 
         } else if (jdbcDataSourceClass.getName().equals(JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME)) {
@@ -363,6 +403,9 @@ public class DbConnSQLServer extends DbConnection {
             if (this.timeout == null) {
                 this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
+            if (this.timeout < 0) {
+                return;
+            }
             Method loginTimeout = null;
             try {
                 loginTimeout = jdbcDataSourceClass.getMethod("loginTimeout", int.class);
@@ -370,6 +413,15 @@ public class DbConnSQLServer extends DbConnection {
             } catch (Exception e) {
                 log.error("Unable to set login timeout. Default value will be used", e);
             }
+        } else if (jdbcDataSourceClass.getName().equals(MSSQL_JDBC_DATASOURCE_CLASS_NAME)) {
+            if (this.timeout == null) {
+                this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+            }
+            if (this.timeout < 0) {
+                return;
+            }
+            ((SQLServerDataSource) ds).setSocketTimeout((int) TimeUnit.SECONDS.toMillis(timeout));
+            ((SQLServerDataSource) ds).setLoginTimeout((int) TimeUnit.SECONDS.toMillis(timeout));
         } else {
             /**
              * Currently this block is reached when classes from com.microsoft.sqlserver.jdbc package are used.
@@ -379,11 +431,14 @@ public class DbConnSQLServer extends DbConnection {
             if (this.timeout == null) {
                 this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
+            if (this.timeout < 0) {
+                return;
+            }
             try {
                 Method setSocketTimeout = jdbcDataSourceClass.getMethod("setSocketTimeout", int.class);
                 setSocketTimeout.invoke(ds, this.timeout);
             } catch (Exception e) {
-                log.error("Unable to set login timeout. Default value will be used", e);
+                log.error("Unable to set socket timeout. Default value will be used", e);
             }
         }
     }
@@ -420,7 +475,9 @@ public class DbConnSQLServer extends DbConnection {
 
         if (ds != null) {
             try {
-                ds.close();
+                if (ds instanceof BasicDataSource) {
+                    ((BasicDataSource) ds).close();
+                }
             } catch (Exception e) {
                 throw new DbException("Unable to close database source", e);
             }
@@ -456,7 +513,7 @@ public class DbConnSQLServer extends DbConnection {
      *
      * <p>
      * By default jTDS is used. If you want to use JSQLConnect you should add this
-     * to your Java VM invocation command line:<br/>
+     * to your Java VM invocation command line:<br>
      * <code>
      * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix=jdbc:JSQLConnect://
      * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class=com.jnetdirect.jsql.JSQLDriver
@@ -467,8 +524,22 @@ public class DbConnSQLServer extends DbConnection {
     private void updateConnectionSettings() {
 
         String value = System.getProperty(JDBC_DRIVER_VENDOR_KEY);
+        if (this.customProperties != null) {
+            if (this.customProperties.containsKey(DbKeys.DRIVER)) {
+                // even if the value is null/empty, it will be used
+                String driverValueFromCustProps = (String) this.customProperties.get(DbKeys.DRIVER);
+                if (driverValueFromCustProps != null) {
+                    if (!driverValueFromCustProps.equals(value)) {
+                        log.warn("Overriding DB driver for connection '" + this.getDescription() + "' from '" + value
+                                 + "' to '" + driverValueFromCustProps + "'");
+                    }
+                }
+                value = driverValueFromCustProps;
+            }
+        }
         MsSQLJDBCDriverVendor vendor = null;// MsSQLJDBCDriverVendor.JTDS; // default version
         if (!StringUtils.isNullOrEmpty(value)) {
+            log.info("Setting DB driver to '" + value + "' for connection '" + this.getDescription() + "'");
             value = value.trim().toUpperCase();
             try {
                 vendor = MsSQLJDBCDriverVendor.valueOf(value);
@@ -570,8 +641,8 @@ public class DbConnSQLServer extends DbConnection {
     }
 
     /**
-     * Tries to load class passed as argument. does  not throw exception if not found.
-     * @return
+     * Tries to load class passed as argument. Does not throw exception if not found.
+     * @return true if class is found and loaded
      */
     private boolean loadClass( String someClass ) {
 

@@ -49,8 +49,8 @@ import com.axway.ats.rbv.storage.Matchable;
  * <br>- the second nested message is the [1]
  * <br>- the second nested message of the first nested message is the [0, 1]
  *
- * <br/><br/>
- * <b>User guide</b> pages related to this class:<br/>
+ * <br><br>
+ * <b>User guide</b> pages related to this class:<br>
  * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
  * and
  * <a href="https://axway.github.io/ats-framework/IMAP-verifications.html">IMAP verification details</a>

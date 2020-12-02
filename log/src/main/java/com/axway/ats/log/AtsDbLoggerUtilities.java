@@ -57,8 +57,8 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>It is expected to have Test Explorer running on port 80.
-     * </br>The file must not be bigger than 10MB
+     * <br>It is expected to have Test Explorer running on port 80.
+     * <br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
      * @param testExplorerContextName the name of the web application, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
@@ -74,7 +74,7 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the current test case in the Test Explorer DB.
-     * </br>The file must not be bigger than 10MB
+     * <br>The file must not be bigger than 10MB
      * 
      * @param fileLocation the absolute path to the file
      * @param testExplorerContextName the name of the web application context, e.g. "TestExplorer" or "TestExplorer-4.0.0" etc.
@@ -93,8 +93,8 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach( upload) a local file to the a testcase in the Test Explorer DB.
-     * </br>It is expected to have Test Explorer running on port 80 or alternatively use {{@link #attachFileToTestcase(int, String, String, int)}}
-     * </br>The file must not be bigger than 10MB
+     * <br>It is expected to have Test Explorer running on port 80 or alternatively use {{@link #attachFileToTestcase(int, String, String, int)}}
+     * <br>The file must not be bigger than 10MB
      * 
      * @param testcaseId the testcase ID to which the file will be attached
      * @param fileLocation the absolute path to the file
@@ -111,7 +111,7 @@ public class AtsDbLoggerUtilities {
 
     /**
      * Attach a local file to the a testcase in the Test Explorer DB.
-     * </br>The file must not be bigger than 10MB
+     * <br>The file must not be bigger than 10MB
      * 
      * @param testcaseId the testcase id to which the file will be attached
      * @param fileLocation the absolute path to the file
@@ -230,7 +230,7 @@ public class AtsDbLoggerUtilities {
             } catch (Exception e) {
                 logger.error("Error while reading response for file attach", e);
             }
-            logger.warn("File attach error for file " + fileLocation);
+            logger.error("File attach error for file " + fileLocation);
             return false;
         } else {
             logger.info("Successfully attached \"" + fileLocation + "\" to testcase with ID \"" + testcaseId + "\"");
@@ -246,14 +246,16 @@ public class AtsDbLoggerUtilities {
             cc.setRequestMethod("HEAD");
 
             if (cc.getResponseCode() != 200) {
-                logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right");
+                logger.error(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is not defined right. Check TestExplorer's "
+                            + "context name, HTTP port and host/IP. Details: Connect successful but test HEAD request "
+                            + "received HTTP status code " + cc.getResponseCode() + " instead of expected 200 (OK).");
                 return false;
             }
         } catch (MalformedURLException mue) {
-            logger.warn(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is malformed", mue);
+            logger.error(currentErrMsgPrefix + ". Upload URL \"" + url + "\" is malformed", mue);
             return false;
         } catch (IOException ioe) {
-            logger.warn(currentErrMsgPrefix + ". Check request to URL \"" + url + "\" failed", ioe);
+            logger.error(currentErrMsgPrefix + ". Check request to URL \"" + url + "\" failed", ioe);
             return false;
         }
         return true;

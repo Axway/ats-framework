@@ -32,19 +32,27 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.process.LocalProcessExecutor;
+import com.axway.ats.core.reflect.ReflectionUtils;
 import com.axway.ats.core.system.model.ISystemInputOperations;
 import com.axway.ats.core.system.model.ISystemOperations;
+import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
 
@@ -176,9 +184,9 @@ public class LocalSystemOperations implements ISystemOperations {
     }
 
     /**
-     * Creates display screenshot and save it in an image file.<br/>
-     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br/>
-     * <br/>
+     * Creates display screenshot and save it in an image file.<br>
+     * The currently supported image formats/types are PNG, JPG, JPEG, GIF and BMP<br>
+     * <br>
      * <b>NOTE:</b> For remote usage, the filePath value must be only the image file extension eg. ".PNG"
      *
      * @param filePath the screenshot image file path. If the file extension is not specified, the default format PNG will be used
@@ -302,6 +310,38 @@ public class LocalSystemOperations implements ISystemOperations {
     public void logDuplicatedJars() {
 
         new ClasspathUtils().logProblematicJars();
+    }
+
+    public void setAtsDbAppenderThreshold( Level threshold ) {
+
+        Logger rootLogger = Logger.getRootLogger();
+        Enumeration<Appender> appenders = rootLogger.getAllAppenders();
+        while (appenders.hasMoreElements()) {
+            Appender appender = appenders.nextElement();
+            if (appender != null) {
+                if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
+                    ((AppenderSkeleton) appender).setThreshold(threshold);
+                }
+                if (appender.getClass().getName().equals("com.axway.ats.log.appenders.PassiveDbAppender")) {
+                    String callerId = ThreadsPerCaller.getCaller();
+                    String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller", true);
+                    if (callerId != null && callerId.equals(passiveDbAppenderCaller)) {
+                        ((AppenderSkeleton) appender).setThreshold(threshold);
+                    }
+                }
+            }
+        }
+    }
+
+    public void attachFileAppender( String filepath, String messageFormatPattern ) {
+
+        try {
+            Logger rootLogger = Logger.getRootLogger();
+            rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
+        } catch (Exception e) {
+            throw new RuntimeException("Could not attach file appender '" + filepath + "'", e);
+        }
+
     }
 
     /**
@@ -618,4 +658,5 @@ public class LocalSystemOperations implements ISystemOperations {
 
         PNG, JPG, JPEG, GIF, BMP;
     }
+
 }

@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2020 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,6 +70,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
+import com.axway.ats.core.utils.HostUtils;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -101,7 +102,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
     private static final Logger              log                                  = Logger.getLogger(LocalFileSystemOperations.class);
 
-    private static final Charset             DEFAULT_CHARSET                      = Charset.forName("UTF-8");
+    static final Charset                     DEFAULT_CHARSET                      = Charset.forName("UTF-8");
 
     //  line-terminator chars
     private static final byte                LINE_TERM_LF                         = '\n';
@@ -111,15 +112,15 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     private static final String              NORM_LINESEP                         = "\r\n";
 
     //file transfer socket commands (during file/directory copy)
-    private static final String              FILE_COPY_SOCKET_COMMAND             = "file";
-    private static final String              DIR_CREATE_SOCKET_COMMAND            = "dir";
-    private static final int                 INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                             // used for file/dir command and  file name length
+    static final String                      FILE_COPY_SOCKET_COMMAND             = "file";
+    static final String                      DIR_CREATE_SOCKET_COMMAND            = "dir";
+    static final int                         INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                             // used for file/dir command and  file name length
 
     //read buffer
-    private static final int                 READ_BUFFER_SIZE                     = 16384;
+    static final int                         READ_BUFFER_SIZE                     = 16384;
 
-    private static final int                 FILE_TRANSFER_BUFFER_SIZE            = 512 * 1024;
-    private static final int                 FILE_TRANSFER_TIMEOUT                = 60 * 1000;
+    static final int                         FILE_TRANSFER_BUFFER_SIZE            = 512 * 1024;
+    static final int                         FILE_TRANSFER_TIMEOUT                = 60 * 1000;
 
     // file size threshold after which a warning is issued for too-big file and that problems might arise
     private static final int                 FILE_SIZE_FOR_WARNING                = 10 * 1024 * 1024;                                 // 10 MB
@@ -146,7 +147,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      */
     private static final Random              randomGenerator                      = new Random();
 
-    // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs. Instance should be Hashtable to synchronize access operations;
+    // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs.
+    // Instance should be Hashtable to synchronize access operations;
     private Map<Integer, FileTransferStatus> fileTransferStates                   = new Hashtable<Integer, FileTransferStatus>();
 
     private static Map<String, FileLock>     lockedFiles                          = new HashMap<String, FileLock>();
@@ -467,7 +469,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             /* Copy the file in chunks.
              * If we provide the whole file at once, the copy process does not start or does not
              * copy the whole file on some systems when the file is a very large one - usually
-             * bigger then 2 GBs
+             * bigger than 2 GBs
              */
             final long CHUNK = 16 * 1024 * 1024; // 16 MB chunks
             for (long pos = 0; pos < srcChannel.size();) {
@@ -477,7 +479,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             if (srcChannel.size() != dstChannel.size()) {
                 throw new FileSystemOperationException("Size of the destination file \"" + destinationFile
                                                        + "\" and the source file \"" + sourceFile
-                                                       + "\" missmatch!");
+                                                       + "\" mismatch!");
             }
 
             if (osType.isUnix()) {
@@ -497,6 +499,27 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                 "Unable to close destination channel while copying file '" + sourceFile
                                             + "' to '" + destinationFile + "'");
         }
+    }
+
+    /**
+     * On Agent side. Read file from the executor
+     */
+    public void copyFileFrom( String sourceFileName, String destinationFile, String host, int remotePort,
+                              boolean failOnError ) {
+
+        FileTransferStatus status = new FileTransferStatus(); // Shared status of the transfer
+        FileTransferReader.readTransfer(host, remotePort, status);
+        if (status.transferException != null) {
+            // the error will be just logged locally on agent and finally detected on TestExecutor side
+            log.error("Error getting file " + sourceFileName + " from " + host + ":"
+                      + remotePort + "Error:", status.transferException);
+        } else {
+            if (log.isDebugEnabled()) {
+                log.debug("Incoming file transfer from " + host + ":" + remotePort
+                          + " completed successfully and saved as " + destinationFile);
+            }
+        }
+
     }
 
     /**
@@ -597,19 +620,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                    + toFileName + "' on " + toHost + ":" + toPort, ioe);
         } finally {
             IoUtils.closeStream(sos);
-            if (socket != null) {
-                try {
-                    socket.close();
-                } catch (IOException e) {
-                    log.error("Could not close the socket", e);
-                }
-            }
+            IoUtils.closeStream(socket, "Could not close the socket for sending file " + fromFileName);
         }
     }
 
     /**
      * Set port range for copy file operations
-     * 
+     *
      * @param copyFileStartPort starting range port
      * @param copyFileEndPort   ending range port
      */
@@ -618,25 +635,21 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                       Integer copyFileEndPort ) {
 
         if (copyFileStartPort != null || copyFileEndPort != null) {
-            String startErrorMsg = "Specified port for copy file '";
-            String endErrorMsg = "' port must be a positive integer!";
+            String startErrorMsg = "Specified port value for file copy '";
+            String endErrorMsg = "' must be a positive integer less than " + HostUtils.HIGHEST_PORT_NUMBER;
 
             // check if both values are positive
-            if (copyFileStartPort == null || copyFileStartPort < 0) {
+            if (copyFileStartPort == null || copyFileStartPort < HostUtils.LOWEST_PORT_NUMBER
+                || copyFileStartPort > HostUtils.HIGHEST_PORT_NUMBER) {
                 throw new RuntimeException(startErrorMsg + copyFileStartPort + endErrorMsg);
-            } else if (copyFileEndPort == null || copyFileEndPort < 0) {
-                throw new RuntimeException(startErrorMsg + copyFileEndPort + endErrorMsg);
-            } else if (copyFileStartPort == 0 || copyFileEndPort == 0) {
-                if (copyFileStartPort == 0 && copyFileEndPort != 0) {
-                    throw new RuntimeException(startErrorMsg + copyFileStartPort + endErrorMsg);
-                } else {
-                    throw new RuntimeException(startErrorMsg + copyFileEndPort + endErrorMsg);
-                }
-            }
+            } else if (copyFileEndPort == null || copyFileEndPort < HostUtils.LOWEST_PORT_NUMBER
+                       || copyFileEndPort > HostUtils.HIGHEST_PORT_NUMBER) {
+                           throw new RuntimeException(startErrorMsg + copyFileEndPort + endErrorMsg);
+                       }
 
             if (copyFileStartPort > copyFileEndPort) {
-                log.warn("Specified start port for copy file '" + copyFileStartPort
-                         + "' is bigger than the end port '" + copyFileEndPort + "'. We will switch them!");
+                log.warn("Specified start port for file copy '" + copyFileStartPort
+                         + "' is bigger than the end port '" + copyFileEndPort + "'. They will be switched!");
                 this.copyFileStartPort = copyFileEndPort;
                 this.copyFileEndPort = copyFileStartPort;
 
@@ -650,7 +663,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
     /**
      * Search for free port
-     * 
+     *
      * @return
      */
     private ServerSocket getServerSocket() {
@@ -702,6 +715,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     Socket socket = null;
                     FileOutputStream fos = null;
                     DataInputStream dis = null;
+                    String fileName = null; // name of current file/dir for transfer
                     try {
                         server.setReuseAddress(true);
                         server.setSoTimeout(FILE_TRANSFER_TIMEOUT);
@@ -714,7 +728,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             String fdType = readString(dis, fdTypeLength); // directory or file
                             int fileNameLength = dis.readInt();
                             checkParamLengthForSocketTransfer(fileNameLength, "file name length");
-                            String fileName = readString(dis, fileNameLength);
+                            fileName = readString(dis, fileNameLength);
                             fileName = IoUtils.normalizeFilePath(fileName,
                                                                  osType); // switch file separators according to the current OS
                             File file = new File(fileName);
@@ -754,16 +768,14 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                             } else if (fdType.equals(DIR_CREATE_SOCKET_COMMAND)) {
 
                                 if (!file.exists()) {
-
                                     log.debug("Creating directory: " + fileName);
                                     if (!file.mkdirs()) {
-                                        throw new RuntimeException();
+                                        throw new RuntimeException("Could not create full path for " + fileName);
                                     }
                                 }
                             } else {
 
-                                log.error("Unknown socket command (must be the file descriptor type): "
-                                          + fdType);
+                                log.error("Unknown socket command (must be the file descriptor type): " + fdType);
                                 return;
                             }
 
@@ -788,23 +800,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
                         IoUtils.closeStream(fos);
                         IoUtils.closeStream(dis);
-                        if (socket != null) {
-                            try {
-                                socket.close();
-                            } catch (IOException e) {
-                                log.error("Could not close the Socket", e);
-                            }
-                        }
-                        if (server != null) {
-                            try {
-                                server.close();
-                            } catch (IOException e) {
-                                log.error("Could not close the ServerSocket", e);
-                            }
-                        }
-
+                        IoUtils.closeStream(socket,
+                                            "Could not close the Socket while trying to transfer file "
+                                                    + fileName);
+                        IoUtils.closeStream(server, "Could not close the ServerSocket while trying to transfer "
+                                                    + "file " + fileName);
                         synchronized (transferStatus) {
-
                             transferStatus.finished = true;
                             transferStatus.notify();
                         }
@@ -848,6 +849,94 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         } catch (Exception e) {
 
             throw new FileSystemOperationException("Unable to open file transfer socket", e);
+        }
+
+        return freePort;
+    }
+
+    // TODO: move file transfer operations into child or utility class
+
+    /**
+     * Open file transfer socket for sending specific file
+     *
+     * @param nameOfFileToSend name of local (source) file name
+     * @param targetFileName destination file name
+     * @param failOnError whether we should fail if file is modified during reading and sending
+     * @return the port where the socket is listening
+     * @throws FileSystemOperationException
+     */
+    public int openFileTransferSocketForSending( String nameOfFileToSend, String targetFileName, boolean failOnError ) {
+
+        int freePort = -1;
+        try {
+
+            final ServerSocket server;
+            if (copyFileStartPort == null && copyFileEndPort == null) {
+                server = new ServerSocket(0);
+            } else {
+                server = getServerSocket();
+            }
+            freePort = server.getLocalPort();
+
+            if (log.isDebugEnabled()) {
+                log.debug("Starting file sending transfer server on port: " + freePort);
+            }
+
+            final FileTransferStatus transferStatus = new FileTransferStatus();
+            fileTransferStates.put(freePort, transferStatus);
+            Thread thread = new Thread(new Runnable() {
+
+                @Override
+                public void run() {
+
+                    Socket socket = null;
+                    DataOutputStream dos = null;
+                    try {
+                        server.setReuseAddress(true);
+                        server.setSoTimeout(FILE_TRANSFER_TIMEOUT);
+                        socket = server.accept();
+
+                        dos = new DataOutputStream(socket.getOutputStream());
+                        sendFileToSocketStream(new File(nameOfFileToSend), targetFileName, dos, failOnError);
+
+                    } catch (SocketTimeoutException ste) {
+                        // timeout usually will be when waiting for client connection but theoretically could be also
+                        //   in the middle of reading data
+                        log.error("Reached timeout of " + (FILE_TRANSFER_TIMEOUT / 1000)
+                                  + " seconds while waiting for file/directory copy operation.", ste);
+                        transferStatus.transferException = ste;
+                    } catch (IOException e) {
+                        log.error("An I/O error occurred", e);
+                        transferStatus.transferException = e;
+                    } finally {
+
+                        IoUtils.closeStream(dos);
+                        if (socket != null) {
+                            try {
+                                socket.close();
+                            } catch (IOException e) {
+                                log.error("Could not close the Socket", e);
+                            }
+                        }
+                        try {
+                            server.close();
+                        } catch (IOException e) {
+                            log.error("Could not close the ServerSocket", e);
+                        }
+
+                        synchronized (transferStatus) {
+                            transferStatus.finished = true;
+                            transferStatus.notify();
+                        }
+                    }
+                }
+            });
+
+            thread.setName("ATSFileTransferSocket-port" + freePort + "__" + thread.getName());
+            thread.start();
+        } catch (Exception e) {
+            throw new FileSystemOperationException("Unable to open file transfer socket for sending file '"
+                                                   + nameOfFileToSend + "'", e);
         }
 
         return freePort;
@@ -900,8 +989,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 Files.delete(file.toPath());
             } catch (IOException e) {
                 throw new FileSystemOperationException("Unable to delete " + (isDirectory
-                                                                                             ? "directory"
-                                                                                             : "file")
+                                                                                          ? "directory"
+                                                                                          : "file")
                                                        + " '" + fileName + "'" + (isDirectory
                                                                                               ? ". Try invoking deleteDirectory() instead."
                                                                                               : ""),
@@ -911,10 +1000,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     @Override
-    public void renameFile(
-                            String sourceFile,
-                            String destinationFile,
-                            boolean overwrite ) {
+    public void renameFile( String sourceFile, String destinationFile, boolean overwrite ) {
 
         File oldFile = new File(sourceFile);
         File newFile = new File(destinationFile);
@@ -1585,8 +1671,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         if (!targetFile.exists()) {
             throw new FileDoesNotExistException(fileName);
         }
-        if (searchFromPosition < 0l) {
-            searchFromPosition = 0l;
+        if (searchFromPosition < 0L) {
+            searchFromPosition = 0L;
         } else if (searchFromPosition > targetFile.length()) {
             throw new FileSystemOperationException("The file '" + fileName + "' has size("
                                                    + targetFile.length()
@@ -2109,7 +2195,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * @param to directory destination.
      * @param filter array of names not to copy.
      * @param isRecursive should sub directories be copied too
-     * @param failOnError set to true if you want to be thrown an exception, 
+     * @param failOnError set to true if you want to be thrown an exception,
      * if there is still a process writing in the file that is being copied
      * @throws FileSystemOperationException
      */
@@ -2235,7 +2321,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * @param toDirName the destination directory name
      * @param outputStream the output stream
      * @param isRecursive whether to send files/folders recursively or not
-     * @param failOnError set to true if you want to be thrown an exception, 
+     * @param failOnError set to true if you want to be thrown an exception,
      * if there is still a process writing in the file that is being copied
      * @throws FileDoesNotExistException
      * @throws IOException
@@ -2253,7 +2339,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             // fix possible path on Windows: d:/work/path -> D:\work\path
             File fromDir = new File(fromDirName);
             fromDirName = fromDir.getCanonicalPath();
-            /* 
+            /*
              * getCanonicalPath() does not append slash or backslash at the end of the filepath, so we manually append it
              * This is done, because later, this slash or backslash is needed, when constructing the target file name
              */
@@ -2274,7 +2360,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     /* Append slash, so we can concatenate files properly.
                      * Even though, on Windows, we well concatenate slash as well,
                      * it manages to transform it to \\, when saving files to disk,
-                     * ( ..path\\to/file -> saved as ..path\\to\\file ) 
+                     * ( ..path\\to/file -> saved as ..path\\to\\file )
                      * whereas, Linux, thinks \\ or \ is part of the filename.
                      * ( ../path/to/file -> saved as ../path/to/\file )
                      */
@@ -2295,7 +2381,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * @param file the file to send
      * @param toFileName the destination file name
      * @param outputStream the output stream
-     * @param failOnError set to true if you want to be thrown an exception, 
+     * @param failOnError set to true if you want to be thrown an exception,
      * if there is still a process writing in the file that is being copied
      * @throws IOException
      */
@@ -2476,7 +2562,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * change the boolean value, but {@link Boolean} is immutable and we also need to use the same object,
      * because we are synchronizing on it.
      */
-    private class FileTransferStatus {
+    class FileTransferStatus {
 
         boolean   finished = false;
         /**
@@ -2603,7 +2689,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         } catch (Exception e) {
             String errorMsg = null;
             if (entry != null) {
-                errorMsg = "Unable to untar " + StringEscapeUtils.escapeJava( entry.getName()) + " from " + tarFilePath
+                errorMsg = "Unable to untar " + StringEscapeUtils.escapeJava(entry.getName()) + " from " + tarFilePath
                            + ".Target directory '" + outputDirPath + "' is in inconsistent state.";
             } else {
                 errorMsg = "Could not read data from " + tarFilePath;
@@ -2807,16 +2893,20 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     /**
      * This is method for internal use only.
      * Currently used on the agent when copying files from the executor
-     * 
+     *
      * @param srcFileName the file name without path, existing on the executor
      * @param dstFilePath the target file path - desired file location (directory or directory + file name)
-     * 
+     *
      * @return full file path on the agent, used for file copy operations
      * */
     public String constructDestinationFilePath(
                                                 String srcFileName,
                                                 String dstFilePath ) throws Exception {
 
+        // workaround for relative file name w/o any path. Otherwise - File.getParentFile() returns null and NPE occurs
+        if (!dstFilePath.contains("\\") && !dstFilePath.contains("/")) {
+            dstFilePath = "." + File.separator + dstFilePath;
+        }
         File dstFile = new File(dstFilePath);
 
         // check if file exists
@@ -2850,29 +2940,4 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
             }
         }
     }
-
-//    private Charset loadCharset( String charset ) {
-//
-//        if (StringUtils.isNullOrEmpty(charset) || StandardCharsets.ISO_8859_1.name().equals(charset)) {
-//            return StandardCharsets.ISO_8859_1;
-//        }
-//        if (StandardCharsets.US_ASCII.name().equals(charset)) {
-//            return StandardCharsets.US_ASCII;
-//        }
-//        if (StandardCharsets.UTF_16.name().equals(charset)) {
-//            return StandardCharsets.UTF_16;
-//        }
-//        if (StandardCharsets.UTF_16BE.name().equals(charset)) {
-//            return StandardCharsets.UTF_16BE;
-//        }
-//        if (StandardCharsets.UTF_16LE.name().equals(charset)) {
-//            return StandardCharsets.UTF_16LE;
-//        }
-//        if (StandardCharsets.UTF_8.name().equals(charset)) {
-//            return StandardCharsets.UTF_8;
-//        }
-//
-//        throw new IllegalArgumentException("Charset '" + charset
-//                                           + "' is not supported. See java.nio.charset.StandardCharsets for supported ones.");
-//    }
 }

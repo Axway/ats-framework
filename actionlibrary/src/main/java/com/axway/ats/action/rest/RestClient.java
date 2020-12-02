@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,9 @@
  */
 package com.axway.ats.action.rest;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.security.KeyStore;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
@@ -29,6 +27,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.regex.Pattern;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -76,7 +75,7 @@ import com.axway.ats.core.utils.StringUtils;
 /**
  * A utility class for working with REST requests and responses
  *
- * <br/><br/>   
+ * <br><br>
  * <b>User guide</b> page related to this class is
  * <a href="https://axway.github.io/ats-framework/REST-Operations.html">here</a>
  *
@@ -165,7 +164,7 @@ public class RestClient {
 
     private boolean                   requestFilterAlreadyRegistered     = false;
 
-    private boolean                   bufferResponse                     = false;
+    private boolean                   bufferResponse                     = true;
 
     private boolean                   invalidateClient                   = true;
 
@@ -174,8 +173,6 @@ public class RestClient {
     /**
      * Constructor not specifying the target URI.
      * You have to specify one using the appropriate set method
-     *
-     * @param uri the target URI
      */
     @PublicAtsApi
     public RestClient() {
@@ -378,6 +375,28 @@ public class RestClient {
      */
     public RestClient setSupportedProtocols( String[] supportedProtocols ) {
 
+        if (supportedProtocols == null) {
+            throw new IllegalArgumentException("Supported protocols could not be null");
+        } else if (supportedProtocols.length == 0) {
+            throw new IllegalArgumentException("Supported protocols could not be empty array");
+        } else {
+            if (supportedProtocols.length > 1) {
+                log.warn("Multiple protocols provided, but only the first one will be used");
+            }
+            String firstProtocol = supportedProtocols[0];
+            if (StringUtils.isNullOrEmpty(firstProtocol)) {
+                throw new IllegalArgumentException("The first protocol could not be null/empty");
+            } else {
+                if (firstProtocol.contains(",")) {
+                    throw new IllegalArgumentException("Multi-value protocols '" + supportedProtocols[0]
+                                                       + "' are not supported. Please specify only one");
+                }
+            }
+        }
+
+        // trim the first value, because otherwise an error for Unsupported protocol is thrown later
+        supportedProtocols[0] = supportedProtocols[0].trim();
+
         this.supportedProtocols = supportedProtocols;
 
         this.invalidateClient = true;
@@ -396,7 +415,7 @@ public class RestClient {
 
     /**
      * If the URI is not fully specified in the constructor,
-     * you can navigate to an internal resource.</br>
+     * you can navigate to an internal resource.<br>
      * For example you can pass:
      * <ul>
      *   <li>"company"</li>
@@ -601,9 +620,9 @@ public class RestClient {
     }
 
     /**
-     * Add one or more values for one request(also called query) parameter</br></br>
+     * Add one or more values for one request(also called query) parameter<br><br>
      *
-     * The following example adds a language request parameter:</br>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
      * @param name parameter name
@@ -628,9 +647,9 @@ public class RestClient {
     }
 
     /**
-     * Add a list of values for one request(also called query) parameter</br></br>
+     * Add a list of values for one request(also called query) parameter<br><br>
      *
-     * The following example adds a language request parameter:</br>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
      * @param name parameter name
@@ -649,12 +668,12 @@ public class RestClient {
     }
 
     /**
-     * Add one or more request(also called query) parameters<br/></br/>
+     * Add one or more request(also called query) parameters<br></br/>
      *
-     * The following example adds a language request parameter:<br/>
+     * The following example adds a language request parameter:<br>
      * http://example.com/?language=eng
      *
-     * @param valueList map with parameter names and values
+     * @param requestParameters map with parameter names and values
      *
      * @return this client's instance
      */
@@ -671,7 +690,7 @@ public class RestClient {
     }
 
     /**
-     * Remove a request(also called query) parameter<br/></br/>
+     * Remove a request(also called query) parameter<br></br/>
      *
      * @param name the name of the parameter
      *
@@ -699,7 +718,7 @@ public class RestClient {
     }
 
     /**
-     * Remove one or more request(also called query) parameters<br/></br/>
+     * Remove one or more request(also called query) parameters<br></br/>
      *
      * @param names the names of the parameters
      *
@@ -757,7 +776,7 @@ public class RestClient {
 
     /**
      * Set the request HTTP media type.
-     * This is the value of the "Content-Type" header.</br>
+     * This is the value of the "Content-Type" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the request media type
      *
@@ -787,7 +806,7 @@ public class RestClient {
 
     /**
      * Set the request HTTP media type and charset.
-     * This is the value of the "Content-Type" header.</br>
+     * This is the value of the "Content-Type" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      *
      * @param mediaType the request media type
@@ -821,7 +840,7 @@ public class RestClient {
 
     /**
      * Set the response HTTP media type.
-     * This is the value of the "Accept" header.</br>
+     * This is the value of the "Accept" header.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the response media type
      *
@@ -839,7 +858,7 @@ public class RestClient {
 
     /**
      * Set the response HTTP media type and charset.
-     * These are the values of "Accept" and "Accept-Charset" headers.</br>
+     * These are the values of "Accept" and "Accept-Charset" headers.<br>
      * <b>Note:</b> You should pass one of the constants defined in RESTMediaType class
      * @param mediaType the response media type
      * @param mediaCharset the response media charset
@@ -916,9 +935,6 @@ public class RestClient {
         } else {
             response = new RestResponse(invocationBuilder.method(httpMethod, Response.class), this.bufferResponse);
         }
-
-        logRESTResponse(response);
-        initInternalVariables();
 
         logRESTResponse(response);
         initInternalVariables();
@@ -1207,29 +1223,29 @@ public class RestClient {
      * Whether the response body will be buffered <strong>immediately</strong> after the HTTP request is executed by 
      * the RestClient. 
      * <ul>
-     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered automatically. <br/>
-     *      If possible, RestClient will still <strong>try</strong> to buffer the response body (if not too big),  
-     *      but this will happen only <strong>after</strong> explicit usage of getBodyAsXYZ() method in test code. </li>
+     *  <li>If <code>false</code> then response body <strong>will not</strong> be consumed and buffered. <br>
+     *      This could be useful when developer expects very large response.
+     *      One drawback of this technique is that there should be exactly one invokation of method like getBodyAsXYZ()
+     *      to consume the body. </li>
      *  <li>If <code>true</code> then body will be consumed and buffered automatically. This allows usage of the 
      *      RestClient without explicitly (in your code) to have to consume the (whole) response body. One such case is if 
-     *      you verify only the returned HTTP status code or the headers.</br>
+     *      you verify only the returned HTTP status code or the headers.<br>
      *      It is highly recommended to set it to <code>true</code> if you are using <code>ApacheConnector</code> 
      *      provider.</li>
      * </ul> 
      * 
-     * @param bufferResponse - true/false with behavior explained above.
+     * @param bufferResponse - true/false with behavior explained above. Default is true.
      * 
      */
     @PublicAtsApi
     public RestClient setBufferResponse( boolean bufferResponse ) {
 
         this.bufferResponse = bufferResponse;
-
         return this;
     }
 
     /**
-     * Set whether a connection pool will be used to obtain connection.</br>
+     * Set whether a connection pool will be used to obtain connection.<br>
      * <strong>Note</strong> that this currently works only if ApacheConnectorProvider is registered
      * @param usePooling - true/false with behavior explained above.
      * */
@@ -1322,6 +1338,8 @@ public class RestClient {
         // handle HTTPS requests
         if (isHttps()) {
             // configure Trust-all SSL context
+
+            checkSupportedProtocols();
 
             SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
                                                            clientConfigurator.getCertificateFilePassword(),
@@ -1471,6 +1489,8 @@ public class RestClient {
         if (isHttps()) {
             // configure Trust-all SSL context
 
+            checkSupportedProtocols();
+
             SSLContext sslContext = SslUtils.getSSLContext(clientConfigurator.getCertificateFileName(),
                                                            clientConfigurator.getCertificateFilePassword(),
                                                            supportedProtocols[0]);
@@ -1483,6 +1503,42 @@ public class RestClient {
         createClient(clientBuilder);
 
         createInvocationBuilder(descriptionToken);
+
+    }
+
+    private void checkSupportedProtocols() {
+
+        final String HTTPS_PROTOCOLS_KEY = "https.protocols";
+
+        String systemPropertyProtocols = System.getProperty(HTTPS_PROTOCOLS_KEY);
+
+        if (StringUtils.isNullOrEmpty(systemPropertyProtocols)) {
+            return;
+        }
+
+        if (systemPropertyProtocols.contains(" ")) {
+            // 0x20 = space (" ")
+            log.error("The system property '" + HTTPS_PROTOCOLS_KEY + " (" + systemPropertyProtocols + ")"
+                      + "' have invalid character - space (0x20)");
+        }
+
+        String[] systemPropertyProtocolsArray = systemPropertyProtocols.split(Pattern.quote(","));
+
+        String supportedProtocol = this.supportedProtocols[0];
+        boolean found = false;
+        for (String protocol : systemPropertyProtocolsArray) {
+            if (protocol.equalsIgnoreCase(supportedProtocol)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            log.error("The provided HTTP protocol '" + supportedProtocol
+                      + "' not found in the value of the system property '" + HTTPS_PROTOCOLS_KEY + " ( "
+                      + systemPropertyProtocols + ")"
+                      + "'. This can lead to an error");
+        }
 
     }
 
@@ -1638,8 +1694,8 @@ public class RestClient {
         return url;
     }
 
-    private KeyStore convertToKeyStore( String certificateFileName ) {
-
+    /*private KeyStore convertToKeyStore( String certificateFileName ) {
+    
         try {
             X509Certificate[] certificates = new X509Certificate[]{ SslUtils.convertFileToX509Certificate(new File(certificateFileName)) };
             KeyStore keystore = KeyStore.getInstance("JKS");
@@ -1653,7 +1709,7 @@ public class RestClient {
         } catch (Exception e) {
             throw new RestException("Failed to create keystore from certificate", e);
         }
-    }
+    }*/
 
     private void createClient( ClientBuilder newClientBuilder ) {
 
@@ -1698,14 +1754,14 @@ public class RestClient {
         if ( (debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY
              && response.getContentLength() != -1) {
             // log response body
-            if (response.getContentLength() <= RestResponse.MAX_RESPONSE_SIZE) {
+            if (response.getContentLength() <= RestResponse.RESPONSE_SIZE_BIG_WARN) {
                 responseMessage.append("Body: " + response.getBodyAsString() + "\n");
             } else {
                 // if the content-length is greater than RESTResponse.MAX_RESPONSE_SIZE, truncate the response's body
                 responseMessage.append("Body: "
                                        + response.getBodyAsString()
                                                  .substring(0,
-                                                            RestResponse.MAX_RESPONSE_SIZE)
+                                                            RestResponse.RESPONSE_SIZE_BIG_WARN)
                                        + "... [Response body truncated.]" + "\n");
             }
         }

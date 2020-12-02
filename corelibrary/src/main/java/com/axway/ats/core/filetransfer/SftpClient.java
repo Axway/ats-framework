@@ -85,7 +85,7 @@ public class SftpClient extends AbstractFileTransferClient implements ISftpClien
 
     private static final Logger                 log                                 = Logger.getLogger(SftpClient.class);
 
-    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in GenericFileTransferClient class";
+    private static final String                 USE_ONE_OF_THE_SFTP_CONSTANTS       = "Use one of the SFTP_* constatns for key and values in FileTransferClient class";
 
     public static final String                  SFTP_USERNAME                       = "SFTP_USERNAME";
     public static final String                  SFTP_CIPHERS                        = "SFTP_CIPHERS";
@@ -224,7 +224,10 @@ public class SftpClient extends AbstractFileTransferClient implements ISftpClien
             this.channel = (ChannelSftp) this.session.openChannel("sftp");
             this.channel.connect();
         } catch (Exception e) {
-            throw new FileTransferException("Unable to connect!", e);
+            String errMessage = "Unable to connect to  " + hostname + " on port " + this.port
+                                + " using username " + username + " and password " + password;
+            log.error(errMessage, e);
+            throw new FileTransferException(e);
         }
     }
 

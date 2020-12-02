@@ -16,6 +16,7 @@
 package com.axway.ats.agent.core.threading.data.config;
 
 import static org.junit.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -170,6 +171,49 @@ public class Test_ListDataConfig extends BaseTest {
         assertEquals(2, currentValues.size());
         assertEquals(args.get(4), currentValues.get(0));
         assertEquals(args.get(5), currentValues.get(1));
+    }
+    
+    @Test
+    public void distributeN() {
+
+        int minHosts = 1;
+        int maxHosts = 100;
+
+        int minValues = 1;
+        int maxValues = 300;
+
+        for (int host = minHosts; host < maxHosts; host++) {
+            for (int value = minValues; value < maxValues; value++) {
+                doDistributeN(host, generateValues(value));
+            }
+        }
+
+    }
+
+    private void doDistributeN( int hosts, List<String> values ) {
+
+        ListDataConfig listDataConfig = new ListDataConfig("param1", values);
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(hosts);
+        assertEquals(hosts, dustributedDataConfigs.size());
+
+        int valuesFound = 0;
+
+        int maxValue = (int) Math.ceil( ((float) values.size()) / ((float) hosts));
+        int minValue = (int) Math.floor(values.size() / hosts);
+
+        //System.out.println("Min values per host/agent is: " + minValue);
+        //System.out.println("Max values per host/agent is: " + maxValue);
+
+        for (int i = 0; i < hosts; i++) {
+            ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(i);
+            int currentValuesSize = currentListDataConfig.getValues().size();
+            valuesFound += currentValuesSize;
+            assertTrue(maxValue >= currentValuesSize, "Value > Max value");
+            assertTrue(minValue <= currentValuesSize, "Value < Min value");
+
+        }
+        assertEquals(values.size(), valuesFound);
+
     }
     
     private List<String> generateValues( int count ) {

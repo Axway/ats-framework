@@ -47,7 +47,7 @@ public class DbTable {
      */
     public DbTable( String tableName ) {
 
-        this(tableName, new String(), new ArrayList<String>());
+        this(tableName, "", new ArrayList<String>());
     }
 
     /**
@@ -240,5 +240,13 @@ public class DbTable {
         newDbTable.autoIncrementResetValue = this.autoIncrementResetValue;
 
         return newDbTable;
+    }
+
+    @Override public String toString() {
+
+        return "DbTable{" +
+               "tableName='" + tableName + '\'' +
+               ", schema='" + schema + '\'' +
+               '}';
     }
 }

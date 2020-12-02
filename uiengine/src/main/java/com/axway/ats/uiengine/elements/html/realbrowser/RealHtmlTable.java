@@ -88,7 +88,7 @@ public class RealHtmlTable extends HtmlTable {
     }
 
     /**
-     * Get the values of all table cells.</br>
+     * Get the values of all table cells.<br>
      * 
      * <b>Note:</b> If a table cell contains a checkbox - we will return 'checked' or 'notchecked' value.
      * 
@@ -159,7 +159,6 @@ public class RealHtmlTable extends HtmlTable {
      * @param value the new table cell value
      * @param row the field row starting at 0
      * @param column the field column starting at 0
-     * @return
      */
     @Override
     @PublicAtsApi

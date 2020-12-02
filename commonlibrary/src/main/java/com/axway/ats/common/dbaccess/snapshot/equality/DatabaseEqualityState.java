@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,7 +114,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with different primary keys </br>
+     * Get list of tables with different primary keys <br>
      * Note that the list of tables is the same for both snapshots
      * 
      * @param snapshot snapshot name
@@ -132,7 +132,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get the different primary keys per table and snapshot. </br>
+     * Get the different primary keys per table and snapshot. <br>
      * Note that we currently do not support more than one primary key difference
      * 
      * @param snapshot snapshot name
@@ -172,7 +172,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with different number of rows </br>
+     * Get list of tables with different number of rows <br>
      * Note that the list of tables is the same for both snapshots
      * 
      * @param snapshot snapshot name
@@ -190,7 +190,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get the number of rows for the given table and snapshot. </br>
+     * Get the number of rows for the given table and snapshot. <br>
      * 
      * @param snapshot snapshot name
      * @param table table name
@@ -227,7 +227,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique columns </br>
+     * Get list of tables with unique columns <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique columns
@@ -239,7 +239,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique columns for the given table and snapshot. </br>
+     * Get a list of unique columns for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents a column description.
      * The list contains a map where the key is a column attribute name while the value
@@ -256,7 +256,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique columns for the given table and snapshot. </br>
+     * Get a list of unique columns for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing a column.
      * 
@@ -295,7 +295,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique indexes </br>
+     * Get list of tables with unique indexes <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique indexes
@@ -307,7 +307,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique indexes for the given table and snapshot. </br>
+     * Get a list of unique indexes for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents an index description.
      * The list contains a map where the key is an index attribute name while the value
@@ -324,7 +324,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique indexes for the given table and snapshot. </br>
+     * Get a list of unique indexes for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing an index.
      * 
@@ -335,11 +335,16 @@ public class DatabaseEqualityState {
     @PublicAtsApi
     public List<String> getIndexesPresentInOneSnapshotOnlyAsStrings( String snapshot, String table ) {
 
-        List<String> result = new ArrayList<>();
+        List<String> result = null;
 
         Map<String, List<String>> indexesPerTable = indexPresentInOneSnapshotOnly.get(snapshot);
         if (indexesPerTable != null) {
             result = indexesPerTable.get(table);
+        }
+
+        if (result == null) {
+            // no indexes for that table, so return empty list
+            result = new ArrayList<>();
         }
 
         return result;
@@ -364,7 +369,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get list of tables with unique rows </br>
+     * Get list of tables with unique rows <br>
      * 
      * @param snapshot snapshot name
      * @return tables with unique rows
@@ -376,7 +381,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique rows for the given table and snapshot. </br>
+     * Get a list of unique rows for the given table and snapshot. <br>
      * 
      * We return a list each item of which represents a row.
      * The list contains a map where the key is a column name while the value
@@ -393,7 +398,7 @@ public class DatabaseEqualityState {
     }
 
     /**
-     * Get a list of unique rows for the given table and snapshot. </br>
+     * Get a list of unique rows for the given table and snapshot. <br>
      * 
      * We return a list each item of which is a String describing the row content.
      * 
@@ -431,6 +436,48 @@ public class DatabaseEqualityState {
         rowsPerTable.add(rowValues);
     }
 
+    public void clearDifferentNumberOfRowsForTable( String tableName ) {
+
+        // check if the table have different rows
+        if (this.getDifferentNumberOfRows(firstSnapshotName, tableName) != null) {
+            this.differentNumberOfRows.get(firstSnapshotName).remove(tableName);
+            if (this.differentNumberOfRows.get(firstSnapshotName) == null
+                || this.differentNumberOfRows.get(firstSnapshotName).isEmpty()) {
+                this.differentNumberOfRows.remove(firstSnapshotName);
+            }
+        }
+        if (this.getDifferentNumberOfRows(secondSnapshotName, tableName) != null) {
+            this.differentNumberOfRows.get(secondSnapshotName).remove(tableName);
+            if (this.differentNumberOfRows.get(secondSnapshotName) == null
+                || this.differentNumberOfRows.get(secondSnapshotName).isEmpty()) {
+                this.differentNumberOfRows.remove(secondSnapshotName);
+            }
+        }
+    }
+
+    public void clearRowsPresentedInOneSnapshotOnly( String tableName ) {
+
+        if (this.rowPresentInOneSnapshotOnly.containsKey(firstSnapshotName)) {
+            if (this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).containsKey(tableName)) {
+                this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).remove(tableName);
+                if (this.rowPresentInOneSnapshotOnly.get(firstSnapshotName) == null
+                    || this.rowPresentInOneSnapshotOnly.get(firstSnapshotName).isEmpty()) {
+                    this.rowPresentInOneSnapshotOnly.remove(firstSnapshotName);
+                }
+            }
+        }
+
+        if (this.rowPresentInOneSnapshotOnly.containsKey(secondSnapshotName)) {
+            if (this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).containsKey(tableName)) {
+                this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).remove(tableName);
+                if (this.rowPresentInOneSnapshotOnly.get(secondSnapshotName) == null
+                    || this.rowPresentInOneSnapshotOnly.get(secondSnapshotName).isEmpty()) {
+                    this.rowPresentInOneSnapshotOnly.remove(secondSnapshotName);
+                }
+            }
+        }
+    }
+
     private List<String> breakIntoTables( Map<String, Map<String, List<String>>> entities, String snapshot ) {
 
         List<String> tables = new ArrayList<>();
@@ -450,6 +497,11 @@ public class DatabaseEqualityState {
         Map<String, List<String>> entitiesPerTable = entities.get(snapshot);
         if (entitiesPerTable != null) {
             List<String> allEntitiesAsStrings = entitiesPerTable.get(table);
+
+            if (allEntitiesAsStrings == null) {
+                // no entries for the provided table in the provided snapshot
+                return result;
+            }
 
             // cycle all entities
             for (String entityAsString : allEntitiesAsStrings) {

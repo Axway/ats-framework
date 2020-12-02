@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.Writer;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -29,7 +28,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -215,7 +214,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
             String partitionColumnName = getPartitionColumnName(table);
             generateTableScript = generateTableScript.replace("<PARTITION_SCHEME_OR_FILEGROUP_PLACEHOLDER>",
                                                               " ON [" + partitionName + "]([" + partitionColumnName
-                                                                                                + "])");
+                                                                                                             + "])");
         } else {
             // if the table do not have to be partitioned
             // check if the table is on a filegroup
@@ -252,7 +251,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
                        + "'].[' + OBJECT_NAME(parent_object_id) + "
                        + "'] DROP CONSTRAINT [' + name + ']' "
                        + " FROM sys.foreign_keys "
-                       + " WHERE referenced_object_id = object_id('" + tableName + "')";
+                       + " WHERE referenced_object_id = object_id('" + tableName + "') ORDER BY name";
 
         Statement callableStatementDropForeignKeys = null;
         ResultSet rsDropForeignKeys = null;
@@ -606,7 +605,7 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     /**
-     * Add table for backup.<br/>If the table's schema is not specified, ATS will obtain and use the default schema for the user that will interact with the database during backup/restore
+     * Add table for backup.<br>If the table's schema is not specified, ATS will obtain and use the default schema for the user that will interact with the database during backup/restore
      * */
     @Override
     public void addTable( DbTable table ) {
@@ -784,36 +783,11 @@ class MssqlEnvironmentHandler extends AbstractEnvironmentHandler {
         }
     }
 
-    /**
-     * Get file contents from classpath
-     * @param scriptFileName Relative path is relative to the package of current class.
-     * @return String of  
-     */
-    private String loadScriptFromClasspath( String scriptFileName ) {
-
-        String scriptContents = null;
-        try (InputStream is = this.getClass().getResourceAsStream(scriptFileName)) {
-            if (is != null) {
-                scriptContents = IoUtils.streamToString(is);
-            }
-        } catch (Exception e) {
-            if (e.getSuppressed() != null) { // possible close resources
-                Throwable[] suppressedExc = e.getSuppressed();
-                for (int i = 0; i < suppressedExc.length; i++) {
-                    LOG.warn("Suppressed exception [" + i + "] details", suppressedExc[i]);
-                }
-            }
-            throw new DbException("Could not load SQL server script needed for DB environment restore from classpath. Check "
-                                  + "location of " + scriptFileName + " file", e);
-        }
-        return scriptContents;
-    }
-
     private Map<String, List<String>> getForeingKeys( String tableName,
                                                       Connection connection ) throws DbException {
 
         PreparedStatement stmnt = null;
-        Map<String, List<String>> tableForeignKey = new HashMap<String, List<String>>();
+        Map<String, List<String>> tableForeignKey = new LinkedHashMap<String, List<String>>();
         ResultSet rs = null;
         try {
             String simpleTableName = tableName.substring(tableName.indexOf('.') + 1, tableName.length());

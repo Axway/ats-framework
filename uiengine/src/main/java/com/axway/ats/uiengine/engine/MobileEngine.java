@@ -77,7 +77,8 @@ public class MobileEngine extends AbstractEngine {
         super(uiDriver, elementsFactory);
 
         MobileDriver mobileDriver = (MobileDriver) uiDriver;
-        appiumDriver = (AppiumDriver<?>) mobileDriver.getInternalObject(InternalObjectsEnum.WebDriver.name());
+        appiumDriver = (AppiumDriver<? extends WebElement>) mobileDriver.getInternalObject(
+                InternalObjectsEnum.WebDriver.name());
     }
 
     /**
@@ -306,10 +307,12 @@ public class MobileEngine extends AbstractEngine {
     public class Device {
 
         /**
-         * @param appPath application absolute path
-         *
-         * NOTE: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br/>
-         *  Example:  export PATH=/opt/android/android-sdk_r24.0.2/platform-tools/:$PATH
+         *  <p>Install application.</p>
+         *  <p>
+         *      <em>NOTE</em>: 'adb' executable must be in the $PATH variable in the environment of the Appium server<br>
+         *      Example:  export PATH=/opt/android/android-sdk_r24.0.2/platform-tools/:$PATH
+         *  </p>
+         *  @param appPath application absolute path or relative to the started Appium server
          */
         @PublicAtsApi
         public void installApp(

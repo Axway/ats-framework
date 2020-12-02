@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ import com.axway.ats.core.utils.StringUtils;
  * The {@link FtpsClient} uses the Apache Commons Net component suite for Java
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTPS 
  * connections to a remote server. <br/>
- * <br/>
+ * <br>
  * The default implementation does *not* verify the server certificate against a
  * local trusted CA store!
  */
@@ -207,7 +207,7 @@ public class FtpsClient extends AbstractFileTransferClient implements IFtpClient
             this.client.connect(hostname, this.port);
             // login to the host
             if (!this.client.login(userName, password)) {
-                throw new Exception("Invallid username and/or password. ");
+                throw new Exception("Invalid username and/or password. ");
             }
             // set transfer mode
             if (this.transferMode == TransferMode.ASCII) {
@@ -219,7 +219,9 @@ public class FtpsClient extends AbstractFileTransferClient implements IFtpClient
                     throw new Exception("Unable to set transfer mode to BINARY");
                 }
             }
-
+            // initial fix - always use passive mode
+            // Currently not working: int replyCode = this.ftpsConnection.pasv();
+            this.client.enterLocalPassiveMode();
         } catch (Exception e) {
             String errMessage = "Unable to connect to  " + hostname + " on port " + this.port
                                 + " using username " + userName + " and password " + password;

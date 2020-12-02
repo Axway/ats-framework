@@ -36,6 +36,7 @@ import javax.ws.rs.core.Response;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.agent.core.model.Parameter;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerClass;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethod;
 import com.axway.ats.agent.webapp.restservice.api.documentation.annotations.SwaggerMethodParameterDefinition;
@@ -62,42 +63,14 @@ public class FileSystemRestEntryPoint {
     @Path( "/")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Initialize file system details",
-            summary = "Initialize file system",
-            url = "/")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Initialize file system details", summary = "Initialize file system", url = "/")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully initialize file system resource details",
-                                       description = "Successfully initialize file system resource",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The resource ID of the newly initialized resource",
-                                               example = "123",
-                                               name = "resourceId",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while initializing file system resource details",
-                                       description = "Error while initializing file system resource",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully initialize file system resource details", description = "Successfully initialize file system resource", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The resource ID of the newly initialized resource", example = "123", name = "resourceId", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while initializing file system resource details", description = "Error while initializing file system resource", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response initializeFileSystem( @Context HttpServletRequest request ) {
 
@@ -129,57 +102,17 @@ public class FileSystemRestEntryPoint {
     @Path( "file/append")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Append content to file details",
-            summary = "Append content to file",
-            url = "file/append")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Append content to file details", summary = "Append content to file", url = "file/append")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file path",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "filePath",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The content, which will be appended to the end of the file",
-                                                  example = "some content",
-                                                  name = "contentToAdd",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file path", example = "/home/atsuser/file.txt", name = "filePath", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The content, which will be appended to the end of the file", example = "some content", name = "contentToAdd", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully append content to file details",
-                                       description = "Successfully append content to file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "succcessfully append content to file",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while appending content to file details",
-                                       description = "Error while appending content to file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully append content to file details", description = "Successfully append content to file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "succcessfully append content to file", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while appending content to file details", description = "Error while appending content to file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response appendToFile( @Context HttpServletRequest request ) {
 
@@ -227,59 +160,21 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/permissions")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file permissions",
-            url = "file/permissions")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file permissions", url = "file/permissions")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file permissions details",
-                                       description = "Successfully get file permissions",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file permissions",
-                                               example = "0777",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file permissions details",
-                                       description = "Error while getting file permissions",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file permissions details", description = "Successfully get file permissions", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file permissions", example = "0777", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file permissions details", description = "Error while getting file permissions", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFilePermissions( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                        @QueryParam(
-                                                value = "resourceId") long resourceId,
-                                        @QueryParam(
-                                                value = "fileName") String fileName ) {
+    public Response getFilePermissions( @Context HttpServletRequest request,
+                                        @QueryParam( value = "callerId") String callerId,
+                                        @QueryParam( value = "resourceId") long resourceId,
+                                        @QueryParam( value = "fileName") String fileName ) {
 
         try {
 
@@ -314,59 +209,20 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/filegroup")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file group",
-            url = "file/filegroup")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file group", url = "file/filegroup")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file group details",
-                                       description = "Successfully get file group",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file group",
-                                               example = "some file group",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file group details",
-                                       description = "Error while getting file group",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file group details", description = "Successfully get file group", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file group", example = "some file group", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file group details", description = "Error while getting file group", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileGroup( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                  @QueryParam(
-                                          value = "resourceId") long resourceId,
-                                  @QueryParam(
-                                          value = "fileName") String fileName ) {
+    public Response getFileGroup( @Context HttpServletRequest request, @QueryParam( value = "callerId") String callerId,
+                                  @QueryParam( value = "resourceId") long resourceId,
+                                  @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -400,59 +256,20 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/gid")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file GID",
-            url = "file/gid")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file GID", url = "file/gid")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file GID details",
-                                       description = "Successfully get file GID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file GID",
-                                               example = "some file GID",
-                                               name = "action_result",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file GID details",
-                                       description = "Error while getting file GID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file GID details", description = "Successfully get file GID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file GID", example = "some file GID", name = "action_result", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file GID details", description = "Error while getting file GID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileGID( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                @QueryParam(
-                                        value = "resourceId") long resourceId,
-                                @QueryParam(
-                                        value = "fileName") String fileName ) {
+    public Response getFileGID( @Context HttpServletRequest request, @QueryParam( value = "callerId") String callerId,
+                                @QueryParam( value = "resourceId") long resourceId,
+                                @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -486,59 +303,20 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/owner")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file owner",
-            url = "file/owner")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file owner", url = "file/owner")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file owner details",
-                                       description = "Successfully get file owner",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file owner",
-                                               example = "some file owner",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file owner details",
-                                       description = "Error while getting file owner",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file owner details", description = "Successfully get file owner", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file owner", example = "some file owner", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file owner details", description = "Error while getting file owner", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileOwner( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                  @QueryParam(
-                                          value = "resourceId") long resourceId,
-                                  @QueryParam(
-                                          value = "fileName") String fileName ) {
+    public Response getFileOwner( @Context HttpServletRequest request, @QueryParam( value = "callerId") String callerId,
+                                  @QueryParam( value = "resourceId") long resourceId,
+                                  @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -572,59 +350,20 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/uid")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file UID",
-            url = "file/uid")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file UID", url = "file/uid")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file UID details",
-                                       description = "Successfully get file UID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file UID",
-                                               example = "some file UID",
-                                               name = "action_result",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file UID details",
-                                       description = "Error while getting file UID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file UID details", description = "Successfully get file UID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file UID", example = "some file UID", name = "action_result", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file UID details", description = "Error while getting file UID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileUID( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                @QueryParam(
-                                        value = "resourceId") long resourceId,
-                                @QueryParam(
-                                        value = "fileName") String fileName ) {
+    public Response getFileUID( @Context HttpServletRequest request, @QueryParam( value = "callerId") String callerId,
+                                @QueryParam( value = "resourceId") long resourceId,
+                                @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -658,59 +397,21 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/modificationTime")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file modification time",
-            url = "file/modificationTime")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file modification time", url = "file/modificationTime")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file modification time details",
-                                       description = "Successfully get file modification time",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file modification time in milliseconds",
-                                               example = "1002120122",
-                                               name = "action_result",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file modification time details",
-                                       description = "Error while getting file modification time",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file modification time details", description = "Successfully get file modification time", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file modification time in milliseconds", example = "1002120122", name = "action_result", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file modification time details", description = "Error while getting file modification time", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileModificationTime( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                             @QueryParam(
-                                                     value = "resourceId") long resourceId,
-                                             @QueryParam(
-                                                     value = "fileName") String fileName ) {
+    public Response getFileModificationTime( @Context HttpServletRequest request,
+                                             @QueryParam( value = "callerId") String callerId,
+                                             @QueryParam( value = "resourceId") long resourceId,
+                                             @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -744,59 +445,20 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/size")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file size",
-            url = "file/size")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file size", url = "file/size")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file size details",
-                                       description = "Successfully get file size",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file size in bytes",
-                                               example = "1024",
-                                               name = "action_result",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file size details",
-                                       description = "Error while getting file size",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file size details", description = "Successfully get file size", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file size in bytes", example = "1024", name = "action_result", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file size details", description = "Error while getting file size", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileSize( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                 @QueryParam(
-                                         value = "resourceId") long resourceId,
-                                 @QueryParam(
-                                         value = "fileName") String fileName ) {
+    public Response getFileSize( @Context HttpServletRequest request, @QueryParam( value = "callerId") String callerId,
+                                 @QueryParam( value = "resourceId") long resourceId,
+                                 @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -830,59 +492,21 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/uniqueId")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file unique ID",
-            url = "file/uniqueId")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file unique ID", url = "file/uniqueId")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file unique ID details",
-                                       description = "Successfully get file unique ID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file unique ID",
-                                               example = "1024",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting file unique ID details",
-                                       description = "Error while getting file unique ID",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file unique ID details", description = "Successfully get file unique ID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file unique ID", example = "1024", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting file unique ID details", description = "Error while getting file unique ID", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
-    public Response getFileUniqueID( @Context HttpServletRequest request, @QueryParam(
-            value = "callerId") String callerId,
-                                     @QueryParam(
-                                             value = "resourceId") long resourceId,
-                                     @QueryParam(
-                                             value = "fileName") String fileName ) {
+    public Response getFileUniqueID( @Context HttpServletRequest request,
+                                     @QueryParam( value = "callerId") String callerId,
+                                     @QueryParam( value = "resourceId") long resourceId,
+                                     @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -916,57 +540,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/uid")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set file U I D details",
-            summary = "Set file U I D",
-            url = "file/uid")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set file U I D details", summary = "Set file U I D", url = "file/uid")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file UID",
-                                                  example = "1000",
-                                                  name = "uid",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file UID", example = "1000", name = "uid", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set file U I D details",
-                                       description = "Successfully set file U I D",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file uid successfully set to <some_uid>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting file U I D details",
-                                       description = "Error while setting file U I D",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set file U I D details", description = "Successfully set file U I D", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file uid successfully set to <some_uid>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting file U I D details", description = "Error while setting file U I D", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setFileUID( @Context HttpServletRequest request ) {
 
@@ -1014,57 +598,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/gid")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set file G I D details",
-            summary = "Set file G I D",
-            url = "file/gid")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set file G I D details", summary = "Set file G I D", url = "file/gid")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file GID",
-                                                  example = "1000",
-                                                  name = "uid",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file GID", example = "1000", name = "uid", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set file G I D details",
-                                       description = "Successfully set file G I D",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file uid successfully set to <some_gid>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting file G I D details",
-                                       description = "Error while setting file G I D",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set file G I D details", description = "Successfully set file G I D", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file uid successfully set to <some_gid>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting file G I D details", description = "Error while setting file G I D", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setFileGID( @Context HttpServletRequest request ) {
 
@@ -1112,57 +656,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/permissions")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set file permissions details",
-            summary = "Set file permissions",
-            url = "file/permissions")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set file permissions details", summary = "Set file permissions", url = "file/permissions")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file permissions",
-                                                  example = "0777",
-                                                  name = "permissions",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file permissions", example = "0777", name = "permissions", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set file permissions details",
-                                       description = "Successfully set file permissions",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file uid successfully set to <permissions>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting file permissions details",
-                                       description = "Error while setting file permissions",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set file permissions details", description = "Successfully set file permissions", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file uid successfully set to <permissions>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting file permissions details", description = "Error while setting file permissions", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setFilePermissions( @Context HttpServletRequest request ) {
 
@@ -1212,57 +716,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/modificationTime")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set file modification time details",
-            summary = "Set file modification time",
-            url = "file/modificationTime")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set file modification time details", summary = "Set file modification time", url = "file/modificationTime")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file modification time",
-                                                  example = "1021301023423",
-                                                  name = "modificationTime",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file modification time", example = "1021301023423", name = "modificationTime", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set file modification time details",
-                                       description = "Successfully set file modification time",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file modification time successfully set to <modification time>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting file modification time details",
-                                       description = "Error while setting file modification time",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set file modification time details", description = "Successfully set file modification time", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file modification time successfully set to <modification time>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting file modification time details", description = "Error while setting file modification time", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setFileModificationTime( @Context HttpServletRequest request ) {
 
@@ -1312,57 +776,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/hidden")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set whether file is hidden details",
-            summary = "Set whether file is hidden",
-            url = "file/hidden")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set whether file is hidden details", summary = "Set whether file is hidden", url = "file/hidden")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Flag for hidden file",
-                                                  example = "TRUE|FALSE",
-                                                  name = "hidden",
-                                                  type = "boolean")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Flag for hidden file", example = "TRUE|FALSE", name = "hidden", type = "boolean")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set file to be hidden details",
-                                       description = "Successfully set file to be hidden",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file hidden attribute successfully set to <true_or_false>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting file hidden attribute details",
-                                       description = "Error while setting file hidden attribute",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set file to be hidden details", description = "Successfully set file to be hidden", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file hidden attribute successfully set to <true_or_false>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting file hidden attribute details", description = "Error while setting file hidden attribute", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setFileHiddenAttribute( @Context HttpServletRequest request ) {
 
@@ -1409,60 +833,21 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/exist")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Check whether file exists",
-            url = "file/exist")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Check whether file exists", url = "file/exist")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully check does file exists details",
-                                       description = "Successfully check does file exists",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Whether file exists",
-                                               example = "TRUE|FALSE",
-                                               name = "action_result",
-                                               type = "boolean") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while checking does file exists details",
-                                       description = "Error while checking does file exists",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully check does file exists details", description = "Successfully check does file exists", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Whether file exists", example = "TRUE|FALSE", name = "action_result", type = "boolean") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while checking does file exists details", description = "Error while checking does file exists", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response doesFileExists( @Context HttpServletRequest request,
-                                    @QueryParam(
-                                            value = "callerId") String callerId,
-                                    @QueryParam(
-                                            value = "resourceId") long resourceId,
-                                    @QueryParam(
-                                            value = "fileName") String fileName ) {
+                                    @QueryParam( value = "callerId") String callerId,
+                                    @QueryParam( value = "resourceId") long resourceId,
+                                    @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1496,87 +881,23 @@ public class FileSystemRestEntryPoint {
     @PUT
     @Path( "file")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Create file details",
-            summary = "Create file",
-            url = "file")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Create file details", summary = "Create file", url = "file")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Optional file content. In order for this field to be taken into consideration, isRandomContent must be false",
-                                                  example = "some content",
-                                                  name = "fileContent",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file size in bytes. If fileContent is set, this field can be set to -1",
-                                                  example = "1024",
-                                                  name = "fileSize",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file user ID ( UID )",
-                                                  example = "1000",
-                                                  name = "uid",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file group ID ( GID )",
-                                                  example = "1000",
-                                                  name = "gid",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The type of the line ending (*NIX, WIN, MAC)",
-                                                  example = "\\n",
-                                                  name = "eol",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Should random file content by generated for the newly created file or not",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRandomContent",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Determine whether the file binary or not",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isBinary",
-                                                  type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Optional file content. In order for this field to be taken into consideration, isRandomContent must be false", example = "some content", name = "fileContent", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file size in bytes. If fileContent is set, this field can be set to -1", example = "1024", name = "fileSize", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file user ID ( UID )", example = "1000", name = "uid", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file group ID ( GID )", example = "1000", name = "gid", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The type of the line ending (*NIX, WIN, MAC)", example = "\\n", name = "eol", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Should random file content by generated for the newly created file or not", example = "TRUE|FALSE", name = "isRandomContent", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Determine whether the file binary or not", example = "TRUE|FALSE", name = "isBinary", type = "boolean"),
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully create file details",
-                                       description = "Successfully create file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully created",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while creating file details",
-                                       description = "Error while creating file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully create file details", description = "Successfully create file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully created", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while creating file details", description = "Error while creating file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response createFile( @Context HttpServletRequest request ) {
 
@@ -1638,60 +959,21 @@ public class FileSystemRestEntryPoint {
     @DELETE
     @Path( "file")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "delete",
-            parametersDefinition = "",
-            summary = "Delete file",
-            url = "file")
+    @SwaggerMethod( httpOperation = "delete", parametersDefinition = "", summary = "Delete file", url = "file")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully deleted file details",
-                                       description = "Successfully deleted file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully deleted",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while deleting file details",
-                                       description = "Error while deleting file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully deleted file details", description = "Successfully deleted file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully deleted", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while deleting file details", description = "Error while deleting file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response deleteFile( @Context HttpServletRequest request,
-                                @QueryParam(
-                                        value = "callerId") String callerId,
-                                @QueryParam(
-                                        value = "resourceId") long resourceId,
-                                @QueryParam(
-                                        value = "fileName") String fileName ) {
+                                @QueryParam( value = "callerId") String callerId,
+                                @QueryParam( value = "resourceId") long resourceId,
+                                @QueryParam( value = "fileName") String fileName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1725,62 +1007,18 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Rename file details",
-            summary = "Rename file",
-            url = "file")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Rename file details", summary = "Rename file", url = "file")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The old file name",
-                                                  example = "/home/atsuser/old_file.txt",
-                                                  name = "oldFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The new file name",
-                                                  example = "/home/atsuser/new_file.txt",
-                                                  name = "newFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to overwrite already existing file with name <newFileName>",
-                                                  example = "TRUE|FALSE",
-                                                  name = "overwrtite",
-                                                  type = "booloean")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The old file name", example = "/home/atsuser/old_file.txt", name = "oldFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The new file name", example = "/home/atsuser/new_file.txt", name = "newFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to overwrite already existing file with name <newFileName>", example = "TRUE|FALSE", name = "overwrtite", type = "booloean")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully renamed file details",
-                                       description = "Successfully renamed file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file '<file_name> successfully renamed",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while renaming file details",
-                                       description = "Error while renaming file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully renamed file details", description = "Successfully renamed file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file '<file_name> successfully renamed", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while renaming file details", description = "Error while renaming file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response renameFile( @Context HttpServletRequest request ) {
 
@@ -1830,75 +1068,26 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/content/lastLines")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get last lines from file",
-            url = "file/content/lastLines")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get last lines from file", url = "file/content/lastLines")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The number of lines to be read fom the end of the file",
-                                                  example = "7",
-                                                  name = "numberOfLines",
-                                                  type = "integer"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The charset name of the file. ",
-                                                  example = "See java.nio.charset.StandardCharsets "
-                                                            + "class for more details on which charsets are supported.",
-                                                  name = "charset",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The number of lines to be read fom the end of the file", example = "7", name = "numberOfLines", type = "integer"),
+                                          @SwaggerMethodParameterDefinition( description = "The charset name of the file. ", example = "See java.nio.charset.StandardCharsets "
+                                                                                                                                       + "class for more details on which charsets are supported.", name = "charset", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully got last line from file details",
-                                       description = "Successfully got last line from file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Array of the last line",
-                                               example = "[\"line_1\",\"line_2\"]",
-                                               name = "action_result",
-                                               type = "string[]") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting last lines from file details",
-                                       description = "Error while getting last lines from file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully got last line from file details", description = "Successfully got last line from file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Array of the last line", example = "[\"line_1\",\"line_2\"]", name = "action_result", type = "string[]") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting last lines from file details", description = "Error while getting last lines from file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getLastLines( @Context HttpServletRequest request,
-                                  @QueryParam(
-                                          value = "callerId") String callerId,
-                                  @QueryParam(
-                                          value = "resourceId") long resourceId,
-                                  @QueryParam(
-                                          value = "fileName") String fileName,
-                                  @QueryParam(
-                                          value = "numberOfLines") int numberOfLines,
-                                  @QueryParam(
-                                          value = "charset") String charset ) {
+                                  @QueryParam( value = "callerId") String callerId,
+                                  @QueryParam( value = "resourceId") long resourceId,
+                                  @QueryParam( value = "fileName") String fileName,
+                                  @QueryParam( value = "numberOfLines") int numberOfLines,
+                                  @QueryParam( value = "charset") String charset ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -1937,67 +1126,23 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/content")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Read file",
-            url = "file/content")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Read file", url = "file/content")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file encoding",
-                                                  example = "UTF-8",
-                                                  name = "fileEncoding",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The file encoding", example = "UTF-8", name = "fileEncoding", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully read file details",
-                                       description = "Successfully read file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file content",
-                                               example = "some text",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while reading file details",
-                                       description = "Error while reading file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully read file details", description = "Successfully read file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file content", example = "some text", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while reading file details", description = "Error while reading file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response readFile( @Context HttpServletRequest request,
-                              @QueryParam(
-                                      value = "callerId") String callerId,
-                              @QueryParam(
-                                      value = "resourceId") long resourceId,
-                              @QueryParam(
-                                      value = "fileName") String fileName,
-                              @QueryParam(
-                                      value = "fileEncoding") String fileEncoding ) {
+                              @QueryParam( value = "callerId") String callerId,
+                              @QueryParam( value = "resourceId") long resourceId,
+                              @QueryParam( value = "fileName") String fileName,
+                              @QueryParam( value = "fileEncoding") String fileEncoding ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -2033,67 +1178,23 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/content/tail")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Read file from certain position",
-            url = "file/content/tail")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Read file from certain position", url = "file/content/tail")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The offset in the file from which the content will be read",
-                                                  example = "100",
-                                                  name = "fromBytePosition",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The offset in the file from which the content will be read", example = "100", name = "fromBytePosition", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully execute tail over file content details",
-                                       description = "Successfully execute tail over file content file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "File tail info object",
-                                               example = "{\"currentPosition\": 152300,\"isFileRotated\": false,\"newContent\": \"some new content\"}",
-                                               name = "action_result",
-                                               type = "object") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while reading file details",
-                                       description = "Error while reading file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully execute tail over file content details", description = "Successfully execute tail over file content file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "File tail info object", example = "{\"currentPosition\": 152300,\"isFileRotated\": false,\"newContent\": \"some new content\"}", name = "action_result", type = "object") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while reading file details", description = "Error while reading file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response readFileFromPosition( @Context HttpServletRequest request,
-                                          @QueryParam(
-                                                  value = "callerId") String callerId,
-                                          @QueryParam(
-                                                  value = "resourceId") long resourceId,
-                                          @QueryParam(
-                                                  value = "fileName") String fileName,
-                                          @QueryParam(
-                                                  value = "fromBytePosition") long fromBytePosition ) {
+                                          @QueryParam( value = "callerId") String callerId,
+                                          @QueryParam( value = "resourceId") long resourceId,
+                                          @QueryParam( value = "fileName") String fileName,
+                                          @QueryParam( value = "fromBytePosition") long fromBytePosition ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -2131,68 +1232,24 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/md5sum")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get file MD5 sum details",
-            url = "file/md5sum")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get file MD5 sum details", url = "file/md5sum")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether different file ending will produce different md5 (BINARY) or not (ASCII)",
-                                                  example = "ASCII|BINARY",
-                                                  name = "md5SumMode",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether different file ending will produce different md5 (BINARY) or not (ASCII)", example = "ASCII|BINARY", name = "md5SumMode", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully get file MD5 sum details",
-                                       description = "Successfully get file MD5 sum",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The file's MD5 sum",
-                                               example = "e8e28d025aaec86eaecae163f09c0e9d",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error getting file MD5 sum details",
-                                       description = "Error getting file MD5 sum",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully get file MD5 sum details", description = "Successfully get file MD5 sum", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The file's MD5 sum", example = "e8e28d025aaec86eaecae163f09c0e9d", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error getting file MD5 sum details", description = "Error getting file MD5 sum", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
 
     public Response computeMd5Sum( @Context HttpServletRequest request,
-                                   @QueryParam(
-                                           value = "callerId") String callerId,
-                                   @QueryParam(
-                                           value = "resourceId") long resourceId,
-                                   @QueryParam(
-                                           value = "fileName") String fileName,
-                                   @QueryParam(
-                                           value = "md5SumMode") String md5SumMode ) {
+                                   @QueryParam( value = "callerId") String callerId,
+                                   @QueryParam( value = "resourceId") long resourceId,
+                                   @QueryParam( value = "fileName") String fileName,
+                                   @QueryParam( value = "md5SumMode") String md5SumMode ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -2227,72 +1284,20 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/content/replace")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Replace specific texts in file details",
-            summary = "Replace specific texts in file",
-            url = "file/content/replace")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Replace specific texts in file details", summary = "Replace specific texts in file", url = "file/content/replace")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/old_file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The text that will be replaced in the file.",
-                                                  example = "Guess I'll be replaced",
-                                                  name = "searchString",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The replacement text",
-                                                  example = "Guess I was replaced",
-                                                  name = "newString",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether the searchString is REGEX or plain text",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRegex",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "You can replace more than one text by using this field, instead searchString and newString.",
-                                                  example = "{\"oldText\":\"newText\"}",
-                                                  name = "searchTokens",
-                                                  type = "object")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/old_file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The text that will be replaced in the file.", example = "Guess I'll be replaced", name = "searchString", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The replacement text", example = "Guess I was replaced", name = "newString", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether the searchString is REGEX or plain text", example = "TRUE|FALSE", name = "isRegex", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "You can replace more than one text by using this field, instead searchString and newString.", example = "{\"oldText\":\"newText\"}", name = "searchTokens", type = "object")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully replace text in file details",
-                                       description = "Successfully replace text in file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file content successfully replaced",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while renaming file details",
-                                       description = "Error while renaming file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully replace text in file details", description = "Successfully replace text in file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file content successfully replaced", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while renaming file details", description = "Error while renaming file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response findTextInFileAfterGivenPosition( @Context HttpServletRequest request ) {
 
@@ -2373,80 +1378,36 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/content/find")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Find text in file after given position details",
-            summary = "Find text in file after given position",
-            url = "file/content/find")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Find text in file after given position details", summary = "Find text in file after given position", url = "file/content/find")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/old_file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether the provided search texts are REGEXes or plain text ones",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRegex",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The patterns that will be searched in the file content",
-                                                  example = "[\"[a-z]\"]",
-                                                  name = "searchTexts",
-                                                  type = "string[]"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The initial offset in the file from which the search will begin",
-                                                  example = "100",
-                                                  name = "searchFromPosition",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The current position in the file",
-                                                  example = "10",
-                                                  name = "currentLineNumber",
-                                                  type = "int")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/old_file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether the provided search texts are REGEXes or plain text ones", example = "TRUE|FALSE", name = "isRegex", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "The patterns that will be searched in the file content", example = "[\"[a-z]\"]", name = "searchTexts", type = "string[]"),
+                                          @SwaggerMethodParameterDefinition( description = "The initial offset in the file from which the search will begin", example = "100", name = "searchFromPosition", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The current position in the file", example = "10", name = "currentLineNumber", type = "int")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully find text in file after given position details",
-                                       description = "Successfully find text in file after given position",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "File match info object",
-                                               example = "{" +
-                                                         "    \"numberOfMatchedLines\": 1," +
-                                                         "    \"matched\": true," +
-                                                         "    \"lastReadByte\": 55," +
-                                                         "    \"lastReadLineNumber\": 15," +
-                                                         "    \"lineNumbers\": [3]," +
-                                                         "    \"lines\": [\"testCaseState\"]," +
-                                                         "    \"matchedPatterns\": [\"test\"]" +
-                                                         "}",
-                                               name = "action_result",
-                                               type = "object") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while searching for text in file details",
-                                       description = "Error while searching for text in file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully find text in file after given position details", description = "Successfully find text in file after given position", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "File match info object", example = "{"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"numberOfMatchedLines\": 1,"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"matched\": true,"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"lastReadByte\": 55,"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"lastReadLineNumber\": 15,"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"lineNumbers\": [3],"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"lines\": [\"testCaseState\"],"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "    \"matchedPatterns\": [\"test\"]"
+                                                                                                                                                                                                                                                                                                                                   +
+                                                                                                                                                                                                                                                                                                                                   "}", name = "action_result", type = "object") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while searching for text in file details", description = "Error while searching for text in file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response findTextAfterGivenPositionInFile( @Context HttpServletRequest request ) {
 
@@ -2511,75 +1472,26 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "file/content/grep")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Execute grep operation on file",
-            url = "file/content/grep")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Execute grep operation on file", url = "file/content/grep")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "fileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The String to match",
-                                                  example = "some string",
-                                                  name = "searchPattern",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to use DOS/WIN-like characters (* and ?) (true) or any valid REGEX expression (false)",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isSimpleMode",
-                                                  type = "boolean")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/file.txt", name = "fileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The String to match", example = "some string", name = "searchPattern", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to use DOS/WIN-like characters (* and ?) (true) or any valid REGEX expression (false)", example = "TRUE|FALSE", name = "isSimpleMode", type = "boolean")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully grep file details",
-                                       description = "Successfully grep file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Array of found lines",
-                                               example = "[\"line_1\",\"line_2\"]",
-                                               name = "action_result",
-                                               type = "string[]") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while executing grep operation on file details",
-                                       description = "Error while executing grep operation on file details",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully grep file details", description = "Successfully grep file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Array of found lines", example = "[\"line_1\",\"line_2\"]", name = "action_result", type = "string[]") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while executing grep operation on file details", description = "Error while executing grep operation on file details", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
 
     public Response fileGrep( @Context HttpServletRequest request,
-                              @QueryParam(
-                                      value = "callerId") String callerId,
-                              @QueryParam(
-                                      value = "resourceId") long resourceId,
-                              @QueryParam(
-                                      value = "fileName") String fileName,
-                              @QueryParam(
-                                      value = "searchPattern") String searchPattern,
-                              @QueryParam(
-                                      value = "isSimpleMode") boolean isSimpleMode ) {
+                              @QueryParam( value = "callerId") String callerId,
+                              @QueryParam( value = "resourceId") long resourceId,
+                              @QueryParam( value = "fileName") String fileName,
+                              @QueryParam( value = "searchPattern") String searchPattern,
+                              @QueryParam( value = "isSimpleMode") boolean isSimpleMode ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -2614,52 +1526,16 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/lock")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Lock file details",
-            summary = "Lock file",
-            url = "file/lock")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Lock file details", summary = "Lock file", url = "file/lock")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/old_file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/old_file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully lock file details",
-                                       description = "Successfully lock file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully locked",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while locking file details",
-                                       description = "Error while locking file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully lock file details", description = "Successfully lock file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully locked", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while locking file details", description = "Error while locking file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response lockFile( @Context HttpServletRequest request ) {
 
@@ -2703,52 +1579,16 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/unlock")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Unlock file details",
-            summary = "Unlock file",
-            url = "file/unlock")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Unlock file details", summary = "Unlock file", url = "file/unlock")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "/home/atsuser/old_file.txt",
-                                                  name = "fileName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "/home/atsuser/old_file.txt", name = "fileName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully unlock file details",
-                                       description = "Successfully unlock file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully unlocked",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while unlocking file details",
-                                       description = "Error while unlocking file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully unlock file details", description = "Successfully unlock file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully unlocked", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while unlocking file details", description = "Error while unlocking file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response unlockFile( @Context HttpServletRequest request ) {
 
@@ -2792,57 +1632,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/unzip")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Unzip file details",
-            summary = "Unzip file",
-            url = "file/unzip")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Unzip file details", summary = "Unzip file", url = "file/unzip")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The zip archive name",
-                                                  example = "/home/atsuser/file.zip",
-                                                  name = "zipFilePath",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The output directory name",
-                                                  example = "/home/atsuser",
-                                                  name = "outputDirPath",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The zip archive name", example = "/home/atsuser/file.zip", name = "zipFilePath", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The output directory name", example = "/home/atsuser", name = "outputDirPath", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully unzip file details",
-                                       description = "Successfully unzip file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully unzipped",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while unzipping file details",
-                                       description = "Error while unzipping file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully unzip file details", description = "Successfully unzip file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully unzipped", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while unzipping file details", description = "Error while unzipping file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response unzipFile( @Context HttpServletRequest request ) {
 
@@ -2891,57 +1691,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "file/extract")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Extract file details",
-            summary = "Extract file",
-            url = "file/extract")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Extract file details", summary = "Extract file", url = "file/extract")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The archive file name. It must be .zip, .tar or .tar.gz",
-                                                  example = "/home/atsuser/file.tar.gz",
-                                                  name = "archiveFilePath",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The output directory name",
-                                                  example = "/home/atsuser",
-                                                  name = "outputDirPath",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The archive file name. It must be .zip, .tar or .tar.gz", example = "/home/atsuser/file.tar.gz", name = "archiveFilePath", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The output directory name", example = "/home/atsuser", name = "outputDirPath", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully extract file details",
-                                       description = "Successfully extract file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully extracted",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while extracting file details",
-                                       description = "Error while extracting file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully extract file details", description = "Successfully extract file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully extracted", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while extracting file details", description = "Error while extracting file", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response extractFile( @Context HttpServletRequest request ) {
 
@@ -2988,74 +1748,22 @@ public class FileSystemRestEntryPoint {
     }
 
     @POST
-    @Path( "file/send")
+    @Path( "file/send/to")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Send file details",
-            summary = "Send file",
-            url = "file/send")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Send file TO details", summary = "Send file TO", url = "file/send/to")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The source file name",
-                                                  example = "/home/atsuser/srcFile.txt",
-                                                  name = "fromFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination file name",
-                                                  example = "/home/vsuser/dstFile.txt",
-                                                  name = "toFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination host address where the file will be sent",
-                                                  example = "212.89.23.131",
-                                                  name = "machineIP",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The port number which will be used for the transfer. This is obtained via call to transferSocket",
-                                                  example = "25300",
-                                                  name = "port",
-                                                  type = "integer"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to throw an error if the file size changed during copying",
-                                                  example = "TRUE|FALSE",
-                                                  name = "failOnError",
-                                                  type = "boolean")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The source file name", example = "/home/atsuser/srcFile.txt", name = "fromFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination file name", example = "/home/vsuser/dstFile.txt", name = "toFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination host address where the file will be sent", example = "212.89.23.131", name = "machineIP", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The port number which will be used for the transfer. This is obtained via call to transferSocket", example = "25300", name = "port", type = "integer"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to throw an error if the file size changed during copying", example = "TRUE|FALSE", name = "failOnError", type = "boolean")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully send file details",
-                                       description = "Successfully send file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "file successfully sent",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while sending file details",
-                                       description = "Error while sending file",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully send file TO details", description = "Successfully send file TO", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully sent", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while sending file TO details", description = "Error while sending file TO", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response sendFileTo( @Context HttpServletRequest request ) {
 
@@ -3093,13 +1801,13 @@ public class FileSystemRestEntryPoint {
             }
             port = getJsonElement(jsonObject, "port").getAsInt();
             if (port < 0) {
-                throw new IllegalArgumentException("port has invallid value '" + resourceId + "'");
+                throw new IllegalArgumentException("port has invalid value '" + resourceId + "'");
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
             FileSystemManager.sendFileTo(callerId, resourceId, fromFileName, toFileName, machineIP, port, failOnError);
             return Response.ok("{\"status_message\":\"file successfully sent\"}").build();
         } catch (Exception e) {
-            String message = "Unable to send file file using filesystem resource with id '"
+            String message = "Unable to send file file TO using filesystem resource with id '"
                              + resourceId
                              + "' from caller with id '"
                              + callerId + "'";
@@ -3113,55 +1821,97 @@ public class FileSystemRestEntryPoint {
         }
     }
 
+    /* ================================================================ */
+
+    @Path( "file/send/from")
+    @Produces( MediaType.APPLICATION_JSON)
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Send file FROM details", summary = "Send file FROM", url = "file/send/from")
+    @SwaggerMethodParameterDefinitions( {
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The source file name", example = "/home/atsuser/srcFile.txt", name = "fromFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination file name", example = "/home/vsuser/dstFile.txt", name = "toFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination host address where the file will be sent to", example = "212.89.23.100", name = "toMachineIP", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The port number which will be used for the transfer. This is obtained via call to transferSocket", example = "25300", name = "port", type = "integer"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to throw an error if the file size changed during copying", example = "TRUE|FALSE", name = "failOnError", type = "boolean")
+    })
+    @SwaggerMethodResponses( {
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully send file FROM details", description = "Successfully send file FROM", parametersDefinitions = {
+                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "Status message", example = "file successfully sent", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while sending file FROM details", description = "Error while sending file FROM", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
+    })
+    public Response sendFileFrom( @Context HttpServletRequest request ) {
+
+        String callerId = null;
+        long resourceId = -1;
+        String fromFileName = null;
+        String toFileName = null;
+        String machineIP = null;
+        int port = -1;
+        boolean failOnError = true;
+        try {
+            JsonObject jsonObject = new JsonParser().parse(new InputStreamReader(request.getInputStream(),
+                                                                                 "UTF-8"))
+                                                    .getAsJsonObject();
+            callerId = getJsonElement(jsonObject, "callerId").getAsString();
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
+            }
+            ThreadsPerCaller.registerThread(callerId);
+            resourceId = getJsonElement(jsonObject, "resourceId").getAsLong();
+            if (resourceId < 0) {
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
+            }
+            fromFileName = getJsonElement(jsonObject, "fromFileName").getAsString();
+            if (StringUtils.isNullOrEmpty(fromFileName)) {
+                throw new NoSuchElementException("fromFileName is not provided with the request");
+            }
+            toFileName = getJsonElement(jsonObject, "toFileName").getAsString();
+            if (StringUtils.isNullOrEmpty(toFileName)) {
+                throw new NoSuchElementException("toFileName is not provided with the request");
+            }
+            machineIP = getJsonElement(jsonObject, "machineIP").getAsString();
+            if (StringUtils.isNullOrEmpty(machineIP)) {
+                throw new NoSuchElementException("machineIP is not provided with the request");
+            }
+            port = getJsonElement(jsonObject, "port").getAsInt();
+            if (port < 0) {
+                throw new IllegalArgumentException("port has invalid value '" + resourceId + "'");
+            }
+            failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
+            FileSystemManager.sendFileFrom(callerId, resourceId, fromFileName, toFileName, machineIP, port, failOnError);
+            return Response.ok("{\"status_message\":\"file successfully sent\"}").build();
+        } catch (Exception e) {
+            String message = "Unable to send file file FROM using filesystem resource with id '"
+                             + resourceId
+                             + "' from caller with id '"
+                             + callerId + "'";
+            LOG.error(message, e);
+            return Response.serverError()
+                           .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
+                                   + "\"}")
+                           .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
+        }
+    }
+
+    /* ================================================================ */
+
     @PUT
     @Path( "/file/copy")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Copy file locally on the agent details",
-            summary = "Copy file locally on the agent. If you want to copy the file from one machine to another make call to /file/send",
-            url = "/file/copy")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Copy file locally on the agent details", summary = "Copy file locally on the agent. If you want to copy the file from one machine to another make call to /file/send", url = "/file/copy")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The source file name",
-                                                  example = "/home/atsuser/srcFile.txt",
-                                                  name = "fromFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination file name",
-                                                  example = "/home/atsuser/dstFile.txt",
-                                                  name = "toFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to fail if file size changed during copying",
-                                                  example = "TRUE|FALSE",
-                                                  name = "failOnError",
-                                                  type = "boolean") })
+                                          @SwaggerMethodParameterDefinition( description = "The source file name", example = "/home/atsuser/srcFile.txt", name = "fromFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination file name", example = "/home/atsuser/dstFile.txt", name = "toFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to fail if file size changed during copying", example = "TRUE|FALSE", name = "failOnError", type = "boolean") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully copy file locally details",
-                                       description = "Successfully copy file locally",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "successfully copy file locally",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while copying file locally details",
-                                       description = "Error while copying file locally",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully copy file locally details", description = "Successfully copy file locally", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully copy file locally", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while copying file locally details", description = "Error while copying file locally", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response copyFileLocally( @Context HttpServletRequest request ) {
 
@@ -3212,58 +1962,18 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "constructPath")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Contruct destination file path details",
-            summary = "Since the agent can be on both WIN and Linux and the request can come from WIN or Linux, "
-                      + "this method constructs the destination file path",
-            url = "constructPath")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Contruct destination file path details", summary = "Since the agent can be on both WIN and Linux and the request can come from WIN or Linux, "
+                                                                                                                       + "this method constructs the destination file path", url = "constructPath")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file name",
-                                                  example = "file.txt",
-                                                  name = "srcFileName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination file path",
-                                                  example = "/home/atsuser",
-                                                  name = "dstFilePath",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file name", example = "file.txt", name = "srcFileName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination file path", example = "/home/atsuser", name = "dstFilePath", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully constructed destination file path details",
-                                       description = "Successfully constructed destination file path",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The destination file path",
-                                               example = "/home/atsuser/file.txt",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while constructing destination file path details",
-                                       description = "Error while constructing destination file path",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully constructed destination file path details", description = "Successfully constructed destination file path", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The destination file path", example = "/home/atsuser/file.txt", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while constructing destination file path details", description = "Error while constructing destination file path", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response constructFilePath( @Context HttpServletRequest request ) {
 
@@ -3313,57 +2023,17 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "copyPortRange")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Set port range for copy operations details",
-            summary = "Set port range for copy operations.You can set either both ports (start and end) or just one of them",
-            url = "copyPortRange")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Set port range for copy operations details", summary = "Set port range for copy operations.You can set either both ports (start and end) or just one of them", url = "copyPortRange")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The start port number.",
-                                                  example = "23500",
-                                                  name = "copyFileStartPort",
-                                                  type = "integer"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The end port number",
-                                                  example = "23510",
-                                                  name = "copyFileEndPort",
-                                                  type = "integer")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The start port number.", example = "23500", name = "copyFileStartPort", type = "integer"),
+                                          @SwaggerMethodParameterDefinition( description = "The end port number", example = "23510", name = "copyFileEndPort", type = "integer")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully set copy port range details",
-                                       description = "Successfully set copy port range",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "successfully set copy port range",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting copy port range details",
-                                       description = "Error while setting copy port range",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully set copy port range details", description = "Successfully set copy port range", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully set copy port range", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting copy port range details", description = "Error while setting copy port range", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setCopyPortRange( @Context HttpServletRequest request ) {
 
@@ -3415,53 +2085,19 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "transferSocket")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Open and get socket for transfer operations details",
-            url = "transferSocket")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Open and get socket for transfer operations details", url = "transferSocket")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully open and get socket for transfer operations details",
-                                       description = "Successfully open and get socket for transfer operations",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "successfully set copy port range",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while setting copy port range details",
-                                       description = "Error while setting copy port range",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully open and get socket for transfer operations details", description = "Successfully open and get socket for transfer operations", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully set copy port range", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while setting copy port range details", description = "Error while setting copy port range", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                              @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response openTransferSocket( @Context HttpServletRequest request,
-                                        @QueryParam(
-                                                value = "callerId") String callerId,
-                                        @QueryParam(
-                                                value = "resourceId") long resourceId ) {
+                                        @QueryParam( value = "callerId") String callerId,
+                                        @QueryParam( value = "resourceId") long resourceId ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -3491,52 +2127,16 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "waitTransferComepletion")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Wait for transfer to complete details",
-            summary = "Wait for transfer to complete",
-            url = "waitForFileTransferCompletion")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Wait for transfer to complete details", summary = "Wait for transfer to complete", url = "waitForFileTransferCompletion")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The port for the transfer",
-                                                  example = "25300",
-                                                  name = "port",
-                                                  type = "integer")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The port for the transfer", example = "25300", name = "port", type = "integer")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully wait for transfer to complete details",
-                                       description = "Successfully wait for transfer to complete",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "successfully set copy port range",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while waiting for transfer to complete details",
-                                       description = "Error while waiting for transfer to complete",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully wait for transfer to complete details", description = "Successfully wait for transfer to complete", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully set copy port range", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while waiting for transfer to complete details", description = "Error while waiting for transfer to complete", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response waitForFileTransferCompletion( @Context HttpServletRequest request ) {
 
@@ -3580,71 +2180,20 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "findFiles")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Find files details",
-            summary = "Find files",
-            url = "findFiles")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Find files details", summary = "Find files", url = "findFiles")
     @SwaggerMethodParameterDefinitions( {
 
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The file search directory",
-                                                  example = "/home/atsuser",
-                                                  name = "location",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The search string",
-                                                  example = "log_file",
-                                                  name = "searchString",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether the search string is regex",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRegex",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether matching directories will be included along with the matching files",
-                                                  example = "TRUE|FALSE",
-                                                  name = "acceptDirectories",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether the search will traverse subdirectories as well",
-                                                  example = "TRUE|FALSE",
-                                                  name = "recursiveSearch",
-                                                  type = "boolean")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The file search directory", example = "/home/atsuser", name = "location", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The search string", example = "log_file", name = "searchString", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether the search string is regex", example = "TRUE|FALSE", name = "isRegex", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether matching directories will be included along with the matching files", example = "TRUE|FALSE", name = "acceptDirectories", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether the search will traverse subdirectories as well", example = "TRUE|FALSE", name = "recursiveSearch", type = "boolean")
     })
-    @SwaggerMethodResponses( { @SwaggerMethodResponse(
-            code = 200,
-            definition = "Successfully find files details",
-            description = "Successfully find files",
-            parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                    description = "Array of the found files and directories names",
-                    example = "[\"/home/atsuser/log_file1.txt\"]",
-                    name = "action_result",
-                    type = "string[]") }), @SwaggerMethodResponse(
-                            code = 500,
-                            definition = "Error while executing operation findFiles details",
-                            description = "Error while executing operation findFiles",
-                            parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                    description = "The action Java exception object",
-                                    example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                    name = "error",
-                                    type = "object"),
-                                                      @SwaggerMethodParameterDefinition(
-                                                              description = "The java exception class name",
-                                                              example = "com.myproduct.exception.NoEntryException",
-                                                              name = "exceptionClass",
-                                                              type = "string") })
+    @SwaggerMethodResponses( { @SwaggerMethodResponse( code = 200, definition = "Successfully find files details", description = "Successfully find files", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Array of the found files and directories names", example = "[\"/home/atsuser/log_file1.txt\"]", name = "action_result", type = "string[]") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while executing operation findFiles details", description = "Error while executing operation findFiles", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response findFiles( @Context HttpServletRequest request ) {
 
@@ -3700,60 +2249,21 @@ public class FileSystemRestEntryPoint {
     @GET
     @Path( "directory/exist")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Check whether directory exists",
-            url = "directory/exist")
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Check whether directory exists", url = "directory/exist")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory name",
-                                                  example = "/home/atsuser/",
-                                                  name = "dirName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory name", example = "/home/atsuser/", name = "dirName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully check does directory exists details",
-                                       description = "Successfully check does directory exists",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Whether directory exists",
-                                               example = "TRUE|FALSE",
-                                               name = "action_result",
-                                               type = "boolean") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while checking does directory exists details",
-                                       description = "Error while checking does directory exists",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully check does directory exists details", description = "Successfully check does directory exists", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Whether directory exists", example = "TRUE|FALSE", name = "action_result", type = "boolean") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while checking does directory exists details", description = "Error while checking does directory exists", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response doesDirectoryExists( @Context HttpServletRequest request,
-                                         @QueryParam(
-                                                 value = "callerId") String callerId,
-                                         @QueryParam(
-                                                 value = "resourceId") long resourceId,
-                                         @QueryParam(
-                                                 value = "dirName") String dirName ) {
+                                         @QueryParam( value = "callerId") String callerId,
+                                         @QueryParam( value = "resourceId") long resourceId,
+                                         @QueryParam( value = "dirName") String dirName ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -3787,62 +2297,18 @@ public class FileSystemRestEntryPoint {
     @PUT
     @Path( "directory")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Create directory details",
-            summary = "Create directory",
-            url = "directory")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Create directory details", summary = "Create directory", url = "directory")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "dirName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory user ID ( UID )",
-                                                  example = "1000",
-                                                  name = "uid",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory group ID ( GID )",
-                                                  example = "1000",
-                                                  name = "gid",
-                                                  type = "long")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory name", example = "/home/atsuser/file.txt", name = "dirName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory user ID ( UID )", example = "1000", name = "uid", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory group ID ( GID )", example = "1000", name = "gid", type = "long")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully create directory details",
-                                       description = "Successfully create directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "directory successfully created",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while creating directory details",
-                                       description = "Error while creating directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully create directory details", description = "Successfully create directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "directory successfully created", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while creating directory details", description = "Error while creating directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response createDirectory( @Context HttpServletRequest request ) {
 
@@ -3889,62 +2355,22 @@ public class FileSystemRestEntryPoint {
     @DELETE
     @Path( "directory")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "delete",
-            parametersDefinition = "",
-            summary = "Delete directory",
-            url = "directory")
+    @SwaggerMethod( httpOperation = "delete", parametersDefinition = "", summary = "Delete directory", url = "directory")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory name",
-                                                  example = "/home/atsuser/file.txt",
-                                                  name = "dirName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory name", example = "/home/atsuser/file.txt", name = "dirName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully deleted directory details",
-                                       description = "Successfully deleted directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "directory successfully deleted",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while deleting directory details",
-                                       description = "Error while deleting directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully deleted directory details", description = "Successfully deleted directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "directory successfully deleted", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while deleting directory details", description = "Error while deleting directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response deleteDirectory( @Context HttpServletRequest request,
-                                     @QueryParam(
-                                             value = "callerId") String callerId,
-                                     @QueryParam(
-                                             value = "resourceId") long resourceId,
-                                     @QueryParam(
-                                             value = "directoryName") String directoryName,
-                                     @QueryParam(
-                                             value = "deleteRecursively") boolean deleteRecursively ) {
+                                     @QueryParam( value = "callerId") String callerId,
+                                     @QueryParam( value = "resourceId") long resourceId,
+                                     @QueryParam( value = "directoryName") String directoryName,
+                                     @QueryParam( value = "deleteRecursively") boolean deleteRecursively ) {
 
         try {
             if (StringUtils.isNullOrEmpty(callerId)) {
@@ -3978,52 +2404,16 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "directory/purgeContent")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Purge directory content details",
-            summary = "Delete only the directory child files and directories",
-            url = "directory/purgeContent")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Purge directory content details", summary = "Delete only the directory child files and directories", url = "directory/purgeContent")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory name",
-                                                  example = "/home/atsuser",
-                                                  name = "directoryName",
-                                                  type = "string")
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory name", example = "/home/atsuser", name = "directoryName", type = "string")
     })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully purge directory content details",
-                                       description = "Successfully purge directory content",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "directory's content successfully purged",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while purging directory content details",
-                                       description = "Error while purging directory content",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully purge directory content details", description = "Successfully purge directory content", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "directory's content successfully purged", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while purging directory content details", description = "Error while purging directory content", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response purgeDirectoryContent( @Context HttpServletRequest request ) {
 
@@ -4066,75 +2456,19 @@ public class FileSystemRestEntryPoint {
     @POST
     @Path( "directory/send")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Send directory details",
-            summary = "Send directory",
-            url = "directory/send")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "123",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The source directory name",
-                                                  example = "/home/atsuser/srcDir",
-                                                  name = "fromDirName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination directory name",
-                                                  example = "/home/vsuser/dstDir",
-                                                  name = "toDirName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination host address where the directory will be sent",
-                                                  example = "212.89.23.131",
-                                                  name = "machineIP",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The port number which will be used for the transfer. This is obtained via call to transferSocket",
-                                                  example = "25300",
-                                                  name = "port",
-                                                  type = "integer"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to throw an error if the directory size changed during copying",
-                                                  example = "TRUE|FALSE",
-                                                  name = "failOnError",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to copy recursively or not",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRecursive",
-                                                  type = "boolean") })
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Send directory details", summary = "Send directory", url = "directory/send")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "123", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The source directory name", example = "/home/atsuser/srcDir", name = "fromDirName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination directory name", example = "/home/vsuser/dstDir", name = "toDirName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination host address where the directory will be sent", example = "212.89.23.131", name = "machineIP", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The port number which will be used for the transfer. This is obtained via call to transferSocket", example = "25300", name = "port", type = "integer"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to throw an error if the directory size changed during copying", example = "TRUE|FALSE", name = "failOnError", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to copy recursively or not", example = "TRUE|FALSE", name = "isRecursive", type = "boolean") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully send directory details",
-                                       description = "Successfully send directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "directory successfully sent",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while sending directory details",
-                                       description = "Error while sending directory",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully send directory details", description = "Successfully send directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "directory successfully sent", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while sending directory details", description = "Error while sending directory", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response sendDirectoryTo( @Context HttpServletRequest request ) {
 
@@ -4198,57 +2532,17 @@ public class FileSystemRestEntryPoint {
     @PUT
     @Path( "/directory/copy")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Copy directory locally on the agent details",
-            summary = "Copy directory locally on the agent. If you want to copy the directory from one machine to another make call to /file/send",
-            url = "/directory/copy")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Copy directory locally on the agent details", summary = "Copy directory locally on the agent. If you want to copy the directory from one machine to another make call to /file/send", url = "/directory/copy")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The source directory name",
-                                                  example = "/home/atsuser/srcDir",
-                                                  name = "fromDirName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The destination directory name",
-                                                  example = "/home/atsuser/dstDir",
-                                                  name = "toDirName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to fail if directory size changed during copying",
-                                                  example = "TRUE|FALSE",
-                                                  name = "failOnError",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether to copy directory recursively or not",
-                                                  example = "TRUE|FALSE",
-                                                  name = "isRecursive",
-                                                  type = "boolean") })
+                                          @SwaggerMethodParameterDefinition( description = "The source directory name", example = "/home/atsuser/srcDir", name = "fromDirName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The destination directory name", example = "/home/atsuser/dstDir", name = "toDirName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to fail if directory size changed during copying", example = "TRUE|FALSE", name = "failOnError", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether to copy directory recursively or not", example = "TRUE|FALSE", name = "isRecursive", type = "boolean") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successfully copy directory locally details",
-                                       description = "Successfully copy directory locally",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "successfully copy directory locally",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while copying directory locally details",
-                                       description = "Error while copying directory locally",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.myproduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successfully copy directory locally details", description = "Successfully copy directory locally", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "successfully copy directory locally", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while copying directory locally details", description = "Error while copying directory locally", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transient class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.myproduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response copyDirectoryLocally( @Context HttpServletRequest request ) {
 
@@ -4281,7 +2575,8 @@ public class FileSystemRestEntryPoint {
             }
             failOnError = getJsonElement(jsonObject, "failOnError").getAsBoolean();
             isRecursive = getJsonElement(jsonObject, "isRecursive").getAsBoolean();
-            FileSystemManager.copyDirectoryLocally(callerId, resourceId, fromDirName, toDirName, failOnError, isRecursive);
+            FileSystemManager.copyDirectoryLocally(callerId, resourceId, fromDirName, toDirName, failOnError,
+                                                   isRecursive);
             return Response.ok("{\"status_message\":\"successfully copy directory locally\"}").build();
         } catch (Exception e) {
             String message = "Unable to copy directory locally using filesystem resource with id '"

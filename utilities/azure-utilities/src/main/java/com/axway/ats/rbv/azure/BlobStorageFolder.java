@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 Axway Software
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,21 +35,21 @@ import com.axway.ats.rbv.storage.Matchable;
 /**
  * Class that encapsulates SINGLE Azure Blob Storage instance and retrieves {@link BlobStorageMetaData} for particular blob insde container<br>
  * All of the needed values (storage <strong>connection string</strong> and <strong>sas token</strong>, along with <strong>container name</strong> and <strong>blob name</strong>), are obtained from the {@link BlobStorageSearchTerm} object
- *
+ * 
  * */
 public class BlobStorageFolder implements Matchable {
 
-    private static final Logger log = Logger.getLogger(BlobStorageFolder.class);
+    private static final Logger        log = Logger.getLogger(BlobStorageFolder.class);
 
-    private boolean isOpen;
-    private String  containerName;
-    private String  blobName;
-    private boolean searchRecursively;
-    private boolean containerOperationsOnly;
+    private boolean                    isOpen;
+    private String                     containerName;
+    private String                     blobName;
+    private boolean                    searchRecursively;
+    private boolean                    containerOperationsOnly;
 
-    private BlobStorageOperations     operations;
-    private HashMap<String, MetaData> allMetaData;
-    private List<MetaData>            newMetaData;
+    private BlobStorageOperations operations;
+    private HashMap<String, MetaData>  allMetaData;
+    private List<MetaData>             newMetaData;
 
     BlobStorageFolder( BlobStorageSearchTerm searchTerm ) {
 

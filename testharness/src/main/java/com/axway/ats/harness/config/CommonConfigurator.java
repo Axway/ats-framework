@@ -272,11 +272,11 @@ public final class CommonConfigurator extends AbstractConfigurator {
     }
 
     /**
-     * By default ATS tries to discover on its own if some host is a local or remote one. </br>
+     * By default ATS tries to discover on its own if some host is a local or remote one. <br>
      * In case you find this discovery is not accurate, you can use this method 
-     * to explicitly set a host locality. </br></br>
+     * to explicitly set a host locality. <br><br>
      * 
-     * This is important for some ATS operations which need to know if some host is a local one or not. </br>
+     * This is important for some ATS operations which need to know if some host is a local one or not. <br>
      * For example when copying a file to a remote host we will need to work with an ATS Agent located on that remote host. 
      * But if we find this is a local host, we can simply use the available java classes for the copy process.
      * 

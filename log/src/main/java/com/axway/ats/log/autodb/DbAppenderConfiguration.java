@@ -16,33 +16,38 @@
 package com.axway.ats.log.autodb;
 
 import java.io.Serializable;
-import com.axway.ats.core.log.AtsConsoleLogger;
+
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
+import com.axway.ats.log.autodb.io.AbstractDbAccess;
 
 /**
  * Hold the configuration data for this db appender
  */
 public class DbAppenderConfiguration implements Serializable {
 
-    private static final long serialVersionUID                       = 4786587768915142179L;
+    private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
     private String            host;
     private String            port;
     private String            database;
     private String            user;
     private String            password;
-    private String            mode                                   = "";
+    private String            mode                                  = "";
+    private String            driver                                = DbKeys.SQL_SERVER_DRIVER_JTDS;
+    private String            chunkSize;
 
     // the capacity of our logging queue
-    private static final int   DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
-    private String             maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
+    private static final int  DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS = 100000;
+    private String            maxNumberLogEvents                    = String.valueOf(DEFAULT_MAX_NUMBER_PENDING_LOG_EVENTS);
 
     //are checkpoints enabled
-    private boolean           enableCheckpoints                      = true;
+    private boolean           enableCheckpoints                     = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    private int               loggingThreshold                       = -1;
+    private int               loggingThreshold                      = -1;
 
     public String getHost() {
 
@@ -175,6 +180,26 @@ public class DbAppenderConfiguration implements Serializable {
         this.loggingThreshold = loggingThreshold;
     }
 
+    public String getDriver() {
+
+        return driver;
+    }
+
+    public void setDriver( String driver ) {
+
+        this.driver = driver;
+    }
+
+    public String getChunkSize() {
+
+        return chunkSize;
+    }
+
+    public void setChunkSize( String chunkSize ) {
+
+        this.chunkSize = chunkSize;
+    }
+
     /**
      * Verify that the configuration is valid - the method will throw runtime exception if the configuration is not
      * valid
@@ -204,6 +229,14 @@ public class DbAppenderConfiguration implements Serializable {
 
         if (password == null) {
             throw new InvalidAppenderConfigurationException("password");
+        }
+
+        if (driver == null) {
+            this.driver = DbKeys.SQL_SERVER_DRIVER_JTDS;
+        }
+
+        if (chunkSize == null) {
+            this.chunkSize = AbstractDbAccess.DEFAULT_CHUNK_SIZE + "";
         }
     }
 
@@ -264,6 +297,13 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (loggingThreshold != otherConfig.loggingThreshold) {
+            return false;
+        }
+        if (!driver.equalsIgnoreCase(otherConfig.driver)) { // driver value is case-insensitive
+            return false;
+        }
+
+        if (!chunkSize.equals(otherConfig.chunkSize)) {
             return false;
         }
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 Axway Software
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,12 +34,12 @@ import com.axway.ats.rbv.model.RbvException;
 import com.azure.storage.blob.models.BlobType;
 
 /**
- *
- * Azure Blob Storage verification client.
- * For examples and details refer to ATS framework guide
- * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">here</a>
- *
- */
+*
+* Azure Blob Storage verification client.
+* For examples and details refer to ATS framework guide
+* <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">here</a>
+*
+*/
 @PublicAtsApi
 public class BlobStorageVerifications extends VerificationSkeleton {
 
@@ -53,9 +53,9 @@ public class BlobStorageVerifications extends VerificationSkeleton {
      * @param containerName  - the container name
      */
     public BlobStorageVerifications(
-            String connectionString,
-            String sasToken,
-            String containerName ) {
+                                     String connectionString,
+                                     String sasToken,
+                                     String containerName ) {
 
         super();
 
@@ -81,11 +81,11 @@ public class BlobStorageVerifications extends VerificationSkeleton {
      * @param recursive - should search for match be done recursively
      */
     public BlobStorageVerifications(
-            String connectionString,
-            String sasToken,
-            String containerName,
-            String blobName,
-            boolean recursive ) {
+                                     String connectionString,
+                                     String sasToken,
+                                     String containerName,
+                                     String blobName,
+                                     boolean recursive ) {
 
         super();
 
@@ -260,16 +260,14 @@ public class BlobStorageVerifications extends VerificationSkeleton {
             matchedObjects[i] = newMatchedObject;
             MetaData currentMetaData = matchedMetaData.get(i);
             newMatchedObject.setBlobName((String) currentMetaData.getProperty(BlobStorageMetaData.BLOB_NAME));
-            newMatchedObject.setBlobType((com.axway.ats.action.azure.BlobInfo.BlobType) currentMetaData.getProperty(
-                    BlobStorageMetaData.BLOB_TYPE));
+            newMatchedObject.setBlobType((com.axway.ats.action.azure.BlobInfo.BlobType) currentMetaData.getProperty(BlobStorageMetaData.BLOB_TYPE));
             newMatchedObject.setContainerName((String) currentMetaData.getProperty(BlobStorageMetaData.CONTAINER_NAME));
             newMatchedObject.setContentType((String) currentMetaData.getProperty(BlobStorageMetaData.CONTENT_TYPE));
             newMatchedObject.setCreationTime((Date) currentMetaData.getProperty(BlobStorageMetaData.CREATION_TIME));
             newMatchedObject.setETag((String) currentMetaData.getProperty(BlobStorageMetaData.E_TAG));
             newMatchedObject.setLastModified((Date) currentMetaData.getProperty(BlobStorageMetaData.LAST_MODIFIED));
             newMatchedObject.setMd5((String) currentMetaData.getProperty(BlobStorageMetaData.BLOB_NAME));
-            newMatchedObject.setMetadata(
-                    (Map<String, String>) currentMetaData.getProperty(BlobStorageMetaData.META_DATA));
+            newMatchedObject.setMetadata((Map<String, String>) currentMetaData.getProperty(BlobStorageMetaData.META_DATA));
             newMatchedObject.setSize((long) currentMetaData.getProperty(BlobStorageMetaData.SIZE));
         }
 

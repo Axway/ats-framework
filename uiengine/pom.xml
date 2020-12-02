@@ -15,11 +15,11 @@
         iOS) and Swing
     </description>
     <url>https://axway.github.io/ats-framework/Automated-testing-of-HTML-and-Javascript-application.html</url>
-
+  
     <properties>
         <selenium-java.version>3.141.59</selenium-java.version> <!-- might be overwritten with more recent version -->
         <selenium-htmlunit-driver.version>2.36.0</selenium-htmlunit-driver.version>
-        <selenium-supported.browser.versions>Firefox 68, Chrome 76, IE 11, Safari 5.1+, Edge(limited)
+        <selenium-supported.browser.versions>Firefox 79, Chrome 84, Edge 85, IE 11, Safari 5.1+
         </selenium-supported.browser.versions>
         <fest.swing.version>1.2.1</fest.swing.version>
         <xml-apis.version>1.4.01</xml-apis.version>
@@ -29,6 +29,24 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>com.nickwongdev</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <version>1.12.1</version>
+                <configuration>
+                    <complianceLevel>${java.classlevel.version}</complianceLevel>
+                    <source>${java.classlevel.version}</source>
+                    <target>${java.classlevel.version}</target>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test-compile</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -44,27 +62,6 @@
                         <exclude>**/*$*</exclude>
                     </excludes>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>com.nickwongdev</groupId>
-                <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.12.1</version>
-                <configuration>
-                    <complianceLevel>${java.classlevel.version}</complianceLevel>
-                    <source>${java.classlevel.version}</source>
-                    <target>${java.classlevel.version}</target>
-
-                </configuration>
-                <!--configuration> <complianceLevel>1.6</complianceLevel>
-                    <Xlint>warning</Xlint> </configuration -->
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>test-compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
         <pluginManagement>
@@ -132,12 +129,6 @@
             <artifactId>ats-actionlibrary</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <version>${testng.version}</version>
-            <scope>test</scope>
-        </dependency>
 
         <dependency>
             <groupId>org.seleniumhq.selenium</groupId>
@@ -201,7 +192,7 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
-            <version>1.8.2</version>
+            <version>1.9.6</version> <!-- Lstest current AspectJ with support for some Java 13 and 14 features -->
         </dependency>
 
         <!-- Mobile dependencies -->
@@ -224,6 +215,13 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>${testng.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

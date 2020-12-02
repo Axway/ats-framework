@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ public abstract class DbConnection {
      * <p>Note that <strong>timeout</strong> has different meaning for different databases and/or database drivers.</br>
      * See {@link DbConnection#applyTimeout()} for more information.</p>
      * */
-    public static final int       DEFAULT_TIMEOUT = 30;  // 30 seconds
+    public static final int       DEFAULT_TIMEOUT = -1;  // No timeout
 
     /**
      * The type of the database
@@ -168,7 +168,7 @@ public abstract class DbConnection {
      * Initialize the connection descriptor custom properties - this method
      * will be called by the constructor if properties are supplied
      * 
-     * @param properties map of properties
+     * @param customProperties map of additional properties
      */
     protected abstract void initializeCustomProperties(
                                                         Map<String, Object> customProperties );
@@ -194,7 +194,9 @@ public abstract class DbConnection {
         connHash.append("_");
         connHash.append(db);
         connHash.append("_");
+        connHash.append(user);
         if (customProperties != null) {
+            connHash.append("_");
             connHash.append(customProperties.hashCode());
         }
 
@@ -202,9 +204,11 @@ public abstract class DbConnection {
     }
 
     /**
-     * Get a DataSource from this connection
-     * 
-     * @return
+     * Get a new DataSource from this connection.
+     * <p><em>Note</em> that each call returns new DataSource instance.
+     * It is recommended to use {@link ConnectionPool#getConnection(DbConnection)} which keeps cache of
+     * existing DataSources based on connection hash of the provided {@link DbConnection} descriptor.</p>
+     * @return new {@link DataSource} instance based on current instance parameters and credentials.
      */
     public abstract DataSource getDataSource();
 

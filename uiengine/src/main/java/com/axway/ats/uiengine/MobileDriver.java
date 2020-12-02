@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -332,7 +332,7 @@ public class MobileDriver extends UiDriver {
             }
         } else {
 
-            //TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
+            // TODO: Find solution. Note that "this.driver.resetApp();" doesn't reset app cache.
             throw new NotSupportedOperationException(
                     "Currently clear application cache operation for iOS is not implemented. Hint: check with resetApp");
         }

@@ -34,9 +34,7 @@ public enum MysqlColumnNames {
     DEFAULT_COLUMN;
 
     /**
-     * Returns the name of the column depending on the type of JDBC drivers used
-     * 
-     * @param isJDBC4 whether or not the specification is higher than JDBC4
+     * Returns the name of the column
      * @return the name of the column
      * @throws DbException 
      */

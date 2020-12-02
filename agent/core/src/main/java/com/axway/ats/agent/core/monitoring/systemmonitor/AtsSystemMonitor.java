@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,11 +22,12 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
-import org.hyperic.sigar.SigarException;
 
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
+import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
 import com.axway.ats.common.performance.monitor.PerformanceMonitor;
-import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.common.performance.monitor.beans.ParentProcessReadingBean;
+import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.core.monitoring.SystemMonitorDefinitions;
 
 /**
@@ -36,7 +37,7 @@ public class AtsSystemMonitor extends PerformanceMonitor {
 
     private static final Logger                   log                           = Logger.getLogger(AtsSystemMonitor.class);
 
-    private SigarWrapper                          sigarWrapper;
+    private ISystemInformation                    systemInfo;
 
     private List<ReadingInstance>                 staticReadingInstances        = new ArrayList<ReadingInstance>();
     private List<ReadingInstance>                 dynamicReadingInstances       = new ArrayList<ReadingInstance>();
@@ -51,10 +52,11 @@ public class AtsSystemMonitor extends PerformanceMonitor {
         log.info("Initializing the ATS System Monitor");
 
         try {
-            this.sigarWrapper = new SigarWrapper();
-        } catch (SigarException e) {
-            log.error("Error initializing the Sigar System", e);
-            throw new Exception("Error initializing the Sigar System", e);
+            this.systemInfo = SystemInformationFactory.get();
+        } catch (Exception e) {
+            String errorMessage = "Error initializing the provider of system information. System monitoring will not work.";
+            log.error(errorMessage, e);
+            throw new SystemInformationException(errorMessage, e);
         }
 
         List<ReadingBean> staticReadings = new ArrayList<ReadingBean>();
@@ -63,7 +65,7 @@ public class AtsSystemMonitor extends PerformanceMonitor {
             if (!reading.isDynamicReading()) {
                 staticReadings.add(reading);
             } else {
-                // check if this process has parent
+                // check if this process has a parent
                 String parentProcessName = reading.getParameter(SystemMonitorDefinitions.PARAMETER_NAME__PROCESS_PARENT_NAME);
                 if (parentProcessName != null) {
                     final String parentProcessId = parentProcessName + "-" + reading.getName();
@@ -81,10 +83,10 @@ public class AtsSystemMonitor extends PerformanceMonitor {
             }
         }
 
-        ReadingInstancesFactory.init(sigarWrapper, getPollInterval());
+        ReadingInstancesFactory.init(systemInfo, getPollInterval());
 
         // create the actual static reading instances
-        staticReadingInstances = ReadingInstancesFactory.createStaticReadingInstances(sigarWrapper,
+        staticReadingInstances = ReadingInstancesFactory.createStaticReadingInstances(systemInfo,
                                                                                       staticReadings);
 
         // remember the initial dynamic readings
@@ -93,7 +95,7 @@ public class AtsSystemMonitor extends PerformanceMonitor {
         // create the list of dynamic reading instances. Initializing lastPollTime and lastLongValue to make correct
         // calculations on the first poll
         if (initialDynamicReadings.size() > 0) {
-            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(sigarWrapper,
+            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(systemInfo,
                                                                                                     parentProcessReadingInstances,
                                                                                                     initialDynamicReadings,
                                                                                                     dynamicReadingInstances);
@@ -103,8 +105,8 @@ public class AtsSystemMonitor extends PerformanceMonitor {
     @Override
     public void deinit() throws Exception {
 
-        this.sigarWrapper.stopUsingSigar();
-        this.sigarWrapper = null;
+        this.systemInfo.destroy();
+        this.systemInfo = null;
     }
 
     @Override
@@ -131,14 +133,13 @@ public class AtsSystemMonitor extends PerformanceMonitor {
 
         // update the list of dynamic reading instances
         if (initialDynamicReadings.size() > 0) {
-            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(sigarWrapper,
+            dynamicReadingInstances = ReadingInstancesFactory.createOrUpdateDynamicReadingInstances(systemInfo,
                                                                                                     parentProcessReadingInstances,
                                                                                                     initialDynamicReadings,
                                                                                                     dynamicReadingInstances);
         }
 
-        // refresh the Sigar's info
-        this.sigarWrapper.refresh();
+        this.systemInfo.refresh();
 
         // poll the static reading instances
         redingsResult.addAll(pollReadingInstances(staticReadingInstances));

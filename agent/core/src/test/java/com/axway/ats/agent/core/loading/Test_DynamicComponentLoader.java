@@ -32,6 +32,9 @@ public class Test_DynamicComponentLoader extends BaseTest {
     @Test
     public void testLoadComponentsPositive() throws AgentException {
 
+        // Temporal fix for workaround of rare cleanup issues from other tests
+        ComponentRepository.getInstance().clear();
+        
         DynamicComponentLoader dynamicLoader = new DynamicComponentLoader( new File( RELATIVE_PATH_TO_TEST_RESOURCES ),
                                                                            new Object() );
         dynamicLoader.loadAvailableComponents( ComponentRepository.getInstance() );

@@ -187,7 +187,7 @@ public class MimePackage implements Package {
     /**
      * Flag to show that message for interrupted parsing of nested MIME parts is already logged.
      * Such message is logged to indicate that some MIME parts are not parsed because of reached max nested level
-     * {@link ActionLibraryConfigurator.getInstance().getMimePackageMaxNestedLevel()}
+     * {@link ActionLibraryConfigurator#getMimePackageMaxNestedLevel()}
      */
     private boolean               skippedParsingMsgIsAlreadyLogged   = false;
 
@@ -260,13 +260,9 @@ public class MimePackage implements Package {
      * Returns the MIME package we want to work with. This could be the top
      * level package or some nested package.
      *
-     * @param packagePath
-     *            path to the needed package
-     * @param fullPackagePath
-     *            backup of the path to the needed package. This is used for
-     *            logging purposes.
-     * @return
-     * @throws NoSuchMimePackageException
+     * @param packagePath  path to the needed package
+     * @return {@link MimePackage} instance of the specific nested mail part
+     * @throws NoSuchMimePackageException If mail message is not found matching specific path
      */
     @PublicAtsApi
     public MimePackage getNeededMimePackage(

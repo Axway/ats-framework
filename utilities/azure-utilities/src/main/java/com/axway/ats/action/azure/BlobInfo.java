@@ -1,12 +1,12 @@
 /*
  * Copyright 2020 Axway Software
- *
+ * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  * http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -38,9 +38,7 @@ public class BlobInfo {
      * */
     public enum AccessTier {
         P4, P6, P10, P15, P20, P30, P40, P50, P60, P70, P80, HOT, COOL, ARCHIVE
-    }
-
-    ;
+    };
 
     private String              containerName;
     private String              blobName;

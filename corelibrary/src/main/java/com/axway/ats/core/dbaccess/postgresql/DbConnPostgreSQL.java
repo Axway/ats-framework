@@ -210,12 +210,15 @@ public class DbConnPostgreSQL extends DbConnection {
             this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
         }
 
-        sb.append("connectTimeout=" + this.timeout + ";");
-        sb.append("socketTimeout=" + this.timeout);
+        if (this.timeout > 0) {
+            sb.append("connectTimeout=" + this.timeout + ";");
+            sb.append("socketTimeout=" + this.timeout);
 
-        if (sb.length() > 0) {
-            ds.setConnectionProperties(sb.toString());
+            if (sb.length() > 0) {
+                ds.setConnectionProperties(sb.toString());
+            }
         }
+
     }
 
     @Override

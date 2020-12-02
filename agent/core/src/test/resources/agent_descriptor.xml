@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component name="agenttest" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:noNamespaceSchemaLocation="../../src/agent_descriptor.xsd">
+	xsi:noNamespaceSchemaLocation="./agent_descriptor.xsd">
 	
     <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.FirstActionClass"/>
     <actionClass name="com.axway.ats.agent.core.ant.component.agenttest.SecondActionClass"/>

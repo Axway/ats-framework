@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2020 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -40,23 +40,20 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                       = Logger.getLogger(LocalProcessExecutor.class);
-
-    private final static int    MAX_STRING_SIZE           = 100000;                                      // max chars used to limit process output
-
-    private final static String SKIPPED_CHARACTERS        = "... skipped characters ..."
-                                                            + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
-    private final static int    SKIPPED_CHARACTERS_LENGTH = SKIPPED_CHARACTERS.length();
+    private static final Logger log                            = Logger.getLogger(LocalProcessExecutor.class);
+    public static final int     OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000;                              /* 1 hour */
+    private final static int    MAX_STRING_SIZE                = 100000;                                      // max chars used to limit process output
+    private final static String SKIPPED_CHARACTERS             = "... skipped characters ..."
+                                                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
+    private final static int    SKIPPED_CHARACTERS_LENGTH      = SKIPPED_CHARACTERS.length();
 
     private List<String>        commandTokens;
     private String              commandDescription;
 
     private ProcessOutputReader errorReaderThread;
     private ProcessOutputReader outputReaderThread;
-
     private String              standardOutputFile;
     private String              errorOutputFile;
-
     private boolean             logStandardOutput;
     private boolean             logErrorOutput;
 
@@ -195,7 +192,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         if (startCommandSnippet == null || startCommandSnippet.length() < 2) {
 
-            throw new IllegalStateException("The process start command snippet is invalid. The minimum allowed length is 2 characters");
+            throw new IllegalStateException(
+                                            "The process start command snippet is invalid. The minimum allowed length is 2 characters");
         }
 
         int numberOfKilled = 0;
@@ -307,7 +305,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Returns the full standard output content.</br></br>
+     * Returns the full standard output content.<br><br>
      *
      * <b>Note:</b> This is a blocking operation which will:
      * <ul>
@@ -324,7 +322,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Returns the full error output content.</br></br>
+     * Returns the full error output content.<br><br>
      *
      * <b>Note:</b> This is a blocking operation which will:
      * <ul>
@@ -391,8 +389,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log output to corresponding log4j appenders
-     * @param logErrorOutput
+     * Log standard output also to the corresponding Log4j appenders
+     * @param logStandardOutput <code>true</code> - log the output read to the log4j too
      */
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
@@ -401,7 +399,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
     /**
      * Log error to corresponding log4j appenders
-     * @param logErrorOutput
+     * @param logErrorOutput - <code>true</code> - log the error output to the log4j too
      */
     public void setLogErrorOutput( boolean logErrorOutput ) {
 
@@ -413,9 +411,14 @@ public class LocalProcessExecutor implements IProcessExecutor {
         this.workDirectory = workDirectory;
     }
 
-    public void setEnvVariable( String variableName, String variableValue ) {
+    public String setEnvVariable( String variableName, String variableValue ) {
 
-        this.processBuilder.environment().put(variableName, variableValue);
+        return this.processBuilder.environment().put(variableName, variableValue);
+    }
+
+    public String removeEnvVariable( String variableName ) {
+
+        return this.processBuilder.environment().remove(variableName);
     }
 
     public void appendToEnvVariable( String variableName, String variableValueToAppend ) {
@@ -430,6 +433,16 @@ public class LocalProcessExecutor implements IProcessExecutor {
     public String getEnvVariable( String variableName ) {
 
         return this.processBuilder.environment().get(variableName);
+    }
+
+    /**
+     * Map of current environment to be used by child process. If process is not started yet, it could be modified
+     * depending on underlying implementation.
+     * @return key:value map of process environment (case-sensitive usually)
+     */
+    public Map<String, String> getEnvVariables() {
+
+        return this.processBuilder.environment();
     }
 
     /**
@@ -513,6 +526,16 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 String line = null;
                 String dataToLeave = null;
                 bufReaderStream = new BufferedReader(new InputStreamReader(is));
+                int pollingIntervalMs = AtsSystemProperties.getPropertyAsNonNegativeNumber(
+                                                                                           AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL,
+                                                                                           -1);
+                if (pollingIntervalMs < 0 || pollingIntervalMs > OUTPUT_POLLING_INTERVAL_MAX_MS) {
+                    pollingIntervalMs = AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT; // default value
+                } else { // explicitly set and acceptable value
+                    if (log.isDebugEnabled()) {
+                        log.debug("Setting process output polling interval to " + pollingIntervalMs + " ms.");
+                    }
+                }
 
                 while (true) {
 
@@ -523,7 +546,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
                         if (isExternalProcessOver()) {
                             // the external process is over, exit this thread
-                            log.debug("External process is over, stop reading its stream for " + type); // STANDARD or ERROR OUTPUT
+                            log.debug("External process is over, stop reading its stream for "
+                                      + type); // STANDARD or ERROR OUTPUT
                             return;
                         } else {
                             /*
@@ -532,7 +556,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                              *      If sleep time is too long - it may take a long after external process is over and the moment we exit this thread.
                              */
                             try {
-                                Thread.sleep(500);
+                                Thread.sleep(pollingIntervalMs);
                             } catch (InterruptedException ee) {
                                 // continue with next iteration
                             }
@@ -617,7 +641,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 } catch (InterruptedException e1) {
                     timeout = start + READ_TIMEOUT - System.currentTimeMillis();
                     if (timeout > 0) {
-                        log.warn("Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
+                        log.warn(
+                                 "Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
                                  + timeout + " ms");
                     }
                 }

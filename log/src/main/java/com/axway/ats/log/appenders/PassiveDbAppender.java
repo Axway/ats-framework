@@ -25,10 +25,10 @@ import org.apache.log4j.spi.LoggingEvent;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ExecutorUtils;
-import com.axway.ats.log.autodb.DbEventRequestProcessor;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
+import com.axway.ats.log.autodb.logqueue.DbEventRequestProcessor;
 
 /**
  * This appender is capable of arranging the database storage and storing messages into it. This appender works on the

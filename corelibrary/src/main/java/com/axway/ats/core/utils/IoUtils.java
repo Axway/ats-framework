@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,16 +41,16 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
 /**
  * Utility class for working with files, folders, input-output operations.
- * 
+ *
  * Note: the code is static and not synchronized! 
  */
 public class IoUtils {
 
-    private static final Logger log                  = Logger.getLogger(IoUtils.class);
+    private static final Logger log = Logger.getLogger(IoUtils.class);
 
-    public static final String  FORWARD_SLASH        = "/";
+    public static final String FORWARD_SLASH = "/";
 
-    private static final int    INTERNAL_BUFFER_SIZE = 4 * 1024;                       // 4KB
+    private static final int INTERNAL_BUFFER_SIZE = 4 * 1024;                       // 4KB
 
     /**
      * Return the name of a file by truncating the file path from the full file name
@@ -112,7 +112,7 @@ public class IoUtils {
 
     /**
      * Replaces any '\\' or '/' characters with the ones for the target system
-     * 
+     *
      * @param source the file path
      * @param osType the system to format for
      * @return the properly formatted file path
@@ -124,11 +124,11 @@ public class IoUtils {
         }
 
         String fileSeparator = osType.isWindows()
-                                                  ? "\\"
-                                                  : "/";
+                               ? "\\"
+                               : "/";
         String opositeFileSeparator = fileSeparator.equals("/")
-                                                                ? "\\"
-                                                                : FORWARD_SLASH;
+                                      ? "\\"
+                                      : FORWARD_SLASH;
 
         return source.replace(opositeFileSeparator, fileSeparator);
     }
@@ -158,8 +158,8 @@ public class IoUtils {
     public static String normalizeDirPath( String source, OperatingSystemType osType ) {
 
         String fileSeparator = osType.isWindows()
-                                                  ? "\\"
-                                                  : "/";
+                               ? "\\"
+                               : "/";
 
         source = normalizeFilePath(source, osType);
         if (source != null && !source.endsWith(fileSeparator)) {
@@ -169,7 +169,7 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
+     * 1. Replaces any '\\' characters with '/' <br>
      * 2. Appends '/' at the end if not present
      *
      * @param source the source directory
@@ -191,8 +191,8 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
-     * 2. Appends '/' at the end if not present </br>
+     * 1. Replaces any '\\' characters with '/' <br>
+     * 2. Appends '/' at the end if not present <br>
      * 3. Adds '"' character at the start and at the end of the string
      *
      * @param source the source directory
@@ -230,7 +230,7 @@ public class IoUtils {
     }
 
     /**
-     * 1. Replaces any '\\' characters with '/' </br>
+     * 1. Replaces any '\\' characters with '/' <br>
      * 2. Adds '"' character at the start and at the end of the string
      *
      * @param source the source file
@@ -253,7 +253,7 @@ public class IoUtils {
      * @return <code>false</code> if close operation had been issued but not completed successfully
      */
     public static boolean closeStream(
-                                       Closeable closeable ) {
+            Closeable closeable ) {
 
         return closeStream(closeable, null);
     }
@@ -265,9 +265,7 @@ public class IoUtils {
      * @param message a message to present to the user if the operation fail
      * @return <code>false</code> if close operation had been issued but not completed successfully
      */
-    public static boolean closeStream(
-                                       Closeable closeable,
-                                       String message ) {
+    public static boolean closeStream( Closeable closeable, String message ) {
 
         if (closeable == null) { // nothing to do
             return true;
@@ -277,37 +275,34 @@ public class IoUtils {
                 closeable.close();
                 closed = true;
             } catch (IOException e) {
-                log.warn( (message == null
-                                           ? "Could not close a stream"
-                                           : message),
-                          e);
+                log.warn((message == null ? "Could not close a stream" : message), e);
             }
             return closed;
         }
     }
 
     /**
-    *
-    * @param input {@link InputStream}. The input stream is closed after copying.
-    * @param output {@link OutputStream}. The output stream is closed after copying.
-    * @param closeInputStream. Whether to close the input stream after copying is complete.
-    * @param closeOutputStream. Whether to close the output stream after copying is complete.
-    * @param maxSize. The maximum number of bytes that will be copied ( -1 for unlimited ) 
-    * @return the number of bytes copied
-    * @throws IOException
-    */
+     *
+     * @param input {@link InputStream}. The input stream is closed after copying.
+     * @param output {@link OutputStream}. The output stream is closed after copying.
+     * @param closeInputStream Whether to close the input stream after copying is complete.
+     * @param closeOutputStream Whether to close the output stream after copying is complete.
+     * @param maxSize The maximum number of bytes that will be copied ( -1 for unlimited )
+     * @return the number of bytes copied
+     * @throws IOException
+     */
     public static long copyStream(
-                                   InputStream input,
-                                   OutputStream output,
-                                   boolean closeInputStream,
-                                   boolean closeOutputStream,
-                                   long maxSize ) throws IOException {
+            InputStream input,
+            OutputStream output,
+            boolean closeInputStream,
+            boolean closeOutputStream,
+            long maxSize ) throws IOException {
 
         byte[] buffer = new byte[INTERNAL_BUFFER_SIZE];
         long count = 0;
         int n = 0;
         try {
-            while ( (n = input.read(buffer)) != -1) {
+            while ((n = input.read(buffer)) != -1) {
                 output.write(buffer, 0, n);
                 count += n;
                 if (maxSize > 0 && count > maxSize) {
@@ -334,14 +329,14 @@ public class IoUtils {
     }
 
     public static long copyStream(
-                                   InputStream input,
-                                   OutputStream output ) throws IOException {
+            InputStream input,
+            OutputStream output ) throws IOException {
 
         return copyStream(input, output, true, true, -1);
     }
 
     /**
-     * 
+     *
      * @param zipFilePath the zip file path
      * @param outputDirPath output directory
      * @param isTempDirectory whether the directory is temporary or not. Temporary means that
@@ -349,9 +344,9 @@ public class IoUtils {
      * @throws IOException
      */
     public static void unzip(
-                              String zipFilePath,
-                              String outputDirPath,
-                              boolean isTempDirectory ) throws IOException {
+            String zipFilePath,
+            String outputDirPath,
+            boolean isTempDirectory ) throws IOException {
 
         File outputDir = new File(outputDirPath);
         outputDir.mkdirs();
@@ -402,7 +397,7 @@ public class IoUtils {
      * @throws IOException
      */
     public static InputStream readFile(
-                                        String filePath ) throws IOException {
+            String filePath ) throws IOException {
 
         // fix the encoded characters
         filePath = URLDecoder.decode(filePath, "UTF-8");
@@ -423,7 +418,7 @@ public class IoUtils {
     /**
      * Loads a file from a jar and returns it as an {@link InputStream}
      * <p><em>Note:</em> The returned stream is full in-memory copy and should be used with small files only.</p>
-     * <p><strong>EXAMPLE:</strong><br/>
+     * <p><strong>EXAMPLE:</strong><br>
      * If you want to load "file:/C:/folder/myJarFile.jar!/com/test/myFile.xml"<br>
      * then jarContainingTheFileToRead must be "file:/C:/folder/myJarFile.jar!/com/test/myFile.xml"
      * or "file:/C:/folder/myJarFile.jar"<br>
@@ -436,8 +431,8 @@ public class IoUtils {
      * @throws IOException
      */
     public static InputStream readFileFromJar(
-                                               String jarContainingTheFileToRead,
-                                               String fileToLoad ) throws IOException {
+            String jarContainingTheFileToRead,
+            String fileToLoad ) throws IOException {
 
         // fix the encoded characters
         jarContainingTheFileToRead = URLDecoder.decode(jarContainingTheFileToRead, "UTF-8");
@@ -494,7 +489,7 @@ public class IoUtils {
      * @throws IOException
      */
     private static byte[] loadInputStreamToMemory(
-                                                   InputStream inputStream ) throws IOException {
+            InputStream inputStream ) throws IOException {
 
         if (inputStream == null) {
             throw new IllegalArgumentException("Null parameter passed");
@@ -517,7 +512,7 @@ public class IoUtils {
      * @throws IOException
      */
     public static String streamToString(
-                                         InputStream inputStream ) throws IOException {
+            InputStream inputStream ) throws IOException {
 
         try {
             return new String(loadInputStreamToMemory(inputStream));
@@ -535,9 +530,9 @@ public class IoUtils {
      * @return file chunk between fromLine and toLine
      */
     public static String getFileChunk(
-                                       String fileName,
-                                       int fromLine,
-                                       int toLine ) {
+            String fileName,
+            int fromLine,
+            int toLine ) {
 
         return getFileChunk(fileName, fromLine, toLine, 10);
     }
@@ -552,19 +547,19 @@ public class IoUtils {
      * @return file chunk between fromLine and toLine
      */
     public static String getFileChunk(
-                                       String fileName,
-                                       int fromLine,
-                                       int toLine,
-                                       int averageLineLength ) {
+            String fileName,
+            int fromLine,
+            int toLine,
+            int averageLineLength ) {
 
-        StringBuilder sb = new StringBuilder( (toLine - fromLine) * averageLineLength);
+        StringBuilder sb = new StringBuilder((toLine - fromLine) * averageLineLength);
         BufferedReader br = null;
         try {
             br = new BufferedReader(new InputStreamReader(new FileInputStream(fileName)));
 
             int lineNumber = 1;
             String line;
-            while ( (line = br.readLine()) != null) {
+            while ((line = br.readLine()) != null) {
 
                 if (lineNumber >= fromLine) {
 
@@ -584,7 +579,7 @@ public class IoUtils {
     }
 
     public static String readLineWithEOL(
-                                          RandomAccessFile raf ) throws IOException {
+            RandomAccessFile raf ) throws IOException {
 
         StringBuilder line = new StringBuilder();
         int c = -1;
@@ -602,7 +597,7 @@ public class IoUtils {
                     eol = true;
                     line.append('\r');
                     long cur = raf.getFilePointer();
-                    if ( (raf.read()) != '\n') {
+                    if ((raf.read()) != '\n') {
                         raf.seek(cur);
                     } else {
                         line.append('\n');

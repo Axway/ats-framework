@@ -27,9 +27,6 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.TimeUtils;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
-import com.axway.ats.log.autodb.DbEventRequestProcessor;
-import com.axway.ats.log.autodb.LogEventRequest;
-import com.axway.ats.log.autodb.QueueLoggerThread;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
@@ -37,6 +34,9 @@ import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
 import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
+import com.axway.ats.log.autodb.logqueue.DbEventRequestProcessor;
+import com.axway.ats.log.autodb.logqueue.LogEventRequest;
+import com.axway.ats.log.autodb.logqueue.QueueLoggerThread;
 import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 
@@ -250,14 +250,14 @@ public class DbChannel {
                     Level level = Logger.getRootLogger().getLevel();
                     Logger.getRootLogger().setLevel(Level.OFF);
 
-                    AtsConsoleLogger.level = level;
+                    AtsConsoleLogger.setLevel(level);
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, false);
                     //this event has already been through the queue
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel(level);
-                    AtsConsoleLogger.level = null;
+                    AtsConsoleLogger.setLevel(level);
 
                     return;
                 case END_RUN: {
@@ -273,13 +273,13 @@ public class DbChannel {
                     level = Logger.getRootLogger().getLevel();
                     Logger.getRootLogger().setLevel(Level.OFF);
 
-                    AtsConsoleLogger.level = level;
+                    AtsConsoleLogger.setLevel(level);
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel(level);
-                    AtsConsoleLogger.level = null;
+                    AtsConsoleLogger.setLevel(level);
 
                     //this event has already been through the queue
                     return;

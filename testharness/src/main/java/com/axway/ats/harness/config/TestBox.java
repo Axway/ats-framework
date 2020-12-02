@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 package com.axway.ats.harness.config;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
+import com.axway.ats.core.dbaccess.DbConnection;
+import com.axway.ats.core.utils.HostUtils;
 
 /**
  * A test box 
@@ -29,9 +32,6 @@ public class TestBox extends Box {
      * Constant for specifying that DB port is not set
      */
     public final static int   DB_PORT_NOT_SPECIFIED = 0;
-
-    private final static int  LOWEST_PORT_NUMBER    = 0;
-    private final static int  HIGHEST_PORT_NUMBER   = 64 * 1024;
 
     private String            host;
     /**
@@ -87,15 +87,15 @@ public class TestBox extends Box {
 
         verifyNotNullNorEmptyParameter("dbPort", dbPortStr);
         int dbPortInt = DB_PORT_NOT_SPECIFIED;
-        final String errMsg = "'. Expected number within range [" + LOWEST_PORT_NUMBER + ","
-                              + HIGHEST_PORT_NUMBER + "]";
+        final String errMsg = "'. Expected number within range [" + HostUtils.LOWEST_PORT_NUMBER + ","
+                              + HostUtils.HIGHEST_PORT_NUMBER + "]";
         try {
             dbPortStr = dbPortStr.trim();
             dbPortInt = Integer.parseInt(dbPortStr);
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Illegal value for DB port specified: '" + dbPortStr + errMsg);
         }
-        if (dbPortInt < LOWEST_PORT_NUMBER || dbPortInt > HIGHEST_PORT_NUMBER) {
+        if (dbPortInt < HostUtils.LOWEST_PORT_NUMBER || dbPortInt > HostUtils.HIGHEST_PORT_NUMBER) {
             throw new IllegalArgumentException("Illegal number for DB port specified: '" + dbPortInt
                                                + errMsg);
         }
@@ -241,6 +241,46 @@ public class TestBox extends Box {
         newBox.properties = this.getNewProperties();
 
         return newBox;
+    }
+
+    /**<strong>INTERNAL<strong> method. Could be changed without notice
+     * Create TestBox from {@link DbConnection} object<br>
+     * Note that any custom properties from the connection (except the port value) will not be transfered to the TestBox
+     * 
+     * @param dbConnection - the db connection or null if the dbConnection parameter is null
+     * */
+
+    //@PublicAtsApi
+    public static TestBox fromDbConnection( DbConnection dbConnection ) {
+
+        if (dbConnection == null) {
+            return null; // should an exception IllegalArgumentException be thrown instead ?!?
+        }
+
+        String host = dbConnection.getHost();
+        int port = dbConnection.getPort();
+        String dbName = dbConnection.getDb();
+        String dbType = dbConnection.getDbType();
+        String userName = dbConnection.getUser();
+        String password = dbConnection.getPassword();
+
+        TestBox box = new TestBox();
+        box.setHost(host);
+        box.setDbPort(port + "");
+        box.setDbName(dbName);
+        box.setDbUser(userName);
+        box.setDbPass(password);
+        box.setDbType(dbType);
+        return box;
+    }
+
+    //@PublicAtsApi
+    /**<strong>INTERNAL<strong> method. Could be changed without notice
+     * */
+    public DbConnection asDbConnection() {
+
+        return DatabaseProviderFactory.createDbConnection(dbType, host, dbPort, dbName, dbUser, dbPass);
+
     }
 
     @Override

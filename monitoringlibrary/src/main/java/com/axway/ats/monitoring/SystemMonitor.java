@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,8 +39,8 @@ import com.axway.ats.core.utils.StringUtils;
  * The monitored host parameter accepted by some methods is actually the ATS
  * Agent address.
  *
- * <br/>
- * <br/>
+ * <br>
+ * <br>
  * <b>User guide</b> <a href=
  * "https://axway.github.io/ats-framework/ATS-OS-Documentation">page</a> for the
  * System monitor
@@ -244,7 +244,7 @@ public class SystemMonitor {
     private Map<String, ConnectionInfo> connectionsInformation;
 
     private boolean                     isStarted      = false;
-    private boolean                     alreadyStopped = false;
+    //private boolean                     alreadyStopped = false;
 
     /**
      * This class encapsulates necessary connection information to each ATS agent on which a monitoring is started
@@ -389,7 +389,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring on a system process.
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param monitoredHost the host where the monitored process lives
      * @param processPattern the pattern to use in order to find the process among all system processes.
@@ -417,7 +417,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring on a system process. This method specifies the name of the user who started the process to monitor.
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param monitoredHost the host where the monitored process lives
      * @param processPattern the pattern to use in order to find the process among all system processes.
@@ -447,9 +447,9 @@ public class SystemMonitor {
     /**
     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
     * a name of a parent process.
-    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * <br>When one or more processes have a parent process specified, the parent process will combine
     * the statistics of all of its children processes.
-    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * <br>This way it is possible to get a picture of the resource usage of a whole tested product
     * which is running more than one actual system processes
     *
     * @param monitoredHost the host where the monitored process lives
@@ -479,9 +479,9 @@ public class SystemMonitor {
     /**
     * It works in the same way as the <b>scheduleProcessMonitoring</b> method works with an extra parameter specifying
     * a name of a parent process.
-    * </br>When one or more processes have a parent process specified, the parent process will combine
+    * <br>When one or more processes have a parent process specified, the parent process will combine
     * the statistics of all of its children processes.
-    * </br>This way it is possible to get a picture of the resource usage of a whole tested product
+    * <br>This way it is possible to get a picture of the resource usage of a whole tested product
     * which is running more than one actual system processes
     *
     * @param monitoredHost the host where the monitored process lives
@@ -613,9 +613,9 @@ public class SystemMonitor {
      * @param mbeanName the name of the mbean than would be monitored
      * @param unit the metric unit
      * @param mbeanAttributes the MBean attribute to capture values for. 
-     * </br><b>Note: </b>This can be an array of nested attributes as sometimes the first MBean attribute is not a simple value but a composite element. Then the following attribute is the actual one to track.
-     * </br>For example when monitoring the Heap Used Memory, you have to provide "java.lang:type=Memory" as MBean name, the first level attribute is "HeapMemoryUsage" which is a composite element and its "used" attribute is the one of interest. In such case you need to provide here: "HeapMemoryUsage", "used"
-     * </br><b>Note: </b> Order of the mbeanAttributes is important
+     * <br><b>Note: </b>This can be an array of nested attributes as sometimes the first MBean attribute is not a simple value but a composite element. Then the following attribute is the actual one to track.
+     * <br>For example when monitoring the Heap Used Memory, you have to provide "java.lang:type=Memory" as MBean name, the first level attribute is "HeapMemoryUsage" which is a composite element and its "used" attribute is the one of interest. In such case you need to provide here: "HeapMemoryUsage", "used"
+     * <br><b>Note: </b> Order of the mbeanAttributes is important
      */
     @PublicAtsApi
     public void scheduleCustomJvmMonitoring(
@@ -692,7 +692,7 @@ public class SystemMonitor {
 
     /**
      * Schedule monitoring the user activity on an ATS Agent(usually used as a performance test loader).
-     * </br>No statistics collection will be triggered until the startMonitor method is called.
+     * <br>No statistics collection will be triggered until the startMonitor method is called.
      *
      * @param atsAgent the ATS Agent which runs the monitored virtual users
      */
@@ -768,7 +768,7 @@ public class SystemMonitor {
                 log.error("The following error occured while starting the system monitoring process: "
                           + errorMessage);
             }
-            throw new MonitoringException("There were error starting the system monitoring process");
+            throw new MonitoringException("There were error starting the system monitoring process. Check previous error(s) logged");
         }
 
         isStarted = true;
@@ -824,7 +824,7 @@ public class SystemMonitor {
     }
 
     /**
-     * Stop all monitoring activity.</br>Note that after this call, the current instance could not be used anymore.
+     * Stop all monitoring activity.<br>Note that after this call, the current instance could not be used anymore.
      */
     @PublicAtsApi
     public void stopMonitoring() {
@@ -849,7 +849,7 @@ public class SystemMonitor {
         }
 
         isStarted = false;
-        alreadyStopped = true;
+        //alreadyStopped = true;
     }
 
     private String stopMonitoring( String monitoredHost, ConnectionInfo info ) {
@@ -900,10 +900,10 @@ public class SystemMonitor {
     private ConnectionInfo performSetup(
                                          String monitoredHost ) {
 											 
-		if (alreadyStopped) {
+        /*if (alreadyStopped) {
             throw new MonitoringException("SystemMonitor.stopMonitoring() has already been invoked on this instance. "
                                           + "This instance of SystemMonitor could not be used anymore");
-        }
+        }*/
 
         ConnectionInfo info = this.connectionsInformation.get(monitoredHost);
         if (info != null) {

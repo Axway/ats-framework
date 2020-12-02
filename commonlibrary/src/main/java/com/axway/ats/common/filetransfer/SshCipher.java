@@ -20,7 +20,7 @@ import java.io.Serializable;
 import com.axway.ats.common.PublicAtsApi;
 
 /**
- * This class describes an SSH Cipher. Currently used in SFTPClient.<br/>
+ * This class describes an SSH Cipher. Currently used in SftpClient.<br>
  * It contains some public constants of the frequently used ciphers (predefined {@link SshCipher} instances).
  */
 @PublicAtsApi
@@ -28,7 +28,7 @@ public class SshCipher implements Serializable {
 
     private static final long     serialVersionUID = 1L;
 
-    // a long list of jscape supported ciphers could be found in a JceEncryptions class
+    // a long list of SSH/SFTP supported ciphers could be found in a JceEncryptions class
 
     @PublicAtsApi
     public static final SshCipher AES128_CBC       = new SshCipher("aes128-cbc",
@@ -70,11 +70,13 @@ public class SshCipher implements Serializable {
     public static final SshCipher _3DES_CBC        = new SshCipher("3des-cbc",
                                                                    "DESede/CBC/NoPadding",
                                                                    null,
+                                                                   null,
                                                                    8,
                                                                    24);
     @PublicAtsApi
     public static final SshCipher BLOWFISH_CBC     = new SshCipher("blowfish-cbc",
                                                                    "Blowfish/CBC/NoPadding",
+                                                                   null,
                                                                    null,
                                                                    8,
                                                                    16);
@@ -92,7 +94,7 @@ public class SshCipher implements Serializable {
                                                                    32);
 
     /**
-     * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt<br/>
+     * Check currently defined ciphers here (SSH RFC4253, [Page 10]): http://www.ietf.org/rfc/rfc4253.txt <br>
      * eg: 3des-cbc, blowfish-cbc, twofish256-cbc, aes256-cbc, aes192-cbc, aes128-cbc...
      *
      */
@@ -114,7 +116,7 @@ public class SshCipher implements Serializable {
     private String                jceAlgorithmName;
 
     /**
-     * The JCE provider name<br/>
+     * The JCE provider name<br>
      * For example "BC" for BouncyCastle or null for the default Sun provider
      */
     public String                 provider;
@@ -130,6 +132,12 @@ public class SshCipher implements Serializable {
     private int                   keyLength;
 
     /**
+     * The Class that is implementing the current cipher. Can be skipped if the provider can handle that step directly.<br>
+     * Basically if something fails, you can try setting this property.
+     * */
+    private Class<?>              implClass;
+
+    /**
      *
      * @param sshAlgorithmName the SSH algorithm name
      * @param jceAlgorithmName the JCE algorithm name
@@ -142,7 +150,43 @@ public class SshCipher implements Serializable {
                       int blockLength,
                       int keyLength ) {
 
-        this(sshAlgorithmName, jceAlgorithmName, null, blockLength, keyLength);
+        this(sshAlgorithmName, jceAlgorithmName, null, null, blockLength, keyLength);
+    }
+
+    /**
+    *
+    * @param sshAlgorithmName the SSH algorithm name
+    * @param jceAlgorithmName the JCE algorithm name
+    * @param implClass the Class that implements the cipher
+    * @param blockLength the cipher block length in bytes
+    * @param keyLength the algorithm key length in bytes
+    */
+    @PublicAtsApi
+    public SshCipher( String sshAlgorithmName,
+                      String jceAlgorithmName,
+                      Class<?> implClass,
+                      int blockLength,
+                      int keyLength ) {
+
+        this(sshAlgorithmName, jceAlgorithmName, null, implClass, blockLength, keyLength);
+    }
+
+    /**
+    *
+    * @param sshAlgorithmName the SSH algorithm name
+    * @param jceAlgorithmName the JCE algorithm name
+    * @param provider the JCE provider name
+    * @param blockLength the cipher block length in bytes
+    * @param keyLength the algorithm key length in bytes
+    */
+    @PublicAtsApi
+    public SshCipher( String sshAlgorithmName,
+                      String jceAlgorithmName,
+                      String provider,
+                      int blockLength,
+                      int keyLength ) {
+
+        this(sshAlgorithmName, jceAlgorithmName, provider, null, blockLength, keyLength);
     }
 
     /**
@@ -150,6 +194,7 @@ public class SshCipher implements Serializable {
      * @param sshAlgorithmName the SSH algorithm name
      * @param jceAlgorithmName the JCE algorithm name
      * @param provider the JCE provider name
+     * @param implClass the Class that implements the cipher
      * @param blockLength the cipher block length in bytes
      * @param keyLength the algorithm key length in bytes
      */
@@ -157,6 +202,7 @@ public class SshCipher implements Serializable {
     public SshCipher( String sshAlgorithmName,
                       String jceAlgorithmName,
                       String provider,
+                      Class<?> implClass,
                       int blockLength,
                       int keyLength ) {
 
@@ -215,6 +261,16 @@ public class SshCipher implements Serializable {
     }
 
     /**
+     * 
+     * @return the implementation class
+     */
+    @PublicAtsApi
+    public Class<?> getImplClass() {
+
+        return implClass;
+    }
+
+    /**
      * @param sshAlgorithmName SSH algorithm name
      */
     @PublicAtsApi
@@ -264,6 +320,15 @@ public class SshCipher implements Serializable {
                               int keyLength ) {
 
         this.keyLength = keyLength;
+    }
+
+    /**
+     * @param implClass the implementation class
+     */
+    @PublicAtsApi
+    public void setImplClass( Class<?> implClass ) {
+
+        this.implClass = implClass;
     }
 
     @Override

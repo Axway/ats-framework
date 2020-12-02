@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,7 +191,9 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                 log.info("Pushing configuration to ATS Agent at '" + ai.address + "'");
 
                 RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(ai.address)
-                                                                                                                               .getDbLogLevel());
+                                                                                                                               .getDbLogLevel(),
+                                                                                                    AgentConfigurationLandscape.getInstance(ai.address)
+                                                                                                                               .getChunkSize());
                 new RemoteConfigurationManager().pushConfiguration(ai.address,
                                                                    remoteLoggingConfigurator);
                 ai.logConfigured = true;
@@ -212,24 +214,33 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                                                       null, null);
                                 ai.testConfigured = true;
                             } else {
-                                //log.info("Agent at '" + ai.address + "' used outside of a TESTCASE");
+                                /**
+                                 * Or log/throw an error like:
+                                 * 
+                                 * String message = "Could not join testcase on ATS Agent at '" + monitoredHost + "'. "
+                                 *                  + "Either you did not attach AtsTestngListener listener to your test class hierarchy or "
+                                 *                  + "you are invoking System monitoring operation outside of @Test, @BeforeMethod or @AfterMethod annotated methods.";
+                                 * throw new MonitoringException(message); //or log.error(message)
+                                 * */
+                                log.warn("Agent at '" + ai.address + "' used outside of a TESTCASE");
                             }
                         } else {
-                            //log.info("Agent at '" + ai.address + "' used outside of both TESTCASE and RUN");
+                            // Do we really need to end in this else block? Even inside a RUN, monitoring does not work. The current LifeCycle state must be TESTCASE_STARTED
+                            log.warn("Agent at '" + ai.address + "' used outside of both TESTCASE and RUN"); // or log.error()?
                         }
 
                     } catch (Exception e) {
-                        String message = null;
+                        String message = "Exception while trying to configure agent at " + ai.address + ": ";
                         if (testCaseState != null) {
-                            message = "Unable to start testcase with id '" + testCaseState.getTestcaseId()
-                                      + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
-                                      + ai.address
-                                      + "'";
+                            message += "Unable to start testcase with id '" + testCaseState.getTestcaseId()
+                                       + "' from run with id '" + testCaseState.getRunId() + "' on agent '"
+                                       + ai.address
+                                       + "'";
                         } else {
-                            message = "Unable to start testcase, because ATS could not obtain testcase state information";
+                            message += "Unable to start testcase, because ATS could not obtain testcase state information";
                         }
 
-                        log.error(message);
+                        log.error(message, e);
                         throw new AgentException(message, e);
                     }
                 }
@@ -256,6 +267,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
             wsTestCaseState.setTestcaseId(testCaseState.getTestcaseId());
             wsTestCaseState.setLastExecutedTestcaseId(testCaseState.getLastExecutedTestcaseId());
             wsTestCaseState.setRunId(testCaseState.getRunId());
+
             return wsTestCaseState;
         }
     }

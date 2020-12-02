@@ -60,19 +60,26 @@ import com.axway.ats.common.dbaccess.OracleKeys;
 */
 public class SslUtils {
 
-    private static final Logger log                = Logger.getLogger(SslUtils.class);
+    private static final Logger log                                = Logger.getLogger(SslUtils.class);
 
-    private static final String DEFAULT_PROTOCOL   = "TLS";
-    
+    private static final String DEFAULT_PROTOCOL                   = "TLS";
+
     // not lazy but not size consuming
-    private static SslUtils     instance           = new SslUtils();
-    
+    private static SslUtils     instance                           = new SslUtils();
+
     private static boolean      bcProviderAlreadyRegisteredAsFirst = false;
-    
+
+    /**
+     * Since java 9, the default keystore type is changed to P12, instead of JKS.<br>
+     * This leads to a problem, when BC provider is registered, because the JAVA_HOME/lib/security/cacerts keystore is expected to be p12, but is JKS<br>
+     * So we use the Security property "keystore.type" to set the store type to JKS and save the original value in the field below
+     * */
+    private static String       origKeystoreType                   = null;
+
     private static SSLContext   trustAllSSlContext;
-    
+
     // in this list are collected all created keystore files during THIS run
-    private static List<String> availableKeyStores = new ArrayList<String>();
+    private static List<String> availableKeyStores                 = new ArrayList<String>();
 
     /**
      * Hostname verifier.
@@ -83,8 +90,6 @@ public class SslUtils {
      * Thrust managers.
      */
     private TrustManager[]      trustManagers;
-
-
 
     private SslUtils() {
 
@@ -287,7 +292,11 @@ public class SslUtils {
         if (StringUtils.isNullOrEmpty(keyStoreType) && StringUtils.isNullOrEmpty(keyStorePassword)
             && StringUtils.isNullOrEmpty(keyStoreFullPath)) {
             // all parameters are empty
-            keyStoreFullPath = System.getProperty("java.io.tmpdir") + "ats_TempKeyStore_" + host + "_"
+            String tmpDir = System.getProperty("java.io.tmpdir");
+            if (!tmpDir.endsWith(File.separator)) {
+                tmpDir += File.separator;
+            }
+            keyStoreFullPath = tmpDir + "ats_TempKeyStore_" + host + "_"
                                + databaseName + ".jks";
             keyStorePassword = "password";
             keyStoreType = "JKS";
@@ -548,16 +557,17 @@ public class SslUtils {
     /**
      * Registers Bouncy Castle (BC) as <em>first security provider</em> before any other providers 
      * coming with the Java runtime. This is done once, if not already applied.
-     * </br>ATS calls this method internally when it is supposed to be needed.
+     * <br>ATS calls this method internally when it is supposed to be needed.
      * 
-     * </br></br><b>Note:</b> This is a static operation. All working threads will be affected. 
+     * <br><br><b>Note:</b> This is a static operation. All working threads will be affected.
      * The method itself is not thread-safe.
      * 
-     * </br></br><b>Note:</b> Effective set of provider is done only once per Java runtime. 
+     * <br><br><b>Note:</b> Effective set of provider is done only once per Java runtime.
      *   Currently subsequent invocations do not check whether provider is removed meanwhile and 
      *   this way could be forcefully set other security provider.  
      */
     public static void registerBCProvider() {
+
         if (bcProviderAlreadyRegisteredAsFirst) {
             return; // do nothing. Provider is already registered as first one.
         }
@@ -585,6 +595,11 @@ public class SslUtils {
             Security.insertProviderAt(bcProvider, 1);
             bcProviderAlreadyRegisteredAsFirst = true;
             log.info("Bouncy Castle security provider is registered as first in the list of available providers");
+
+            origKeystoreType = Security.getProperty("keystore.type");
+
+            Security.setProperty("keystore.type", "jks");
+            log.info("Default keystore type set to: JKS");
         }
     }
 
@@ -600,6 +615,10 @@ public class SslUtils {
                 Security.removeProvider(BouncyCastleProvider.PROVIDER_NAME);
                 bcProviderAlreadyRegisteredAsFirst = false;
                 log.info("Bouncy Castle security provider is unregistered from the list of available providers");
+
+                Security.setProperty("keystore.type", "jks");
+                log.info("Default keystore type revert back to: " + origKeystoreType);
+
                 return;
             }
         }

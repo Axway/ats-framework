@@ -17,10 +17,12 @@ package com.axway.ats.agent.webapp.restservice.api.processes.executor;
 
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -58,51 +60,15 @@ public class ProcessExecutorRestEntryPoint {
     @Path( "")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Initialize process executor details",
-            summary = "Initialize process executor",
-            url = "")
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Initialize process executor details", summary = "Initialize process executor", url = "")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "shell command or bat/bash script",
-                                                  example = "grep",
-                                                  name = "command",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "shell command arguments",
-                                                  example = "[\"-nr test\"]",
-                                                  name = "commandArguments",
-                                                  type = "string[]") })
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "shell command or bat/bash script", example = "grep", name = "command", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "shell command arguments", example = "[\"-nr test\"]", name = "commandArguments", type = "string[]") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful initialization of process executor details",
-                                       description = "Successful initialization of process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The resource ID of the initialized process executor",
-                                               example = "123",
-                                               name = "resourceId",
-                                               type = "long") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while initializing process executor details",
-                                       description = "Error while initializing process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful initialization of process executor details", description = "Successful initialization of process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The resource ID of the initialized process executor", example = "123", name = "resourceId", type = "long") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while initializing process executor details", description = "Error while initializing process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"", name = "error", type = "object"),
+                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response
             initializeProcessExecutor( @Context HttpServletRequest request ) {
@@ -161,76 +127,20 @@ public class ProcessExecutorRestEntryPoint {
     @Path( "start")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Start process executor details",
-            summary = "Start process executor",
-            url = "start")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Start process executor details", summary = "Start process executor", url = "start")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The directory from which the process will be started",
-                                                  example = "/home/atsuser/",
-                                                  name = "workDirectory",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "File which will store the process's STDOUT stream",
-                                                  example = "/home/atsuser/stdout.txt",
-                                                  name = "standardOutputFile",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "File which will store the process's STDERR stream",
-                                                  example = "/home/atsuser/stderr.txt",
-                                                  name = "errorOutputFile",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Toggle STDOUT logging",
-                                                  example = "true|false",
-                                                  name = "logStandardOutput",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Toggle STDERR logging",
-                                                  example = "true|false",
-                                                  name = "logErrorOutput",
-                                                  type = "boolean"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "Whether or not to wait for process to finish before returning control to the main Java program",
-                                                  example = "true|false",
-                                                  name = "waitForCompletion",
-                                                  type = "boolean") })
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The directory from which the process will be started", example = "/home/atsuser/", name = "workDirectory", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "File which will store the process's STDOUT stream", example = "/home/atsuser/stdout.txt", name = "standardOutputFile", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "File which will store the process's STDERR stream", example = "/home/atsuser/stderr.txt", name = "errorOutputFile", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "Toggle STDOUT logging", example = "true|false", name = "logStandardOutput", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Toggle STDERR logging", example = "true|false", name = "logErrorOutput", type = "boolean"),
+                                          @SwaggerMethodParameterDefinition( description = "Whether or not to wait for process to finish before returning control to the main Java program", example = "true|false", name = "waitForCompletion", type = "boolean") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful start of process executor details",
-                                       description = "Successful start of process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "process successfully started",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while starting process executor details",
-                                       description = "Error while starting process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful start of process executor details", description = "Successful start of process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "process successfully started", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while starting process executor details", description = "Error while starting process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response startProcess( @Context HttpServletRequest request ) {
 
@@ -284,45 +194,13 @@ public class ProcessExecutorRestEntryPoint {
     @Path( "kill")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "",
-            summary = "Kill process executor",
-            url = "kill")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "", summary = "Kill process executor", url = "kill")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful kill of process executor details",
-                                       description = "Successful kill of process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "process successfully killed",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while killing process executor details",
-                                       description = "Error while killing process executor",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful kill of process executor details", description = "Successful kill of process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "process successfully killed", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while killing process executor details", description = "Error while killing process executor", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"", name = "error", type = "object"),
+                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response killProcess( @Context HttpServletRequest request ) {
 
@@ -362,45 +240,13 @@ public class ProcessExecutorRestEntryPoint {
     @Path( "kill/all")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "",
-            summary = "Kill process (executor)",
-            url = "kill/all")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "", summary = "Kill process (executor)", url = "kill/all")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful kill of process and its children details",
-                                       description = "Successful kill of process and its children",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "process and its children successfully killed",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while killing process and its children details",
-                                       description = "Error while killing process and its children",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful kill of process and its children details", description = "Successful kill of process and its children", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "process and its children successfully killed", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while killing process and its children details", description = "Error while killing process and its children", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc)\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response killAll( @Context HttpServletRequest request ) {
 
@@ -441,51 +287,15 @@ public class ProcessExecutorRestEntryPoint {
     @Path( "kill/external")
     @Consumes( MediaType.APPLICATION_JSON)
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Kill external process details",
-            summary = "Kill external process",
-            url = "kill/external")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "start command snippet",
-                                                  example = "grep -nr test",
-                                                  name = "startCommandSnippet",
-                                                  type = "string") })
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Kill external process details", summary = "Kill external process", url = "kill/external")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "start command snippet", example = "grep -nr test", name = "startCommandSnippet", type = "string") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful kill of external process details",
-                                       description = "Successful kill of external process",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the number of killed external processes",
-                                               example = "3",
-                                               name = "action_result",
-                                               type = "integer") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while killing external process details",
-                                       description = "Error while killing external process",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful kill of external process details", description = "Successful kill of external process", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the number of killed external processes", example = "3", name = "action_result", type = "integer") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while killing external process details", description = "Error while killing external process", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response killExternalProcess( @Context HttpServletRequest request ) {
 
@@ -532,45 +342,13 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "exitCode")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get process's exit code",
-            url = "exitCode")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get process's exit code", url = "exitCode")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process exit code details",
-                                       description = "Successful get of process exit code",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process exit code",
-                                               example = "0",
-                                               name = "action_result",
-                                               type = "integer") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process exit code details",
-                                       description = "Error while getting process exit code",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process exit code details", description = "Successful get of process exit code", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process exit code", example = "0", name = "action_result", type = "integer") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process exit code details", description = "Error while getting process exit code", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                  @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getProcessExitCode( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                         @QueryParam( "resourceId") long resourceId ) {
@@ -604,46 +382,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "pid")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get process's ID",
-            url = "pid")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get process's ID", url = "pid")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process id details",
-                                       description = "Successful get of process id",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process id",
-                                               example = "0",
-                                               name = "action_result",
-                                               type = "integer") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process id details",
-                                       description = "Error while getting process id",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process id details", description = "Successful get of process id", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process id", example = "0", name = "action_result", type = "integer") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process id details", description = "Error while getting process id", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                    @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getProcessId( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                   @QueryParam( "resourceId") long resourceId ) {
@@ -677,45 +423,13 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stdout")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get process's STDOUT content",
-            url = "stdout")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get process's STDOUT content", url = "stdout")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process STDOUT details",
-                                       description = "Successful get of process STDOUT",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process STDOUT",
-                                               example = "some STDOUT messages",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process STDOUT details",
-                                       description = "Error while getting process STDOUT",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process STDOUT details", description = "Successful get of process STDOUT", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process STDOUT", example = "some STDOUT messages", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process STDOUT details", description = "Error while getting process STDOUT", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getStandardOutput( @Context HttpServletRequest request, @QueryParam( "callerId") String callerId,
                                        @QueryParam( "resourceId") long resourceId ) {
@@ -749,46 +463,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stdout/current")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get current process's STDOUT content",
-            url = "stdout/current")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get current process's STDOUT content", url = "stdout/current")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process current STDOUT details",
-                                       description = "Successful get of process current STDOUT",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process current STDOUT",
-                                               example = "some STDOUT messages",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process current STDOUT details",
-                                       description = "Error while getting process current STDOUT",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process current STDOUT details", description = "Successful get of process current STDOUT", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process current STDOUT", example = "some STDOUT messages", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process current STDOUT details", description = "Error while getting process current STDOUT", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getCurrentStandardOutput( @Context HttpServletRequest request,
                                               @QueryParam( "callerId") String callerId,
@@ -823,46 +505,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stdout/fullyread")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get whether process's STDOUT is fully read",
-            url = "stdout/fullyread")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get whether process's STDOUT is fully read", url = "stdout/fullyread")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get whether process STDOUT is fully read details",
-                                       description = "Successful get whether process STDOUT is fully read",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "whether the process STDERR is fully read",
-                                               example = "TRUE|FALSE",
-                                               name = "action_result",
-                                               type = "boolean") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting whether process STDOUT is fully read details",
-                                       description = "Error while getting whether process STDOUT is fully read",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get whether process STDOUT is fully read details", description = "Successful get whether process STDOUT is fully read", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "whether the process STDERR is fully read", example = "TRUE|FALSE", name = "action_result", type = "boolean") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting whether process STDOUT is fully read details", description = "Error while getting whether process STDOUT is fully read", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response isStandardOutputFullyRead( @Context HttpServletRequest request,
                                                @QueryParam( "callerId") String callerId,
@@ -898,46 +548,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stderr")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get process's STDERR content",
-            url = "stderr")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get process's STDERR content", url = "stderr")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process STDERR details",
-                                       description = "Successful get of process STDERR",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process STDERR",
-                                               example = "some STDERR messages",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process STDERR details",
-                                       description = "Error while getting process STDERR",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process STDERR details", description = "Successful get of process STDERR", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process STDERR", example = "some STDERR messages", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process STDERR details", description = "Error while getting process STDERR", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getStandardErrorOutput( @Context HttpServletRequest request,
                                             @QueryParam( "callerId") String callerId,
@@ -972,46 +590,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stderr/current")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get current process's STDERR content",
-            url = "stderr/current")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get current process's STDERR content", url = "stderr/current")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get of process current STDERR details",
-                                       description = "Successful get of process current STDERR",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "the process current STDERR",
-                                               example = "some STDERR messages",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process current STDERR details",
-                                       description = "Error while getting process current STDERR",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get of process current STDERR details", description = "Successful get of process current STDERR", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "the process current STDERR", example = "some STDERR messages", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process current STDERR details", description = "Error while getting process current STDERR", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getCurrentStandardErrorOutput( @Context HttpServletRequest request,
                                                    @QueryParam( "callerId") String callerId,
@@ -1046,46 +632,14 @@ public class ProcessExecutorRestEntryPoint {
     @GET
     @Path( "stderr/fullyread")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get whether process's STDERR is fully read",
-            url = "stderr/fullyread")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get whether process's STDERR is fully read", url = "stderr/fullyread")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
 
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get whether process STDERR is fully read details",
-                                       description = "Successful get whether process STDERR is fully read",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "whether the process STDERR is fully read",
-                                               example = "TRUE|FALSE",
-                                               name = "action_result",
-                                               type = "boolean") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting  whether process STDERR is fully read details",
-                                       description = "Error while getting  whether process STDERR is fully read",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get whether process STDERR is fully read details", description = "Successful get whether process STDERR is fully read", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "whether the process STDERR is fully read", example = "TRUE|FALSE", name = "action_result", type = "boolean") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting  whether process STDERR is fully read details", description = "Error while getting  whether process STDERR is fully read", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response isStandardErrorOutputFullyRead( @Context HttpServletRequest request,
                                                     @QueryParam( "callerId") String callerId,
@@ -1119,52 +673,16 @@ public class ProcessExecutorRestEntryPoint {
     }
 
     @GET
-    @Path( "envvars")
+    @Path( "envvar")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "get",
-            parametersDefinition = "",
-            summary = "Get process environment variable's value",
-            url = "envvars")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The variable name. Such variable must already exists",
-                                                  example = "my_var",
-                                                  name = "variableName",
-                                                  type = "string") })
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get process environment variable's value", url = "envvar")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The variable name. Such variable must already exists", example = "my_var", name = "variableName", type = "string") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful get process environment variable details",
-                                       description = "Successful get process environment variable",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The process environment variable's value",
-                                               example = "some_env_var_value",
-                                               name = "action_result",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while getting process environment variable details",
-                                       description = "Error while getting process environment variable",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get process environment variable details", description = "Successful get process environment variable", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The process environment variable's value", example = "some_env_var_value", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process environment variable details", description = "Error while getting process environment variable", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                        @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response getEnvironmentVariable( @Context HttpServletRequest request,
                                             @QueryParam( "callerId") String callerId,
@@ -1201,58 +719,60 @@ public class ProcessExecutorRestEntryPoint {
 
     }
 
+    @GET
+    @Path( "envvars")
+    @Produces( MediaType.APPLICATION_JSON)
+    @SwaggerMethod( httpOperation = "get", parametersDefinition = "", summary = "Get ALL of the process environment variables", url = "envvars")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long") })
+    @SwaggerMethodResponses( {
+                               @SwaggerMethodResponse( code = 200, definition = "Successful get process environment variables details", description = "Successful get process environment variables", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The process environment variable's value", example = "some_var_name: the_value, some_other_var_name: the value", name = "action_result", type = "Map") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while getting process environment variables details", description = "Error while getting process environment variables", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
+    })
+    public Response getEnvironmentVariables( @Context HttpServletRequest request,
+                                             @QueryParam( "callerId") String callerId,
+                                             @QueryParam( "resourceId") long resourceId ) {
+
+        Map<String, String> envVars = null;
+        try {
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
+            }
+            ThreadsPerCaller.registerThread(callerId);
+            if (resourceId < 0) {
+                throw new IllegalArgumentException("resourceId has invalid value '" + resourceId + "'");
+            }
+            envVars = ProcessesExecutorsManager.getEnvironmentVariables(callerId, resourceId);
+
+            return Response.ok("{\"action_result\":" + GSON.toJson(envVars, Map.class) + "}").build();
+        } catch (Exception e) {
+            String message = "Unable to get environment variables using resourceId '"
+                             + resourceId
+                             + "' from caller with id '" + callerId + "'";
+            LOG.error(message, e);
+            return Response.serverError()
+                           .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
+                                   + "\"}")
+                           .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
+        }
+
+    }
+
     @PUT
     @Path( "envvars")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "put",
-            parametersDefinition = "Set process environment variable details",
-            summary = "Set process environment variable",
-            url = "envvars")
-    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition(
-            description = "The caller ID",
-            example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-            name = "callerId",
-            type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The variable name",
-                                                  example = "my_var",
-                                                  name = "variableName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The variable value",
-                                                  example = "my_value",
-                                                  name = "variableValue",
-                                                  type = "string") })
+    @SwaggerMethod( httpOperation = "put", parametersDefinition = "Set process environment variable details", summary = "Set process environment variable", url = "envvars")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The variable name", example = "my_var", name = "variableName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The variable value", example = "my_value", name = "variableValue", type = "string") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful create of new process environment variable details",
-                                       description = "Successful create of new process environment variable details",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "value of env variable set to <SOME_VALUE>",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while creating new process environment variable details",
-                                       description = "Error while creating new process environment variable details",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful create of new process environment variable details", description = "Successful create of new process environment variable details", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "value of env variable set to <SOME_VALUE>", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while creating new process environment variable details", description = "Error while creating new process environment variable details", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response setEnvironmentVariable( @Context HttpServletRequest request ) {
 
@@ -1278,7 +798,30 @@ public class ProcessExecutorRestEntryPoint {
                 throw new IllegalArgumentException("variableName not provided with the request");
             }
             variableValue = getJsonElement(jsonObject, "variableValue").getAsString();
-            ProcessesExecutorsManager.setEnvironmentVariable(callerId, resourceId, variableName, variableValue);
+            // here the actual value will be set, so check if the expected value is actually set
+
+            String newVariableValue = ProcessesExecutorsManager.setEnvironmentVariable(callerId, resourceId,
+                                                                                       variableName, variableValue);
+
+            if (newVariableValue == null) {
+                if (variableValue == null) {
+                    // everything appears to be OK
+                } else {
+                    throw new RuntimeException("Variable '" + variableName + "' was not set to '" + variableValue
+                                               + "', but '" + newVariableValue + "' !");
+                }
+            } else {
+                if (variableValue == null) {
+                    throw new RuntimeException("Variable '" + variableName + "' was not set to '" + variableValue
+                                               + "', but '" + newVariableValue + "' !");
+                } else {
+                    // should this check be not case-sensitive?
+                    if (!newVariableValue.equals(variableValue)) {
+                        throw new RuntimeException("Variable '" + variableName + "' was not set to '" + variableValue
+                                                   + "', but '" + newVariableValue + "' !");
+                    }
+                }
+            }
 
             return Response.ok("{\"status_message\":\"value of environment variable '" + variableName
                                + "' successfully set to '" + variableValue
@@ -1302,56 +845,16 @@ public class ProcessExecutorRestEntryPoint {
     @POST
     @Path( "envvars")
     @Produces( MediaType.APPLICATION_JSON)
-    @SwaggerMethod(
-            httpOperation = "post",
-            parametersDefinition = "Append a value to an existing process environment variable details",
-            summary = "Append a value to an existing process environment variable",
-            url = "envvars")
+    @SwaggerMethod( httpOperation = "post", parametersDefinition = "Append a value to an existing process environment variable details", summary = "Append a value to an existing process environment variable", url = "envvars")
     @SwaggerMethodParameterDefinitions( {
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The caller ID",
-                                                  example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main",
-                                                  name = "callerId",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The resource ID",
-                                                  example = "1",
-                                                  name = "resourceId",
-                                                  type = "long"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The variable name. Such variable must already exists",
-                                                  example = "my_var",
-                                                  name = "variableName",
-                                                  type = "string"),
-                                          @SwaggerMethodParameterDefinition(
-                                                  description = "The value which will be append to the existing one",
-                                                  example = "additional_value",
-                                                  name = "variableValueToAppend",
-                                                  type = "string") })
+                                          @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The variable name. Such variable must already exists", example = "my_var", name = "variableName", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The value which will be append to the existing one", example = "additional_value", name = "variableValueToAppend", type = "string") })
     @SwaggerMethodResponses( {
-                               @SwaggerMethodResponse(
-                                       code = 200,
-                                       definition = "Successful append to process environment variable's value details",
-                                       description = "Successful append to process environment variable's value",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "Status message",
-                                               example = "",
-                                               name = "status_message",
-                                               type = "string") }),
-                               @SwaggerMethodResponse(
-                                       code = 500,
-                                       definition = "Error while appending process environment variable's value details",
-                                       description = "Error while appending process environment variable's value",
-                                       parametersDefinitions = { @SwaggerMethodParameterDefinition(
-                                               description = "The action Java exception object",
-                                               example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"",
-                                               name = "error",
-                                               type = "object"),
-                                                                 @SwaggerMethodParameterDefinition(
-                                                                         description = "The java exception class name",
-                                                                         example = "com.mypoduct.exception.NoEntryException",
-                                                                         name = "exceptionClass",
-                                                                         type = "string") })
+                               @SwaggerMethodResponse( code = 200, definition = "Successful append to process environment variable's value details", description = "Successful append to process environment variable's value", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "Status message", example = "", name = "status_message", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while appending process environment variable's value details", description = "Error while appending process environment variable's value", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                                            @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
     })
     public Response appendToEnvironmentVariable( @Context HttpServletRequest request ) {
 
@@ -1395,6 +898,53 @@ public class ProcessExecutorRestEntryPoint {
                            + "' successfully appended to environment variable '"
                            + variableName + "'\"}")
                        .build();
+
+    }
+
+    @DELETE
+    @Path( "envvar")
+    @Produces( MediaType.APPLICATION_JSON)
+    @SwaggerMethod( httpOperation = "delete", parametersDefinition = "", summary = "Delete process environment variable", url = "envvar")
+    @SwaggerMethodParameterDefinitions( { @SwaggerMethodParameterDefinition( description = "The caller ID", example = "HOST_ID:localhost:8089;WORKDIR:C/users/atsuser/SOME_PROJECT_PATH;THREAD_ID:1;THREAD_NAME:main", name = "callerId", type = "string"),
+                                          @SwaggerMethodParameterDefinition( description = "The resource ID", example = "1", name = "resourceId", type = "long"),
+                                          @SwaggerMethodParameterDefinition( description = "The variable name. Such variable must already exists", example = "my_var", name = "variableName", type = "string") })
+    @SwaggerMethodResponses( {
+                               @SwaggerMethodResponse( code = 200, definition = "Successful deleted process environment variable details", description = "Successful deleted process environment variable", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The process environment variable's name", example = "some_env_name", name = "action_result", type = "string") }),
+                               @SwaggerMethodResponse( code = 500, definition = "Error while deleting process environment variable details", description = "Error while deleting process environment variable", parametersDefinitions = { @SwaggerMethodParameterDefinition( description = "The action Java exception object", example = "\"See the non-transiend class fields for java.lang.Throwable ( detailMessage, cause, etc )\"", name = "error", type = "object"),
+                                                                                                                                                                                                                                          @SwaggerMethodParameterDefinition( description = "The java exception class name", example = "com.mypoduct.exception.NoEntryException", name = "exceptionClass", type = "string") })
+    })
+    public Response deleteEnvironmentVariable( @Context HttpServletRequest request,
+                                               @QueryParam( "callerId") String callerId,
+                                               @QueryParam( "resourceId") long resourceId,
+                                               @QueryParam( "variableName") String variableName ) {
+
+        String envVar = null;
+        try {
+            if (StringUtils.isNullOrEmpty(callerId)) {
+                throw new NoSuchElementException("callerId is not provided with the request");
+            }
+            ThreadsPerCaller.registerThread(callerId);
+            if (resourceId < 0) {
+                throw new IllegalArgumentException("resourceId has invallid value '" + resourceId + "'");
+            }
+            if (StringUtils.isNullOrEmpty(variableName)) {
+                throw new IllegalArgumentException("variableName not provided with the request");
+            }
+            envVar = ProcessesExecutorsManager.deleteEnvironmentVariable(callerId, resourceId, variableName);
+
+            return Response.ok("{\"action_result\":" + GSON.toJson(envVar, String.class) + "}").build();
+        } catch (Exception e) {
+            String message = "Unable to delete environment variable '" + variableName + "' using resourceId '"
+                             + resourceId
+                             + "' from caller with id '" + callerId + "'";
+            LOG.error(message, e);
+            return Response.serverError()
+                           .entity("{\"error\":" + GSON.toJson(e) + ", \"exceptionClass\":\"" + e.getClass().getName()
+                                   + "\"}")
+                           .build();
+        } finally {
+            ThreadsPerCaller.unregisterThread();
+        }
 
     }
 

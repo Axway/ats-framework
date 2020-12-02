@@ -505,7 +505,7 @@ public class InternalFileSystemOperations {
     @Action(
             name = "Internal File System Operations send File To")
     @ActionRequestInfo(
-            requestUrl = "filesystem/file/send",
+            requestUrl = "filesystem/file/send/to",
             requestMethod = "POST")
     public void sendFileTo( @Parameter(
             name = "fromFileName") String fromFileName,
@@ -519,6 +519,30 @@ public class InternalFileSystemOperations {
                                     name = "failOnError") boolean failOnError ) throws Exception {
 
         localFSOperations.sendFileTo(fromFileName, toFileName, machineIP, port, failOnError);
+    }
+    
+    /**
+     * Actually get file From. Name left for consistency with other file operations.
+     * Used when agent could not open port and will serve as file receiver without opening data pots, i.e. sender
+     * opens the port
+     * @param fromFileName Name of the sender file
+     * @param toFileName
+     * @param machineIP IP of the sender of the file
+     * @param port port number for sending data on the sending part. Receiver will request the data
+     * @param failOnError
+     * @throws Exception
+     */
+    @Action( name = "Internal File System Operations send File From" )
+    @ActionRequestInfo(
+                       requestUrl = "filesystem/file/send/from",
+                       requestMethod = "POST")
+    public void sendFileFrom( @Parameter( name = "fromFileName" ) String fromFileName,
+                              @Parameter( name = "toFileName" ) String toFileName,
+                              @Parameter( name = "machineIP" ) String machineIP,
+                              @Parameter( name = "port" ) int port,
+                              @Parameter( name = "failOnError" ) boolean failOnError ) throws Exception {
+
+        localFSOperations.copyFileFrom(fromFileName, toFileName, machineIP, port, failOnError);
     }
 
     @Action(

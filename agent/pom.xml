@@ -1,81 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework</groupId>
-        <artifactId>ats-framework</artifactId>
+	<parent>
+		<groupId>com.axway.ats.framework</groupId>
+		<artifactId>ats-framework</artifactId>
         <version>4.1.0-SNAPSHOT</version>
-    </parent>
+	</parent>
 
-    <groupId>com.axway.ats.framework.agent</groupId>
-    <artifactId>ats-agent</artifactId>
-    <packaging>pom</packaging>
-    <name>ATS-AGENT</name>
+	<groupId>com.axway.ats.framework.agent</groupId>
+	<artifactId>ats-agent</artifactId>
+	<packaging>pom</packaging>
+	<name>ATS-AGENT</name>
 
-    <modules>
-        <module>core</module>
-        <module>agentapp</module>
-        <module>webapps</module>
-    </modules>
+	<modules>
+		<module>core</module>
+		<module>agentapp</module>
+		<module>webapps</module>
+	</modules>
 
-    <properties>
-        <javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
-    </properties>
-    <dependencyManagement>
-        <dependencies>
-            <dependency> <!-- For the ACGen task -->
-                <groupId>org.apache.ant</groupId>
-                <artifactId>ant</artifactId>
-                <version>1.10.7</version>
-            </dependency>
-            <dependency>
-                <groupId>xerces</groupId>
-                <artifactId>xercesImpl</artifactId>
-                <version>2.10.0</version>
-            </dependency>
-            <dependency>
-                <groupId>xalan</groupId>
-                <artifactId>xalan</artifactId>
-                <version>2.7.1</version>
-            </dependency>
-            <dependency> <!-- for Agent core and webapp components. Another one used for agent all -->
-                <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>${javax.servlet.servlet-api.version}</version>
-                <scope>provided</scope>
-            </dependency>
-            <dependency>
-                <groupId>org.eclipse.jetty.aggregate</groupId>
-                <artifactId>jetty-webapp</artifactId>
-                <version>8.1.0.v20120127</version>  <!-- 8.1.16.v20140903 -->
-            </dependency>
-            <!-- <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-server</artifactId>
-                <version>8.1.0.v20120127</version> TODO: use latest 8 (currently 8.1.16.v20140903)
-                or even 9.2.x </dependency> <dependency> <groupId>org.eclipse.jetty</groupId>
-                <artifactId>jetty-webapp</artifactId> <version>8.1.0.v20120127</version>
-                </dependency> -->
-            <dependency>
-                <groupId>org.fusesource</groupId>
-                <artifactId>sigar</artifactId>
-                <version>1.6.4</version>
-            </dependency>
-            <dependency>
-                <groupId>com.sun.xml.ws</groupId>
-                <artifactId>jaxws-rt</artifactId>
-                <version>2.3.2</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.metro</groupId>
-                <artifactId>webservices-rt</artifactId>
-                <version>2.4.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.glassfish.metro</groupId>
-                <artifactId>webservices-api</artifactId>
-                <version>2.4.3</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
+	<properties>
+		<javax.servlet.servlet-api.version>2.5</javax.servlet.servlet-api.version>
+	</properties>
+	<dependencyManagement>
+		<dependencies>
+			<dependency> <!-- For the ACGen task -->
+				<groupId>org.apache.ant</groupId>
+				<artifactId>ant</artifactId>
+				<version>1.10.8</version>
+			</dependency>
+			<dependency>
+				<groupId>xerces</groupId>
+				<artifactId>xercesImpl</artifactId>
+				<version>${apache.xercesImpl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>xalan</groupId>
+				<artifactId>xalan</artifactId>
+				<version>${apache.xalan.version}</version>
+			</dependency>
+			<dependency> <!-- for Agent core and webapp components. Another one used for agent all -->
+				<groupId>javax.servlet</groupId>
+				<artifactId>servlet-api</artifactId>
+				<version>${javax.servlet.servlet-api.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.eclipse.jetty.aggregate</groupId>
+				<artifactId>jetty-webapp</artifactId>
+				<version>8.1.0.v20120127</version>  <!-- 8.1.16.v20140903 -->
+			</dependency>
+			<!-- <dependency> <groupId>org.eclipse.jetty</groupId> <artifactId>jetty-server</artifactId> 
+				<version>8.1.0.v20120127</version> TODO: use latest 8 (currently 8.1.16.v20140903) 
+				or even 9.2.x </dependency> <dependency> <groupId>org.eclipse.jetty</groupId> 
+				<artifactId>jetty-webapp</artifactId> <version>8.1.0.v20120127</version> 
+				</dependency> -->
+			<dependency>
+				<groupId>org.fusesource</groupId>
+				<artifactId>sigar</artifactId>
+				<version>1.6.4</version>
+			</dependency>
+			<dependency>
+				<groupId>com.github.oshi</groupId>
+				<artifactId>oshi-core</artifactId>
+				<version>${oshi.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.sun.xml.ws</groupId>
+				<artifactId>jaxws-rt</artifactId>
+				<version>2.3.2</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.metro</groupId>
+				<artifactId>webservices-rt</artifactId>
+				<version>2.4.3</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.metro</groupId>
+				<artifactId>webservices-api</artifactId>
+				<version>2.4.3</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 </project>

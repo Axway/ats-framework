@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="component">
+        <xs:complexType>
+            <xs:sequence>
+
+                <xs:element name="actionClass" minOccurs="1" maxOccurs="unbounded">
+                
+                    <xs:annotation>
+                        <xs:documentation xml:lang="en">
+                            Action class element
+                        </xs:documentation>
+                    </xs:annotation>
+                    
+                    <xs:complexType>
+                    
+                        <xs:attribute name="name" type="classPath" use="required">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    Action class full
+                                    name.
+                                    e.g. org.axway.component.SomeActionClass
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        
+                        <xs:attribute name="initializeRequestUrl" type="URL" use="optional">
+                            <xs:annotation>
+                                <xs:documentation xml:lang="en">
+                                    Relative ( to the ATS agent REST API location ) URL 
+                                    for creating instance of this Action class on the agent.
+                                    For internal use only. Do not use it for your own custom actions.
+                                    e.g. processes/executor
+                                </xs:documentation>
+                            </xs:annotation>
+                        </xs:attribute>
+                        
+                    </xs:complexType>
+                    
+                </xs:element>
+
+                <xs:element name="initHandler" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="classPath" use="required" />
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="finalHandler" minOccurs="0" maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="classPath" use="required" />
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element name="cleanupHandler" minOccurs="1"
+                    maxOccurs="1">
+                    <xs:complexType>
+                        <xs:attribute name="name" type="classPath" use="required" />
+                    </xs:complexType>
+                </xs:element>
+
+                <xs:element ref="environment" minOccurs="0" maxOccurs="unbounded" />
+
+            </xs:sequence>
+            <xs:attribute name="name" type="notEmptyString" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="environment">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="database" minOccurs="0" maxOccurs="unbounded" />
+                <xs:element ref="file" minOccurs="0" maxOccurs="unbounded" />
+                <xs:element ref="directory" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="name" type="notEmptyString" use="optional" />
+            <xs:attribute name="backupFolder" type="notEmptyString"
+                use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Backup folder path for
+                        Unix based systems.
+                        If not specified - the system temp directory
+                        will be used.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="windowsBackupFolder" type="notEmptyString"
+                use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Backup folder path for
+                        Windows system.
+                        If not specified - the system temp directory will
+                        be used.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="database">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="table" minOccurs="1" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="host" type="notEmptyString" use="optional" />
+            <xs:attribute name="port" type="xs:positiveInteger" use="optional" />
+            <xs:attribute name="user" type="notEmptyString" use="required" />
+            <xs:attribute name="password" type="notEmptyString" use="required" />
+            <xs:attribute name="name" type="notEmptyString" use="optional" />
+            <xs:attribute name="type" type="dbType" use="required">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Database type: oracle,
+                        mysql, ...
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="sid" type="notEmptyString" use="optional" />
+            <xs:attribute name="serviceName" type="notEmptyString"
+                use="optional" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="dbType">
+        <xs:restriction base="notEmptyString">
+            <xs:enumeration value="oracle" />
+            <xs:enumeration value="mysql" />
+            <xs:enumeration value="mssql" />
+            <xs:enumeration value="cassandra" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="table">
+        <xs:complexType>
+            <xs:attribute name="name" type="notEmptyString" use="required" />
+            <xs:attribute name="columnsToExclude" type="notEmptyString"
+                use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Column names (comma
+                        separated) to exclude from backup.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="lock" type="xs:boolean" use="optional"
+                default="true">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Indicates if the table
+                        will be locked during restore.
+                        Default value is 'true'.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+            <xs:attribute name="autoIncrementResetValue" type="xs:nonNegativeInteger"
+                use="optional">
+                <xs:annotation>
+                    <xs:documentation xml:lang="en">
+                        Reset value for Auto
+                        increment columns or Sequences.
+                    </xs:documentation>
+                </xs:annotation>
+            </xs:attribute>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="file">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="action" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="path" type="notEmptyString" use="required" />
+            <xs:attribute name="backupName" type="notEmptyString"
+                use="optional" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="directory">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element ref="action" minOccurs="0" maxOccurs="unbounded" />
+            </xs:sequence>
+            <xs:attribute name="path" type="notEmptyString" use="required" />
+            <xs:attribute name="backupName" type="notEmptyString"
+                use="optional" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="notEmptyString">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:element name="action">
+        <xs:complexType>
+            <xs:attribute name="command" type="notEmptyString" use="required" />
+            <xs:attribute name="sleep" type="xs:nonNegativeInteger" use="required" />
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="classPath">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9\\.\\_\\-]+" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:simpleType name="URL">
+        <xs:restriction base="xs:string">
+            <xs:pattern value="[a-zA-Z0-9//-]+" />
+        </xs:restriction>
+    </xs:simpleType>
+
+</xs:schema>

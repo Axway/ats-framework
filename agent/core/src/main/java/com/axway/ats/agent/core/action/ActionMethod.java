@@ -432,7 +432,7 @@ public class ActionMethod {
     }
 
     /**
-     * Builds the action method name. It is the method class name + method name split by Camel-Case words<br/>
+     * Builds the action method name. It is the method class name + method name split by Camel-Case words<br>
      * For example: getDescription -> MethodClassName get Description; getSMSCount -> MethodClassName get S M S Count
      *
      * @param actionMethod action method

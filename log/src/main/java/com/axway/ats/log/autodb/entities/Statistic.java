@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package com.axway.ats.log.autodb.entities;
 import java.text.ParseException;
 import java.util.Date;
 
-import com.axway.ats.log.autodb.AbstractDbAccess;
+import com.axway.ats.log.autodb.io.AbstractDbAccess;
 
 public class Statistic extends DbEntity {
 
@@ -27,7 +27,7 @@ public class Statistic extends DbEntity {
     // name for container combining statistics from different action queues
     public static final String COMBINED_STATISTICS_CONTAINER = "ALL QUEUES";
 
-    public int                 statisticTypeId;
+    public long                statisticTypeId;
 
     public String              name;
     public String              parentName;

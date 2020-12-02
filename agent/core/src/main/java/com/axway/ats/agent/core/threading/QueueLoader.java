@@ -76,7 +76,7 @@ public interface QueueLoader {
      * 
      * @return If the queue was paused and if so - the client knows it has to resume 
      * the queue for another iteration.
-     * </br>In case the queue has finished - it will not try to resume it
+     * <br>In case the queue has finished - it will not try to resume it
      */
     public boolean waitUntilPaused();
 

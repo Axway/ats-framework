@@ -64,9 +64,9 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     /**
      * Constructor
      *
-     * @param backupDirPath
+     * @param backupDirPath target folder
      * @param backupFileName the name of the backup file
-     * @param testBox testbox with all necessary credentials
+     * @param testBox {@link TestBox} with all necessary credentials for connection
      * @param customProperties map with custom properties
      * @param dbTables list of database tables to backup
      */
@@ -95,10 +95,10 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
     /**
      * Constructor
      *
+     * @param backupDirPath path to the directory where backup file will be created
      * @param backupFileName the name of the backup file
      * @param dbConnection database connection
      * @param dbTables list of database tables to backup
-     * @param environmentHandlerFactory the factory for creating backup and restore handlers
      */
     public DatabaseEnvironmentUnit( String backupDirPath, String backupFileName, DbConnection dbConnection,
                                     List<DbTable> dbTables ) {
@@ -200,7 +200,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     /**
      * Toggle whether to drop and recreate tables on restore. Default is <strong>false</strong>.
-     * @param dropTables
+     * @param dropTables true will generate drop table statement before restore
      * */
     @PublicAtsApi
     public void setDropTables( boolean dropTables ) {
@@ -210,7 +210,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
     /**
      * Toggle whether to add the tables' content to the backup.
-     * @param skipTabkesContent - true will add the content of the tables in the backup, false will not
+     * @param skipTablesContent - true will NOT add the content of the tables in the backup, false will do
      * */
     @PublicAtsApi
     public void setSkipTablesContent( boolean skipTablesContent ) {

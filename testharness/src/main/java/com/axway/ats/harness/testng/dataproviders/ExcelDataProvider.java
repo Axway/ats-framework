@@ -19,6 +19,7 @@ package com.axway.ats.harness.testng.dataproviders;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 
+import com.axway.ats.core.utils.IoUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -38,7 +39,7 @@ public class ExcelDataProvider extends BasicDataProvider implements IDataProvide
     /**
      * Returns a set of test data, depending on the {@link Method} that requires it. This specific implementation
      * searches for the excel spread sheet in the same directory structure, that the calling method's class is in (i.e.
-     * com/axway/mft/automation).
+     * com/axway/some_package/tests).
      *
      * @param m the {@link Method} that requires the test data
      * @return a two dimensional array of Object elements
@@ -52,25 +53,27 @@ public class ExcelDataProvider extends BasicDataProvider implements IDataProvide
                                       Method m ) throws DataProviderException, NoSuchPropertyException,
                                                  ConfigurationException {
 
-        InputStream dataFileInputStream = getDataFileInputStream(m);
-        String dataSheet = getDataSheet(m);
+        InputStream dataFileInputStream = null;
+        try {
+            dataFileInputStream = getDataFileInputStream(m);
+            String dataSheet = getDataSheet(m);
 
-        ExcelParser excelParser = new ExcelParser(dataFileInputStream, dataSheet);
-        Object[][] data = excelParser.getDataBlock(m);
+            ExcelParser excelParser = new ExcelParser(dataFileInputStream, dataSheet);
+            Object[][] data = excelParser.getDataBlock(m);
 
-        //When the number of test method input arguments is different than the number of columns
-        //in the table feeding this test method a friendly RuntimeException exception is thrown
+            //When the number of test method input arguments is different than the number of columns
+            //in the table feeding this test method a friendly RuntimeException exception is thrown
 
-        if (data.length != 0) {
-
-            if (data[0].length != m.getParameterTypes().length) {
-
-                throw new RuntimeException("Unable to load data.Expected " + m.getParameterTypes().length
-                                           + " number of parameters while recieved " + data[0].length + "!");
+            if (data.length != 0) {
+                if (data[0].length != m.getParameterTypes().length) {
+                    throw new RuntimeException("Unable to load data. Expected " + m.getParameterTypes().length
+                                               + " number of parameters while received " + data[0].length + "!");
+                }
             }
-
+            return data;
+        } finally {
+            IoUtils.closeStream(dataFileInputStream, "Error closing data provider stream for method " + m.getName());
         }
 
-        return data;
     }
 }

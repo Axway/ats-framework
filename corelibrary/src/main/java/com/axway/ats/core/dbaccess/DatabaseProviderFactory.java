@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
-import com.axway.ats.core.dbaccess.postgresql.PostgreSqlProvider;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.reflect.AmbiguousMethodException;
 import com.axway.ats.core.reflect.MethodFinder;
 import com.axway.ats.core.utils.XmlUtils;
@@ -187,7 +187,7 @@ public class DatabaseProviderFactory {
                 break;
 
             case DbConnPostgreSQL.DATABASE_TYPE:
-                dbProvider = new PostgreSqlProvider((DbConnPostgreSQL) createDbConnection(dbType, dbHost, dbPort,
+                dbProvider = new PostgreSqlDbProvider((DbConnPostgreSQL) createDbConnection(dbType, dbHost, dbPort,
                                                                                           dbName, dbUser, dbPass,
                                                                                           customProperties));
                 break;
@@ -293,6 +293,8 @@ public class DatabaseProviderFactory {
      *            the type of the database
      * @param host
      *            the host to connect to
+     * @param port
+     *            the port to connect to
      * @param database
      *            the database name
      * @param user

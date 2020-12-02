@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,43 +15,60 @@
  */
 package com.axway.ats.core.dbaccess.mysql;
 
+import java.sql.Connection;
 import java.sql.Driver;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
-import com.axway.ats.core.dbaccess.DbUtils;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
-import com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource;
+import com.axway.ats.core.dbaccess.DbUtils;
+import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.reflect.ReflectionUtils;
+import com.axway.ats.core.utils.BackwardCompatibility;
+import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.core.utils.StringUtils;
+import com.mysql.cj.conf.PropertyDefinitions.DatabaseTerm;
 
 /**
  * Connection descriptor for MySQL databases
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMySQL.class);
+    private static Logger       log                                = Logger.getLogger(DbConnMySQL.class);
 
+    public static final String  MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
+    public static final String  MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
     /**
      * Default DB port
      */
-    public static final int DEFAULT_PORT = 3306;
-
+    public static final int     DEFAULT_PORT                       = 3306;
     /**
      * The JDBC MySQL prefix string
      */
-    private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
+    private static final String JDBC_MYSQL_PREFIX                  = "jdbc:mysql://";
+    public static final String  DATABASE_TYPE                      = "MYSQL";
 
-    public static final String DATABASE_TYPE = "MYSQL";
     /**
      * The connection URL
      */
-    private             String url;
-    MysqlConnectionPoolDataSource dataSource;
+    private String              url;
+    private String              serverTimeZone;
+
+    private static String       dataSourceClassName                = null;
+    private static boolean      serverTimeZoneWarningLogged        = false;
+
+    DataSource                  dataSource;
 
     /**
      * Constructor
@@ -96,6 +113,7 @@ public class DbConnMySQL extends DbConnection {
 
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
 
+        // should we add other settings like the server time zone for example?
         url = new StringBuilder().append(JDBC_MYSQL_PREFIX)
                                  .append(host)
                                  .append(":")
@@ -119,41 +137,258 @@ public class DbConnMySQL extends DbConnection {
                 }
                 this.port = (Integer) portValue;
             }
+
+            // read the server's timezone
+            Object serverTimeZone = customProperties.get(DbKeys.SERVER_TIMEZONE);
+            if (serverTimeZone != null) {
+                this.serverTimeZone = (String) serverTimeZone;
+            }
         }
 
         if (this.port < 1) {
             this.port = DEFAULT_PORT;
+        }
+
+        if (StringUtils.isNullOrEmpty(this.serverTimeZone)) {
+            if (!serverTimeZoneWarningLogged) {
+                log.warn("No server timezone specified. This can lead to an exception!");
+                serverTimeZoneWarningLogged = true;
+            }
         }
     }
 
     @Override
     public DataSource getDataSource() {
 
-        dataSource = new MysqlConnectionPoolDataSource();// do not use connection pool
-        dataSource.setServerName(this.host);
-        dataSource.setPort(this.port);
-        dataSource.setDatabaseName(this.db);
-        dataSource.setUser(this.user);
-        dataSource.setPassword(this.password);
-        dataSource.setAllowMultiQueries(true);
-
-        applyTimeout();
-
+        @BackwardCompatibility
+        DataSource dataSource = createDataSource();
         return dataSource;
+    }
+
+    private DataSource createDataSource() {
+
+        Class<?> mysqlDataSourceClass = null;
+        Object dataSourceInstance = null;
+        Throwable mysql8Exception = null;
+        Throwable mysql5Exception = null;
+        if (dataSourceClassName == null) {
+            try {
+                mysqlDataSourceClass = Class.forName(MYSQL_JDBS_8_DATASOURCE_CLASS_NAME);
+                dataSourceClassName = MYSQL_JDBS_8_DATASOURCE_CLASS_NAME;
+            } catch (Exception e) {
+                mysql8Exception = e;
+                try {
+                    mysqlDataSourceClass = Class.forName(MYSQL_JDBC_5_DATASOURCE_CLASS_NAME);
+                    dataSourceClassName = MYSQL_JDBC_5_DATASOURCE_CLASS_NAME;
+
+                } catch (Throwable t) {
+                    mysql5Exception = t;
+                }
+            }
+        } else {
+            // using already cached data source class name
+            try {
+                mysqlDataSourceClass = Class.forName(dataSourceClassName);
+            } catch (Throwable t) {
+                log.error("Error while creating MySQL data source class, using the already cached class '"
+                          + dataSourceClassName + "'", t);
+                mysqlDataSourceClass = null;
+            }
+
+        }
+
+        if (mysqlDataSourceClass == null) {
+            // actually it is tested with these versions, but 6.xx.xx maybe also be used with the 5.1.xx logic
+            StringBuilder sb = new StringBuilder();
+            sb.append(
+                      "Could not load any MySQL datasource class. Check if your classpath contains either mysql-connector-java.jar with version 5.1.xx or 8.xx.xx\n")
+              .append("Exception are:")
+              .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql8Exception, "MySQL JDBC 8.xx exception"))
+              .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql5Exception, "MySQL JDBC 5.1.xx exception"));
+            throw new RuntimeException(sb.toString());
+        } else {
+            log.info("MySQL datasource class will be '" + dataSourceClassName
+                     + "'. Begin datasource configuration");
+            try {
+                dataSourceInstance = mysqlDataSourceClass.getDeclaredConstructor().newInstance();
+                // set server name
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setServerName",
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.host });
+                // set port
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setPort",
+                                                                       new Class<?>[]{ int.class }, true),
+                                             dataSourceInstance, new Object[]{ this.port });
+                // set db name
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setDatabaseName",
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.db });
+                // set user name
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setUser",
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.user });
+
+                // set user password
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setPassword",
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.password });
+                // set other stuff
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setAllowMultiQueries",
+                                                                       new Class<?>[]{ boolean.class }, true),
+                                             dataSourceInstance, new Object[]{ true });
+
+                if (mysqlDataSourceClass.getName().equals(MYSQL_JDBS_8_DATASOURCE_CLASS_NAME)) {
+                    // tell MySQL, that you want connection.getMetaData().getTables() to return tables only from the connection's (table) schema
+                    ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setPassword",
+                                                                           new Class<?>[]{ String.class }, true),
+                                                 dataSourceInstance, new Object[]{ this.password });
+                    ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                           "setUseInformationSchema",
+                                                                           new Class<?>[]{ boolean.class }, true),
+                                                 dataSourceInstance, new Object[]{ true });
+                    ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setDatabaseTerm",
+                                                                           new Class<?>[]{ String.class }, true),
+                                                 dataSourceInstance, new Object[]{ DatabaseTerm.SCHEMA.name() });
+
+                    if (StringUtils.isNullOrEmpty(this.serverTimeZone)) {
+                        // try to find the time zone
+                        this.serverTimeZone = getServerTimeZone((DataSource) dataSourceInstance);
+                        // special handling for EEST so we are IANA compatible
+                        if (!StringUtils.isNullOrEmpty(this.serverTimeZone)) {
+                            String dateString = "00:00:00 <Z> 2020";
+                            dateString = dateString.replace("<Z>", this.serverTimeZone);
+                            SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss Z yyyy");
+                            Date date = sdf.parse(dateString);
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(date);
+
+                            //String zoneId = calendar.getTimeZone().getID();
+                            //ZonedDateTime zdt = LocalDateTime.now().atZone(ZoneId.of(zoneId));
+                            this.serverTimeZone = calendar.getTimeZone().getID();
+                        }
+
+                    }
+
+                    if (!StringUtils.isNullOrEmpty(this.serverTimeZone)) {
+                        if (log.isDebugEnabled()) {
+                            log.debug("Server time zone set to: " + this.serverTimeZone);
+                        }
+                        // set the server's time zone or actually what the client will "think" the server time zone is
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                               "setServerTimezone",
+                                                                               new Class<?>[]{ String.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.serverTimeZone });
+                    }
+
+                }
+
+                this.dataSource = (DataSource) dataSourceInstance; // not sure, what will happen
+                //applyTimeout();
+
+                if (this.timeout == null) {
+                    this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+                }
+                try {
+                    if (this.timeout > 0) {
+                        // TODO check if both are available in all of the supported versions
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                               "setConnectTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setSocketTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setLoginTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                    }
+                } catch (Exception e) {
+                    String errMsg = "Unable to apply custom timeout settings to MySQL connection";
+                    if (e instanceof SQLException) {
+                        throw new RuntimeException(DbUtils.getFullSqlException(errMsg, (SQLException) e));
+                    } else {
+                        throw new RuntimeException(errMsg, e);
+                    }
+
+                }
+
+                log.info("Done configuring the MySQL datasource.");
+                return (DataSource) dataSourceInstance;
+            } catch (Throwable t) {
+                throw new DbException("Error while configuring MySQL's data source instance", t);
+            }
+        }
+
+    }
+
+    // TODO
+    /*
+     * 
+     * new MysqlConnectionPoolDataSource();// do not use connection pool (com.axway.ats.core.dbaccess.ConnectionPool)
+    dataSource.setServerName(this.host);
+    dataSource.setPort(this.port);
+    dataSource.setDatabaseName(this.db);
+    dataSource.setUser(this.user);
+    dataSource.setPassword(this.password);
+    try {
+        // tell MySQL, that you want connection.getMetaData().getTables() to return tables only from the connection's (table) schema
+        dataSource.setUseInformationSchema(true);
+        dataSource.setDatabaseTerm(DatabaseTerm.SCHEMA.name());
+    } catch (SQLException e) {
+        throw new DbException("Error while enabling use information schema flag", e);
+    }
+    try {
+        dataSource.setServerTimezone(this.serverTimeZone);
+    } catch (SQLException e) {
+        throw new DbException("Error while setting server timezone to " + this.serverTimeZone, e);
+    }
+    try {
+        dataSource.setAllowMultiQueries(true);
+    } catch (SQLException e) {
+        throw new DbException("Error while enabling multiple queries flag", e);
+    }
+     * 
+     * */
+
+    private String getServerTimeZone( DataSource dataSourceInstance ) {
+
+        String sql = "SHOW GLOBAL VARIABLES WHERE Variable_name LIKE '%system_time_zone%';";
+        Connection conn = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
+        String serverTimeZone = null;
+        try {
+            // set the time zone to UTC, so we can actually connect to the MySql server
+            ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(dataSourceInstance.getClass(),
+                                                                   "setServerTimezone",
+                                                                   new Class<?>[]{ String.class }, true),
+                                         dataSourceInstance, new Object[]{ "UTC" });
+            conn = dataSourceInstance.getConnection();
+            stmt = conn.prepareStatement(sql);
+            rs = stmt.executeQuery();
+            while (rs.next()) {
+                serverTimeZone = rs.getString("Value");
+                break;
+            }
+        } catch (Throwable t) {
+            log.error("Unable to get server variable system_time_zone", t);
+        } finally {
+            DbUtils.closeResultSet(rs);
+            DbUtils.close(conn, stmt);
+        }
+        return serverTimeZone;
+
+    }
+
+    public static String getDataSourceClassName() {
+
+        return dataSourceClassName;
     }
 
     @Override
     protected void applyTimeout() {
 
-        if (this.timeout == null) {
-            this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
-        }
-        try {
-            dataSource.setConnectTimeout(this.timeout);
-            dataSource.setSocketTimeout(this.timeout);
-        } catch (SQLException e) {
-            throw new RuntimeException(DbUtils.getFullSqlException(null, e));
-        }
+        // nothing. see createDataSource method
     }
 
     @Override

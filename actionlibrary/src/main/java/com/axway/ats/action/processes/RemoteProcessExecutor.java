@@ -15,6 +15,8 @@
  */
 package com.axway.ats.action.processes;
 
+import java.util.Map;
+
 import com.axway.ats.agent.components.system.operations.clients.InternalProcessOperations;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.common.process.ProcessExecutorException;
@@ -164,12 +166,23 @@ public class RemoteProcessExecutor implements IProcessExecutor {
     }
 
     @Override
-    public void setEnvVariable(
+    public String setEnvVariable(
                                 String variableName,
                                 String variableValue ) {
 
         try {
-            this.remoteProcessOperations.setEnvVariable(variableName, variableValue);
+            return this.remoteProcessOperations.setEnvVariable(variableName, variableValue);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
+        }
+    }
+
+
+    @Override 
+    public String removeEnvVariable( String variableName ) {
+
+        try {
+            return this.remoteProcessOperations.removeEnvVariable(variableName);
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }
@@ -193,6 +206,16 @@ public class RemoteProcessExecutor implements IProcessExecutor {
 
         try {
             return this.remoteProcessOperations.getEnvVariable(variableName);
+        } catch (AgentException e) {
+            throw new ProcessExecutorException(e);
+        }
+    }
+
+    @Override
+    public Map<String, String> getEnvVariables() {
+
+        try {
+            return this.remoteProcessOperations.getEnvVariables();
         } catch (AgentException e) {
             throw new ProcessExecutorException(e);
         }

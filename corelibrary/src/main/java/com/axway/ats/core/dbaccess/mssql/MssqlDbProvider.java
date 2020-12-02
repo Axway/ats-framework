@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbColumn;
@@ -47,12 +48,28 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class MssqlDbProvider extends AbstractDbProvider {
 
+    /**
+     * All of the properties (their names) for the TABLE INDEXes
+     * */
+    public static class IndexProperties {
+        public static final String INDEX_NAME           = "index_name";
+        public static final String COLUMN_NAME          = "column_name";
+        public static final String TYPE                 = "type";
+        public static final String COLUMN_POSITION      = "column_position";
+        public static final String DATASPACE_NAME       = "DataSpaceName";
+        public static final String DATASPACE_TYPE       = "DataSpaceType";
+        public static final String IS_PRIMARY_KEY       = "IsPrimaryKey";
+        public static final String IS_UNIQUE            = "IsUnique";
+        public static final String IS_DUPLICATED_KEY    = "IsDuplicateKey";
+        public static final String IS_UNIQUE_CONSTRAINT = "IsUniqueConstraint";
+    }
+    
     private static final Logger log = Logger.getLogger(MssqlDbProvider.class);
 
     /**
      * Constructor to create authenticated connection to a database.
      *
-     * @param dbconn db-connection object
+     * @param dbConnection DB-connection object
      */
     public MssqlDbProvider( DbConnSQLServer dbConnection ) {
 
@@ -115,11 +132,23 @@ public class MssqlDbProvider extends AbstractDbProvider {
             // we have an array of primitive data type
             InputStream is = null;
             try {
-                is = resultSet.getAsciiStream(index);
-                value = IoUtils.streamToString(is);
+                boolean isMssqlDriverInUse = checkIsMssqlDriverInUse();
+                if (isMssqlDriverInUse) {
+                    is = resultSet.getBinaryStream(index);
+                    StringBuilder hexString = new StringBuilder();
+
+                    //read the binary data from the stream and convert it to hex according to the sample from
+                    // http://www.herongyang.com/jdbc/Oracle-BLOB-SQL-INSERT.html - see 3 variants for Oracle, MsSQL and MySQL
+                    hexString = addBinDataAsHexAndCloseStream(hexString, is);
+                    value = hexString.toString();
+                } else {
+                    is = resultSet.getAsciiStream(index);
+                    value = IoUtils.streamToString(is);
+                }
             } finally {
                 IoUtils.closeStream(is);
             }
+
         } else if (valueAsObject instanceof Blob) {
             // we have a blob
             log.debug("Blob detected. Will try to dump as hex");
@@ -138,6 +167,23 @@ public class MssqlDbProvider extends AbstractDbProvider {
         }
 
         return value;
+    }
+
+    private boolean checkIsMssqlDriverInUse() {
+
+        String dbDriver = (String) (this.dbConnection).getCustomProperties().get(DbKeys.DRIVER);
+        // TODO: check for empty value. Currently assumed jTDS 
+        if (dbDriver != null && DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(dbDriver)) {
+            // set directly in DB custom properties
+            return true;
+        } else {
+            String sysProperty = System.getProperty(DbConnSQLServer.JDBC_DRIVER_VENDOR_KEY);
+            if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(sysProperty)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
     @Override
@@ -171,7 +217,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
 
     /**
      * Currently handling the case where a system table is returned, we do not want such table.
-     * In such case the TABLE_SCEM is 'sys', but the regular tables have the DB name instead.
+     * In such case the TABLE_SCHEM is 'sys', but the regular tables have the DB name instead.
      */
     @Override
     protected boolean isTableAccepted( ResultSet tableResultSet, String dbName, String tableName ) {
@@ -195,17 +241,18 @@ public class MssqlDbProvider extends AbstractDbProvider {
                                                        String catalog ) throws DbException {
 
         StringBuilder sql = new StringBuilder();
-        sql.append("SELECT 'column_name=' + columns.name + ', ' + 'index_name=' + indexes.name as column_and_index_name,")
-           .append("indexes.name AS index_name,")
-           .append("columns.name AS column_name,")
-           .append("indexes.type_desc AS type,")
-           .append("ind_col.index_column_id AS column_position,")
-           .append("ds.name AS DataSpaceName,")
-           .append("ds.type AS DataSpaceType,")
-           .append("indexes.is_primary_key AS IsPrimaryKey,")
-           .append("indexes.is_unique AS IsUnique,")
-           .append("indexes.ignore_dup_key AS IsDuplicateKey,")
-           .append("indexes.is_unique_constraint AS IsUniqueConstraint")
+        sql.append("SELECT '" + IndexProperties.COLUMN_NAME + "=' + columns.name + ', ' + '"
+                   + IndexProperties.INDEX_NAME + "=' + indexes.name as column_and_index_name,")
+           .append("indexes.name AS " + IndexProperties.INDEX_NAME + ",")
+           .append("columns.name AS " + IndexProperties.COLUMN_NAME + ",")
+           .append("indexes.type_desc AS " + IndexProperties.TYPE + ",")
+           .append("ind_col.index_column_id AS " + IndexProperties.COLUMN_POSITION + ",")
+           .append("ds.name AS " + IndexProperties.DATASPACE_NAME + ",")
+           .append("ds.type AS " + IndexProperties.DATASPACE_TYPE + ",")
+           .append("indexes.is_primary_key AS " + IndexProperties.IS_PRIMARY_KEY + ",")
+           .append("indexes.is_unique AS " + IndexProperties.IS_UNIQUE + ",")
+           .append("indexes.ignore_dup_key AS " + IndexProperties.IS_DUPLICATED_KEY + ",")
+           .append("indexes.is_unique_constraint AS " + IndexProperties.IS_UNIQUE_CONSTRAINT)
            .append(" FROM sys.indexes AS indexes,")
            .append("sys.data_spaces ds,")
            .append("sys.index_columns ind_col,")

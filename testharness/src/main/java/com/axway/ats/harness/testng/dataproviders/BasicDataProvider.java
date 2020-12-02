@@ -34,15 +34,14 @@ public class BasicDataProvider {
     private final String XLS  = ".xls";
 
     /**
-     * Returns the {@link InputStream} to the method input data file. The folder holding the file can be specified by TestOptions
-     * annotation in the test class, method or in the harness properties file. If not specified in any of these
-     * locations, search for the data file in the classpath.
+     * Returns the {@link InputStream} to the method input data file. The folder holding the file can be specified by
+     * TestOptions annotation in the test class, method or in the harness properties file. If not specified in any of
+     * these locations, search for the data file in the classpath.
      *
      * The name of data file can be specified by TestOptions annotation in the test method. If not - use the test class
      * name
      *
      * @param m the test method
-     * @param fileExtension a specific file extension for each data provider
      * @return data file {@link InputStream}
      * @throws DataProviderException
      * @throws ConfigurationException
@@ -117,7 +116,7 @@ public class BasicDataProvider {
         // if the method annotation does not specify the sheet name use the method name
         String dataSheet = m.getName();
 
-        // search thru a TestOptions annotation applied on test method
+        // search via TestOptions annotation applied on test method
         TestOptions testOptions = m.getAnnotation(TestOptions.class);
         if (testOptions != null) {
             if (testOptions.dataSheet().length() > 0) {

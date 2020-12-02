@@ -26,12 +26,14 @@ import com.axway.ats.core.validation.Validate;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
+import java.util.Map;
+
 /**
- * Used for running a system processes. <br/>
+ * Used for running a system processes. <br>
  * <b>Note</b> that this is not the same as simply running a shell command, as for example
  * the executed process will inherit the environment variables from the parent process.
  *
- * <br/>
+ * <br>
  * <b>User guide</b>
  * <a href="https://axway.github.io/ats-framework/Running-external-process.html">page</a>
  * related to this class.
@@ -53,8 +55,9 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor(
+            @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -69,7 +72,7 @@ public class ProcessExecutor {
      * @param command the command to run
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ command });
@@ -89,9 +92,10 @@ public class ProcessExecutor {
      * </p>
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor(
+            @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+            @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command,
+            @Validate( name = "commandArguments", type = ValidationType.NONE ) String[] commandArguments ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -107,8 +111,8 @@ public class ProcessExecutor {
      * @param commandArguments command arguments
      */
     @PublicAtsApi
-    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
-                            @Validate( name = "commandArguments", type = ValidationType.NONE) String[] commandArguments ) {
+    public ProcessExecutor( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY ) String command,
+                            @Validate( name = "commandArguments", type = ValidationType.NONE ) String[] commandArguments ) {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ command, commandArguments });
@@ -160,7 +164,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on the local host. <br/>
+     * Killing external process(such not started by us) on the local host. <br>
      * The process is found by a token which is contained in the start command.
      * No regex supported.
      *
@@ -179,7 +183,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on a remote host. <br/>
+     * Killing external process(such not started by us) on a remote host. <br>
      * The process is found by a token which is contained in the start command.
      * No regex supported.
      *
@@ -190,8 +194,8 @@ public class ProcessExecutor {
      */
     @PublicAtsApi
     public static int
-            killExternalProcess( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT) String atsAgent,
-                                 @Validate( name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY) String startCommandSnippet ) {
+    killExternalProcess( @Validate( name = "atsAgent", type = ValidationType.STRING_SERVER_WITH_PORT ) String atsAgent,
+                         @Validate( name = "startCommandSnippet", type = ValidationType.STRING_NOT_EMPTY ) String startCommandSnippet ) {
 
         // validate input parameters
         atsAgent = HostUtils.getAtsAgentIpAndPort(atsAgent);
@@ -205,7 +209,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Tries to get the ID of the process started.<br/>
+     * Tries to get the ID of the process started.<br>
      * <b>Note</b>: Currently works only on some UNIX variants with SUN/Oracle JDK.
      *
      * @return The ID of the process. -1 in case of error.
@@ -218,7 +222,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Returns the exit code of the executed process.<br/>
+     * Returns the exit code of the executed process.<br>
      * Sometimes like on some Linux versions the process should be invoked after making sure that it
      * has already completed. Otherwise an exception is thrown by the VM.
      *
@@ -324,7 +328,7 @@ public class ProcessExecutor {
     /**
      * Route the standard output to the log4j system
      *
-     * @param logErrorOutput
+     * @param logStandardOutput
      */
     @PublicAtsApi
     public void setLogStandardOutput( boolean logStandardOutput ) {
@@ -355,20 +359,32 @@ public class ProcessExecutor {
     }
 
     /**
-     * Set environment variable prior to running the process
+     * Set environment variable. Should be used prior to the actual execute (start) of the process
      *
-     * @param variableName name of the environment variable
+     * @param variableName name of the environment variable. Generally upper case name is preferred but all supported
+     *                     chars in name depends on the underlying OS
      * @param variableValue new value of the environment variable
+     * @return old value of variable existed before. If not - returns null.
      */
     @PublicAtsApi
-    public void setEnvVariable( String variableName, String variableValue ) {
+    public String setEnvVariable( String variableName, String variableValue ) {
 
-        this.processExecutor.setEnvVariable(variableName, variableValue);
+        return this.processExecutor.setEnvVariable(variableName, variableValue);
+    }
+
+    /**
+     * Removes environment variable. Support depends on the JVM and OS used
+     * @param variableName the name of the environment variable. Upper case is preferred but naming depends on the underlying OS support
+     * @return The old value if variable already existed. If not - returns null.
+     */
+    public String removeEnvVariable( String variableName ) {
+
+        return this.processExecutor.removeEnvVariable(variableName);
     }
 
     /**
      * Append some value to an existing environment variable.
-     * If the variable is not present - it will be created. <br/>
+     * If the variable is not present - it will be created. <br>
      * <b>Note</b>: it is caller's responsibility to use appropriate delimiter when concatenating values.
      *
      * @param variableName name of the environment variable
@@ -382,16 +398,28 @@ public class ProcessExecutor {
 
     /**
      * Get the value of environment variable.
-     * Will return null in case there is no such variable
+     * Environment could be get (and set) before actual start of the process
      *
      * @param variableName name of the environment variable
-     * @return the value of the environment variable
+     * @return the value of the environment variable. Will return null in case there is no such variable.
      */
     @PublicAtsApi
     public String getEnvVariable( String variableName ) {
 
-        checkIfProcessIsStarted();
+        // environment could be get (and set) before actual start of the process
         return this.processExecutor.getEnvVariable(variableName);
+    }
+
+    /**
+     * Get all the environment variables as Map.
+     * Environment could be get before and after execution of the process
+     *
+     * @return the key:value Map containing current environment (of started or not yet started process))
+     */
+    @PublicAtsApi
+    public Map<String, String> getEnvVariables() {
+
+        return this.processExecutor.getEnvVariables();
     }
 
     private IProcessExecutor getOperationsImplementationFor( String atsAgent, String command,
@@ -414,4 +442,5 @@ public class ProcessExecutor {
         if (!isProcessAlreadyStarted)
             throw new ProcessExecutorException("You first need to start the process with execute(boolean) method!");
     }
+
 }

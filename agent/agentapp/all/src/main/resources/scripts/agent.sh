@@ -19,11 +19,8 @@ MEMORY=256
 # allow remote connections for debug purposes (true/false)
 DEBUG=false
 DEBUG_PORT=8000
+# DEBUG_OPTIONS details are defined later
 DEBUG_OPTIONS=""
-if $DEBUG
-then
-    DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
-fi
 
 # enable monitoring the number of pending log events (true/false)
 MONITOR_EVENTS_QUEUE=false
@@ -44,7 +41,7 @@ LOGGING_PATTERN=
 PROG_NAME=AtsAgent
 
 # get the absolute path to the script, e.g. /home/user/ats_agent/agent.sh
-SCRIPTPATH=`cd "\`dirname \"$0\"\`" && pwd`
+SCRIPTPATH=$(cd "$(dirname "$0")" && pwd)
 
 # Do not change next line without sync-ing with Agent-with-Java POM parts.
 # parse the input arguments
@@ -109,54 +106,132 @@ done
 
 agent_start() {
 
-        echo "Starting $PROG_NAME ..."
+    echo "Starting $PROG_NAME ..."
 
-        if [ "$(agent_status)" = "$PROG_NAME is running" ]
-        then
-            echo "$PROG_NAME is already started on port $PORT"
-            exit
-        fi
+    if [ "$(agent_status)" = "$PROG_NAME is running" ]
+    then
+        echo "$PROG_NAME is already started on port $PORT"
+        exit
+    fi
 
-        nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" -Djava.endorsed.dirs=ats-agent/endorsed \
-         $JMX_OPTIONS \
-        -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
-        -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
-        -Dlogging.severity="$LOGGING_SEVERITY" \
-        -Xms${MEMORY}m -Xmx${MEMORY}m -Dlogging.pattern="$LOGGING_PATTERN" \
-        $JAVA_OPTS $DEBUG_OPTIONS \
-        -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
-        
-        # replace the agent port in the swagger.json
-        COUNTER=0
-        while [ $COUNTER -le 10 ]
-        do
-			if [ -d "ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger" ];
-			then
-				sed -i 's/localhost:8089/localhost:'$PORT'/g' ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger/swagger.json
-				break
-			fi
-			COUNTER=$(( $COUNTER + 1 ))
-			sleep 1
-        done
+    ENDORSED_OPTIONS=""
+    JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    case "$JAVA_VERSION" in
+        "1.8"*)
+            # Java 8 (lower not supported) - use endorsed dir
+            if $DEBUG
+            then
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
+            fi
+            ENDORSED_OPTIONS=-Djava.endorsed.dirs=ats-agent/endorsed
+            ;;
+        "1."*)
+            echo "Unsupported Java version - $JAVA_VERSION. It looks to be less than 1.8!"
+            exit 5
+            ;;
+        *) # Java 9 or newer
+            if $DEBUG
+            then
+                # Listen on all network interfaces - use "address=*:port" Java 9+ format.
+                # Since Java 9 by default debug session listens on localhost only but this is not usable
+                # as ATS agents by default are remote
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=*:$DEBUG_PORT,suspend=n"
+            fi
+            # No endorsed mechanism
+            ENDORSED_OPTIONS=""
+            ;;
+    esac
 
-        JVM_PID=$!
-        if $DEBUG
-        then
-            echo "started in DEBUG mode on $DEBUG_PORT with PID: $JVM_PID"
-        else
-            echo "started with PID: $JVM_PID"
-        fi
+    nohup $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+       $ENDORSED_OPTIONS $JMX_OPTIONS \
+       -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+       -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+       -Xms${MEMORY}m -Xmx${MEMORY}m \
+       -Dlogging.severity="$LOGGING_SEVERITY" -Dlogging.pattern="$LOGGING_PATTERN" \
+       $JAVA_OPTS $DEBUG_OPTIONS \
+       -jar ats-agent/ats-agent-standalone-containerstarter.jar > logs/nohup_$PORT.out 2>&1&
+
+	
+	# replace the agent port in the swagger.json
+	COUNTER=0
+	while [ $COUNTER -le 10 ]
+	do
+		if [ -d "ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger" ];
+		then
+			sed -i 's/localhost:8089/localhost:'$PORT'/g' ats-agent/work/jetty-0.0.0.0-$PORT-agentapp.war-_agentapp-any-/webapp/swagger/swagger.json
+			break
+		fi
+		COUNTER=$(( $COUNTER + 1 ))
+		sleep 1
+	done
+
+
+    JVM_PID=$!
+    if $DEBUG
+    then
+        echo "started in DEBUG mode on $DEBUG_PORT with PID: $JVM_PID"
+    else
+        echo "started with PID: $JVM_PID"
+    fi
+}
+
+agent_start_in_container() {
+
+    echo "Starting $PROG_NAME in container mode ... "
+
+    if [ "$(agent_status)" = "$PROG_NAME is running" ]
+    then
+        echo "$PROG_NAME is already started on port $PORT"
+        exit
+    fi
+
+    ENDORSED_OPTIONS=""
+    JAVA_VERSION=$($JAVA_EXEC -version 2>&1 | head -n 1 | awk -F '"' '{print $2}')
+    case "$JAVA_VERSION" in
+        "1.8"*)
+            # Java 8 (lower not supported) - use endorsed dir
+            if $DEBUG
+            then
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=$DEBUG_PORT,suspend=n"
+            fi
+            ENDORSED_OPTIONS=-Djava.endorsed.dirs=ats-agent/endorsed
+            ;;
+        "1."*)
+            echo "Unsupported Java version - $JAVA_VERSION! It looks to be less than 1.8."
+            exit 16
+            ;;
+        *)
+            # Java 9 or newer
+            if $DEBUG
+            then
+                # Listen on all network interfaces - use "address=*:port" Java 9+ format. Since Java 9 by default
+                # debug session listens on localhost only but this is not usable as ATS agents by default are remote
+                DEBUG_OPTIONS="-agentlib:jdwp=transport=dt_socket,server=y,address=*:$DEBUG_PORT,suspend=n"
+            fi
+            # No endorsed mechanism
+            ENDORSED_OPTIONS=""
+            ;;
+    esac
+
+    $JAVA_EXEC -showversion -Dats.agent.default.port=$PORT -Dats.agent.home="$SCRIPTPATH" \
+    $ENDORSED_OPTIONS $JMX_OPTIONS \
+    -Dats.log.monitor.events.queue=$MONITOR_EVENTS_QUEUE \
+    -Dats.agent.components.folder="$COMPONENTS_FOLDER" -Dagent.template.actions.folder="$TEMPLATE_ACTIONS_FOLDER" \
+    -Xms${MEMORY}m -Xmx${MEMORY}m  \
+    $JAVA_OPTS \
+    $DEBUG_OPTIONS \
+    -Dlogging.enable.log4j.file=true \
+    -jar ats-agent/ats-agent-standalone-containerstarter.jar
 }
 
 agent_stop() {
-
-    if [ -f logs/atsAgent_$PORT.pid ]
+    if [ -f logs/atsAgent_"$PORT".pid ]
     then
-        read JVM_PID < logs/atsAgent_$PORT.pid
+        read JVM_PID < logs/atsAgent_"$PORT".pid
         echo "Stopping $PROG_NAME with PID: $JVM_PID"
         # try to exit gracefully
-        kill $JVM_PID 2>/dev/null
-        rm logs/atsAgent_$PORT.pid
+        kill "$JVM_PID" 2>/dev/null
+        rm logs/atsAgent_"$PORT".pid
     else
         echo "$PROG_NAME seems not running. No such .pid file."
     fi
@@ -194,11 +269,14 @@ agent_version() {
 }
 
 cd "$SCRIPTPATH"
-mkdir -p -m 777 logs
+mkdir -p -m 775 logs
 
 case $COMMAND in
     'start')
         agent_start
+    ;;
+    'container')
+        agent_start_in_container
     ;;
     'stop')
         agent_stop
@@ -215,8 +293,8 @@ case $COMMAND in
         agent_version
     ;;
     *)
-		# TODO print [-java_opts JAVA_OPTS] as a known command in the future
+        # TODO print [-java_opts JAVA_OPTS] as a known command in the future
         echo "Usage:"
-        echo "$0 start|stop|restart|status|version [-port PORT] [-java_exec PATH_TO_JAVA_EXECUTABLE] [-logging_pattern day|hour|minute|30KB|20MB|10GB] [-memory MEMORY_IN_MB] [-logging_severity DEBUG|INFO|WARN|ERROR]"
+        echo "$0 start|stop|restart|status|version|container [-port PORT] [-java_exec PATH_TO_JAVA_EXECUTABLE] [-logging_pattern day|hour|minute|30KB|20MB|10GB] [-memory MEMORY_IN_MB] [-logging_severity DEBUG|INFO|WARN|ERROR]"
     ;;
 esac

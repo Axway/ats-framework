@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -16,6 +16,7 @@
 package com.axway.ats.action.xml;
 
 import static org.testng.AssertJUnit.assertEquals;
+import static org.testng.AssertJUnit.fail;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,9 +30,9 @@ import com.axway.ats.common.xml.XMLException;
 
 public class Test_XmlText extends BaseTest {
 
-    private static final Logger        log   = Logger.getLogger(Test_XmlText.class);
+    private static final Logger log = Logger.getLogger(Test_XmlText.class);
 
-    private static File                file;
+    private static File file;
 
     private static final StringBuilder body1 = new StringBuilder().append("<owner id=\"1\">")
                                                                   .append("<firstname>Dragoslav</firstname>")
@@ -57,11 +58,11 @@ public class Test_XmlText extends BaseTest {
                                                                   .append("<power>650hp</power>")
                                                                   .append("</engine>");
 
-    private static XmlText             xmlText1;
+    private static XmlText xmlText1;
 
-    private static XmlText             xmlText2;
+    private static XmlText xmlText2;
 
-    private static XmlText             xmlText3;
+    private static XmlText xmlText3;
 
     @Before
     public void setUpTest_XmlText() {
@@ -1437,14 +1438,30 @@ public class Test_XmlText extends BaseTest {
 
             XmlText xml = new XmlText(file);
 
-            actualValue = xml.setAttribute("/vehicles", "new name", "new value").getAttribute("/vehicles",
-                                                                                              "new name");
+            actualValue = xml.setAttribute("/vehicles", "new_name", "new value").getAttribute("/vehicles",
+                                                                                              "new_name");
 
         } catch (XMLException e) {
             log.error(e.getMessage());
         }
 
         assertEquals(expectedValue, actualValue);
+    }
+
+    @Test // expected attribute does not check exception message in jUnit
+    public void setAttribute_Negative_SpaceInName() {
+
+        boolean expectedExcThrown = false;
+        try {
+            XmlText xml = new XmlText(file);
+            xml.setAttribute("/vehicles", "new name", "new value");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Illegal character in name: 'new name'.", e.getMessage());
+            expectedExcThrown = true;
+        }
+        if (!expectedExcThrown) {
+            fail("Expected exception for illegal character but not thrown");
+        }
     }
 
     @Test

@@ -66,7 +66,7 @@ public class BlobStorageOperations {
     private static final Logger log                    = Logger.getLogger(BlobStorageOperations.class);
     private static final long   DEFAULT_TIMEOUT_IN_SEC = 5 * 60;                                       // in seconds
 
-    private BlobServiceClient serviceClient;
+    private BlobServiceClient   serviceClient;
 
     @PublicAtsApi
     public BlobStorageOperations( String connectionString, String sasToken ) {
@@ -183,18 +183,17 @@ public class BlobStorageOperations {
                                                       + "' due to container name, having invalid characters", e);
                 } else if (ExceptionUtils.containsMessage("ContainerBeingDeleted", e, true)
                            && logBeingDeletedMessage) {
-                    logBeingDeletedMessage = false;
-                    log.warn("Container '" + containerName
-                             + "' is currently being deleted!. This can lead to failure "
-                             + "of createContainer method. You should increase the timeout for creation of this "
-                             + "container if this error is persistent");
-                }
+                               logBeingDeletedMessage = false;
+                               log.warn("Container '" + containerName
+                                        + "' is currently being deleted!. This can lead to failure "
+                                        + "of createContainer method. You should increase the timeout for creation of this "
+                                        + "container if this error is persistent");
+                           }
                 lastException = e;
             }
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
         }
 
         throw new AtsBlobStorageException("Could not create container '" + containerName + "' in " + timeoutSec
@@ -250,8 +249,7 @@ public class BlobStorageOperations {
 
             try {
                 Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+            } catch (InterruptedException e) {}
         }
 
         throw new AtsBlobStorageException("Could not delete container '" + containerName + "' in " + timeoutSec
@@ -464,11 +462,11 @@ public class BlobStorageOperations {
         } catch (Exception e) {
             String errorMessage = "Could not list blobs from container '" + containerName + "'"
                                   + (!StringUtils.isNullOrEmpty(prefix)
-                                     ? " with prefix '" + prefix + "'"
-                                     : "")
+                                                                        ? " with prefix '" + prefix + "'"
+                                                                        : "")
                                   + (!StringUtils.isNullOrEmpty(directory)
-                                     ? " in directory '" + directory + "'"
-                                     : "")
+                                                                           ? " in directory '" + directory + "'"
+                                                                           : "")
                                   + " in " + retrieveTimeout + " seconds";
             throw new AtsBlobStorageException(errorMessage, e);
         }
@@ -695,9 +693,9 @@ public class BlobStorageOperations {
                 blobName = tokens[tokens.length - 1];
             }
 
-            log.info("Uploading " + ((overwrite)
-                                     ? "(overwrite enabled)"
-                                     : "")
+            log.info("Uploading " + ( (overwrite)
+                                                  ? "(overwrite enabled)"
+                                                  : "")
                      + " '" + localFilepath + "' to container '" + containerName + "' as a blob, named '" + blobName
                      + "' ...");
 
@@ -738,9 +736,9 @@ public class BlobStorageOperations {
                 blobName = tokens[tokens.length - 1];
             }
 
-            log.info("Uploading " + ((overwrite)
-                                     ? "(overwrite enabled)"
-                                     : "")
+            log.info("Uploading " + ( (overwrite)
+                                                  ? "(overwrite enabled)"
+                                                  : "")
                      + " '" + localFilepath + "' to container '" + containerName + "' as a/an "
                      + blobType.name().split("_")[0] + " blob, named '" + blobName
                      + "' ...");
@@ -794,9 +792,9 @@ public class BlobStorageOperations {
                 throw new IllegalArgumentException("Content stream must not be null");
             }
 
-            log.info("Uploading " + ((overwrite)
-                                     ? "(overwrite enabled)"
-                                     : "")
+            log.info("Uploading " + ( (overwrite)
+                                                  ? "(overwrite enabled)"
+                                                  : "")
                      + contentStream.getClass().getName() + " stream to container '" + containerName + "' as a/an "
                      + blobType.name().split("_")[0] + " blob, named '" + blobName
                      + "' ...");
@@ -854,7 +852,7 @@ public class BlobStorageOperations {
             int defaultBufferSize = PageBlobAsyncClient.MAX_PUT_PAGES_BYTES; // well the maximum value for single put page operation
             byte[] buffer = new byte[defaultBufferSize];
             int readBytes = 0;
-            while ((readBytes = contentStream.read(buffer)) != -1) {
+            while ( (readBytes = contentStream.read(buffer)) != -1) {
                 // append the next block of data
                 if (readBytes < defaultBufferSize) {
                     buffer = Arrays.copyOf(buffer, readBytes);
@@ -884,7 +882,7 @@ public class BlobStorageOperations {
             int defaultBufferSize = 1024 * 1024 * 10; // 10 MB
             byte[] buffer = new byte[defaultBufferSize];
             int readBytes = 0;
-            while ((readBytes = contentStream.read(buffer)) != -1) {
+            while ( (readBytes = contentStream.read(buffer)) != -1) {
                 // append the next block of data
                 if (readBytes < defaultBufferSize) {
                     buffer = Arrays.copyOf(buffer, readBytes);
@@ -896,7 +894,6 @@ public class BlobStorageOperations {
                                        uploadedPercentage));
             }
             bos.flush();
-            ;
         }
 
     }
@@ -917,7 +914,7 @@ public class BlobStorageOperations {
         int defaultBufferSize = AppendBlobAsyncClient.MAX_APPEND_BLOCK_BYTES; // well the maximum value for single append operation
         byte[] buffer = new byte[defaultBufferSize];
         int readBytes = 0;
-        while ((readBytes = contentStream.read(buffer)) != -1) {
+        while ( (readBytes = contentStream.read(buffer)) != -1) {
             // append the next block of data
             if (readBytes < defaultBufferSize) {
                 buffer = Arrays.copyOf(buffer, readBytes);
@@ -983,9 +980,9 @@ public class BlobStorageOperations {
     public void download( String containerName, String blobName, String localFilepath, boolean overwrite ) {
 
         try {
-            log.info("Downloading " + ((overwrite)
-                                       ? "(overwrite enabled)"
-                                       : "")
+            log.info("Downloading " + ( (overwrite)
+                                                    ? "(overwrite enabled)"
+                                                    : "")
                      + " blob '" + blobName + "' from container '" + containerName + "' to file '" + localFilepath
                      + "' ...");
 
@@ -1041,19 +1038,16 @@ public class BlobStorageOperations {
                         double downloadedPercentage = ((double) (newSize) / (double) (actualSize)) * 100.0;
                         log.info(String.format("Bytes downloaded: %d (%.2f %%)", newSize - oldSize,
                                                downloadedPercentage));
-                        ;
 
                         if (aboutToExit) {
                             if (System.currentTimeMillis()
                                 - aboutToExitStartTime > TimeUnit.MINUTES.toMillis(waitMinutes)) {
-                                log.error(
-                                        "Exitting monitor thread, as there was no bytes downloaded from blob to file '"
-                                        + localFilepath + "' in the last " + waitMinutes + " minute(s)!");
+                                log.error("Exitting monitor thread, as there was no bytes downloaded from blob to file '"
+                                          + localFilepath + "' in the last " + waitMinutes + " minute(s)!");
                                 break;
                             }
                         } else {
-                            if (oldSize == newSize
-                                && newSize != 0) { // != so we ignore the initial tick, where both sizes are zero
+                            if (oldSize == newSize && newSize != 0) { // != so we ignore the initial tick, where both sizes are zero
                                 if (newSize < actualSize) {
                                     log.warn("No tranfer of bytes! Waiting " + waitMinutes
                                              + " minutes, before exitting thread.");
@@ -1071,8 +1065,7 @@ public class BlobStorageOperations {
 
                     try {
                         Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                    }
+                    } catch (InterruptedException e) {}
 
                 }
 
@@ -1095,9 +1088,9 @@ public class BlobStorageOperations {
 
         try {
 
-            log.info("Creating " + ((overwrite)
-                                    ? "or overwriting existing"
-                                    : "")
+            log.info("Creating " + ( (overwrite)
+                                                 ? "or overwriting existing"
+                                                 : "")
                      + " page blob '" + blobName + "' in container '" + containerName + "' with size '" + size
                      + "' ...");
 
@@ -1138,9 +1131,9 @@ public class BlobStorageOperations {
 
         try {
 
-            log.info("Creating " + ((overwrite)
-                                    ? "or overwriting existing"
-                                    : "")
+            log.info("Creating " + ( (overwrite)
+                                                 ? "or overwriting existing"
+                                                 : "")
                      + " append blob '" + blobName + "' in container '" + containerName + "' ...");
 
             serviceClient.getBlobContainerClient(containerName)
@@ -1198,9 +1191,9 @@ public class BlobStorageOperations {
                 throw new IllegalArgumentException("Content stream must not be null");
             }
 
-            log.info("Creating " + ((overwrite)
-                                    ? "or overwriting existing"
-                                    : "")
+            log.info("Creating " + ( (overwrite)
+                                                 ? "or overwriting existing"
+                                                 : "")
                      + " block blob '" + blobName + "' in container '" + containerName + "' with size '"
                      + contentLength
                      + "' ...");
@@ -1331,7 +1324,7 @@ public class BlobStorageOperations {
             }
             PagedIterable<BlobContainerItem> blobContainers = serviceClient.listBlobContainers(lbco,
                                                                                                Duration.ofSeconds(
-                                                                                                       retrieveTimeoutSeconds));
+                                                                                                                  retrieveTimeoutSeconds));
 
             log.info("Successfully listed " + blobContainers.stream().count() + " containers.");
 
@@ -1339,10 +1332,10 @@ public class BlobStorageOperations {
         } catch (Exception e) {
             throw new AtsBlobStorageException("Could not list containers "
                                               + (!StringUtils.isNullOrEmpty(containerNamePrefix)
-                                                 ? "with prefix '"
-                                                   + containerNamePrefix
-                                                   + "'"
-                                                 : "")
+                                                                                                 ? "with prefix '"
+                                                                                                   + containerNamePrefix
+                                                                                                   + "'"
+                                                                                                 : "")
                                               + " in " + retrieveTimeoutSeconds + " seconds",
                                               e);
         }

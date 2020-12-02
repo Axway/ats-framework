@@ -47,6 +47,11 @@ public class Test_DbConnSQLServer extends BaseTest {
         DbConnSQLServer dbConnection = new DbConnSQLServer("host", "db", "user", "pass");
 
         assertEquals(BasicDataSource.class, dbConnection.getDataSource().getClass());
+        
+        // so we can test that the customProperties map is modifiable
+        dbConnection.getCustomProperties().put("test_key", "test_val");
     }
+    
+    
 
 }

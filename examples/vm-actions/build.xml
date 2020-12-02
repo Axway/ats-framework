@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <project name="ats-demo-agent-actions" basedir="." xmlns="antlib:org.apache.tools.ant"
-         xmlns:ant-contrib="antlib:net.sf.antcontrib" default="all">
+         xmlns:ivy="antlib:org.apache.ivy.ant" xmlns:ant-contrib="antlib:net.sf.antcontrib" default="all">
 
     <echo>Using Ant version: ${ant.version}</echo>
     <echo>Using project version: ${project_version}</echo>

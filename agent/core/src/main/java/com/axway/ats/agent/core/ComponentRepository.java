@@ -229,7 +229,7 @@ public class ComponentRepository {
             ComponentActionMap actionMap = component.getActionMap();
             if (actionMap == null) {
                 log.warn("Action map for component '" + component.getComponentName() + "' is null");
-                continue;
+                continue; // should this be ommited?
             }
             Class<? extends FinalizationHandler> finalizationClass = actionMap.getFinalizationHandler();
 

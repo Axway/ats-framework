@@ -66,7 +66,9 @@ public class RestSystemMonitor {
     }
 
     public void initializeMonitoringContext(
-                                             @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost ) {
+                                             @Validate(
+                                                     name = "monitoredHost",
+                                                     type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -84,8 +86,12 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleSystemMonitoring(
-                                                      @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                      @Validate( name = "systemReadingTypes", type = ValidationType.NOT_NULL) String[] systemReadingTypes ) {
+                                                      @Validate(
+                                                              name = "monitoredHost",
+                                                              type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                      @Validate(
+                                                              name = "systemReadingTypes",
+                                                              type = ValidationType.NOT_NULL) String[] systemReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -109,9 +115,15 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleMonitoring(
-                                                @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                @Validate( name = "readingType", type = ValidationType.STRING_NOT_EMPTY) String readingType,
-                                                @Validate( name = "readingParameters", type = ValidationType.NOT_NULL) Map<String, String> readingParameters ) {
+                                                @Validate(
+                                                        name = "monitoredHost",
+                                                        type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                @Validate(
+                                                        name = "readingType",
+                                                        type = ValidationType.STRING_NOT_EMPTY) String readingType,
+                                                @Validate(
+                                                        name = "readingParameters",
+                                                        type = ValidationType.NOT_NULL) Map<String, String> readingParameters ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -143,10 +155,18 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleProcessMonitoring(
-                                                       @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                       @Validate( name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                       @Validate( name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                       @Validate( name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+                                                       @Validate(
+                                                               name = "monitoredHost",
+                                                               type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                       @Validate(
+                                                               name = "processPattern",
+                                                               type = ValidationType.STRING_NOT_EMPTY) String processPattern,
+                                                       @Validate(
+                                                               name = "processAlias",
+                                                               type = ValidationType.STRING_NOT_EMPTY) String processAlias,
+                                                       @Validate(
+                                                               name = "processReadingTypes",
+                                                               type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -164,11 +184,21 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleProcessMonitoring(
-                                                       @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                       @Validate( name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                       @Validate( name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                       @Validate( name = "processUsername", type = ValidationType.NONE) String processUsername,
-                                                       @Validate( name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+                                                       @Validate(
+                                                               name = "monitoredHost",
+                                                               type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                       @Validate(
+                                                               name = "processPattern",
+                                                               type = ValidationType.STRING_NOT_EMPTY) String processPattern,
+                                                       @Validate(
+                                                               name = "processAlias",
+                                                               type = ValidationType.STRING_NOT_EMPTY) String processAlias,
+                                                       @Validate(
+                                                               name = "processUsername",
+                                                               type = ValidationType.NONE) String processUsername,
+                                                       @Validate(
+                                                               name = "processReadingTypes",
+                                                               type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -187,11 +217,21 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleChildProcessMonitoring(
-                                                            @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                            @Validate( name = "parentProcess", type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
-                                                            @Validate( name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                            @Validate( name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                            @Validate( name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+                                                            @Validate(
+                                                                    name = "monitoredHost",
+                                                                    type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                            @Validate(
+                                                                    name = "parentProcess",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
+                                                            @Validate(
+                                                                    name = "processPattern",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String processPattern,
+                                                            @Validate(
+                                                                    name = "processAlias",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String processAlias,
+                                                            @Validate(
+                                                                    name = "processReadingTypes",
+                                                                    type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -210,12 +250,24 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleChildProcessMonitoring(
-                                                            @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                            @Validate( name = "parentProcess", type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
-                                                            @Validate( name = "processPattern", type = ValidationType.STRING_NOT_EMPTY) String processPattern,
-                                                            @Validate( name = "processAlias", type = ValidationType.STRING_NOT_EMPTY) String processAlias,
-                                                            @Validate( name = "processUsername", type = ValidationType.NONE) String processUsername,
-                                                            @Validate( name = "processReadingTypes", type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
+                                                            @Validate(
+                                                                    name = "monitoredHost",
+                                                                    type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                            @Validate(
+                                                                    name = "parentProcess",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String parentProcess,
+                                                            @Validate(
+                                                                    name = "processPattern",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String processPattern,
+                                                            @Validate(
+                                                                    name = "processAlias",
+                                                                    type = ValidationType.STRING_NOT_EMPTY) String processAlias,
+                                                            @Validate(
+                                                                    name = "processUsername",
+                                                                    type = ValidationType.NONE) String processUsername,
+                                                            @Validate(
+                                                                    name = "processReadingTypes",
+                                                                    type = ValidationType.NOT_NULL) String[] processReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -265,19 +317,33 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleJvmMonitoring(
-                                                   @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                   @Validate( name = "jvmPort", type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
-                                                   @Validate( name = "jvmReadingTypes", type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
+                                                   @Validate(
+                                                           name = "monitoredHost",
+                                                           type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                   @Validate(
+                                                           name = "jvmPort",
+                                                           type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
+                                                   @Validate(
+                                                           name = "jvmReadingTypes",
+                                                           type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
 
         return scheduleJvmMonitoring(monitoredHost, jvmPort, "", jvmReadingTypes);
 
     }
 
     public Set<ReadingBean> scheduleJvmMonitoring(
-                                                   @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                   @Validate( name = "jvmPort", type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
-                                                   @Validate( name = "alias", type = ValidationType.NOT_NULL) String alias,
-                                                   @Validate( name = "jvmReadingTypes", type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
+                                                   @Validate(
+                                                           name = "monitoredHost",
+                                                           type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                   @Validate(
+                                                           name = "jvmPort",
+                                                           type = ValidationType.NUMBER_PORT_NUMBER) String jvmPort,
+                                                   @Validate(
+                                                           name = "alias",
+                                                           type = ValidationType.NOT_NULL) String alias,
+                                                   @Validate(
+                                                           name = "jvmReadingTypes",
+                                                           type = ValidationType.NOT_NULL) String[] jvmReadingTypes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -312,12 +378,24 @@ public class RestSystemMonitor {
     }
 
     public Set<ReadingBean> scheduleCustomJvmMonitoring(
-                                                         @Validate( name = "monitoredHost", type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
-                                                         @Validate( name = "jmxPort", type = ValidationType.NUMBER_PORT_NUMBER) String jmxPort,
-                                                         @Validate( name = "alias", type = ValidationType.NOT_NULL) String alias,
-                                                         @Validate( name = "mbeanName", type = ValidationType.NOT_NULL) String mbeanName,
-                                                         @Validate( name = "unit", type = ValidationType.NOT_NULL) String unit,
-                                                         @Validate( name = "mbeanAttributes", type = ValidationType.NOT_NULL) String... mbeanAttributes ) {
+                                                         @Validate(
+                                                                 name = "monitoredHost",
+                                                                 type = ValidationType.STRING_SERVER_WITH_PORT) String monitoredHost,
+                                                         @Validate(
+                                                                 name = "jmxPort",
+                                                                 type = ValidationType.NUMBER_PORT_NUMBER) String jmxPort,
+                                                         @Validate(
+                                                                 name = "alias",
+                                                                 type = ValidationType.NOT_NULL) String alias,
+                                                         @Validate(
+                                                                 name = "mbeanName",
+                                                                 type = ValidationType.NOT_NULL) String mbeanName,
+                                                         @Validate(
+                                                                 name = "unit",
+                                                                 type = ValidationType.NOT_NULL) String unit,
+                                                         @Validate(
+                                                                 name = "mbeanAttributes",
+                                                                 type = ValidationType.NOT_NULL) String... mbeanAttributes ) {
 
         // validate input parameters
         monitoredHost = HostUtils.getAtsAgentIpAndPort(monitoredHost);
@@ -395,6 +473,8 @@ public class RestSystemMonitor {
                 }
 
                 cancelAnyMonitoringActivity(ThreadsPerCaller.getCaller());
+                // clear the readings because an error occurred
+                this.readingTypes.clear();
                 throw new MonitoringException("There were error starting the system monitoring process");
             }
         }
@@ -412,6 +492,8 @@ public class RestSystemMonitor {
                 }
 
                 cancelAnyMonitoringActivity(ThreadsPerCaller.getCaller());
+                // clear the readings because an error occurred
+                this.readingTypes.clear();
                 throw new MonitoringException("There were errors starting the monitoring process on ATS Agent");
             }
         }
@@ -459,6 +541,11 @@ public class RestSystemMonitor {
 
     public void setScheduledReadingTypes(
                                           Set<ReadingBean> readingTypes ) {
+
+        if (this.readingTypes == null) {
+            this.readingTypes = new HashSet<>();
+        }
+
         // see which readings are already scheduled and log a warning
 
         // add those that are new

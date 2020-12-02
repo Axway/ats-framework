@@ -12,8 +12,8 @@
     <artifactId>ats-testharness</artifactId>
     <name>ATS-TestHarness</name>
     <description>ATS Test Harness Library is the entry point of ATS framework which listens
-        for testing framework events as start/stop run, start/stop test, test result statuses.
-        It also manages data provider tests as the supported Excel data provider.
+      for testing framework events as start/stop run, start/stop test, test result statuses.
+      It also manages data provider tests as the supported Excel data provider.
     </description>
     <url>https://github.com/Axway/ats-framework</url>
 
@@ -58,22 +58,22 @@
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>6.10</version>
+            <version>${testng.version}</version>
         </dependency>
         <dependency>
             <groupId>com.beust</groupId>
-            <artifactId>jcommander</artifactId><!-- see dependency state for TestNG 7.x -->
-            <version>1.48</version>
+              <artifactId>jcommander</artifactId>
+              <version>1.48</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi</artifactId>
-            <version>3.11</version>
+            <version>4.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>3.11</version>
+            <version>4.1.2</version>
         </dependency>
 
         <!-- TEST dependencies -->

@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class MobileElementState {
 
     private UiElementProperties elementProperties;
 
-    private UiElement           element;
+    private UiElement element;
 
     /**
      * @param uiElement the element of interest
@@ -120,7 +120,7 @@ public class MobileElementState {
      */
     @PublicAtsApi
     public void waitToBecomeExisting(
-                                      int millis ) {
+            int millis ) {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
@@ -154,7 +154,7 @@ public class MobileElementState {
      */
     @PublicAtsApi
     public void waitToBecomeNotExisting(
-                                         int millis ) {
+            int millis ) {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
@@ -188,7 +188,7 @@ public class MobileElementState {
      */
     @PublicAtsApi
     public void waitToBecomeDisplayed(
-                                       int millis ) {
+            int millis ) {
 
         long endTime = System.currentTimeMillis() + millis;
         do {
@@ -211,7 +211,7 @@ public class MobileElementState {
         } catch (UnreachableBrowserException ube) {
             throw new MobileOperationException(
                     "Check if there is connection to the target device and the Appium server is running",
-                                               ube);
+                    ube);
         } catch (Exception e) {
 
             // element is not present or got error checking if it is present
@@ -232,7 +232,7 @@ public class MobileElementState {
         } catch (UnreachableBrowserException ube) {
             throw new MobileOperationException(
                     "Check if there is connection to the target device and the Appium server is running",
-                                               ube);
+                    ube);
         } catch (Exception e) {
             // element is not present or got error checking if it is present
             return false;

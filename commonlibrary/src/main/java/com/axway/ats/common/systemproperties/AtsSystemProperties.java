@@ -24,32 +24,39 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class AtsSystemProperties {
 
+    // Action library properties
+
+    /** Default polling interval for new process output in milliseconds */
+    @PublicAtsApi
+    public static final String ACTION__PROCESS_OUTPUT_POLL_INTERVAL                              = "ats.action.process.output.polling.interval";
+    public static final int    ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT                      = 500;                                                            // ms
+
     // Agent properties
     @PublicAtsApi
-    private static final String DEFAULT_AGENT_PORT_KEY                                            = "ats.agent.default.port";
+    public static final String DEFAULT_AGENT_PORT_KEY                                            = "ats.agent.default.port";
     @PublicAtsApi
-    public static final int     DEFAULT_AGENT_PORT_VALUE                                          = 8089;
+    public static final int    DEFAULT_AGENT_PORT_VALUE                                          = 8089;
     @PublicAtsApi
-    public static final String  AGENT_HOME_FOLDER                                                 = "ats.agent.home";
+    public static final String AGENT_HOME_FOLDER                                                 = "ats.agent.home";
 
-    public static final String  AGENT__MONITOR_POLL_INTERVAL                                      = "ats.agent.monitor.poll.interval";
+    public static final String AGENT__MONITOR_POLL_INTERVAL                                      = "ats.agent.monitor.poll.interval";
     @PublicAtsApi
-    public static final String  AGENT__MONITOR_INITIAL_POLL_DELAY                                 = "ats.agent.monitor.initial.poll.delay";
+    public static final String AGENT__MONITOR_INITIAL_POLL_DELAY                                 = "ats.agent.monitor.initial.poll.delay";
     @PublicAtsApi
-    public static final String  AGENT__COMPONENTS_FOLDER                                          = "ats.agent.components.folder";
+    public static final String AGENT__COMPONENTS_FOLDER                                          = "ats.agent.components.folder";
 
     @PublicAtsApi
-    public static final String  AGENT__TEMPLATE_ACTIONS_PROXY_PROPERTY                            = "ats.agent.template.actions.proxy";                             // Key to specify proxy for template action requests
-    public static final String  AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY = "ats.agent.template.actions.register_full_and_net_action_time"; // Property to enable full action time logging in addition to net+server think time
-    public static final String  AGENT__TEMPLATE_ACTIONS_FOLDER                                    = "ats.agent.template.actions.folder";
-    public static final String  AGENT__TEMPLATE_ACTIONS_MATCH_FILES_BY_SIZE                       = "ats.agent.template.actions.match.files.by.size";
-    public static final String  AGENT__TEMPLATE_ACTIONS_MATCH_FILES_BY_CONTENT                    = "ats.agent.template.actions.match.files.by.content";
+    public static final String AGENT__TEMPLATE_ACTIONS_PROXY_PROPERTY                            = "ats.agent.template.actions.proxy";                             // Key to specify proxy for template action requests
+    public static final String AGENT__REGISTER_FULL_AND_NET_ACTION_TIME_FOR_TEMPLATE_ACTIONS_KEY = "ats.agent.template.actions.register_full_and_net_action_time"; // Property to enable full action time logging in addition to net+server think time
+    public static final String AGENT__TEMPLATE_ACTIONS_FOLDER                                    = "ats.agent.template.actions.folder";
+    public static final String AGENT__TEMPLATE_ACTIONS_MATCH_FILES_BY_SIZE                       = "ats.agent.template.actions.match.files.by.size";
+    public static final String AGENT__TEMPLATE_ACTIONS_MATCH_FILES_BY_CONTENT                    = "ats.agent.template.actions.match.files.by.content";
 
     // Log properties
     @PublicAtsApi
-    public static final String  LOG__MONITOR_EVENTS_QUEUE                                         = "ats.log.monitor.events.queue";
+    public static final String LOG__MONITOR_EVENTS_QUEUE                                         = "ats.log.monitor.events.queue";
     @PublicAtsApi
-    public static final String  LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
+    public static final String LOG__CLASSPATH_ON_START                                           = "ats.log.classpath.on.start";
 
     /**
      * <p>Enable caching of the class and method that created any of the AbstractLoggingEvent(s).</p>
@@ -57,59 +64,79 @@ public class AtsSystemProperties {
      * the StartRunEvent will cache/save where that call was made in the format: full_class_name.method:line_number</p>
      * 
      * */
-    public static final String  LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
-  
+    public static final String LOG__CACHE_EVENTS_SOURCE_LOCATION                                 = "ats.log.cache.events.source.location";
+
     /** The MAX number of events that will be processed at once when batch mode is enabled.<br>
      *  This means that if we set this property's value to be 2000, once a 2000 events are in the queue, they will be sent to the log DB at once.
      * */
     @PublicAtsApi
-    public static final String  LOG__MAX_CACHE_EVENTS                                             = "ats.log.db.max.cache.events";
+    public static final String LOG__MAX_CACHE_EVENTS                                             = "ats.log.db.max.cache.events";
+
+    /** When the test execution db logging is in batch mode, there is a cache for events.<br>
+     * That cache size is managed by {@link AtsSystemProperties#LOG__MAX_CACHE_EVENTS}.<br>
+     * This means that the cache is flushed, when the cache size is reached. But the user can force the cache to be flushed after a certain time interval expired and that
+     * time interval is configured by this property.<br>
+     * Note that the timeout must be in <strong>seconds</strong>
+     * */
+    @PublicAtsApi
+    public static final String LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT                               = "ats.log.db.max.cache.events.flush.timeout";
 
     // TestHarness properties
     // Run name for JUnit executions
     @PublicAtsApi
-    public static final String  TEST_HARNESS__JUNIT_RUN_NAME                                      = "ats.junit.RunName";
+    public static final String TEST_HARNESS__JUNIT_RUN_NAME                                      = "ats.junit.RunName";
     // source location of the running tests
     @PublicAtsApi
-    public static final String  TEST_HARNESS__TESTS_SOURCE_LOCATION                               = "ats.tests.source.location";
+    public static final String TEST_HARNESS__TESTS_SOURCE_LOCATION                               = "ats.tests.source.location";
 
     // UI Engine properties
     // milliseconds to delay between swing events
     @PublicAtsApi
-    public static final String  UI_ENGINE__SWING_ROBOT_DELAY_BETWEEN_EVENTS                       = "ats.uiengine.swing.RobotDelayBetweenEvents";
+    public static final String UI_ENGINE__SWING_ROBOT_DELAY_BETWEEN_EVENTS                       = "ats.uiengine.swing.RobotDelayBetweenEvents";
 
     // Core properties
     // Java secure channel verbose mode
     @PublicAtsApi
-    public static final String  CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
+    public static final String CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
 
     /**
      * Toggle whether ATS Agent will be configured and flag as configured by both SystemMonitor and TestcaseStateListener.
      * This fix is when user wants to stop monitoring and continue using the same agent (executing actions).
      * */
-    public static final String  MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
+    public static final String MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
 
     /**
      * Toggle whether to log all of the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
      * */
-    public static final String  SYSTEM_MONITOR_VERBOSE_MODE                                       = "ats.system.monitor.verbose.mode";
+    public static final String SYSTEM_MONITOR_VERBOSE_MODE                                       = "ats.system.monitor.verbose.mode";
 
     /*
      * Following are system properties which are not supposed to be changed
      * during the VM lifetime, so we do not need to read them more than once.
      */
-    public static final String  SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
-    public static final String  SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
-    public static final String  SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
-    public static final String  SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
-    public static final String  SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
-    public static final String  SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");
-    public static final String  SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty("http.proxyPort");
+    public static final String SYSTEM_LINE_SEPARATOR                                             = System.getProperty("line.separator");
+    public static final String SYSTEM_FILE_SEPARATOR                                             = System.getProperty("file.separator");
+    public static final String SYSTEM_OS_NAME                                                    = System.getProperty("os.name");
+    public static final String SYSTEM_USER_TEMP_DIR                                              = System.getProperty("java.io.tmpdir");
+    public static final String SYSTEM_JAVA_HOME_DIR                                              = System.getProperty("java.home");
+    public static final String SYSTEM_HTTP_PROXY_HOST                                            = System.getProperty("http.proxyHost");
+    public static final String SYSTEM_HTTP_PROXY_PORT                                            = System.getProperty("http.proxyPort");
     /**
      * User directory as of initial call of this class. Note that actual value of this system property could be changed later.
      * And it seems that currently there is no easy Java-only reliable way to change actual current directory.
      */
-    public static final String  USER_CURRENT_DIR                                                  = System.getProperty("user.dir");
+    public static final String USER_CURRENT_DIR                                                  = System.getProperty("user.dir");
+
+    /**
+     * Specify which monitoring provider to used.<br/>
+     * Currently the available once are:<br/>
+     * <ol>
+     *  <li><strong>sigar</strong> (default one)</li>
+     *  <li><strong>oshi</strong></li>
+     * </ol>
+     * 
+     * */
+    public static final String SYSTEM_MONITORING_PROVIDER                                        = "ats.system.monitoring.provider";
 
     /**
      * @return the default ATS agent port number
@@ -322,3 +349,4 @@ public class AtsSystemProperties {
         }
     }
 }
+

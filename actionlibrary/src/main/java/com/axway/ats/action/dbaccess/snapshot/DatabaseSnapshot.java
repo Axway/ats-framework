@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,12 @@
 package com.axway.ats.action.dbaccess.snapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import com.axway.ats.action.dbaccess.snapshot.CompareOptions.Pair;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipColumns;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipContent;
 import com.axway.ats.action.dbaccess.snapshot.rules.SkipIndexAttributes;
@@ -35,12 +38,13 @@ import com.axway.ats.action.dbaccess.snapshot.rules.SkipRows;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotException;
 import com.axway.ats.common.dbaccess.snapshot.DatabaseSnapshotUtils;
-import com.axway.ats.common.dbaccess.snapshot.IndexNameMatcher;
+import com.axway.ats.common.dbaccess.snapshot.IndexMatcher;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.harness.config.CommonConfigurator;
 import com.axway.ats.harness.config.TestBox;
@@ -88,11 +92,13 @@ public class DatabaseSnapshot {
     // MAP< table name(in lower case) , rows to skip >
     Map<String, SkipRows>            skipRowsPerTable            = new HashMap<>();
 
+    Map<String, Set<Properties>>     skipIndexesPerTable         = new HashMap<>();
+
     // MAP< table name(in lower case) , index attributes to skip >
     Map<String, SkipIndexAttributes> skipIndexAttributesPerTable = new HashMap<>();
 
-    //  An interface which tells whether some table index names should be treated as same or not
-    private IndexNameMatcher         indexNameMatcher;
+    //  An interface which tells whether some table index should be treated as same or not
+    private IndexMatcher             indexMatcher;
 
     /**
      * Constructor providing snapshot name and connection parameters
@@ -146,7 +152,7 @@ public class DatabaseSnapshot {
 
     /**
      * Specify a column which values will not be read when comparing the table content.
-     * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
+     * <br>Note: the column meta information(like column type and indexes it participates into) is still compared
      * 
      * @param table table name
      * @param column column
@@ -159,7 +165,7 @@ public class DatabaseSnapshot {
 
     /**
      * Specify columns which values will not be read when comparing the table content.
-     * </br>Note: the column meta information(like column type and indexes it participates into) is still compared 
+     * <br>Note: the column meta information(like column type and indexes it participates into) is still compared
      * 
      * @param table table name
      * @param columns columns
@@ -186,10 +192,10 @@ public class DatabaseSnapshot {
 
     /**
      * Specify table(s) which content (rows) will not be checked, but
-     * we will check whether the number of rows is same. </br>
+     * we will check whether the number of rows is same. <br>
      * Some prefer to use this method for tables with changing binary data
      * (for example some certificates), but they still
-     * want to verify the number of rows(for example number of certificates) is not changed. </br>
+     * want to verify the number of rows(for example number of certificates) is not changed. <br>
      * Note that table meta-data is also checked.
      * 
      * @param tables one or many tables
@@ -226,6 +232,23 @@ public class DatabaseSnapshot {
     }
 
     /**
+     * Allows skipping index in table that match all of the provided properties
+     * @param table - the table name
+     * @param indexProperties - the index properties. For the index properties' names see one of the [Oracle|Mssql|MySQL|Postgresql]DbProvider.IndexProperties , according to the database type
+     * */
+    @PublicAtsApi
+    public void skipTableIndex( String table, Properties indexProperties ) {
+
+        Set<Properties> skipIndexesForThisTable = skipIndexesPerTable.get(table);
+        if (skipIndexesForThisTable == null) {
+            skipIndexesForThisTable = new HashSet<Properties>();
+            skipIndexesPerTable.put(table, skipIndexesForThisTable);
+        }
+        skipIndexesForThisTable.add(indexProperties);
+
+    }
+
+    /**
      * Allows skipping attributes of some index of some table
      * 
      * @param table the table
@@ -245,39 +268,43 @@ public class DatabaseSnapshot {
 
     /**
      * Provide instance of this interface which will define 
-     * whether some table index names should be treated as same or not.</br></br>
+     * whether some table index should be treated as same or not.<br><br>
      * 
-     * <b>Note:</b> If not used, the index names are compared as regular text.
+     * <b>Note:</b> If not used, the index are compared by their names as regular text.<br>
      * 
-     * @param indexNameMatcher the custom implementation.
+     * @param indexMatcher the custom implementation.
      */
     @PublicAtsApi
-    public void setIndexNameMatcher( IndexNameMatcher indexNameMatcher ) {
+    public void setIndexMatcher( IndexMatcher indexMatcher ) {
 
-        this.indexNameMatcher = indexNameMatcher;
+        this.indexMatcher = indexMatcher;
     }
 
     /**
      * Provide a java regular expression which will define 
-     * whether some table index names should be treated as same or not.</br></br>
+     * whether some table index should be treated as same or not.<br><br>
      * <b>Note:</b> The regular expression is applied on the index names,
-     * the first matched subsequences of both index names are compared for equality.</br>
+     * the first matched subsequences of both index names are compared for equality.<br>
      * 
      * In other words, we compare whatever is returned by the {@link Matcher#find()} method 
-     * when applied on both index names.</br></br>
+     * when applied on both index names.<br><br>
      * 
      * 
-     * <b>Note:</b> If not used, the index names are compared as regular text.
+     * <b>Note:</b> If not used, the indexes are compared against their names as regular text, e.g. whether indexOneName.equals(indexTwoName) is true or false<br>
+     * Also note that if there are different properties for some indexes, 
+     * use {@link DatabaseSnapshot#setIndexMatcher(IndexMatcher)} 
+     * where you can skip the default comparison of index properties by overriding the {@link IndexMatcher#isSame(String, Properties, Properties)} method
+     * 
      * 
      * @param indexNameRegex a java regular expression
      */
     @PublicAtsApi
-    public void setIndexNameMatcher( final String indexNameRegex ) {
+    public void setIndexMatcher( final String indexNameRegex ) {
 
-        this.indexNameMatcher = new IndexNameMatcher() {
+        this.indexMatcher = new IndexMatcher() {
+
             @Override
-            public boolean isSame( String table, String firstName, Map<String, String> firstProperties,
-                                   String secondName, Map<String, String> secondProperties ) {
+            public boolean isSame( String table, String firstName, String secondName ) {
 
                 Pattern pattern = Pattern.compile(indexNameRegex);
 
@@ -293,11 +320,19 @@ public class DatabaseSnapshot {
 
                 return firstName.equals(secondName);
             }
+
+            @Override
+            public boolean isSame( String table, Properties firstProperties, Properties secondProperties ) {
+
+                // always false, since REGEX for name is wanted
+                return false;
+            }
+
         };
     }
 
     /**
-     * Take a database snapshot</br>
+     * Take a database snapshot<br>
      * <b>NOTE:</b> We will get only meta data about the tables in the database. 
      * No table content is loaded at this moment as this may cause memory issues.
      * The content of each table is loaded when needed while comparing this snapshot with another one, or while
@@ -332,6 +367,9 @@ public class DatabaseSnapshot {
             }
         }
 
+        // remove indexes that are to be skipped
+        skipIndexes();
+
         // we have loaded all index info, strip some if needed
         stripIndexAttributes(tables);
 
@@ -345,6 +383,114 @@ public class DatabaseSnapshot {
         log.info("End taking database meta information for snapshot with name " + name);
     }
 
+    private void skipIndexes() {
+
+        try {
+            for (TableDescription tableDesc : tables) {
+                if (tableDesc.getIndexes() == null || tableDesc.getIndexes().isEmpty()) {
+                    // no indexes, so nothing to skip
+                    continue;
+                }
+
+                String tableName = tableDesc.getName();
+                if (!this.skipIndexesPerTable.containsKey(tableName)) {
+                    // no indexes are to be skipped for this table
+                    continue;
+                }
+
+                if (this.skipIndexesPerTable.get(tableName) == null
+                    || this.skipIndexesPerTable.get(tableName).isEmpty()) {
+                    log.warn("There are skipped Indexes for table '" + tableName
+                             + "', but they have no properties, e.g. empty properties are provided for them, so no skipping of indexes will be performed");
+                    continue;
+                }
+
+                // begin skipping indexes
+                Map<String, String> loadedIndexes = tableDesc.getIndexes();
+                Map<String, String> finalIndexes = new HashMap<String, String>();
+
+                // iterate over each of the loaded indexes
+                for (String indexKey : loadedIndexes.keySet()) {
+                    String indexValue = loadedIndexes.get(indexKey);
+                    if (StringUtils.isNullOrEmpty(indexValue)) {
+                        // is it possible for index to not have any properties?
+                        throw new RuntimeException("Index '" + indexKey
+                                                   + "' from table '" + tableName + "' has NO properties loaded!");
+                    }
+                    // get current index properties
+                    Properties indexProperties = tableDesc.getIndexProperties(indexKey);
+
+                    // a set of properties that the user wants to be used in order to be able to check which index is to be skipped
+                    Set<Properties> skippedIndexesProperties = this.skipIndexesPerTable.get(tableName);
+                    if (!isIndexToBeSkipped(indexProperties, skippedIndexesProperties)) {
+                        finalIndexes.put(indexKey, indexValue);
+                    }
+                }
+
+                //tableDesk.getIndexes().clear();
+                tableDesc.setIndexes(finalIndexes);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Error while skipping indexes", e);
+        }
+
+    }
+
+    private boolean isIndexToBeSkipped( Properties indexProperties, Set<Properties> skippedIndexesProperties ) {
+
+        for (Properties skipIndexProperties : skippedIndexesProperties) {
+
+            if (skipIndexProperties == null || skipIndexProperties.isEmpty()) {
+                continue;
+            }
+
+            boolean found = true;
+
+            for (Map.Entry<Object, Object> entry : skipIndexProperties.entrySet()) {
+                Object key = entry.getKey();
+                Object value = entry.getValue();
+
+                if (indexProperties.containsKey(key)) {
+                    Object val = indexProperties.get(key);
+
+                    // most of the time, if not always, the value will be String, but keep this, just in case we change this in the future
+                    if (value.getClass().isPrimitive()) {
+                        if (value != val) {
+                            found = false;
+                            break;
+                        }
+                    } else {
+                        if (!value.equals(val)) {
+                            found = false;
+                            break;
+                        }
+                    }
+                } else {
+                    // the user-provided index property is actually not found in the ones, obtained from DB.
+                    // no reason to continue, so the index will not be skipped
+                    log.warn("Index property '" + key + "' is not supported for table index for database of type "
+                             + this.dbProvider.getDbConnection().getDbType() + "!");
+                    found = false;
+                    break;
+                }
+            }
+
+            if (found) {
+                return true;
+            }
+
+        }
+        return false;
+    }
+
+    /**
+     * @see DatabaseSnapshot#compare(DatabaseSnapshot, CompareOptions)
+     * */
+    public void compare( DatabaseSnapshot that ) throws DatabaseSnapshotException {
+
+        this.compare(that, null);
+    }
+
     /**
      * Compare both snapshots and throw error if unexpected differences are found.
      * Snapshots are compared table by table. 
@@ -352,10 +498,11 @@ public class DatabaseSnapshot {
      * But if a snapshot was saved into a file, then its tables are loaded from the file, not from the database.
      * 
      * @param that the snapshot to compare to
+     * @param compareOptions - (optional) additional options that change the comparison. by default is null, so the compare is as-is (e.g. if there is an error, the comparison fails) 
      * @throws DatabaseSnapshotException
      */
     @PublicAtsApi
-    public void compare( DatabaseSnapshot that ) throws DatabaseSnapshotException {
+    public void compare( DatabaseSnapshot that, CompareOptions compareOptions ) throws DatabaseSnapshotException {
 
         try {
             if (that == null) {
@@ -374,9 +521,11 @@ public class DatabaseSnapshot {
                                                     + "] snapshot is still not created");
             }
 
-            log.debug("Comparing snapshots [" + this.name + "] taken on "
-                      + DatabaseSnapshotUtils.dateToString(this.metadataTimestamp) + " and [" + that.name
-                      + "] taken on " + DatabaseSnapshotUtils.dateToString(that.metadataTimestamp));
+            if (log.isDebugEnabled()) {
+                log.debug("Comparing snapshots [" + this.name + "] taken on "
+                          + DatabaseSnapshotUtils.dateToString(this.metadataTimestamp) + " and [" + that.name
+                          + "] taken on " + DatabaseSnapshotUtils.dateToString(that.metadataTimestamp));
+            }
 
             this.equality = new DatabaseEqualityState(this.name, that.name);
 
@@ -400,11 +549,27 @@ public class DatabaseSnapshot {
             Set<String> tablesToSkip = getAllTablesToSkip(skipColumns);
 
             // We can use just one index name matcher
-            IndexNameMatcher actualIndexNameMatcher = mergeIndexNameMatchers(that.indexNameMatcher);
+            IndexMatcher actualIndexNameMatcher = mergeIndexMatchers(that.indexMatcher);
 
             compareTables(this.name, thisTables, that.name, thatTables, that.dbProvider, tablesToSkip,
                           skipColumns, skipContent, skipRows, actualIndexNameMatcher, that.backupXmlFile,
                           equality);
+
+            if (compareOptions != null) {
+                /*try {
+                    // handle expected differences
+                    handleExpectedDifferentNumberOfRows(compareOptions, equality);
+                } catch (Exception e) {
+                    log.error("Error occured while handling different number of rows", e);
+                }*/
+
+                try {
+                    // handle expected differences
+                    handleExpectedMissingRows(compareOptions, equality);
+                } catch (Exception e) {
+                    log.error("Error occured while handling missing rows", e);
+                }
+            }
 
             if (equality.hasDifferences()) {
                 // there are some unexpected differences
@@ -419,8 +584,105 @@ public class DatabaseSnapshot {
         }
     }
 
+    private void handleExpectedMissingRows( CompareOptions compareOptions, DatabaseEqualityState equality ) {
+
+        for (Map.Entry<String, Pair<Integer>> entry : compareOptions.getExpectedTableMissingRows()
+                                                                    .entrySet()) {
+
+            String tableName = entry.getKey();
+            Pair<Integer> rows = entry.getValue();
+
+            List<Map<String, String>> rowsOnlyInFirstSnapshot = equality.getRowsPresentInOneSnapshotOnly(equality.getFirstSnapshotName(),
+                                                                                                         tableName);
+
+            List<Map<String, String>> rowsOnlyInSecondSnapshot = equality.getRowsPresentInOneSnapshotOnly(equality.getSecondSnapshotName(),
+                                                                                                          tableName);
+
+            int totalMissingRows = 0;
+            if (rowsOnlyInFirstSnapshot != null) {
+                totalMissingRows += rowsOnlyInFirstSnapshot.size();
+            }
+            if (rowsOnlyInSecondSnapshot != null) {
+                totalMissingRows += rowsOnlyInSecondSnapshot.size();
+            }
+
+            if (totalMissingRows < rows.first) {
+                log.error("Table '" + tableName + "' is expected to have at least " + rows.first
+                          + " missing rows between snapshots, but instead has " + totalMissingRows);
+                continue;
+            }
+
+            if (totalMissingRows > rows.second) {
+                log.error("Table '" + tableName + "' is expected to have at most " + rows.second
+                          + " missing rows between snapshots, but instead has " + totalMissingRows);
+                continue;
+            }
+
+            // assume that this table is OK
+            equality.clearRowsPresentedInOneSnapshotOnly(tableName);
+
+            // and also clear the different rows error for that table (if such errors exists)
+
+            // This is OK to be cleared, since this error is a result of the already expected one (the one we handled above)
+            equality.clearDifferentNumberOfRowsForTable(tableName);
+        }
+
+    }
+
+    /*private void handleExpectedDifferentNumberOfRows( CompareOptions compareOptions, DatabaseEqualityState equality ) {
+    
+        for (Map.Entry<String, Pair<Integer>> entry : compareOptions.getExpectedTableDifferentNumberOfRows()
+                                                                    .entrySet()) {
+            String tableName = entry.getKey();
+            Pair<Integer> rows = entry.getValue();
+    
+            Integer differentNumberOfRowsFirstSnapshot = equality.getDifferentNumberOfRows(equality.getFirstSnapshotName(),
+                                                                                           tableName);
+            Integer differentNumberOfRowsSecondSnapshot = equality.getDifferentNumberOfRows(equality.getSecondSnapshotName(),
+                                                                                            tableName);
+    
+            int finalDifferentNumberOfRows = 0;
+            if (differentNumberOfRowsFirstSnapshot == null) {
+                if (differentNumberOfRowsSecondSnapshot == null) {
+                    // no different rows
+                    if (compareOptions.isFailOnMissingExpectedError()) {
+                        throw new RuntimeException("Expected different number of rows for table '" + tableName
+                                                   + "' is not produced by the database snapshot comparison!");
+                    }
+                } else {
+                    // use data from the second snapshot
+                    finalDifferentNumberOfRows = differentNumberOfRowsSecondSnapshot;
+                }
+            } else {
+                if (differentNumberOfRowsSecondSnapshot == null) {
+                    // use data from the first snapshot
+                    finalDifferentNumberOfRows = differentNumberOfRowsFirstSnapshot;
+                } else {
+                    // both snapshots have different rows information
+                    finalDifferentNumberOfRows = Math.abs( (differentNumberOfRowsFirstSnapshot
+                                                            - differentNumberOfRowsSecondSnapshot));
+                }
+            }
+    
+            if (finalDifferentNumberOfRows < rows.first) {
+                throw new RuntimeException("Table '" + tableName + "' is expected to have at least " + rows.first
+                                           + " different rows, but instead has " + finalDifferentNumberOfRows);
+            }
+    
+            if (finalDifferentNumberOfRows > rows.second) {
+                throw new RuntimeException("Table '" + tableName + "' is expected to have at most " + rows.second
+                                           + " different rows, but instead has " + finalDifferentNumberOfRows);
+            }
+    
+            // assume that this table is OK
+            equality.clearDifferentNumberOfRowsForTable(tableName);
+    
+        }
+    
+    }*/
+
     /**
-     * Save a snapshot into a file.</br>
+     * Save a snapshot into a file.<br>
      * <b>NOTE:</b> This is the moment when the contents of each table is read from the database 
      * one at a time and is saved into the file.
      * 
@@ -439,7 +701,7 @@ public class DatabaseSnapshot {
      * Load a snapshot from a file
      * 
      * @param newSnapshotName the name of the new snapshot
-     * </br>Pass null or empty string if want to use the snapshot name as saved in the file,
+     * <br>Pass null or empty string if want to use the snapshot name as saved in the file,
      * or provide a new name here
      * @param sourceFile the backup file name
      */
@@ -469,7 +731,8 @@ public class DatabaseSnapshot {
                                 String thatSnapshotName, List<TableDescription> thatTables,
                                 DbProvider thatDbProvider, Set<String> tablesToSkip,
                                 Map<String, SkipColumns> skipColumns, Map<String, SkipContent> skipContent,
-                                Map<String, SkipRows> skipRows, IndexNameMatcher indexNameMatcher,
+                                Map<String, SkipRows> skipRows,
+                                IndexMatcher indexNameMatcher,
                                 Document thatBackupXmlFile, DatabaseEqualityState equality ) {
 
         // make a list of tables present in both snapshots
@@ -546,34 +809,42 @@ public class DatabaseSnapshot {
     }
 
     /**
-     * The Index Name Matcher can come from first or second snapshot instance.
+     * The Index Matcher can come from first or second snapshot instance.
      * Or maybe there is none provided by the user.
      * 
-     * @param thatIndexNameMatcher
+     * @param thatIndexMatcher
      * @return
      */
-    private IndexNameMatcher mergeIndexNameMatchers( IndexNameMatcher thatIndexNameMatcher ) {
+    private IndexMatcher mergeIndexMatchers( IndexMatcher thatIndexMatcher ) {
 
-        if (this.indexNameMatcher != null) {
+        if (this.indexMatcher != null) {
             // use THIS matcher
-            if (thatIndexNameMatcher != null) {
-                log.warn("You have provided Index Name Matchers for both snapshots. We selected to use the one from snapshot ["
+            if (thatIndexMatcher != null) {
+                log.warn("You have provided Index Matchers for both snapshots. We selected to use the one from snapshot ["
                          + this.name + "]");
             }
-            return this.indexNameMatcher;
-        } else if (thatIndexNameMatcher != null) {
+            return this.indexMatcher;
+        } else if (thatIndexMatcher != null) {
             // use THAT matcher
-            return thatIndexNameMatcher;
+            return thatIndexMatcher;
         } else {
-            // index name matcher is not provided for any snapshot
+            // index matcher is not provided for any snapshot
             // create a default one which matches index name literally
-            return new IndexNameMatcher() {
+            return new IndexMatcher() {
+
                 @Override
-                public boolean isSame( String table, String firstName, Map<String, String> firstProperties,
-                                       String secondName, Map<String, String> secondProperties ) {
+                public boolean isSame( String table, String firstName, String secondName ) {
 
                     return firstName.equals(secondName);
                 }
+
+                @Override
+                public boolean isSame( String table, Properties firstProperties, Properties secondProperties ) {
+
+                    // Should it be false?
+                    return false;
+                }
+
             };
         }
     }
@@ -837,7 +1108,7 @@ public class DatabaseSnapshot {
                 dbProvider = this.dbProvider;
             }
 
-            String sqlQuery = construcSelectStatement(table, skipColumns);
+            String sqlQuery = constructSelectStatement(table, skipColumns);
             if (sqlQuery != null) {
                 for (DbRecordValuesList rowValues : dbProvider.select(sqlQuery)) {
                     // if there are rows for skipping we will find them and remove them from the list
@@ -959,7 +1230,7 @@ public class DatabaseSnapshot {
         return null;
     }
 
-    private String construcSelectStatement( TableDescription table, Map<String, SkipColumns> skipColumns ) {
+    private String constructSelectStatement( TableDescription table, Map<String, SkipColumns> skipColumns ) {
 
         Set<String> columns = table.getColumnNames();
 
@@ -974,6 +1245,11 @@ public class DatabaseSnapshot {
 
         if (skipColumnsForThisTable == null) {
             String query = "SELECT * FROM ";
+            if (this.dbProvider instanceof PostgreSqlDbProvider) {
+                List<String> sortedColumns = new ArrayList<>(columns);
+                Collections.sort(sortedColumns);
+                query = "SELECT " + String.join(", ", sortedColumns) + " FROM ";
+            }
             // all columns are important
             if (table.getSchema() != null) {
                 query += table.getSchema() + ".";

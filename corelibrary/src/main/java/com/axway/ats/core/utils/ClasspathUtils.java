@@ -1,12 +1,12 @@
 /*
- * Copyright 2017 Axway Software
- * 
+ * Copyright 2017-2020 Axway Software
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -18,6 +18,7 @@ package com.axway.ats.core.utils;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
@@ -29,11 +30,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
+
+import com.axway.ats.common.system.OperatingSystemType;
 
 /**
  * Utility class for inspecting the classpath
@@ -43,14 +48,14 @@ public class ClasspathUtils {
     private static final Logger       log              = Logger.getLogger(ClasspathUtils.class);
 
     /**
-     * A map containing all jars found in the classpath:
-     * <jar simple name, <list with all detected instances of this jar> >
+     * A map containing all jars found in the classpath: <jar simple name, <list
+     * with all detected instances of this jar> >
      */
     private Map<String, List<String>> loadedJarsMap    = new HashMap<String, List<String>>();
 
     /**
-     * List of jars that are not supposed to be added by user manually
-     * as this may affect the work of the framework in an unpredictable way.
+     * List of jars that are not supposed to be added by user manually as this may
+     * affect the work of the framework in an unpredictable way.
      */
     private static List<String>       PROBLEMATIC_JARS = new ArrayList<String>();
     static {
@@ -59,8 +64,8 @@ public class ClasspathUtils {
     }
 
     /**
-     * Log all jars found in the classpath.
-     * If a jar is found more than once, then we list these one after another
+     * Log all jars found in the classpath. If a jar is found more than once, then
+     * we list these one after another
      */
     public void logClassPath() {
 
@@ -68,9 +73,9 @@ public class ClasspathUtils {
     }
 
     /**
-     * Return all jars found in the classpath.
-     * If a jar is found more than once, then we list these one after another
-     * 
+     * Return all jars found in the classpath. If a jar is found more than once,
+     * then we list these one after another
+     *
      * @return StringBuilder with all jars loaded in the ClassPath
      */
     public StringBuilder getClassPathDescription() {
@@ -88,8 +93,7 @@ public class ClasspathUtils {
         for (int i = 0; i < classpathArray.length; i++) {
             String jarFullPath = classpathArray[i].replace("\\", "/");
             String absPath = jarFullPath.substring(0, jarFullPath.lastIndexOf('/') + 1);
-            String simpleJarName = jarFullPath.substring(jarFullPath.lastIndexOf('/') + 1,
-                                                         jarFullPath.length());
+            String simpleJarName = jarFullPath.substring(jarFullPath.lastIndexOf('/') + 1, jarFullPath.length());
             if (classPathMap.containsKey(absPath)) {
                 classPathMap.get(absPath).add(simpleJarName);
             } else {
@@ -150,9 +154,11 @@ public class ClasspathUtils {
     }
 
     /**
-     * Log in the console jars that are likely to cause issues running the tests:</br>
-     *  - duplicated jars </br>
-     *  - jars that are used by ATS and are not supposed to be added by the user manually
+     * Log in the console jars that are likely to cause issues running the
+     * tests:<br>
+     * - duplicated jars <br>
+     * - jars that are used by ATS and are not supposed to be added by the user
+     * manually
      */
     public void logProblematicJars() {
 
@@ -175,8 +181,7 @@ public class ClasspathUtils {
             }
             if (PROBLEMATIC_JARS.contains(loadedJarEntry.getKey())) {
                 String errorMsg = "The following libraries " + loadedJarEntry.getKey() + " located in "
-                                  + loadedJarEntry.getValue()
-                                  + ". These different jars can cause issues.";
+                                  + loadedJarEntry.getValue() + ". These different jars can cause issues.";
                 log.warn(errorMsg);
                 log.warn(errorMsg);
             }
@@ -198,33 +203,46 @@ public class ClasspathUtils {
         ClassLoader classLoader = getClass().getClassLoader();
         URL[] urls = null;
         do {
-            //check if the class loader is instance of URL and cast it
+            // check if the class loader is instance of URL and cast it
             if (classLoader instanceof URLClassLoader) {
                 urls = ((URLClassLoader) classLoader).getURLs();
+                try {
+                    loadJarsFromManifestFile(classLoader);
+                } catch (IOException ioe) {
+                    log.warn("MANIFEST.MF is loaded, so we will not search for duplicated jars!");
+                }
+                // add all jars from ClassPath to the map
+                for (int i = 0; i < urls.length; i++) {
+                    addJarToMap(urls[i].getFile());
+                }
+
+                // get the parent classLoader
+                classLoader = classLoader.getParent();
+            } else if (isAppClassLoder(classLoader)) {
+                // use the value of the java.class.path property to obtain the classpath
+                urls = obtainClasspathFromProperty();
+                try {
+                    loadJarsFromManifestFile(classLoader);
+                } catch (IOException ioe) {
+                    log.warn("MANIFEST.MF is loaded, so we will not search for duplicated jars!");
+                }
+                // add all jars from ClassPath to the map
+                for (int i = 0; i < urls.length; i++) {
+                    addJarToMap(urls[i].getFile());
+                }
+                classLoader = classLoader.getParent();
             } else {
-                // if the ClassLoader is not instance of URLClassLoader we will break the cycle and log a message
-                log.info("ClassLoader " + classLoader
-                         + " is not instance of URLClassLoader, so it will skip it.");
+                // if the ClassLoader is not instance of URLClassLoader we will break the cycle
+                // and log a message
+                log.info("ClassLoader " + classLoader + " is not instance of URLClassLoader, so it will skip it.");
 
                 // if the ClassLoader is from JBoss, it is instance of BaseClassLoader,
-                // we can take the ClassPath from a public method -> listResourceCache(), from JBoss-classloader.jar
+                // we can take the ClassPath from a public method -> listResourceCache(), from
+                // JBoss-classloader.jar
                 // this ClassLoader is empty, we will get the parent
                 classLoader = classLoader.getParent();
                 continue;
             }
-            try {
-                loadJarsFromManifestFile(classLoader);
-            } catch (IOException ioe) {
-                log.warn("MANIFEST.MF is loaded, so we will not search for duplicated jars!");
-            }
-
-            // add all jars from ClassPath to the map
-            for (int i = 0; i < urls.length; i++) {
-                addJarToMap(urls[i].getFile());
-            }
-
-            // get the parent classLoader
-            classLoader = classLoader.getParent();
         } while (classLoader != null);
 
         if (loadedJarsMap.isEmpty()) {
@@ -233,12 +251,56 @@ public class ClasspathUtils {
         }
     }
 
+    private URL[] obtainClasspathFromProperty() {
+
+        List<URL> urls = new ArrayList<>();
+        String classpath = System.getProperty("java.class.path");
+        if (StringUtils.isNullOrEmpty(classpath)) {
+            log.warn("System property 'java.class.path' is null or empty!");
+            return null; // or empty array ?!?
+        }
+        String[] classpathEntries = classpath.split( (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS)
+                                                                                                                             ? ";"
+                                                                                                                             : ":");
+        for (String classpathEntry : classpathEntries) {
+            try {
+                urls.add(new File(classpathEntry).toURI().toURL());
+            } catch (Exception e) {
+                log.error("Could not construct URL from classpath entry '" + classpathEntry + "'", e);
+            }
+        }
+        return urls.toArray(new URL[urls.size()]);
+    }
+
+    private boolean isAppClassLoder( ClassLoader classLoader ) {
+
+        if (classLoader != null) {
+            return classLoader.getClass().getName().equals("jdk.internal.loader.ClassLoaders$AppClassLoader");
+        }
+
+        return false;
+
+    }
+
     /**
-    * Find and load all MANIFEST.MF files and get jars from the 'Class-Path' value
-    */
+     * Find and load all MANIFEST.MF files and get jars from the 'Class-Path' value
+     */
     private void loadJarsFromManifestFile( ClassLoader classLoader ) throws IOException {
 
-        Enumeration<URL> manifestUrls = ((URLClassLoader) classLoader).findResources("META-INF/MANIFEST.MF");
+        Enumeration<URL> manifestUrls = null;
+        if (classLoader != null) {
+            if (classLoader instanceof URLClassLoader) {
+                manifestUrls = ((URLClassLoader) classLoader).findResources("META-INF/MANIFEST.MF");
+            } else if (isAppClassLoder(classLoader)) {
+                manifestUrls = getClasspathResources(obtainClasspathFromProperty(), "META-INF/MANIFEST.MF");
+            } else {
+                log.warn("ClassLoader '" + classLoader.getClass().getName() + "' is not supported");
+                return;
+            }
+        } else {
+            return;
+        }
+
         Manifest manifest = null;
         URL manifestElement = null;
 
@@ -263,8 +325,7 @@ public class ClasspathUtils {
                                 manifestFile = manifestFile.substring("file:/".length());
                             }
 
-                            manifestFile = manifestFile.substring(0,
-                                                                  manifestFile.indexOf("!/META-INF/MANIFEST.MF"));
+                            manifestFile = manifestFile.substring(0, manifestFile.indexOf("!/META-INF/MANIFEST.MF"));
                             manifestFile = manifestFile.substring(0, manifestFile.lastIndexOf('/'));
 
                             if (!StringUtils.isNullOrEmpty(jarSimpleName)) {
@@ -277,8 +338,7 @@ public class ClasspathUtils {
                                 if (new File(jarAbsolutePath).exists()) {
                                     addJarToMap(jarAbsolutePath);
                                 } else {
-                                    log.trace("File \"" + jarAbsolutePath
-                                              + "\" is defined in /META-INF/MANIFEST.MF \""
+                                    log.trace("File \"" + jarAbsolutePath + "\" is defined in /META-INF/MANIFEST.MF \""
                                               + manifestElement.getPath() + "\", but does not exist!");
                                 }
                             }
@@ -289,6 +349,39 @@ public class ClasspathUtils {
                 }
             }
         }
+    }
+
+    private Enumeration<URL> getClasspathResources( URL[] classpathEntries, String resourceName ) {
+
+        List<URL> resourcesUrls = new ArrayList<URL>();
+        for (URL url : classpathEntries) {
+            JarFile jarFile = null;
+            String jarFileFullpath = null;
+            try {
+                // if the entry is jar, check its content
+                jarFile = new JarFile(new File(url.toURI()));
+                jarFileFullpath = new File(url.toURI()).getAbsolutePath();
+                Enumeration<JarEntry> jarEntries = jarFile.entries();
+                while (jarEntries.hasMoreElements()) {
+                    JarEntry je = jarEntries.nextElement();
+                    if (je.getName().equals(resourceName)) {
+                        String resourceFilepath = "jar:file:" + jarFileFullpath + "!/" + resourceName;
+                        if (OperatingSystemType.getCurrentOsType() == OperatingSystemType.WINDOWS) {
+                            resourceFilepath = resourceFilepath.replace("\\", "/");
+                        }
+                        resourcesUrls.add(new URI(resourceFilepath).toURL());
+                    }
+                }
+            } catch (Exception e) {
+                // not a jar, skip it
+                if (jarFile != null) { // the file was created, so the error must not be discarded
+                    log.error("Error processing JAR file '" + jarFileFullpath + "'", e);
+                }
+            } finally {
+                IoUtils.closeStream(jarFile);
+            }
+        }
+        return Collections.enumeration(resourcesUrls);
     }
 
     private void addJarToMap( String jar ) {
@@ -315,7 +408,8 @@ public class ClasspathUtils {
     /**
      * Extract jar name without version and extension
      *
-     * @param jarFullPath full jar file name with possible version and extension, e.g. jaxws-api-2.2.1.jar
+     * @param jarFullPath full jar file name with possible version and extension,
+     *                    e.g. jaxws-api-2.2.1.jar
      * @return jar name without version, e.g. jaxws-api
      */
     private String getJarSimpleName( String jarFullPath ) {
@@ -327,15 +421,14 @@ public class ClasspathUtils {
         Pattern p = Pattern.compile(pattern);
         Matcher m = p.matcher(jarName);
 
-        if (!StringUtils.isNullOrEmpty(jarName)
-            && jarName.substring(0, jarName.length() - 4).endsWith("sources")) {
+        if (!StringUtils.isNullOrEmpty(jarName) && jarName.substring(0, jarName.length() - 4).endsWith("sources")) {
             isSourceFile = true;
         }
         if (m.find()) {
             jarName = m.group(1);
         } else {
             if (jarName.endsWith(".jar")) {
-                //here we will cut last 4 characters -'.jar'
+                // here we will cut last 4 characters -'.jar'
                 jarName = jarName.substring(0, jarName.length() - 4);
             }
         }
