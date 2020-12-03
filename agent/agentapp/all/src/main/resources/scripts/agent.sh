@@ -76,6 +76,11 @@ for key in "$@" ; do
         # append java_opts to existing ones
         JAVA_OPTS="$JAVA_OPTS $key"
         FOUND_TOKEN=""
+    elif [ "$FOUND_TOKEN" = "-debug" ]; then
+        # debug mode
+        DEBUG=true
+        DEBUG_PORT=$key
+        FOUND_TOKEN=""
     else
         case $key in
             -port)
@@ -95,6 +100,9 @@ for key in "$@" ; do
             ;;
             -java_opts)
                 FOUND_TOKEN="-java_opts"
+            ;;
+            -debug)
+                FOUND_TOKEN="-debug"
             ;;
               *)
             # unknown option
