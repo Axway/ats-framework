@@ -73,16 +73,18 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private static final String           MSG__TEST_SKIPPED_CONFIGURATION       = "[TestNG]: TEST SKIPPED due to configuration failure";
     private static final String           MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
 
-    private String javaFileContent;
-    private String projectSourcesFolder;
+    private final String                  JAVA_FILE_EXTENSION                   = ".java";
+
+    private String                        javaFileContent;
+    private String                        projectSourcesFolder;
 
     /* keeps track if the current testcase name */
-    private        String currentTestcaseName = null;
+    private String                        currentTestcaseName                   = null;
     /* keeps track if the current suite name. Not parallel mode safe */
-    private static String currentSuiteName    = null;
+    private static String                 currentSuiteName                      = null;
 
     /* keeps track of the test result for the last ended testcase */
-    private int lastTestcaseResult = -1;
+    private int                           lastTestcaseResult                    = -1;
 
     private static boolean                testDescAvailable                     = false;
     private static boolean                afterInvocation                       = false;
@@ -95,7 +97,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     static {
         IS_TRACE_ENABLED = AtsSystemProperties.getPropertyAsBoolean(
-                AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION, false);
+                                                                    AtsSystemProperties.LOG__CACHE_EVENTS_SOURCE_LOCATION,
+                                                                    false);
         ATS_LOGGER = new AtsConsoleLogger(AtsTestngListener.class);
     }
 
@@ -329,8 +332,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
          * set the package name to 'default'
          */
         String packageName = (testClass.getPackage() != null)
-                             ? testClass.getPackage().getName()
-                             : "default";
+                                                              ? testClass.getPackage().getName()
+                                                              : "default";
 
         // clear the previously saved java file content, since a new suite is about to start
         javaFileContent = null;
@@ -455,14 +458,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         try {
             fileStream = testClass.getClassLoader()
                                   .getResourceAsStream(
-                                          javaFileName); // if source is also copied in classpath (i.e. next to class file)
+                                                       javaFileName); // if source is also copied in classpath (i.e. next to class file)
             if (fileStream != null) {
                 javaFileContent = IoUtils.streamToString(fileStream);
 
                 return;
             } else {
                 sourceFolderLocation = AtsSystemProperties.getPropertyAsString(
-                        AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
+                                                                               AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
                 if (sourceFolderLocation == null) {
                     Map<String, String> envMap = System.getenv();
                     sourceFolderLocation = envMap.get(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION);
@@ -475,11 +478,11 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                         if (!testDescAvailable) {
                             URL testClassPath = testClass.getClassLoader()
                                                          .getResource(
-                                                                 "."); // this could be null when failsafe maven plugin is used
+                                                                      "."); // this could be null when failsafe maven plugin is used
                             if (testClassPath == null) {
                                 testDescAvailable = true;
                                 logger.info(
-                                        "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. ");
+                                            "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. ");
 
                                 return;
                             }
@@ -547,7 +550,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         try {
             reader = new BufferedReader(new StringReader(javaFileContent));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ( (line = reader.readLine()) != null) {
                 m = p.matcher(line);
                 if (m.matches()) {
                     // method found
@@ -769,9 +772,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         List<ITestResult> failedConfigurations = Arrays.asList(context.getFailedConfigurations()
                                                                       .getAllResults()
                                                                       .toArray(
-                                                                              new ITestResult[context.getFailedConfigurations()
-                                                                                                     .getAllResults()
-                                                                                                     .size()]));
+                                                                               new ITestResult[context.getFailedConfigurations()
+                                                                                                      .getAllResults()
+                                                                                                      .size()]));
         for (ITestResult failedResult : failedConfigurations) {
             if (failedResult.getThrowable() != null) {
                 logger.fatal("Configuration failed!", failedResult.getThrowable());
@@ -800,7 +803,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private void logCondition( IInvokedMethod method, ITestResult testResult, String condition ) {
 
-        logger.info(condition + " '" + testResult.getTestClass().getName() + "@" + method.getTestMethod().getMethodName() + "'");
+        logger.info(condition + " '" + testResult.getTestClass().getName() + "@"
+                    + method.getTestMethod().getMethodName() + "'");
     }
 
     private void handleBeforeSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
@@ -822,9 +826,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             } else if (!currentSuiteName.equals(testResult.getTestClass()
                                                           .getRealClass()
                                                           .getSimpleName())) {
-                endSuite(); // end previously started suite
-                startSuite(testResult); // start new suite
-             }
+                                                              endSuite(); // end previously started suite
+                                                              startSuite(testResult); // start new suite
+                                                          }
             logCondition(method, testResult, MSG__TEST_START);
         } else {
             logCondition(method, testResult, MSG__TEST_END);
@@ -853,9 +857,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                                                           .getRealClass()
                                                           .getSimpleName())) {
 
-                endSuite(); // end previously started suite
-                startSuite(testResult); // start new suite
-            }
+                                                              endSuite(); // end previously started suite
+                                                              startSuite(testResult); // start new suite
+                                                          }
 
             if (currentTestcaseName == null) {
 
@@ -928,8 +932,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 // should not happen, as before reaching this part of the code, a testcase has to be ended
                 // but, just in case, throw an Exception
                 throw new RuntimeException(
-                        "It seems that there is no previously ended testcase. Last testcase result is '"
-                        + -1 + "', which is not a valid TestcaseResult value");
+                                           "It seems that there is no previously ended testcase. Last testcase result is '"
+                                           + -1 + "', which is not a valid TestcaseResult value");
             }
 
             if (testResult.getStatus() == ITestResult.FAILURE) {
@@ -1029,9 +1033,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                                                           .getRealClass()
                                                           .getSimpleName())) {
 
-                endSuite(); // end previously started suite
-                startSuite(testResult); // start new suite
-            }
+                                                              endSuite(); // end previously started suite
+                                                              startSuite(testResult); // start new suite
+                                                          }
 
             if (currentTestcaseName == null) {
 

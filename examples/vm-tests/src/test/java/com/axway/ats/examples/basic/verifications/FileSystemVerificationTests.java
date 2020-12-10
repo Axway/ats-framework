@@ -74,7 +74,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
     /**
      * Prior to each test we make sure we have the folder we worked with
      * in same state
-
+    
      */
 
     @BeforeMethod
@@ -102,7 +102,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
     /**
      * The verification will success on the very first try as the file exists
-
+    
      */
 
     @Test
@@ -120,7 +120,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
     /**
      * The verification will success on the very first try as the directory exists
-
+    
      */
 
     @Test
@@ -139,7 +139,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
      * and has all attributes as specified.
      *
      * In reality you will probably not need to check so many attributes.
-
+    
      */
 
     @Test
@@ -190,7 +190,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
      * In this test a background thread keeps adding bytes to the file every 1000 ms
      * and eventually the verification succeeds.
      * The background thread in this example mimics the behavior of the real tested application.
-
+    
      */
 
     @Test
@@ -224,7 +224,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
      * In this test a background thread keeps adding bytes to the file every 1000 ms
      * and eventually the verification succeeds.
      * The background thread in this example mimics the behavior of the real tested application.
-
+    
      */
 
     @Test
@@ -253,22 +253,20 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
         fsv.checkMd5(expectedMd5);
 
-
-
         /*
-
+        
          * OR specify the expected MD5 by providing another file to extract the MD5 from.
-
+        
          * Usually when doing file transfers, it is convenient to point here to the source file,
-
+        
          * its MD5 is calculated and used for the verification on the target file.
-
+        
          *
-
+        
          * Note that we give here null for first parameter - this means the source file is on the local host.
-
+        
          * If it is on another host, you need to provide here the ATS Agent address.
-
+        
          */
 
         // fsv.checkMd5( null, tempFile );
@@ -316,7 +314,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
     /**
      * Helper method used to create a file using a background thread.
      * This way the main thread is not blocked and the verification works as expected.
-
+    
      */
 
     private void createFileInBackground( final String fileToCreate, final String content ) {
@@ -349,8 +347,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
                     }
 
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
 
             }
 
@@ -361,7 +358,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
     /**
      * Helper method used to remove a file using a background thread.
      * This way the main thread is not blocked and the verification works as expected.
-
+    
      */
 
     private void removeFileInBackground( final String fileToRemove ) {
@@ -382,8 +379,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
                     fileOperations.deleteFile(fileToRemove);
 
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
 
             }
 
@@ -394,7 +390,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
     /**
      * Helper method used to remove a folder using a background thread.
      * This way the main thread is not blocked and the verification works as expected.
-
+    
      */
 
     private void removeDirectoryInBackground( final String directoryToRemove ) {
@@ -415,8 +411,7 @@ public class FileSystemVerificationTests extends BaseTestClass {
 
                     fileOperations.deleteDirectory(directoryToRemove);
 
-                } catch (InterruptedException e) {
-                }
+                } catch (InterruptedException e) {}
 
             }
 
