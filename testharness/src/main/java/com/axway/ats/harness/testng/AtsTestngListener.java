@@ -62,17 +62,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /** Skip checking whether ActiveDbAppender is attached.
      *  This is done in order to enable execution of tests when that appender is not attached/presented
      * */
-    private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
+    private static final AtsDbLogger      logger                                = AtsDbLogger.getLogger("com.axway.ats",
+                                                                                                        true);
 
-    private static final String MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
-    private static final String MSG__TEST_FAILED                      = "[TestNG]: TEST FAILED";
-    private static final String MSG__TEST_START                       = "[TESTNG]: Start:";
-    private static final String MSG__TEST_END                         = "[TESTNG]: End:";
-    private static final String MSG__TEST_SKIPPED_DEPENDENCY          = "[TestNG]: TEST SKIPPED due to dependency failure";
-    private static final String MSG__TEST_SKIPPED_CONFIGURATION       = "[TestNG]: TEST SKIPPED due to configuration failure";
-    private static final String MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
-
-    private final String JAVA_FILE_EXTENSION = ".java";
+    private static final String           MSG__TEST_PASSED                      = "[TestNG]: TEST PASSED";
+    private static final String           MSG__TEST_FAILED                      = "[TestNG]: TEST FAILED";
+    private static final String           MSG__TEST_START                       = "[TESTNG]: Start";
+    private static final String           MSG__TEST_END                         = "[TESTNG]: End";
+    private static final String           MSG__TEST_SKIPPED_DEPENDENCY          = "[TestNG]: TEST SKIPPED due to dependency failure";
+    private static final String           MSG__TEST_SKIPPED_CONFIGURATION       = "[TestNG]: TEST SKIPPED due to configuration failure";
+    private static final String           MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
 
     private String javaFileContent;
     private String projectSourcesFolder;
@@ -85,8 +84,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     /* keeps track of the test result for the last ended testcase */
     private int lastTestcaseResult = -1;
 
-    private static boolean testDescAvailable = false;
-    private static boolean afterInvocation   = false;
+    private static boolean                testDescAvailable                     = false;
+    private static boolean                afterInvocation                       = false;
 
     /**
      * Whether traces for listener's run events are enabled. Enabled via {@link AtsSystemProperties#LOG__CACHE_EVENTS_SOURCE_LOCATION}
@@ -801,9 +800,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private void logCondition( IInvokedMethod method, ITestResult testResult, String condition ) {
 
-        logger.info(
-                condition + testResult.getTestClass().getRealClass() + "@" + method.getTestMethod()
-                                                                                   .getMethodName() + "'");
+        logger.info(condition + " '" + testResult.getTestClass().getName() + "@" + method.getTestMethod().getMethodName() + "'");
     }
 
     private void handleBeforeSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
@@ -827,7 +824,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                                                           .getSimpleName())) {
                 endSuite(); // end previously started suite
                 startSuite(testResult); // start new suite
-            }
+             }
             logCondition(method, testResult, MSG__TEST_START);
         } else {
             logCondition(method, testResult, MSG__TEST_END);
