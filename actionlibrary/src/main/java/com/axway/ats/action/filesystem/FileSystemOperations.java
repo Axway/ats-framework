@@ -508,7 +508,7 @@ public class FileSystemOperations {
      * Copies the contents of a file from the local host (Test Executor) to a new file on the atsAgent host
      *
      * @param fromFile the source file to copy
-     * @param toFile the destination file to copy to. Absolute path is expected
+     * @param toFile the destination file name path (not just the directory) to copy to. Absolute path is expected
      */
     @PublicAtsApi
     public void copyFileTo( @Validate( name = "fromFile", type = ValidationType.STRING_NOT_EMPTY ) String fromFile,

@@ -100,30 +100,25 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class LocalFileSystemOperations implements IFileSystemOperations {
 
-    private static final Logger log = Logger.getLogger(LocalFileSystemOperations.class);
-
-    static final Charset DEFAULT_CHARSET = Charset.forName("UTF-8");
-
-    //  line-terminator chars
-    private static final byte LINE_TERM_LF = '\n';
-    private static final byte LINE_TERM_CR = '\r';
-
-    //line separator for ASCII mode (content is normalized to Windows CRLF)
-    private static final String NORM_LINESEP = "\r\n";
-
+    static final         Charset DEFAULT_CHARSET                      = StandardCharsets.UTF_8;
     //file transfer socket commands (during file/directory copy)
-    static final String FILE_COPY_SOCKET_COMMAND             = "file";
-    static final String DIR_CREATE_SOCKET_COMMAND            = "dir";
-    static final int    INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                             // used for file/dir command and  file name length
-
+    static final         String  FILE_COPY_SOCKET_COMMAND             = "file";
+    static final         String  DIR_CREATE_SOCKET_COMMAND            = "dir";
+    static final         int     INTERNAL_SOCKET_PARAMETER_MAX_LENGTH = 1024;                                             // used for file/dir command and  file name length
     //read buffer
-    static final int READ_BUFFER_SIZE = 16384;
-
-    static final int FILE_TRANSFER_BUFFER_SIZE = 512 * 1024;
-    static final int FILE_TRANSFER_TIMEOUT     = 60 * 1000;
-
+    static final         int     READ_BUFFER_SIZE                     = 16384;
+    static final         int     FILE_TRANSFER_BUFFER_SIZE            = 512 * 1024;
+    static final         int     FILE_TRANSFER_TIMEOUT                = 60 * 1000;
+    private static final Logger  log                                  = Logger.getLogger(
+            LocalFileSystemOperations.class);
+    //  line-terminator chars
+    private static final byte    LINE_TERM_LF                         = '\n';
+    private static final byte    LINE_TERM_CR                         = '\r';
+    //line separator for ASCII mode (content is normalized to Windows CRLF)
+    private static final String  NORM_LINESEP                         = "\r\n";
     // file size threshold after which a warning is issued for too-big file and that problems might arise
-    private static final int FILE_SIZE_FOR_WARNING = 10 * 1024 * 1024;                                 // 10 MB
+    private static final int     FILE_SIZE_FOR_WARNING                =
+            10 * 1024 * 1024;                                 // 10 MB
 
     /**
      * The ASCII decimal code of the character at the beginning of the allowed
@@ -135,26 +130,24 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * The ASCII decimal code of the character at the end of the allowed
      * range for generated file content
      */
-    private static final int END_CHARACTER_CODE_DECIMAL = 122;
-
-    /**
-     * The type of the local OS
-     */
-    private final OperatingSystemType osType;
-
+    private static final int                              END_CHARACTER_CODE_DECIMAL = 122;
     /**
      * Random generator used by the createFile and createBinaryFile
      */
-    private static final Random randomGenerator = new Random();
-
+    private static final Random                           randomGenerator            = new Random();
+    private static final Map<String, FileLock>            lockedFiles                = new HashMap<String, FileLock>();
+    /**
+     * The type of the local OS
+     */
+    private final        OperatingSystemType              osType;
     // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs.
     // Instance should be Hashtable to synchronize access operations;
-    private Map<Integer, FileTransferStatus> fileTransferStates = new Hashtable<Integer, FileTransferStatus>();
-
-    private static Map<String, FileLock> lockedFiles = new HashMap<String, FileLock>();
-
-    private Integer copyFileStartPort;
-    private Integer copyFileEndPort;
+    private final        Map<Integer, FileTransferStatus> fileTransferStates         = new Hashtable<Integer, FileTransferStatus>();
+    // One time warning sent to the user if non recommended relative
+    // path is used for construction of the destination file path
+    private              boolean                          firstTimeWarn              = false;
+    private              Integer                          copyFileStartPort;
+    private              Integer                          copyFileEndPort;
 
     /**
      * Constructor
@@ -526,12 +519,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * Send directory contents to another machine
      *
      * @param fromDirName the source directory name
-     * @param toDirName the destination directory name
-     * @param toHost the destination machine host address
-     * @param toPort the destination machine port
+     * @param toDirName   the destination directory name
+     * @param toHost      the destination machine host address
+     * @param toPort      the destination machine port
      * @param isRecursive whether to send content recursively or not
-     * @param failOnError set to true if you want to be thrown an exception, 
-     *           if there is still a process writing in the file that is being copied 
+     * @param failOnError set to true if you want to be thrown an exception,
+     *                    if there is still a process writing in the file that is being copied
      * @throws FileSystemOperationException
      */
     public void sendDirectoryTo(
@@ -589,11 +582,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * Send file contents to another machine
      *
      * @param fromFileName the source file name
-     * @param toFileName the destination file name
-     * @param toHost the destination host address
-     * @param toPort the destination port
-     * @param failOnError set to true if you want to be thrown an exception, 
-     * if there is still a process writing in the file that is being copied
+     * @param toFileName   the destination file name (Not a directory)
+     * @param toHost       the destination host address
+     * @param toPort       the destination port
+     * @param failOnError  set to true if you want to be thrown an exception,
+     *                     if there is still a process writing in the file that is being copied
      * @throws FileSystemOperationException
      */
     public void sendFileTo(
@@ -860,8 +853,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * Open file transfer socket for sending specific file
      *
      * @param nameOfFileToSend name of local (source) file name
-     * @param targetFileName destination file name
-     * @param failOnError whether we should fail if file is modified during reading and sending
+     * @param targetFileName   destination file name
+     * @param failOnError      whether we should fail if file is modified during reading and sending
      * @return the port where the socket is listening
      * @throws FileSystemOperationException
      */
@@ -1212,8 +1205,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                                                    ioe);
         }
 
-        return "0" + String.valueOf(ownerPermissions) + String.valueOf(groupPermissions)
-               + String.valueOf(othersPermissions);
+        return "0" + ownerPermissions + groupPermissions
+               + othersPermissions;
     }
 
     @Override
@@ -1553,7 +1546,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         }
         copyDirectoryInternal(sourceDir,
                               new File(toDirName),
-                              (String[]) null,
+                              null,
                               isRecursive,
                               failOnError);
     }
@@ -1743,10 +1736,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
     /**
      * Find lines in files which match given pattern
-     * @param searchPattern - pattern to match. <em>Note</em> that patter should match whole line so usually wildcards should be set in front and at the end
-     * @param isSimpleMode - when true we should support * and ? as wildcard characters
      *
-     * (non-Javadoc)
+     * @param searchPattern - pattern to match. <em>Note</em> that patter should match whole line so usually wildcards should be set in front and at the end
+     * @param isSimpleMode  - when true we should support * and ? as wildcard characters
+     *                      <p>
+     *                      (non-Javadoc)
      * @see com.axway.ats.core.filesystem.model.IFileSystemOperations#fileGrep(java.lang.String, java.lang.String, boolean)
      */
     @Override
@@ -1834,7 +1828,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     File fileToLock = new File(fileName);
                     @SuppressWarnings( "resource" )
                     //keep lock to the file
-                            FileChannel channel = new RandomAccessFile(fileToLock, "rw").getChannel();
+                    FileChannel channel = new RandomAccessFile(fileToLock, "rw").getChannel();
 
                     FileLock fileLock = channel.lock();
                     lockedFiles.put(fileName, fileLock);
@@ -1884,9 +1878,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      *
      * <b>NOTE:</b> If the file is replaced with the same byte content, then no change is assumed and 'null' is returned
      *
-     * @param fileName file name
+     * @param fileName         file name
      * @param fromBytePosition byte offset. Example: for already read 100 bytes next method call is expected to have 100 as value for this parameter
-     * return  {@link FileTailInfo} object
+     *                         return  {@link FileTailInfo} object
      */
     public FileTailInfo readFile(
             String fileName,
@@ -2009,7 +2003,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     /**
      * Digest a binary content with the digest provided
      *
-     * @param input the binary stream
+     * @param input  the binary stream
      * @param digest the digest to use
      * @throws IOException on error
      */
@@ -2030,7 +2024,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     /**
      * Generates a normalized (ASCII mode) content of the given stream and updates the provided digest with it.
      *
-     * @param input the binary stream
+     * @param input  the binary stream
      * @param digest the digest to use
      * @throws IOException on error
      */
@@ -2087,9 +2081,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
-     * @param userId user id
-     * @param groupId group id
+     * @param userId   user id
+     * @param groupId  group id
      * @param filename the file name
      * @throws FileSystemOperationException
      */
@@ -2101,7 +2094,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
         filename = IoUtils.normalizeFilePath(filename, osType);
         String[] command = new String[]{ "/bin/sh",
                                          "-c",
-                                         "chown " + String.valueOf(userId) + ":" + String.valueOf(groupId)
+                                         "chown " + userId + ":" + groupId
                                          + " '" + filename + "'" };
 
         String[] result = executeExternalProcess(command);
@@ -2113,7 +2106,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
      * @param filename the file name
      * @return the file user id
      * @throws FileSystemOperationException
@@ -2132,7 +2124,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
      * @param filename the file name
      * @return the file owner
      * @throws FileSystemOperationException
@@ -2152,7 +2143,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
      * @param filename file name
      * @return the file group id
      * @throws FileSystemOperationException
@@ -2171,7 +2161,6 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
      * @param filename the file name
      * @return the file group name
      * @throws FileSystemOperationException
@@ -2193,12 +2182,13 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
     /**
      * Copy directory
-     * @param from source directory to copy from.
-     * @param to directory destination.
-     * @param filter array of names not to copy.
+     *
+     * @param from        source directory to copy from.
+     * @param to          directory destination.
+     * @param filter      array of names not to copy.
      * @param isRecursive should sub directories be copied too
      * @param failOnError set to true if you want to be thrown an exception,
-     * if there is still a process writing in the file that is being copied
+     *                    if there is still a process writing in the file that is being copied
      * @throws FileSystemOperationException
      */
     private void copyDirectoryInternal(
@@ -2313,19 +2303,17 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 }
                 break;
             default:
-                ;
         }
     }
 
     /**
-     *
-     * @param files file list
-     * @param fromDirName the source directory name
-     * @param toDirName the destination directory name
+     * @param files        file list
+     * @param fromDirName  the source directory name
+     * @param toDirName    the destination directory name
      * @param outputStream the output stream
-     * @param isRecursive whether to send files/folders recursively or not
-     * @param failOnError set to true if you want to be thrown an exception,
-     * if there is still a process writing in the file that is being copied
+     * @param isRecursive  whether to send files/folders recursively or not
+     * @param failOnError  set to true if you want to be thrown an exception,
+     *                     if there is still a process writing in the file that is being copied
      * @throws FileDoesNotExistException
      * @throws IOException
      */
@@ -2380,12 +2368,11 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     *
-     * @param file the file to send
-     * @param toFileName the destination file name
+     * @param file         the file to send
+     * @param toFileName   the destination file name
      * @param outputStream the output stream
-     * @param failOnError set to true if you want to be thrown an exception,
-     * if there is still a process writing in the file that is being copied
+     * @param failOnError  set to true if you want to be thrown an exception,
+     *                     if there is still a process writing in the file that is being copied
      * @throws IOException
      */
     private void sendFileToSocketStream(
@@ -2479,8 +2466,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     /**
      * Get the files in a folder which match the given {@link FileFilter}
      *
-     * @param startLocation the start location in which to look
-     * @param searchFilter the search filter to apply
+     * @param startLocation   the start location in which to look
+     * @param searchFilter    the search filter to apply
      * @param recursiveSearch
      * @return list of matching files
      */
@@ -2521,63 +2508,9 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * Class for filtering file names based on a pattern
-     */
-    private static class FileNameSearchFilter implements FileFilter {
-
-        private String  searchPattern;
-        private boolean isRegex;
-        private boolean acceptDirectories;
-
-        private FileNameSearchFilter( String searchPattern,
-                                      boolean isRegex,
-                                      boolean acceptDirectories ) {
-
-            this.searchPattern = searchPattern;
-            this.isRegex = isRegex;
-            this.acceptDirectories = acceptDirectories;
-        }
-
-        /* (non-Javadoc)
-         * @see java.io.FileFilter#accept(java.io.File)
-         */
-        public boolean accept(
-                File pathname ) {
-
-            boolean fileMatches = false;
-
-            if (pathname.isFile() || acceptDirectories) {
-                if ((isRegex && pathname.getName().matches(searchPattern))
-                    || (!isRegex && pathname.getName().equals(searchPattern))) {
-
-                    fileMatches = true;
-                }
-            }
-            return fileMatches;
-        }
-    }
-
-    /**
-     * File transfer status holder<br>
-     * Used for waiting the file transfer to complete<br>
-     * <br>
-     * <b>NOTE</b>: We can't use {@link Boolean} instead of this class, because in some moment we have to
-     * change the boolean value, but {@link Boolean} is immutable and we also need to use the same object,
-     * because we are synchronizing on it.
-     */
-    class FileTransferStatus {
-
-        boolean   finished = false;
-        /**
-         * Any exception that might be caught in the file/dir reading thread.
-         */
-        Exception transferException;
-    }
-
-    /**
      * Unzip file to local or remote machine. If the machine is UNIX-like it will preserve the permissions
      *
-     * @param zipFilePath the zip file path
+     * @param zipFilePath   the zip file path
      * @param outputDirPath output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
@@ -2637,7 +2570,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      * If the machine is UNIX-like it will preserve the permissions
      *
      * @param archiveFilePath the archive file path
-     * @param outputDirPath output directory. The directory will be created if it does not exist
+     * @param outputDirPath   output directory. The directory will be created if it does not exist
      * @throws FileSystemOperationException
      */
     @Override
@@ -2894,28 +2827,64 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     }
 
     /**
-     * This is method for internal use only.
-     * Currently used on the agent when copying files from the executor
-     *
-     * @param srcFileName the file name without path, existing on the executor
-     * @param dstFilePath the target file path - desired file location (directory or directory + file name)
-     *
-     * @return full file path on the agent, used for file copy operations
-     * */
-    public String constructDestinationFilePath(
-            String srcFileName,
-            String dstFilePath ) throws Exception {
+     * Receives path and converts slashes to OS type or prepends agent home dir if path is relative if needed
+     * @param dstFilePath path to destination file possibly relative
+     * @return normalized absolute path ready for further use
+     */
+    private String generateTargetPath( String dstFilePath ) {
 
-        // workaround for relative file name w/o any path. Otherwise - File.getParentFile() returns null and NPE occurs
-        if (!dstFilePath.contains("\\") && !dstFilePath.contains("/")) {
-            dstFilePath = "." + File.separator + dstFilePath;
+        //  Replacing slashes in the path if they do not correspond to the target OS type
+        if ((osType == OperatingSystemType.LINUX && dstFilePath.contains("\\")) ||
+            osType == OperatingSystemType.WINDOWS && dstFilePath.contains("/")) {
+
+            dstFilePath = IoUtils.normalizeFilePath(dstFilePath);
         }
-        File dstFile = new File(dstFilePath);
+        File destinationFile = new File(dstFilePath);
 
+        // When path is not absolute agent home directory is appended to destination file path if it exists
+        if (!destinationFile.isAbsolute()) {
+            String path = System.getProperty(AtsSystemProperties.AGENT_HOME_FOLDER);
+            //boolean warning
+            if (!firstTimeWarn) {
+                firstTimeWarn = true;
+                log.warn("The provided path '" + destinationFile
+                         + "' is relative which is not recommended thus agent home directory '"
+                         + path + "' will be prepended to the destination file path");
+            }
+
+            //if agent home directory is available prepend it with the appropriate slash between them
+            if (path != null) {
+                dstFilePath = path + File.separator + dstFilePath;
+            } else {
+
+                log.warn("Unsupported case. Relative path is passed and agent home system property is not found.");
+            }
+        }
+
+        return dstFilePath;
+    }
+
+    /**
+     * Verifies whether directories and files exists and whether they are writeable
+     * @param srcFileName path source of the file to be copied
+     * @param dstFilePath destination path to where the file is to be copied
+     * @return the verified destination path which is ready for the copied file
+     * @throws FileNotFoundException if the destination file or directory does not exist
+     */
+    private String verifyTargetPath( String srcFileName, String dstFilePath ) throws FileNotFoundException {
+
+        File dstFile = new File(dstFilePath);
+        //add test with existing file
         // check if file exists
         if (dstFile.exists()) {
             // check if dstFile is indeed a File
             if (dstFile.isFile()) {
+                //Checks whether the user has specified the path end as a directory rather than a file
+                if (dstFilePath.endsWith(File.separator)) {
+                    throw new IllegalArgumentException(
+                            "Failed to access " + dstFilePath + ": Not a directory, file with such name exists "
+                            + "remove last separator if it is the desired change");
+                }
                 log.debug(" will overwrite '" + dstFilePath + "'");
                 return dstFilePath;
             } else if (dstFile.isDirectory()) {// check if dstFile is a directory
@@ -2942,5 +2911,76 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                 }
             }
         }
+    }
+
+    /**
+     * This is method for internal use only.
+     * Used exclusively on the agent side when copying files from the local host (Test Executor) to the atsAgent host
+     *
+     * @param srcFileName the file name without path, existing on the executor
+     * @param dstFilePath the target file path - desired file location (directory or directory + file name)
+     * @return full file path on the agent, used for file copy operations
+     */
+    public String constructDestinationFilePath(
+            String srcFileName,
+            String dstFilePath ) throws Exception {
+
+        dstFilePath = generateTargetPath(dstFilePath);
+
+        return verifyTargetPath(srcFileName, dstFilePath);
+    }
+
+    /**
+     * Class for filtering file names based on a pattern
+     */
+    private static class FileNameSearchFilter implements FileFilter {
+
+        private final String  searchPattern;
+        private final boolean isRegex;
+        private final boolean acceptDirectories;
+
+        private FileNameSearchFilter( String searchPattern,
+                                      boolean isRegex,
+                                      boolean acceptDirectories ) {
+
+            this.searchPattern = searchPattern;
+            this.isRegex = isRegex;
+            this.acceptDirectories = acceptDirectories;
+        }
+
+        /* (non-Javadoc)
+         * @see java.io.FileFilter#accept(java.io.File)
+         */
+        public boolean accept(
+                File pathname ) {
+
+            boolean fileMatches = false;
+
+            if (pathname.isFile() || acceptDirectories) {
+                if ((isRegex && pathname.getName().matches(searchPattern))
+                    || (!isRegex && pathname.getName().equals(searchPattern))) {
+
+                    fileMatches = true;
+                }
+            }
+            return fileMatches;
+        }
+    }
+
+    /**
+     * File transfer status holder<br>
+     * Used for waiting the file transfer to complete<br>
+     * <br>
+     * <b>NOTE</b>: We can't use {@link Boolean} instead of this class, because in some moment we have to
+     * change the boolean value, but {@link Boolean} is immutable and we also need to use the same object,
+     * because we are synchronizing on it.
+     */
+    class FileTransferStatus {
+
+        boolean   finished = false;
+        /**
+         * Any exception that might be caught in the file/dir reading thread.
+         */
+        Exception transferException;
     }
 }

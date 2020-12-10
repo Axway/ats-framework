@@ -791,7 +791,7 @@ public class FileSystemVerification extends VerificationSkeleton {
 
         // set the second highest priority for this rule - if the folder path is correct the second most
         // important thing is to check if the entity is a folder
-        FileFolderRule rule = new FileFolderRule(false, "checkIsFile", true, Integer.MIN_VALUE);
+        FileFolderRule rule = new FileFolderRule(false, "checkIsDirectory", true, Integer.MIN_VALUE);
         rootRule.addRule(rule);
     }
 }
