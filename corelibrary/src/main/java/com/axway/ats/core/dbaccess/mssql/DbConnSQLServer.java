@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import javax.management.ReflectionException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -33,7 +32,6 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.log.AtsConsoleLogger;
-import com.axway.ats.core.reflect.ReflectionUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 
@@ -42,14 +40,14 @@ import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
  *
  * <p>Connection-related properties:</p>
  *
- * <p>The way to configure jdbc driver is via <strong>com.axway.automation.ats.logdbdriver</strong> system property.
- * Possible values:
+ * <p>The way to configure JDBC driver is via the custom properties argument to the constructor via the {@link DbKeys#DRIVER} property
+ * Possible values (see more in {@link DbKeys}):
  * <ul>
  *  <li>"JTDS" - default</li>
  *  <li>"JNetDirect" - to use JNetDirect's JSQLConnect driver</li>
- *  <li>"MSSQL" - to use Official Microsoft SQL Server driver (Note that additional Maven dependency is needed)</li>
+ *  <li>"MSSQL" - to use Official Microsoft SQL Server driver</li>
  * </ul>
- * <strong>Note</strong> that both MSSQL and JNetDirect have to be added to the class path if you want to use them. ATS does not include them by default
+ * <strong>Note</strong> that JNetDirect have to be added to the class path if you want to use it. ATS does not include it by default
  * </p>
  *
  */
@@ -73,14 +71,14 @@ public class DbConnSQLServer extends DbConnection {
     private static final String           JDBC_DATASOURCE_CLASS_KEY             = "com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class";
 
     // jTDS driver settings which are used by default
-    private static final String           DEFAULT_JDBC_DRIVER_PREFIX            = "jdbc:jtds:sqlserver://";
-    private static final String           DEFAULT_JDBC_DRIVER_CLASS_NAME        = "net.sourceforge.jtds.jdbc.Driver";                                  // JNetDirect com.jnetdirect.jsql.JSQLDriver
-    private static final String           DEFAULT_JDBC_DATASOURCE_CLASS_NAME    = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
-    // JNetDirect driver settings which are used by default
+    private static final String           JTDS_JDBC_DRIVER_PREFIX               = "jdbc:jtds:sqlserver://";
+    private static final String           JTDS_JDBC_DRIVER_CLASS_NAME           = "net.sourceforge.jtds.jdbc.Driver";
+    private static final String           JTDS_JDBC_DATASOURCE_CLASS_NAME       = "net.sourceforge.jtds.jdbcx.JtdsDataSource";
+    // JNetDirect driver settings
     private static final String           JNETDIRECT_JDBC_DRIVER_PREFIX         = "jdbc:JSQLConnect://";
-    private static final String           JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";                                    // JNetDirect com.jnetdirect.jsql.JSQLDriver
+    private static final String           JNETDIRECT_JDBC_DRIVER_CLASS_NAME     = "com.jnetdirect.jsql.JSQLDriver";
     private static final String           JNETDIRECT_JDBC_DATASOURCE_CLASS_NAME = "com.jnetdirect.jsql.JSQLPoolingDataSource";
-    // MSSQL driver settings which are used by default
+    // MSSQL driver settings
     private static final String           MSSQL_JDBC_DRIVER_PREFIX              = "jdbc:sqlserver://";
     private static final String           MSSQL_JDBC_DRIVER_CLASS_NAME          = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
     private static final String           MSSQL_JDBC_DATASOURCE_CLASS_NAME      = "com.microsoft.sqlserver.jdbc.SQLServerDataSource";
@@ -184,7 +182,7 @@ public class DbConnSQLServer extends DbConnection {
         if (!useSSL && db != null) {
             url.append("/").append(db);
         } else {
-            if (DEFAULT_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
+            if (JTDS_JDBC_DRIVER_PREFIX.equals(jdbcDriverPrefix)) {
                 if (db != null) {
                     url.append("/").append(db);
                 }
@@ -247,7 +245,7 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     public DataSource getDataSource() {
 
-        if (jdbcDataSourceClass.getName().equals(DEFAULT_JDBC_DATASOURCE_CLASS_NAME)) {
+        if (jdbcDataSourceClass.getName().equals(JTDS_JDBC_DATASOURCE_CLASS_NAME)) {
             // jTDS - default SQL server driver. By default we have it in class path
             // jTDS does not provide connection pool so make one using Apache Commons DBCP
             ds = new BasicDataSource();
@@ -373,7 +371,7 @@ public class DbConnSQLServer extends DbConnection {
     @Override
     protected void applyTimeout() {
 
-        if (jdbcDataSourceClass.getName().equals(DEFAULT_JDBC_DATASOURCE_CLASS_NAME)) {
+        if (jdbcDataSourceClass.getName().equals(JTDS_JDBC_DATASOURCE_CLASS_NAME)) {
             /**
              * JTDC uses connectTimeout, socketTimeout and loginTimeout
              * */
@@ -383,7 +381,7 @@ public class DbConnSQLServer extends DbConnection {
                 // no timeout was specified, use the one from the system property or the default one
                 this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
             }
-            
+
             if (this.timeout < 0) {
                 return;
             }
@@ -486,44 +484,121 @@ public class DbConnSQLServer extends DbConnection {
 
     /**
      * Get latest JDBC connection settings.
-     * Alternative for the logdbdriver property is to specify all three system properties:
-     *
-     * <p>The alternative is to specify manually all three needed properties:</p>
-     *
-     * <p>JDBC URL prefix system property <strong>com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix</strong> with possible values:
-     * <ul>
-     *  <li>"jdbc:jtds:sqlserver://" for jTDS</li>
-     *  <li>"jdbc:JSQLConnect://" for JSQLConnect </li>
-     * </ul>
-     * </p>
-     *
-     * <p>JDBC driver-related system property <strong>com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class</strong> with possible values:
-     * <ul>
-     *  <li>"net.sourceforge.jtds.jdbc.Driver" for jTDS</li>
-     *  <li>"com.jnetdirect.jsql.JSQLDriver" for JSQLConnect </li>
-     * </ul>
-     * </p>
-     *
-     * <p>DataSource system property <strong>com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class</strong> with possible values:
-     * <ul>
-     *  <li>"net.sourceforge.jtds.jdbcx.JtdsDataSource" for jTDS</li>
-     *  <li>"com.jnetdirect.jsql.JSQLPoolingDataSource" for JSQLConnect</li>
-     * </ul>
-     * </p>
-     *
      * <p>
-     * By default jTDS is used. If you want to use JSQLConnect you should add this
-     * to your Java VM invocation command line:<br>
-     * <code>
-     * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix=jdbc:JSQLConnect://
-     * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class=com.jnetdirect.jsql.JSQLDriver
-     * -Dcom.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class=com.jnetdirect.jsql.JSQLPoolingDataSource
-     * </code>
+     * The default driver is {@link DbKeys#SQL_SERVER_DRIVER_JTDS} (jTDS)<br> 
+     * If you want to use another driver, add {@link DbKeys#DRIVER} property to the custom properties, when invoking the constructor.<br><br>
+     * The available drivers are:<br>
+     * <ul>
+     * <li>{@link DbKeys#SQL_SERVER_DRIVER_JTDS}</li>
+     * <li>{@link DbKeys#SQL_SERVER_DRIVER_MICROSOFT}</li>
+     * </ul>
      * </p>
      */
     private void updateConnectionSettings() {
 
-        String value = System.getProperty(JDBC_DRIVER_VENDOR_KEY);
+        // load driver from custom properties
+        // set jTDS to be used as a fallback driver
+        String driver = MsSQLJDBCDriverVendor.JTDS.name(); // or DbKeys.SQL_SERVER_DRIVER_JTDS
+        if (this.customProperties != null) {
+            if (this.customProperties.containsKey(DbKeys.DRIVER)) {
+                // even if the value is null/empty, it will be used
+                String driverValueFromCustProps = (String) this.customProperties.get(DbKeys.DRIVER);
+                if (!StringUtils.isNullOrEmpty(driverValueFromCustProps)) {
+                    if (!driver.equals(driverValueFromCustProps)) {
+                        log.warn("Overriding DB driver for connection '" + this.getDescription() + "' from '" + driver
+                                 + "' to '" + driverValueFromCustProps + "'");
+                    }
+                } else {
+                    log.error("Illegal value for SQL Server JDBC driver found (" + driverValueFromCustProps
+                              + "). This will cause the connection to fail!");
+                }
+                driver = driverValueFromCustProps;
+            }
+        }
+
+        // load vendor enum value
+        MsSQLJDBCDriverVendor vendor = null;
+        try {
+            log.info("Setting DB driver to '" + driver + "' for connection '" + this.getDescription() + "'");
+            driver = driver.trim().toUpperCase();
+            vendor = MsSQLJDBCDriverVendor.valueOf(driver);
+        } catch (Exception e) {
+            StringBuilder sb = new StringBuilder();
+            for (MsSQLJDBCDriverVendor enumValue : MsSQLJDBCDriverVendor.values()) {
+                sb.append(enumValue.toString() + ",");
+            }
+            sb.delete(sb.length() - 1, sb.length()); // remove trailing comma
+            throw new DbException("Illegal value '" + driver
+                                  + "' is specified for Log DB driver. Supported are: " + sb.toString()
+                                  + ". No DB IO will be performed.", e);
+        }
+
+        String dataSourceClassName = null;
+        String className = null;
+        switch (vendor) {
+            case JTDS:
+                jdbcDriverPrefix = JTDS_JDBC_DRIVER_PREFIX;
+                className = JTDS_JDBC_DRIVER_CLASS_NAME;
+                dataSourceClassName = JTDS_JDBC_DATASOURCE_CLASS_NAME;
+                break;
+            case JNETDIRECT:
+                jdbcDriverPrefix = JNETDIRECT_JDBC_DRIVER_PREFIX;
+                className = JNETDIRECT_JDBC_DRIVER_CLASS_NAME;
+                dataSourceClassName = JNETDIRECT_JDBC_DRIVER_CLASS_NAME;
+                break;
+            case MSSQL:
+                jdbcDriverPrefix = MSSQL_JDBC_DRIVER_PREFIX;
+                className = MSSQL_JDBC_DRIVER_CLASS_NAME;
+                dataSourceClassName = MSSQL_JDBC_DATASOURCE_CLASS_NAME;
+                break;
+            default:
+                // not expected. Just in case if enum is updated w/o implementation here
+                throw new DbException("Not implemented support for MsSQL driver type "
+                                      + vendor.toString());
+        }
+
+        className = className.trim();
+        dataSourceClassName = dataSourceClassName.trim();
+
+        // load vendor classes
+        log.debug("MsSQL connection: Using JDBC driver prefix: " + jdbcDriverPrefix);
+        boolean isClassLoaded = loadClass(className); // check for availability
+        if (isClassLoaded) {
+            try {
+                jdbcDriverClass = (Class<? extends Driver>) Class.forName(className);
+            } catch (ClassNotFoundException e) {
+                log.error(e); // Not expected. Already checked in loadClass()
+            } catch (ClassCastException e) {
+                throw new DbException("Class with name '" + className
+                                      + "' is not a valid java.sql.Driver class");
+            }
+            log.debug("Using JDBC driver class: " + className);
+        } else {
+            throw new DbException("Could not load MsSQL JDBC driver class with name '" + className + "'");
+        }
+
+        isClassLoaded = loadClass(dataSourceClassName); // check for availability
+        if (isClassLoaded) {
+            try {
+                jdbcDataSourceClass = (Class<? extends DataSource>) Class.forName(dataSourceClassName);
+            } catch (ClassNotFoundException e) {
+                log.error(e); // Not expected. Already checked in loadClass()
+            } catch (ClassCastException e) {
+                throw new DbException("Class with name '" + dataSourceClassName
+                                      + "' is not a valid javax.sql.DataSource class");
+            }
+            log.debug("Using JDBC data source class: " + dataSourceClassName);
+        } else {
+            throw new DbException("Could not load MsSQL JDBC DataSource class with name '" + dataSourceClassName
+                                  + "'");
+        }
+
+    }
+
+    /*private void updateConnectionSettings() {
+    
+        // use jTDS as a fallback driver
+        String value = DbKeys.SQL_SERVER_DRIVER_JTDS;
         if (this.customProperties != null) {
             if (this.customProperties.containsKey(DbKeys.DRIVER)) {
                 // even if the value is null/empty, it will be used
@@ -537,7 +612,7 @@ public class DbConnSQLServer extends DbConnection {
                 value = driverValueFromCustProps;
             }
         }
-        MsSQLJDBCDriverVendor vendor = null;// MsSQLJDBCDriverVendor.JTDS; // default version
+        MsSQLJDBCDriverVendor vendor = null;
         if (!StringUtils.isNullOrEmpty(value)) {
             log.info("Setting DB driver to '" + value + "' for connection '" + this.getDescription() + "'");
             value = value.trim().toUpperCase();
@@ -551,13 +626,13 @@ public class DbConnSQLServer extends DbConnection {
                 sb.delete(sb.length() - 1, sb.length()); // remove trailing comma
                 throw new DbException("Illegal value '" + value
                                       + "' is specified for Log DB driver. Supported are: " + sb.toString()
-                                      + ". No DB logging will be performed.", e);
+                                      + ". No DB IO will be performed.", e);
             }
             switch (vendor) {
                 case JTDS:
-                    System.setProperty(JDBC_PREFIX_KEY, DEFAULT_JDBC_DRIVER_PREFIX);
-                    System.setProperty(JDBC_DRIVER_CLASS_KEY, DEFAULT_JDBC_DRIVER_CLASS_NAME);
-                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, DEFAULT_JDBC_DATASOURCE_CLASS_NAME);
+                    System.setProperty(JDBC_PREFIX_KEY, JTDS_JDBC_DRIVER_PREFIX);
+                    System.setProperty(JDBC_DRIVER_CLASS_KEY, JTDS_JDBC_DRIVER_CLASS_NAME);
+                    System.setProperty(JDBC_DATASOURCE_CLASS_KEY, JTDS_JDBC_DATASOURCE_CLASS_NAME);
                     break;
                 case JNETDIRECT:
                     System.setProperty(JDBC_PREFIX_KEY, JNETDIRECT_JDBC_DRIVER_PREFIX);
@@ -575,20 +650,20 @@ public class DbConnSQLServer extends DbConnection {
                                           + vendor.toString());
             }
         }
-
+    
         // alternative way if JDBC driver is not in enum - the 3 properties can be specified explicitely.
         // The class loading check is also here.
-
+    
         // JDBC prefix like "jdbc:jtds:sqlserver://" from URL jdbc:jtds:sqlserver://SERVER-NAME:port/DB-NAME
         value = System.getProperty(JDBC_PREFIX_KEY);
         if (value != null) {
             jdbcDriverPrefix = value.trim();
         }
         if (StringUtils.isNullOrEmpty(jdbcDriverPrefix)) { // including empty string after trim
-            jdbcDriverPrefix = DEFAULT_JDBC_DRIVER_PREFIX;
+            jdbcDriverPrefix = JTDS_JDBC_DRIVER_PREFIX;
         }
         log.debug("MsSQL connection: Using JDBC driver prefix: " + jdbcDriverPrefix);
-
+    
         // JDBC driver class
         value = System.getProperty(JDBC_DRIVER_CLASS_KEY);
         String className = null;
@@ -596,7 +671,7 @@ public class DbConnSQLServer extends DbConnection {
             className = value.trim();
         }
         if (StringUtils.isNullOrEmpty(className)) { // including empty string after trim
-            className = DEFAULT_JDBC_DRIVER_CLASS_NAME;
+            className = JTDS_JDBC_DRIVER_CLASS_NAME;
         }
         boolean isClassLoaded = loadClass(className); // check for availability
         if (isClassLoaded) {
@@ -612,7 +687,7 @@ public class DbConnSQLServer extends DbConnection {
         } else {
             throw new DbException("Could not load MsSQL JDBC driver class with name '" + className + "'");
         }
-
+    
         // JDBC DataSource class
         value = System.getProperty(JDBC_DATASOURCE_CLASS_KEY);
         className = null;
@@ -620,7 +695,7 @@ public class DbConnSQLServer extends DbConnection {
             className = value.trim();
         }
         if (StringUtils.isNullOrEmpty(className)) { // including empty string after trim
-            className = DEFAULT_JDBC_DATASOURCE_CLASS_NAME;
+            className = JTDS_JDBC_DATASOURCE_CLASS_NAME;
         }
         isClassLoaded = loadClass(className); // check for availability
         if (isClassLoaded) {
@@ -637,8 +712,8 @@ public class DbConnSQLServer extends DbConnection {
             throw new DbException("Could not load MsSQL JDBC DataSource class with name '" + className
                                   + "'");
         }
-
-    }
+    
+    }*/
 
     /**
      * Tries to load class passed as argument. Does not throw exception if not found.

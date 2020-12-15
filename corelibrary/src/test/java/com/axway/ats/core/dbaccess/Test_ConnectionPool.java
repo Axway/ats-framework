@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 Axway Software
+ * Copyright 2019-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,35 +19,42 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.BaseTest;
+import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
+import com.axway.ats.core.utils.ExceptionUtils;
 
 public class Test_ConnectionPool extends BaseTest {
-
-    @After
-    public void after() {
-
-        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_prefix", "");
-        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_driver_class", "");
-        System.setProperty("com.axway.automation.ats.core.dbaccess.mssql_jdbc_datasource_class", "");
-
-    }
 
     @Test
     public void checkDbConnSQLServerWithDifferentDrivers() throws NoSuchFieldException, SecurityException,
                                                            IllegalArgumentException, IllegalAccessException,
                                                            ClassNotFoundException, InstantiationException {
 
-        DbConnSQLServer jtdsDbConnSQLServerWithNullDriver = createDbConnSQLServer(null);
-        validateJtdsConnection(jtdsDbConnSQLServerWithNullDriver);
+        try {
+            DbConnSQLServer jtdsDbConnSQLServerWithNullDriver = createDbConnSQLServer(null);
+            validateJtdsConnection(jtdsDbConnSQLServerWithNullDriver);
+            obtainConnection(jtdsDbConnSQLServerWithNullDriver); // creates one new connection
+        } catch (DbException e) {
+            if (!ExceptionUtils.containsMessage("Illegal value 'null' is specified for Log DB driver", e)) {
+                throw e;
+            }
+        }
 
-        DbConnSQLServer jtdsDbConnSQLServerWithEmptyDriver = createDbConnSQLServer("");
-        validateJtdsConnection(jtdsDbConnSQLServerWithEmptyDriver);
+        try {
+            DbConnSQLServer jtdsDbConnSQLServerWithEmptyDriver = createDbConnSQLServer("");
+            validateJtdsConnection(jtdsDbConnSQLServerWithEmptyDriver);
+
+            obtainConnection(jtdsDbConnSQLServerWithEmptyDriver); // uses the already created one
+        } catch (DbException e) {
+            if (!ExceptionUtils.containsMessage("Illegal value '' is specified for Log DB driver", e)) {
+                throw e;
+            }
+        }
 
         DbConnSQLServer jtdsDbConnSQLServerWithJtdsDriver = createDbConnSQLServer(DbKeys.SQL_SERVER_DRIVER_JTDS);
         validateJtdsConnection(jtdsDbConnSQLServerWithJtdsDriver);
@@ -55,14 +62,12 @@ public class Test_ConnectionPool extends BaseTest {
         DbConnSQLServer mssqlDbConnSQLServer = createDbConnSQLServer(DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
         validateMssqlConnection(mssqlDbConnSQLServer);
 
-        obtainConnection(jtdsDbConnSQLServerWithNullDriver); // creates one new connection
-        obtainConnection(jtdsDbConnSQLServerWithEmptyDriver); // uses the already created one
         obtainConnection(jtdsDbConnSQLServerWithJtdsDriver); // creates second connection
         obtainConnection(mssqlDbConnSQLServer); // creates third connection
 
         int poolSize = ((Map) getFieldValue(ConnectionPool.class, "dataSourceMap")).size();
 
-        Assert.assertEquals(3, poolSize);
+        Assert.assertEquals(2, poolSize);
 
     }
 
@@ -104,17 +109,17 @@ public class Test_ConnectionPool extends BaseTest {
 
         // check driver class
         Class<?> expectedDriverClass = Class.forName((String) getFieldValue(connection,
-                                                                            "DEFAULT_JDBC_DRIVER_CLASS_NAME"));
+                                                                            "JTDS_JDBC_DRIVER_CLASS_NAME"));
         Class<?> actualDriverClass = (Class<?>) getFieldValue(connection, "jdbcDriverClass");
         Assert.assertEquals(expectedDriverClass, actualDriverClass);
         // check driver prefix
         String expectedDriverPrefix = (String) getFieldValue(connection,
-                                                             "DEFAULT_JDBC_DRIVER_PREFIX");
+                                                             "JTDS_JDBC_DRIVER_PREFIX");
         String actualDriverPrefix = (String) getFieldValue(connection, "jdbcDriverPrefix");
         Assert.assertEquals(expectedDriverPrefix, actualDriverPrefix);
         // check datasource class
         Class<?> expectedDataSourceClass = Class.forName((String) getFieldValue(connection,
-                                                                                "DEFAULT_JDBC_DATASOURCE_CLASS_NAME"));
+                                                                                "JTDS_JDBC_DATASOURCE_CLASS_NAME"));
         Class<?> actualDataSourceClass = (Class<?>) getFieldValue(connection, "jdbcDataSourceClass");
         Assert.assertEquals(expectedDataSourceClass, actualDataSourceClass);
 
