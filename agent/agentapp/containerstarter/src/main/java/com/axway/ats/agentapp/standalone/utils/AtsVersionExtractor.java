@@ -18,6 +18,7 @@ package com.axway.ats.agentapp.standalone.utils;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -56,17 +57,17 @@ public class AtsVersionExtractor {
             ZipEntry zipEntry = null;
             while ( (zipEntry = coreJarInputStream.getNextEntry()) != null) {
                 if (ATS_VERSION_FILE.equals(zipEntry.getName())) {
-                    
+
+                    // Could be used Properties for parsing if more values are expected in the future
                     byte[] bytes = new byte[100];
-                    ByteArrayOutputStream outStram = new ByteArrayOutputStream();
+                    ByteArrayOutputStream outStream = new ByteArrayOutputStream();
                     int bytesRead = 0;
 
                     do {
-                        outStram.write( bytes, 0, bytesRead );
-                        bytesRead = coreJarInputStream.read( bytes );
-                    } while( bytesRead > 0 );
-
-                    return new String(outStram.toByteArray(), "UTF-8");
+                        outStream.write(bytes, 0, bytesRead);
+                        bytesRead = coreJarInputStream.read(bytes);
+                    } while (bytesRead > 0);
+                    return new String(outStream.toByteArray(), StandardCharsets.UTF_8);
                 }
             }
         } finally {

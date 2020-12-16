@@ -200,7 +200,11 @@ public class ContainerStarter {
          * Then Jetty will see this folder does not exist and will use the folder
          * pointed by the java.io.tmpdir system property
          */
-        new File(jettyWorkDir).mkdir();
+        if (new File(jettyWorkDir).mkdir()) {
+            System.err.println("Could not create subdirectory work in directory '" + jettyWorkDir
+                               + "'. Check current user's permissions for this directory. Jetty will generate ist work "
+                               + "directory inside OS temp directory.");
+        }
 
         return jettyWorkDir;
     }
@@ -331,7 +335,6 @@ public class ContainerStarter {
     private static void addAppender() throws IOException {
 
         Map<Object, Object> variables = System.getProperties();
-        Level logLevel = Level.INFO;
         String pattern = (String) variables.get("logging.pattern");
         String agentPort = (String) variables.get("ats.agent.default.port");
         String agentSeverity = (String) variables.get("logging.severity");
@@ -363,6 +366,7 @@ public class ContainerStarter {
             DOMConfigurator.configure(fullPath.toString());
         }
 
+        Level logLevel = Level.INFO;
         // check agent logging severity and set the appropriate level
         if (agentSeverity != null) {
             if ("INFO".equalsIgnoreCase(agentSeverity)) {
@@ -474,11 +478,14 @@ public class ContainerStarter {
             appendMessage(systemInformation, "ATS version: '",
                           AtsVersionExtractor.getATSVersion(jettyHome + "/webapp/agentapp.war"));
         } catch (Exception e) {
+            log.warn("Could not parse ATS version. Agent will continue the start operation", e);
         }
         appendMessage(systemInformation, " os.name: '", System.getProperty("os.name"));
         appendMessage(systemInformation, " os.arch: '", System.getProperty("os.arch"));
         appendMessage(systemInformation, " java.version: '", System.getProperty("java.version"));
         appendMessage(systemInformation, " java.home: '", System.getProperty("java.home"));
+        appendMessage(systemInformation, " current directory: '", System.getProperty("user.dir"));
+        appendMessage(systemInformation, " current user name: '", System.getProperty("user.name"));
 
         List<String> ipList = new ArrayList<String>();
         for (InetAddress ip : getAllIPAddresses()) {
