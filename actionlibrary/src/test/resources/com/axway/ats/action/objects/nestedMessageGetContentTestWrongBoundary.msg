@@ -19,10 +19,10 @@ MIME-Version: 1.0
 To: test99@automator.domain
 Subject: Nested message
 Content-Type: multipart/mixed;
- boundary="------------0900050104006010207"
+ boundary="------------090005010403010906010207"
 
 This is a multi-part message in MIME format.
---------------090005010403010906010207
+---NON-EXISTING-BOUNDARY
 Content-Type: text/html; charset=ISO-8859-1
 Content-Transfer-Encoding: 7bit
 
@@ -37,7 +37,7 @@ Content-Transfer-Encoding: 7bit
   </body>
 </html>
 
---------------090005010403010906010207
+---NON-EXISTING-BOUNDARY
 Content-Type: message/rfc822;
  name="Message subject.eml"
 Content-Transfer-Encoding: 7bit
