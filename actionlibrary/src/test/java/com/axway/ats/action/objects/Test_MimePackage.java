@@ -30,6 +30,7 @@ import javax.mail.Session;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimePart;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -817,6 +818,38 @@ public class Test_MimePackage extends BaseTest {
         String contentHtml = mimePack.getHtmlTextBody();
         assertNull(contentHtml);
 
+    }
+
+    @Test
+    public void testGetExceptionCauseWithWrongMimeBoundary() throws Exception {
+
+        String nestedMailPath = Test_MimePackage.class.getResource("nestedMessageGetContentTestWrongBoundary.msg")
+                                                      .getPath();
+        try {
+            PackageLoader.loadMimePackageFromFile(nestedMailPath);
+        }
+        catch(PackageException e) {
+            String message = recurseCauses(e);
+            if (message.contains("Missing start boundary")) {
+                return;
+            } else {
+                throw new Exception("Test scenario threw a different exception "
+                                    + "to the one that was expected: " + e + " was thrown ");
+            }
+        }
+        Assert.fail("Exception was expected to be thrown");
+    }
+
+    private String recurseCauses( Throwable e ) {
+
+        StringBuilder buffer = new StringBuilder();
+
+        buffer.append(". CAUSE: ").append(e.getMessage());
+        if (e.getCause() != null) {
+            buffer.append(recurseCauses(e.getCause()));
+        }
+
+        return buffer.toString();
     }
 
 }
