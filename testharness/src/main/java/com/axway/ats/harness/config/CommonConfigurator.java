@@ -277,10 +277,12 @@ public final class CommonConfigurator extends AbstractConfigurator {
      * 
      * This is important for some ATS operations which need to know if some host is a local one or not. <br>
      * For example when copying a file to a remote host we will need to work with an ATS Agent located on that remote host. 
-     * But if we find this is a local host, we can simply use the available java classes for the copy process.
+     * But if we find this is a local host, we can simply use the available Java classes for work with the filesystem
+     * for the copy process.
      * 
-     * @param host host name or IP address
-     * @param isLocal whether this host should be treated as a local or remote one
+     * @param host host name or IP address. Note that currently this does not accept agent address (IP:port pair).
+     *             You should not provide port.
+     * @param isLocal whether this host should be treated as a local (<code>true</code>) or remote one
      */
     @PublicAtsApi
     public void setHostLocality( String host, boolean isLocal ) {
