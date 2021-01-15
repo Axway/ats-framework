@@ -25,10 +25,9 @@ import com.axway.ats.harness.config.CommonConfigurator;
  */
 public class AllInOneConfiguration {
 
-    private static AllInOneConfiguration instance;
-
     // Instance to the ATS common configurator.
     protected static CommonConfigurator configurator;
+    private static AllInOneConfiguration instance;
 
     private AllInOneConfiguration() {
 
@@ -93,9 +92,19 @@ public class AllInOneConfiguration {
         return configurator.getProperty("db.name");
     }
 
+    public String getBackupDatabaseName() {
+
+        return configurator.getProperty("db.name.backup");
+    }
+
     public String getDatabaseUser() {
 
         return configurator.getProperty("db.user");
+    }
+
+    public int getDbPort() {
+
+        return Integer.parseInt(configurator.getProperty("db.port"));
     }
 
     public String getRootDir() {
