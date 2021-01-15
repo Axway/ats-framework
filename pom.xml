@@ -264,6 +264,11 @@
                         <artifactId>maven-scm-provider-gitexe</artifactId>
                         <version>${org.apache.maven.scm}</version>
                     </dependency>
+                    <dependency>
+                        <groupId>org.apache.maven.scm</groupId>
+                        <artifactId>maven-scm-api</artifactId>
+                        <version>${org.apache.maven.scm}</version>
+                    </dependency>
                 </dependencies>
             </plugin>
             <plugin>
