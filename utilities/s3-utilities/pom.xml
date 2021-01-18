@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>com.axway.ats.framework.utilities</groupId>
 		<artifactId>ats-utilities</artifactId>
-		<version>4.0.8-SNAPSHOT</version>
+		<version>4.0.7-SNAPSHOT</version>
 	</parent>
 
 	<artifactId>ats-s3-utilities</artifactId>
