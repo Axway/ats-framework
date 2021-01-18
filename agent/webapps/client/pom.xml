@@ -35,7 +35,7 @@
                     <additionalJOption>-Xdoclint:none</additionalJOption>
                     <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
                     <failOnWarnings>false</failOnWarnings>
-                    <skip>true</skip> <!-- Do not generate javadoc for any of the classes in this module -->
+                    <skip>false</skip>
                 </configuration>
                 <executions>
                     <execution>
