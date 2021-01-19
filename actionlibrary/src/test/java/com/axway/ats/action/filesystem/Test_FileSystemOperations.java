@@ -294,6 +294,8 @@ public class Test_FileSystemOperations extends BaseTest {
 
         // setup expectations
         expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        expectNew(LocalFileSystemOperations.class).andReturn(localFSOperationsMock);
+        expect(localFSOperationsMock.doesFileExist(SOURCE_FILE_NAME_VALID)).andReturn(true);
         localFSOperationsMock.deleteFile(SOURCE_FILE_NAME_VALID);
 
         replayAll();
@@ -325,6 +327,8 @@ public class Test_FileSystemOperations extends BaseTest {
 
         // setup expectations
         expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        expectNew(RemoteFileSystemOperations.class, REMOTE_HOST_NAME_VALID).andReturn(remoteFSOperationsMock);
+        expect(remoteFSOperationsMock.doesFileExist(DESTINATION_FILE_NAME_VALID)).andReturn(true);
         remoteFSOperationsMock.deleteFile(DESTINATION_FILE_NAME_VALID);
 
         replayAll();
