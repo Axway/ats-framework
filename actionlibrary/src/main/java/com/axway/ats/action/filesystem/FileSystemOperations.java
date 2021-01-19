@@ -653,7 +653,7 @@ public class FileSystemOperations {
 
         } else {
             String message =
-                    "Nothing to delete since file '" + filePath + "'' does not exists " + getHostDescriptionSuffix();
+                    "Nothing to delete since file '" + filePath + "' does not exist " + getHostDescriptionSuffix();
             log.info(message);
         }
 
