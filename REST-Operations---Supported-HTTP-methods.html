@@ -25,7 +25,7 @@
      <div id="main-content" class="wiki-content group"> 
       <p>Following is a list with currently supported HTTP methods</p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-GETmethod">GET method</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-GETmethod">GET method</h1> 
       <p>GET is used to retrieve an already existing resource on the server without modifying it</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -37,9 +37,9 @@ RestResponse response = client.get();
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-POSTmethod">POST method</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-POSTmethod">POST method</h1> 
       <p>POST is used to create a new resource on the server</p> 
-      <h3 id="RESTOperations-SupportedHTTPmethods-POSTaform">POST a form</h3> 
+      <h3 id="RESTOperationsSupportedHTTPmethods-POSTaform">POST a form</h3> 
       <p>Post a form containing some information about some person:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -50,7 +50,7 @@ client.postForm( new RestForm().addParameter( "firstName", USER_FIRST_NAME )
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-SupportedHTTPmethods-POSTajavaobject">POST a java object</h3> 
+      <h3 id="RESTOperationsSupportedHTTPmethods-POSTajavaobject">POST a java object</h3> 
       <p>Post some java object:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -72,15 +72,15 @@ RestResponse response = client.postObject( person );
       <p>In the example above, Person is some particular class provided by you, not the ATS framework.</p> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-PUTmethod">PUT method</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-PUTmethod">PUT method</h1> 
       <p>PUT is used to update an already existing resource on the server</p> 
-      <h3 id="RESTOperations-SupportedHTTPmethods-PUTaform">PUT a form</h3> 
+      <h3 id="RESTOperationsSupportedHTTPmethods-PUTaform">PUT a form</h3> 
       <p>Equivalent to the POST form example, but use the <strong> <em>putForm</em> </strong> method instead</p> 
-      <h3 id="RESTOperations-SupportedHTTPmethods-PUTajavaobject">PUT a java object</h3> 
+      <h3 id="RESTOperationsSupportedHTTPmethods-PUTajavaobject">PUT a java object</h3> 
       <p>Equivalent to the POST object example, but use the <strong> <em>putObject</em> </strong> method instead</p> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-DELETEmethod">DELETE method</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-DELETEmethod">DELETE method</h1> 
       <p>DELETE is used to delete an already existing resource on the server.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -99,7 +99,7 @@ String responseBody = response.getBodyAsString();
       <p>Of course there are different ways of pointing the resource to delete, for example you can use a request parameter.</p> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-Anymethod">Any method</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-Anymethod">Any method</h1> 
       <p>There are other HTTP methods not supported by our REST client, there could be also some methods specific only to your server. Here is how you can proceed in such case:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -114,10 +114,10 @@ String responseBody = response.getBodyAsString();
 </pre> 
        </div> 
       </div> 
-      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" title="(smile)" src="http://techweb.axway.com/confluence/s/en_US/8100/a516614738a0811691ee4368be900fdd7a640552/_/images/icons/emoticons/smile.svg" alt="(smile)" border="0"></p> 
+      <p>In this case our server knows how to handle a method called KICK <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.svg" alt="(smile)"></p> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-SupportedHTTPmethods-Non-compliantmethodexecution">Non-compliant method execution</h1> 
+      <h1 id="RESTOperationsSupportedHTTPmethods-Non-compliantmethodexecution">Non-compliant method execution</h1> 
       <p>There are cases, where some method invocations are not compliant. Example of such method invocations are:</p> 
       <ul style="list-style-type: square;"> 
        <li><strong>PUT</strong> with null body 

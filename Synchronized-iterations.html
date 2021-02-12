@@ -24,10 +24,10 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Synchronizediterations-Introduction">Introduction</h1> 
-      <p>When you run your action queue for a long period of time, it happens that some threads are quicker than others and over period of time you see that the number of running threads is going down. Here is an example graph:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496551.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
-      <p>In order to avoid this, you can specify that you want to have each iteration of all threads to start at the same moment.<br> This means that the quicker threads will wait for slower ones to finish the current iteration and then, they will together start the next iteration.</p> 
-      <p>&nbsp;</p> 
+      <p>When you run your action queue for a long period of time, it happens that some threads are quicker than others and over a period of time you see that the number of running threads is going down. Here is an example graph:</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496551.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
+      <p>In order to avoid this, you can specify that you want to have each iteration of all threads to start at the same moment.<br>This means that the quicker threads will wait for slower ones to finish the current iteration and then, they will together start the next iteration.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Synchronizediterations-Synchronizingtheiterations">Synchronizing the iterations</h1> 
       <p>You need to use the <strong> <em>setUseSynchronizedIterations</em> </strong> method:</p> 
@@ -42,11 +42,11 @@ loader.setThreadingPattern( threadingPattern );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Synchronizediterations-Theresult">The result</h1> 
       <p>As you can see the user activity has changed significantly:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496552.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496546/119496552.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
       <p>No matter how many iterations will be completed and how many threads will run, they will always start together on each iteration.</p> 
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
@@ -54,7 +54,7 @@ loader.setThreadingPattern( threadingPattern );
         <p>Only <em>AllAtOncePattern</em> and <em>FixedDurationAllAtOncePattern</em> support this feature</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

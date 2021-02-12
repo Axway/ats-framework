@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Restarting ATS Agent during RUN execution</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Test-logging.html">Test logging</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Restarting ATS Agent during RUN execution </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>During RUN execution, sometimes a restart of the agent is required.</p> 
+      <p>If that particular agent was not previously configured ( you did not see any log message like "Pushing configuration to ATS Agent at&nbsp; '&lt;Address of the agent you need to restart&gt;' " ), then you are lucky.</p> 
+      <p>But if you do see it, then even after the agent is restarted successfully, ATS will continue to "think" that this agent is already able/configured to log to the ATS Log database, which is not the case anymore.</p> 
+      <p><br></p> 
+      <p>So after you restart the agent, you need to invalidate its state, mark is as not configured.</p> 
+      <p>Here is a simple scenario:</p> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Restarting ATS Agent during RUN execution</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">...
+// execute something on ATS Agent, like getting the RAM size of the machine, where it is deployed
+ProcessExecutor pe = new ProcessExecutor(ATS_AGENT, GET_RAM_SIZE_SCRIPT);
+pe.execute();
+long ramSize = getRamSize(pe.getStandartOutput());
+// do someting with the ramSize and restart the agent if needed
+...
+// now tell ATS that this agent needs to be configured again
+com.axway.ats.agent.webapp.client.AgentConfigurationClient acc = new AgentConfigurationClient(ATS_AGENT);
+acc.invalidateAtsDbLogConfiguration();
+// continue happily using the agent
+...
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

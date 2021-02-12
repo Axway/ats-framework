@@ -25,12 +25,12 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Capturethetransferspeed-Introduction">Introduction</h1> 
       <p>If some of your actions do data transfers, it is valuable to monitor how much data is transferred.</p> 
-      <p>We cannot measure how much data goes over the wire, but we can still get a good idea by using a simple trick</p> 
-      <p>&nbsp;</p> 
+      <p>We cannot measure how much data goes over the wire, but we can still get a good idea by using a simple trick.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Capturethetransferspeed-Examplecode">Example code</h1> 
-      <p>&nbsp;</p> 
-      <p>As a starting point we will use the already presented action class called <a href="Creating-an-Agent-Component.html">FileTransferActions</a></p> 
+      <p><br></p> 
+      <p>As a starting point, we will use the already presented action class called <a href="Creating-an-Agent-Component.html">FileTransferActions</a></p> 
       <p>We will replace the <em> <strong>upload action</strong> </em> as follows:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -50,20 +50,20 @@ public Long upload( @Parameter(name = "localFilePath") String localFilePath ) {
 </pre> 
        </div> 
       </div> 
-      <p>As you see now the java method returns a Long value which is the length of the transferred file. We have also stated in the <em>@Action</em> annotation this action will return number of transferred bytes - see the <strong> <em>transferUnit</em> </strong> attribute</p> 
-      <p>&nbsp;</p> 
+      <p>As you see now the Java method returns a Long value which is the length of the transferred file. We have also stated in the <em>@Action</em> annotation this action will return the number of transferred bytes - see the <strong> <em>transferUnit</em> </strong> attribute.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Capturethetransferspeed-Result">Result</h1> 
       <p>Here is what you might get as a result:</p> 
-      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/119497675/119497709.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="3"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper confluence-embedded-manual-size"><img class="confluence-embedded-image" height="250" src="attachments/119497675/119497709.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
       <p>Our average transfer rate is almost 20 MB/sec</p> 
       <p>It is easy for us to calculate the transfer rate as we always know the action execution time and additionally your action is giving us the transfer size as well.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Capturethetransferspeed-Changethetransferunit">Change the transfer unit</h1> 
       <p>The presented example shows very large numbers.</p> 
-      <p>This can be changed by returning the transfer size in KBytes (you have to divide the numbers by 1024) or in MBytes (you have to divide the numbers by 1024*1024). Do not forget to change accordingly the <strong> <em>transferUnit</em> </strong> attribute</p> 
-      <p>&nbsp;</p> 
+      <p>This can be changed by returning the transfer size in KBytes (you have to divide the numbers by 1024) or in MBytes (you have to divide the numbers by 1024*1024). Do not forget to change accordingly the <strong> <em>transferUnit</em> </strong> attribute.</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Release Notes 4.0.7</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="Release-Notes.html">Release Notes</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Release Notes 4.0.7 </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h2 id="ReleaseNotes4.0.7-Note:Workinprogress">Note: Work in progress</h2> 
+      <p><style type="text/css">/*<![CDATA[*/
+div.rbtoc1613044958837 {padding: 0px;}
+div.rbtoc1613044958837 ul {list-style: disc;margin-left: 0px;}
+div.rbtoc1613044958837 li {margin-left: 0px;padding-left: 0px;}
+
+/*]]>*/</style></p> 
+      <div class="toc-macro rbtoc1613044958837"> 
+       <ul class="toc-indentation"> 
+        <li><a href="#ReleaseNotes4.0.7-Note:Workinprogress">Note: Work in progress</a> 
+         <ul class="toc-indentation"> 
+          <li><a href="#ReleaseNotes4.0.7-NewFeaturesandImprovement">New Features and Improvement</a></li> 
+          <li><a href="#ReleaseNotes4.0.7-BugFixes">Bug Fixes</a></li> 
+          <li><a href="#ReleaseNotes4.0.7-Changesinthirdpartydependencies">Changes in third party dependencies</a></li> 
+          <li><a href="#ReleaseNotes4.0.7-Deprecatedcodeandpendingupdates">Deprecated code and pending updates</a></li> 
+          <li><a href="#ReleaseNotes4.0.7-Knownissuesandlimitations">Known issues and limitations</a></li> 
+         </ul> </li> 
+        <li><a href="#ReleaseNotes4.0.7-TestExplorer">Test Explorer</a></li> 
+        <li><a href="#ReleaseNotes4.0.7-HTTPDBLogger">HTTP DB Logger</a></li> 
+       </ul> 
+      </div> 
+      <p></p> 
+      <div class="confluence-information-macro confluence-information-macro-information"> 
+       <p class="title">Java SE 7 support removed</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-info confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Java SE 7 support as run-time environment <strong>is removed</strong>. This is according to the announcement in the previous release. Please use Java SE 8 or newer version.</p> 
+       </div> 
+      </div> 
+      <p><strong>18 January 2021</strong></p> 
+      <h3 id="ReleaseNotes4.0.7-NewFeaturesandImprovement">New Features and Improvement</h3> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Added support for <strong>Java SE 9 and newer.</strong> Java 11 (LTS) is recommended<strong><br></strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Added <strong>Agent Docker image<br></strong>&nbsp;&nbsp;&nbsp; Released public Agent Docker image named axway/ats-agent (<a class="external-link" href="https://hub.docker.com/r/axway/ats-agent" rel="nofollow">https://hub.docker.com/r/axway/ats-agent</a>); For details check the page <a href="ATS-Agent---Docker-Image.html">ATS Agent - Docker Image</a></p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>Action Library</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Added DB snapshot support for PostgreSQL DB.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Added support for Azure Blob Storage - both create/delete/query and polling operations. This complements already existing Amazon S3 storage support.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Verified compatibility of HttpClient and RestClient with TLS 1.3 (Java 11 needed or Azul Java 8).</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>FileSystemOperations - Support extraction of more ZIP-based archives - JAR, EAR, WAR, SAR, APK.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong> DatabaseSnapshot - Added support for skipping table indexes and additional comparison options for DatabaseSnapshot.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong> ProcessExecutor - Added new method to get all environment variables (locally and remote, on ATS Agent ). So far there were already options to get the value of specific variable and also set/change existing one.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Improvements in parsing supported protocols for HTTPS connections.</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>DB Logging library and TestExplorer</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Allow export of many entities (like suites, tests, statistics) for specific time interval. This allows getting details (like statistics) for more granular interval useful especially for long-running tests.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Update database so checkpoints (performance actions) more than DB MAX INT (~2.4 Billion) could be registered into DB. This allows storing many more performance test statistics. The change requires database upgrade (upgrade script in Test Explorer).</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>Agent</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Add methods to notify ATS that some Agent is restarted during the test and should be reconfigured. Use AgentConfigurationClient.<span class="blob-code-inner blob-code-marker"><span class="pl-en">invalidateAtsDbLogConfiguration</span></span>(agent list) method.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Ability to programmatically set new logging severity for logging from the agent to the ATS database. Method: SystemOperations.setAtsDbAppenderThreshold( thesholdLevel).</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>Monitoring</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Improve additionally the speed of insertion in batches of checkpoints. Useful for performance tests with quick/short-running user actions.</p> 
+      <p><strong>&nbsp;&nbsp;&nbsp;&nbsp; </strong></p> 
+      <p style="margin-left: 30.0px;"><strong>Environment Cleanup<br></strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Added backup/restore functionality for PostgreSQL databases. Backup-restore has also implemented DROP and RECREATE functionality as the rest of the databases. This requires minimum PostgreSQL DB version 12.</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>UI engine</strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Updates for in-browser and&nbsp;mobile application UI testing. Also dependent libraries are upgraded.</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <p style="margin-left: 30.0px;"><strong>Other minor changes:</strong></p> 
+      <p style="margin-left: 30.0px;"><strong>Action Library<br></strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span> FileSystemOperations - allow both options ("/" and "\") for folder path separators to copy files to an ATS Agent. So far the folder separator should match with the type of the&nbsp; Agent's OS.<br>For example new FileSystemOperations("some-agent-host:port").copyFileTo("source/file", "c:/temp/folder/") was not working on target Windows because of UNIX-style forward slashes ("/"). Now both "\" and "/" could be used regardless of the Agent's OS.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Add more DB snapshot compare options. This allows finer tuning of acceptable small snapshot differences.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Add getLong() method for JsonText objects.</p> 
+      <p style="margin-left: 30.0px;"><strong>Test Harness</strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914658.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="add.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Allow possibility to trace TestNG listeners creation and start/stop Run events.</p> 
+      <p style="margin-left: 30.0px;"><br></p> 
+      <h3 id="ReleaseNotes4.0.7-BugFixes">Bug Fixes</h3> 
+      <p><strong>Action library<br></strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>FileSystemOperations - align copyFileTo() method to behave the same as UNIX cp command<strong>.</strong> In brief, it means that missing directories in target path are not created. Non-default OS file separators ("\" for UNIX and "/" for Linux) are supported but not recommended.<strong><br></strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span><span style="color: rgb(64,64,64);">PackageLoader - Some of the methods like <span style="color: rgb(23,43,77);">loadPackageFromDb&nbsp;</span>now log the full exception cause along with a clarifying message instead of just the latter.</span></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>HTTPS, FTPS transfers - Fix keystore parsing issue. <br>Default keystore type is explicitly set by ATS back to JKS. Fixes problems with Java 9+ and BouncyCastle provider combinations.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>FTPS transfers - set passive mode for FTPS transfers as other FTP protocols.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>FileSystemOperations - Allow passive mode for copying files to agents. This eliminates the extra configuration needed to open ports on agent side for file copy. Suitable for container environments.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fixes in SystemOperations - classpath utility methods, related to Java 11 changes and restrictions.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fix for recursive deletion of directories with a lot of entries.</p> 
+      <p><strong>Agent</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fixes in agent start UNIX script for better shell compatibility (sh, bash).</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fixes in agent start Windows script. Compatibility with Java 9+ including debugging options.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fixes for performance tests - for some specific cases distribution of ListDataConfig values was failing.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Fix final DB events logging (do not skip them) when Batch mode is enabled.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Add <em>commons-io</em> to agent libraries in order to allow getting last lines from file (execution of FileSystemOperations.getLastLinesFromFile())</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fix in parsing of ATS UID in order test executors to be properly identified to ATS Agents.</p> 
+      <p><strong>Log</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fixes in batch mode logging. Fixes in user statistics calculation when there were not passed actions for а given period.<br><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Error case was causing loop of data write mode.</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Enhance detection whether Ms SQL Server JDBC driver is used.</p> 
+      <p><strong>Test harness<br></strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Upgraded Excel data provider dependencies - Apache POI to 4.1.2. Also fix potential file handler leak.</p> 
+      <p><strong>RBV </strong>(Rule-Based Verifications)<strong><br></strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>DbVerification - allow to be specified custom DB port for PostgreSQL database.</p> 
+      <p><strong>Environment cleanup</strong></p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fix for Cassandra DB backup creation for some data types like binary ones;</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fix for Microsoft SQL Server DB backups for varbinary DB types;</p> 
+      <p style="margin-left: 30.0px;"><strong><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span></strong>Fix for Microsoft SQL Server for use of custom(non-default) JDBC driver&nbsp; - now the setting is kept per connection and not global;</p> 
+      <p><strong>Monitoring</strong></p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Fix for system and custom monitoring when WildFly (JBoss) is used. This is because of the custom classloader and virtual filesystem (VFS);</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Fix Agent configuration when there are both Agent operations and monitoring running.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Monitoring left running (killed or hanged previous test execution) is reset on new test start. Note that killed Test executor does not stop automatically agent actions so agent (re)start is recommended before starting another&nbsp; performance tests.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Allow monitoring to be used multiple times, after stopMonitoring() is invoked before.</p> 
+      <p style="margin-left: 30.0px;"><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/268914657/268914659.gif" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="fix.gif" data-linked-resource-content-type="image/gif" data-linked-resource-container-version="13"></span>Do not reuse statistic IDs belonging to a different database.</p> 
+      <h3 id="ReleaseNotes4.0.7-Changesinthirdpartydependencies">Changes in third party dependencies</h3> 
+      <ul> 
+       <li><strong>MySQL JDBC</strong> driver (<strong>mysql:mysql-connector-java)</strong> is updated to version 8.0.21. Note that the older 5.x versions still work regardless of some changed classes. This is done transparently.</li> 
+       <li><strong>PostgreSQL JDBC</strong> driver is upgraded to current version - 42.2.9</li> 
+       <li><strong>Microsoft SQL Server</strong> JDBC driver is referred as new dependency. Current version is&nbsp;7.0.0.jre8. However jTDS driver is still used by default</li> 
+       <li>Upgraded <strong>Selenium</strong> and <strong>Appium</strong> dependencies. Selenium is now 3.141.59, Appium is 7.0.0</li> 
+       <li>Updated most of the Maven plugin dependencies for compatibility with newer Java SE versions</li> 
+       <li><strong>commons-net:commons-net</strong> (Apache Commons-net) is updated to version 3.7.1</li> 
+       <li><strong>xerces:xercesImpl </strong>is updated to version 2.12.0</li> 
+       <li><strong>xalan:xalan</strong> is updated to version 2.7.2</li> 
+       <li><strong>org.apache.poi:poi</strong> and <strong>org.apache.poi:poi-ooxml</strong> are updated to version 4.1.2</li> 
+       <li><strong>domj4:dom4j </strong>is changed to <strong>org.dom4j:dom4j </strong>with version 2.1.3</li> 
+       <li><strong>WebServices libraries</strong> (Metro) are updated to version 2.4.3 for Java 11 compatibility.</li> 
+       <li><strong>Selenium</strong> Java client (<strong>org.seleniumhq.selenium:selenium-java</strong>) is upgraded to 3.141.59</li> 
+      </ul> 
+      <h3 id="ReleaseNotes4.0.7-Deprecatedcodeandpendingupdates">Deprecated code and pending updates</h3> 
+      <ul> 
+       <li>TestHarness - Deleted old (already deprecated) <strong>TestNG listeners</strong>. There is new easy way for ATS to listen for test lifecycle events. Removed listeners are <em>AtsTestngClassListener</em>,&nbsp;<em>AtsTestngSuiteListener</em>, <em>AtsTestngTestListener </em>including <em>InitTestHarness class.</em><br>Instead of them use only <em>AtsTestngListener</em>. For painless work, currently we recommend TestNG 6.10 because newer versions have some identified issues.</li> 
+       <li>Logging library - <strong>AutoLogger</strong> class is now deleted. Use AtsDbLogger instead.</li> 
+       <li>UI Engine - <strong>PhantomJS</strong> driver is now deleted because the third-party library used is outdated, without recent support.</li> 
+       <li>UI Engine - UiEngineConfigurator.set/isWorkWithinvisibleElements() methods are deprecated. This feature is planned to be removed. Clicking on non-visible elements is&nbsp; not recommended. Also this feature relies on internal third-party library code which could be changed at any time.</li> 
+      </ul> 
+      <h3 id="ReleaseNotes4.0.7-Knownissuesandlimitations">Known issues and limitations</h3> 
+      <ul> 
+       <li>[Environment cleanup] PostgreSQL backup/restore with drop tables enabled does not work for mixed case table names<strong>.</strong> E.g. backup of table <em>People</em> will not work whereas <em>people</em> is fine. Also table name enclosed in quotes produces error.<strong><br></strong></li> 
+      </ul> 
+      <p><br></p> 
+      <hr> 
+      <h2 id="ReleaseNotes4.0.7-TestExplorer"><strong>Test Explorer</strong></h2> 
+      <p>Release notes for Test Explorer are located <a href="https://axway.github.io/ats-testexplorer/Test-Explorer-Release-Notes.html">here</a></p> 
+      <h2 id="ReleaseNotes4.0.7-HTTPDBLogger"><strong>HTTP DB Logger<br></strong></h2> 
+      <p>Release notes for HTTP DB Logger are located <a href="https://axway.github.io/ats-httpdblogger/HTTP-DB-Logger-Release-Notes.html">here</a></p> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+  <hr>
+  <p>Go to <a href="./Release-Notes.html">parent page</a></p>
+  <p>Go to <a href="./toc.html">Table of Contents</a></p>
+  <hr>
+ </body>
+</html>

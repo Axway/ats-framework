@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Azure Blob Storage Verifications</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+       <li> <span><a href="Common-test-verifications.html">Common test verifications</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Azure Blob Storage Verifications </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="AzureBlobStorageVerifications-Introduction">Introduction</h1> 
+      <p>This page shows how you can verify whether some <em>container/blob </em>is present at <em>Microsoft Azure Blob Storage</em>.</p> 
+      <p>As in <a class="external-link" href="https://techweb.axway.com/confluence/display/ATS/Common+test+verifications" rel="nofollow">other</a> RBV components the benefit is that verification client retries (verifies) as many times as needed in order to check that expected condition <strong>is</strong> or <strong>becomes</strong> true.</p> 
+      <p>For this functionality you also need to import the dependency mentioned <a href="Azure-Blob-Storage-Operations.html">here</a>.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="AzureBlobStorageVerifications-Constructingtheverificationobject">Constructing the verification object</h1> 
+      <p><br></p> 
+      <div> 
+       <div class="code panel pdl" style="border-width: 1px;"> 
+        <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+         <b>Create BlobStorageVerifications Instance</b> 
+        </div> 
+        <div class="codeContent panelContent pdl"> 
+         <pre class="syntaxhighlighter-pre" data-theme="Confluence">...
+import com.axway.ats.rbv.azure.BlobStorageVerifications;
+...
+
+// verify blob
+// the last argument is currently not implemented, so keep it false for now
+BlobStorageVerifications blobStorateVerifications = new BlobStorageVerifications (CONNECTION_STRING, SAS_TOKEN, CONTAINER_NAME, BLOB_NAME, false);
+
+// verify container
+// Note the missing BLOB_NAME argument. This indicates that a container is about to be verified for something
+BlobStorageVerifications blobStorateVerifications = new BlobStorageVerifications(CONNECTION_STRING, SAS_TOKEN, CONTAINER_NAME);
+
+...</pre> 
+        </div> 
+       </div> 
+      </div> 
+      <div> 
+       <br> 
+      </div> 
+      <div> 
+       <hr> 
+      </div> 
+      <h1 id="AzureBlobStorageVerifications-Addverificationrules">Add verification rules</h1> 
+      <p><br></p> 
+      <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Verification rules</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// check the MD5 of the blob 
+blobStorateVerifications.checkBlobMd5(md5);
+// or if it must be different than some MD5 
+blobStorateVerifications.checkBlobMd5Different(md5);
+
+// check the size in bytes of the blob 
+blobStorateVerifications.checkBlobModificationTime(modTime);
+// alternative check
+blobStorateVerifications.checkBlobModificationTimeDifferent(modTime);
+
+// check the modification time in milliseconds since Epoch of the blob
+blobStorateVerifications.checkBlobSize(size);
+// alternative check
+blobStorateVerifications.checkBlobSizeDifferent(size);</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
+       <div class="confluence-information-macro-body"> 
+        <p>So far we have just specified what kind of object (file) we are interested in.</p> 
+        <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods.</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="AzureBlobStorageVerifications-Verifythatblob/containerdoesnotexist">Verify that blob/container does not exist</h1> 
+      <p>Keep polling until verification that the searched blob/container<strong> is NOT present</strong>.</p> 
+      <p>Fail if the searched blob/container<strong> </strong>is present for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">blobStorateVerifications.verifyBlobDoesNotExist();
+blobStorateVerifications.verifyContainerDoesNotExist();</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="AzureBlobStorageVerifications-Verifythatblob/containerexists">Verify that blob/container exists</h1> 
+      <p>Keep polling until verification that the searched blob/container<strong> IS present</strong>.</p> 
+      <p>Fail if the searched blob/container<strong> </strong>is not presented for all polling attempts.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">blobStorateVerifications.verifyBlobExist();
+blobStorateVerifications.verifyContainerExists();</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="AzureBlobStorageVerifications-Verifythatblob/containeralwaysexists">Verify that blob/container always exists</h1> 
+      <p>The next code will succeed if the searched blob/container <strong>is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">blobStorateVerifications.verifyBlobAlwaysExist();
+blobStorateVerifications.verifyContainerDoesNotExist();</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="AzureBlobStorageVerifications-Verifythatblob/containerneverexists">Verify that blob/container never exists</h1> 
+      <p>The next code will succeed if the searched blob/container <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">blobStorateVerifications.verifyBlobNeverExist();
+blobStorateVerifications.verifyContainerNeverExist();</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

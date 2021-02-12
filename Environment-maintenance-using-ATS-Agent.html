@@ -94,8 +94,8 @@
       </div> 
       <p>This example is somewhat complex, but it shows a lot. Here are the important details:</p> 
       <ul> 
-       <li><em>environment node</em> - It describes the environment of our Agent component.<br> It has 2 backup folders for Unix and Windows which define the folder where we will backup the environment into.<br> If both folder attributes are not defined - the system temporary folder will be used instead.<br> This folder will be read later when doing environment restore.</li> 
-       <li><em>database node</em> - it describes the database we want to maintain. You have to specify all the DB connection parameters and the DB type.</li> 
+       <li><em>environment node</em> - It describes the environment of our Agent component.<br>It has 2 backup folders for Unix and Windows which define the folder where we will backup the environment into.<br>If both folder attributes are not defined - the system temporary folder will be used instead.<br>This folder will be read later when doing environment restore.</li> 
+       <li><em>database node</em> - it describes the database we want to maintain. You have to specify all the DB connection parameters and the DB type. Db type value could be: ORACLE, MYSQL, MSSQL, CASSANDRA and POSTGRESQL (since v4.0.7). Character case is not important.</li> 
       </ul> 
       <ul> 
        <li>database <em>table node</em>s - the tables listed here will be the ones to backup/restore. Some options are possible here: 
@@ -105,13 +105,17 @@
          <li><em>dropTable</em> specifies whether table will be dropped and recreated after that. This might be used when the table size is very big and the "delete" query is slow.</li> 
          <li><em>autoIncrementResetValue</em> requests to reset the auto-increment value. You should not use it unless needed</li> 
         </ul></li> 
-       <li><em>file nodes</em> and <em>directory nodes</em> - specify files or whole directories that are to be backed up/restored. You can use full or relative paths.<br> If for some reason you want to specify the name of the backup file/directory - use the <em>backupName</em> attribute. For example you will need to use it when backing up files with same names coming from different locations.</li> 
+       <li><em>file nodes</em> and <em>directory nodes</em> - specify files or whole directories that are to be backed up/restored. You can use full or relative paths.<br>If for some reason you want to specify the name of the backup file/directory - use the <em>backupName</em> attribute. For example you will need to use it when backing up files with same names coming from different locations.</li> 
        <li><em>actions</em> assigned to some file or directory node. Sometimes after the restoration of some file or directory you will need to execute some shell command(this is usually used to restart some system process). This option gives you the chance to execute the needed shell command. The <em>sleep</em> attribute specifies how long time to wait after the execution of your shell command. For example if you have to restart a JBoss application server you may need to wait 60 seconds and then go on.</li> 
       </ul> 
       <h3 id="EnvironmentmaintenanceusingATSAgent-Importantconsiderations">Important considerations</h3> 
+      <h4 id="EnvironmentmaintenanceusingATSAgent-Databases">Databases</h4> 
       <h5 id="EnvironmentmaintenanceusingATSAgent-Oracledatabase">Oracle database</h5> 
       <p>The foreign keys constraints should be configured with DEFERRABLE in order to allow database restore.</p> 
       <p>This does not break the database security. It is used to allow temporally disabling of foreign keys checks till the end of the database restore transaction. More information is available at this <a class="external-link" href="http://www.oracle-base.com/articles/8i/ConstraintCheckingUpdates.php" rel="nofollow">resource</a>.</p> 
+      <h5 id="EnvironmentmaintenanceusingATSAgent-PostgreSQLdatabase">PostgreSQL database</h5> 
+      <p>The user performing DB restore should have superuser role. The requirement comes from the need to enable/disable all triggers and it is similar to the Oracle DB case. When designing your test automation you should use just the DB restore with such power user and do the rest of DB automation with regular user. More info for superuser role needed for disable/enable triggers is here: <a class="external-link" href="https://www.postgresql.org/docs/current/sql-altertable.html" rel="nofollow">https://www.postgresql.org/docs/current/sql-altertable.html</a></p> 
+      <h4 id="EnvironmentmaintenanceusingATSAgent-Filesanddirectories">Files and directories</h4> 
       <h5 id="EnvironmentmaintenanceusingATSAgent-Filesbackup">Files backup</h5> 
       <p>If a backup file already exists - we skip the backup;</p> 
       <p>If the file to backup does not exist - no backup is made.</p> 
@@ -125,7 +129,7 @@
       <h5 id="EnvironmentmaintenanceusingATSAgent-Directoryrestore">Directory restore</h5> 
       <p>The directory restore operation brings the directory of interest back to its original state including all its sub-directories and empty directories</p> 
       <h5 id="EnvironmentmaintenanceusingATSAgent-Additionalactionsonfileanddirectoryrestore">Additional actions on file and directory restore</h5> 
-      <p>You can have many additional actions on same file/directory restore. This is the case when more than one process is affected by same file/directory.<br> You can have the same shell command on more than one file/directory. This is the case when same process is affected by more than one restore file/directory.</p> 
+      <p>You can have many additional actions on same file/directory restore. This is the case when more than one process is affected by same file/directory.<br>You can have the same shell command on more than one file/directory. This is the case when same process is affected by more than one restore file/directory.</p> 
       <p>In order to shorten the time it takes to run all additional actions, we follow the next sequence:</p> 
       <ol> 
        <li>Restore all files and directories one by one</li> 
@@ -134,7 +138,7 @@
       </ol> 
       <p>So In the given example will execute just once <em>/etc/init.d/cmd1</em>, <em>/etc/init.d/cmd2</em> and <em>etc/init.d/cmd3</em>. Then we will sleep for 3 seconds.</p> 
       <h3 id="EnvironmentmaintenanceusingATSAgent-Morethanonedatabaseinsameenvironment">More than one database in same environment</h3> 
-      <p>We support the maintenance of more than one database.<br> Just add another <em>database node</em> to use this feature.</p> 
+      <p>We support the maintenance of more than one database.<br>Just add another <em>database node</em> to use this feature.</p> 
       <h3 id="EnvironmentmaintenanceusingATSAgent-Morethanoneenvironment">More than one environment</h3> 
       <p>Sometimes it is useful to have described more than one environment. Here is an example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 

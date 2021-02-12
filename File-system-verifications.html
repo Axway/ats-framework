@@ -25,7 +25,7 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Filesystemverifications-Introduction">Introduction</h1> 
       <p>This page shows how you can verify whether some <em>File</em> or <em>Folder</em> is present or not&nbsp; at some local or remote <em>host</em></p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Constructingtheverificationobject">Constructing the verification object</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -47,7 +47,7 @@ FileSystemVerification fsVerification = new FileSystemVerification( SERVER_IP, F
         <p>When working remotely, the ATS Agent must be running on the remote host</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Addverificationrules">Add verification rules</h1> 
       <p>Using the different<em> </em> <strong> <em>check</em>...</strong> methods you can add as many checks as you need</p> 
@@ -86,10 +86,10 @@ fsVerification.checkPermissions( 644 );</pre>
         <p>But the actual verification starts at the moment you call one of the <strong> <em>verify...</em> </strong> methods</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafileexists">Verify a file exists</h1> 
-      <p>Keep polling until verify the searched file <strong>is present</strong>.</p> 
+      <p>Keep polling until there is verification that the searched file <strong>is present</strong>.</p> 
       <p>Fail if the searched file is not found for all polling attempts.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -97,11 +97,11 @@ fsVerification.checkPermissions( 644 );</pre>
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Successfulverificationoutput">Successful verification output</h1> 
       <p><em>RBV</em> is verbose enough so from the logs you can understand if each of these checks was successful. It takes a little time until get used with these log messages, but they look the same for all kind of checks.</p> 
-      <p>For example a part of the output in this example would be:</p> 
+      <p>For example, a part of the output in this example would be:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">INFO  17:29:13 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '62'
@@ -111,10 +111,10 @@ INFO  17:29:13 rules.FileSizeRule: Finished evaluation of rule 'checkSize' which
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Unsuccessfulverificationoutput">Unsuccessful verification output</h1> 
-      <p>Upon a failure, you will get output like the following:</p> 
+      <p>Upon failure, you will get output like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">INFO  17:39:49 rules.FileSizeRule: Starting evaluation of rule 'checkSize' which expects file with size '602'
@@ -124,11 +124,11 @@ INFO  17:39:49 rules.FileSizeRule: Finished evaluation of rule 'checkSize' which
 </pre> 
        </div> 
       </div> 
-      <p>Upon failure, a new try is made until all the allowed tries are exhausted and a final failure results in throwing an exception which fails the test case.</p> 
-      <p>&nbsp;</p> 
+      <p>And another try is made until all the allowed tries are exhausted and a final failure results in throwing an exception which fails the test case.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafiledoesnotexist">Verify a file does not exist</h1> 
-      <p>Keep polling until verify the searched file<strong> is NOT present</strong>.</p> 
+      <p>Keep polling until there is verification that the searched file<strong>&nbsp;is NOT present</strong>.</p> 
       <p>Fail if the searched file is present for all polling attempts.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -136,27 +136,27 @@ INFO  17:39:49 rules.FileSizeRule: Finished evaluation of rule 'checkSize' which
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafilealwaysexists">Verify a file always exists</h1> 
-      <p>The next code will succeed if the searched file<strong> is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <p>The next code will succeed if the searched file<strong> is present for all polling attempts</strong>&nbsp;otherwise, it will fail.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileAlwaysExists();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafileneverexists">Verify a file never exists</h1> 
-      <p>The next code will succeed if the searched file <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <p>The next code will succeed if the searched file <strong>is NOT present for all polling attempts</strong>&nbsp;otherwise, it will fail.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFileNeverExist();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafolderexists">Verify a folder exists</h1> 
       <p>Here is how you can verify the existence of a folder</p> 
@@ -176,10 +176,10 @@ fsVerification.verifyFolderExists();
        </div> 
       </div> 
       <p>The logic is basically the same as with the files. But of course all those <strong> <em>check...</em> </strong> methods are not applicable to folders.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafolderdoesnotexist">Verify a folder does not exist</h1> 
-      <p>Keep polling until verify the searched folder<strong> is NOT present</strong>.</p> 
+      <p>Keep polling until there is verification that the searched folder<strong>&nbsp;is NOT present</strong>.</p> 
       <p>Fail if the searched folder is present for all polling attempts.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -187,27 +187,27 @@ fsVerification.verifyFolderExists();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafolderalwaysexists">Verify a folder always exists</h1> 
-      <p>The next code will succeed if the searched folder<strong> is present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <p>The next code will succeed if the searched folder<strong> is present for all polling attempts</strong>&nbsp;otherwise, it will fail.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFolderAlwaysExists();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Filesystemverifications-Verifyafolderneverexists">Verify a folder never exists</h1> 
-      <p>The next code will succeed if the searched folder <strong>is NOT present for all polling attempts</strong>, otherwise it will fail.</p> 
+      <p>The next code will succeed if the searched folder <strong>is NOT present for all polling attempts</strong>&nbsp;otherwise, it will fail.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">fsVerification.verifyFolderNeverExist();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Common-test-verifications.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

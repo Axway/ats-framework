@@ -25,15 +25,14 @@
       <h1 id="SetRUNinformation-Introduction">Introduction</h1> 
       <p>Using ATS you will be reviewing your test results mainly on the web UI of Test Explorer. The first page you will see is the one which lists all your RUNS</p> 
       <p>Here is how the RUNS page may look like:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119482448/119482461.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
-      <p>As you can see the name of the RUN will let you know what these tests are actually testing. The next columns will give you some info about the tested application.</p> 
-      <p>This page shows how you can set the important info about your RUN.</p> 
-      <p>&nbsp;</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119482448/119482461.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="10"></span></p> 
+      <p>As you can see the name of the RUN will inform you what these tests are actually covering. The next columns will give you some info about the tested application.</p> 
+      <p>This page shows how you can set the important information about your RUN.</p> 
       <hr> 
       <h1 id="SetRUNinformation-ChangingtheRUNinformation"><strong> </strong>Changing the RUN information</h1> 
-      <h3 id="SetRUNinformation-Usingtheconfig.propertiesfile">Using the ats.config.properties file</h3> 
-      <p>Place the following entries in a file called <em>ats.config.properties</em> which is placed in the root of the classpath.</p> 
-      <p>For Maven the default directories are either <em>src/main/resources</em> or <em>src/test/resources</em>.</p>
+      <h3 id="SetRUNinformation-Usingtheats.config.propertiesfile">Using the ats.config.properties file</h3> 
+      <p>Place the following entries in a file called <strong><em>ats.config.properties</em></strong> which is placed in the root of your classpath. For <strong>Maven</strong>&nbsp;the defaults are either <strong>src/main/resources</strong> or&nbsp;<strong>src/test/resources</strong>.</p> 
+      <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence"># the name of the Run
@@ -52,26 +51,26 @@ ats.db.logging.run.version=2.3.17
 ats.db.logging.run.build=2000</pre> 
        </div> 
       </div> 
-      <p>ATS will read this file on startup and will use this information to set the RUN info.</p> 
-      <p>&nbsp;</p> 
-      <hr /> 
-      <h3 id="SetRUNinformation-Usingjavacode">Using java code</h3> 
+      <p>ATS will read this file on startup and will use this information to set the RUN info</p> 
+      <p><br></p> 
+      <hr> 
+      <h3 id="SetRUNinformation-UsingJavacode">Using Java code</h3> 
       <p>Have a look at the following code:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.AtsDbLogger;
 
 AtsDbLogger atsDbLogger = AtsDbLogger.getLogger( BaseTest.class.getName() );
-atsDbLogger.updateRun( "Another Run name", 
-                       "Another OS", 
-                       "Another Product name", 
-                       "Another Product Version number",
-                       "Another Product Build number", 
-                       "Some user note about this run" );
+atsDbLogger.updateRun( 	"Another Run name", 
+						"Another OS", 
+						"Another Product name", 
+						"Another Product Version number",
+    					"Another Product Build number", 
+						"Some user note about this run" );
 </pre> 
        </div> 
       </div> 
-      <p>Here we create an instance of the <em>AtsDbLogger</em> class which is used by ATS for managing the logging and we use its <em>updateRun</em> method.<br> The values we have used in this example tell you what kind of information can be changed - these are the same parameters as when using a properties file plus the last one which is to add some user information message about this run.</p> 
+      <p>Here we create an instance of the <em>AtsDbLogger</em> class which is used by ATS for managing the logging and we use its <em>updateRun</em> method.<br>The values we have used in this example tell you what kind of information can be changed - the parameters are the same when using a properties file with the addition of the last one which is to add some user message containing information about the current run.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>A run must be running at the time this method is called. This method updates an existing RUN, it does not start one.</p> 
@@ -85,13 +84,13 @@ atsDbLogger.updateRun( "Another Run name",
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="SetRUNinformation-Whichoptiontouse?">Which option to use?</h1> 
-      <p>The first option(using the config.properties file) is good to provide all the info you know prior to starting your tests.</p> 
-      <p>The second option(using java code) is good to provide info you do not know prior to starting your tests,</p> 
-      <p>Of course you can use either one of them or both.</p> 
-      <p>&nbsp;</p> 
+      <p>The first option(using the config.properties file) is good to provide all the information you know prior to starting your tests.</p> 
+      <p>The second option(using Java code) is good to provide information you do not know prior to starting your tests,</p> 
+      <p>Of course, you can use either one of them or both.</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Test-logging.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

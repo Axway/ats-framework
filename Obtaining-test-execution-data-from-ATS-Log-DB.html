@@ -1,0 +1,305 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Obtaining test execution data from ATS Log DB</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Obtaining test execution data from ATS Log DB </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-Introduction">Introduction</h1> 
+      <p><br></p> 
+      <p>Currently there are two classes, that have methods for obtaining such data -&nbsp; <strong>AtsDbLogger</strong> (for the meta data) and <strong>AtsDbReader</strong>.</p> 
+      <p>Also the only data that still could not be obtained by Java code are the test execution messages.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-Basicinitializationexample">Basic initialization example</h1> 
+      <p>First lets create instance of <strong>AtsDbReader. </strong>There are two ways to do that:<br><br></p> 
+      <ul> 
+       <li>Use the default ActiveDbAppender configuration (in the log4j.xml file) to obtain information about the ATS Log Database</li> 
+       <li>Manualy set the DB information</li> 
+      </ul> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.AtsDbReader;...// use the default DB information
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+// use custom one
+AtsDbReader reader = AtsDbReader.getDefaultInstance( DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASS, DB_CUSTOM_PROPS );
+
+// Since ATS supports only SQL Server and PostgreSQL as a backend for log databases, for the DB_PORT, the dafault ports for there databases can be used (DbConnSQLServer.DEFAULT_PORT or DbConnPostgreSQL.DEFAULT_PORT)
+// Also since most of the time (if not awlays) the user name and password are the same, you can pass null for both of them and the default ones, provided by the install db scripts, will be used
+// As for the custom properties, DB_CUSTOM_PROPS, for now they are just there/here to future-proof the implementation and again can be passed as null
+
+...</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingRUNs">Obtaining RUNs</h1> 
+      <p><br></p> 
+      <p class="auto-cursor-target">Here are the supported <strong>filter fields</strong> (Note that each of the fields, except <strong>start timestamp </strong>and <strong>end timestamp,</strong> are treated as either <strong>regular text/string</strong> or <strong>REGEX</strong></p> 
+      <ul> 
+       <li class="auto-cursor-target">run name</li> 
+       <li class="auto-cursor-target">product name</li> 
+       <li class="auto-cursor-target">version name</li> 
+       <li class="auto-cursor-target">build name</li> 
+       <li class="auto-cursor-target">os name</li> 
+       <li class="auto-cursor-target">user note</li> 
+       <li class="auto-cursor-target">start timestamp</li> 
+       <li class="auto-cursor-target">end timestamp</li> 
+      </ul> 
+      <p><br></p> 
+      <p>You can also pass <strong>null</strong>, in order to <strong>exclude</strong> the field from the search filter</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.Run;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+String runName = null; // we do not want to use that in the filter
+String productName = "ATS Framework";
+String versionName = "4\.0\.[4-7]";
+String buildName = null;
+String osName = "LINUX";
+String userNote = "FIXME";
+
+long startTimestamp = 1588662120000l;
+long endTimestamp = -1; // yet again we do not want this to be in the filter
+
+List&lt;Run&gt; runs = reader.getRuns( startTimestamp, endTimestamp, runName, productName, versionName, buildName, osName, userNote );
+
+if ( !runs.isEmpty() ) {
+	for ( Run run : runs ) {
+		// do something
+	}
+}
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingSUITEs">Obtaining SUITEs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.Suite;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+int runId = 1020;
+
+List&lt;Suite&gt; suites = reader.getSuites( runId );
+...</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingSCENARIOs">Obtaining SCENARIOs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.Scenario;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+int suiteId = 1020;
+
+List&lt;Scenario&gt; scenarios = reader.getScenario( suiteId );
+...</pre> 
+       </div> 
+      </div> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingTESTCASEs">Obtaining TESTCASEs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.Testcase;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+int suiteId = 1020;
+
+List&lt;Testcase&gt; testcases = reader.getTestcases( suiteId );
+
+// or suite + scenario
+
+int scenarioId = 5;
+testcases = reader.getTestcases( suiteId, scenarioId );
+...</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingLOADQUEUEs">Obtaining LOAD QUEUEs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.LoadQueue;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+int testcaseId = 1000;
+
+List&lt;LoadQueue&gt; loadQueues = reader.getLoadQueues( testcaseId );
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p><br></p> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingCHECKPOINTSUMMARYs">Obtaining CHECKPOINT SUMMARYs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.CheckpointSummary;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+int loadQueueId = 1000;
+
+List&lt;CheckpointSummary&gt; summaries = reader.getCheckpointSummaries( loadQueueId );
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <hr> 
+      <p><br></p> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingMACHINEs">Obtaining MACHINEs</h1> 
+      <p><br></p> 
+      <p>You'll need information about a machine if you want to get system statistic descriptions for a particular machine.</p> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.Machine;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+// get all machines
+List&lt;Machine&gt; machines = reader.getMachines();
+// or if you want machine from a particular testcase that was gathering specific system statistic
+
+int testcaseId = 10232;
+int statisticTypeId = 91032;
+machines = reader.getMachines ( testcaseId, statisticTypeId );
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <hr> 
+      <p><br></p> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingSTATISTICDESCRIPTIONs">Obtaining STATISTIC DESCRIPTIONs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.StatisticDescription;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+int testcaseId = 1022;
+List&lt;StatisticDescription&gt; descriptions = reader.getStatisticDescriptions( testcaseId );
+// or from a particular machine
+int machineId = 2;
+descriptions = reader.getStatisticDescriptions( testcaseId, machineId );
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingCHECKPOINTSUMMARYs.1">Obtaining CHECKPOINT SUMMARYs</h1> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.CheckpointSummary;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+int loadQueueId = 1022;
+List&lt;CheckpointSummary&gt; summaries = reader.getCheckpointSummaries( loadQueueId );
+...
+
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
+      <h1 id="ObtainingtestexecutiondatafromATSLogDB-ObtainingAggregatedstatisticsdescriptions/checkpointsummaries">Obtaining Aggregated statistics descriptions/checkpoint summaries</h1> 
+      <p><br></p> 
+      <p>Additionally to the above, you can also get aggregated information. For example, you can get the CPU usage between two dates or the response time for some action between two dates.</p> 
+      <p><br></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.autodb.entities.CheckpointSummary;
+import com.axway.ats.log.autodb.entities.StatisticDescription;
+import com.axway.ats.log.AtsDbReader;
+
+...
+AtsDbReader reader = AtsDbReader.getDefaultInstance();
+
+// get the CPU Usage for one hour
+// both time stamps are in milliseconds (since Epoch)
+long startTimestamp = 1589187600000;
+long endTimestamp   = 1589191200000;
+
+// lets get the CPU Usage
+// the ID for CPU Usage
+int statisticTypeId = 1000;
+int testcaseId = 1;
+int machineId = AtsDbReader.ALL_MACHINES; // use this to tell ATS, that you want statistics from every machine and not a particular one
+StatisticDescription cpuUsageForOneHour = reader.getStatisticsDescriptionForDateRange( statisticTypeId, testcaseId, machineId, startTimestamp, endTimestamp );
+
+// now lets get response time for some action, called FileSystemOperations FPTS upload
+
+int checkpointSummaryId = 10;
+int loadQueueId = 2;
+CheckpointSummary ftpsUploadForOneHour = reader.getCheckpointSummaryForDateRange(  checkpointSummaryId, loadQueueId, testcaseId, startTimestamp, endTimestamp );
+
+</pre> 
+       </div> 
+      </div> 
+      <p class="auto-cursor-target">Feel free to request exposure of other functionality.</p> 
+      <hr> 
+      <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

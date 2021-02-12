@@ -25,15 +25,6 @@
       <h1 id="DatabaseOperations-Introduction">Introduction</h1> 
       <p>Currently ATS supports <em>Oracle Database, MySQL, Microsoft SQL</em> Server, <em>PostgreSQL</em> and <em>Cassandra</em>. With some effort, It is also possible to plug-in support for your own database type.</p> 
       <p><br></p> 
-      <div class="confluence-information-macro confluence-information-macro-warning"> 
-       <p class="title">Working with Cassandra DB</p> 
-       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
-       <div class="confluence-information-macro-body"> 
-        <p>Java 8+ is required for working with Cassandra DB</p> 
-       </div> 
-      </div> 
-      <p><br></p> 
-      <p><br></p> 
       <hr> 
       <h1 id="DatabaseOperations-Basicexample">Basic example</h1> 
       <p>Here is some example code:</p> 
@@ -261,7 +252,14 @@ System.setProperty( "com.axway.automation.ats.logdbdriver", "MSSQL" );</pre>
       <p><br></p> 
       <hr> 
       <h1 id="DatabaseOperations-CassandraSpecifics">Cassandra Specifics</h1> 
-      <p>Apache's <a class="external-link" href="http://cassandra.apache.org/" rel="nofollow">Cassandra</a> can give you different kind of errors you are not used with.</p> 
+      <p>Apache <a class="external-link" href="http://cassandra.apache.org/" rel="nofollow">Cassandra</a> can give you different kind of errors you are not used with.</p> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Working with Cassandra DB</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Java 8+ is required for working with Cassandra DB. This shouldn't be an issue because since version 4.0.7 the whole ATS framework requires Java 8.</p> 
+       </div> 
+      </div> 
       <h3 id="DatabaseOperations-Dependencies">Dependencies</h3> 
       <p>Currently ATS is using the following <a class="external-link" href="https://www.datastax.com/" rel="nofollow">Datastax</a> driver version to work with Cassandra DB:</p> 
       <p>But the ATS is not directly depending on the Datastax driver dependencies. So you have to add them to your classpath.</p> 
@@ -294,8 +292,57 @@ System.setProperty( "com.axway.automation.ats.logdbdriver", "MSSQL" );</pre>
        <li>"Invalid STRING constant (a14f0f51-7ff2-43fe-b922-8c36ddbbd91f) for id of type uuid" - In the <em>where</em> clauses, some data types (like UUID) must not be quoted while others (like TEXT) must be quoted.</li> 
       </ul> 
       <p><br></p> 
+      <hr> 
       <h1 id="DatabaseOperations-PostgreSQLSpecifics">PostgreSQL Specifics</h1> 
-      <p>In order to preserve the case of the letters for the table name or for the name of the table columns, you must additionally enclose them in double quotes (if the table name is Persons, you must pass "Persons" in the query)</p> 
+      <h2 id="DatabaseOperations-Namingconventions">Naming conventions</h2> 
+      <p>By default, in SQL queries, PostgreSQL converts identifiers like table and column names to lower case. <br>In order to preserve the case of the letters for the identifiers, you must additionally enclose them in double quotes. So if the table name is Persons ( intentionally created case-sensitive) , then you should pass "Persons" in the query, in quotes. The guideline is to either always use lower case, or always use case-sensitive names enclosed in double quotes. <br>For more details you may check PostgreSQL documentation here: <a class="external-link" href="https://www.postgresql.org/docs/current/sql-syntax-lexical.html" rel="nofollow">https://www.postgresql.org/docs/current/sql-syntax-lexical.html</a>, Section 4.1.1. Identifiers and Key Words, last paragraph.</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="DatabaseOperations-MySQLSpecifics">MySQL Specifics</h1> 
+      <h3 id="DatabaseOperations-JDBCdriversupport">JDBC driver support</h3> 
+      <p>Starting with ATS version <strong>4.0.7</strong>, MySQL has support for at least two JDBC driver versions, namely 8.0.xx (currently is 8.0.21) and 5.1.xx (validated with 5.1.42). <br>This is done transparently to the user (regardless of the different classes used) by checking which version is available in the classpath. First is the check for 8.0.xx case, then, if no such dependency is found, for 5.1.xx.</p> 
+      <p>Most of the time, you will not be able to differentiate which version is used, because both of them are supported equally and no difference in their behaviour was found.</p> 
+      <p>The only change might be in the performance of the two drivers. This might be related only to PERFormance testing against MySQL servers.</p> 
+      <h3 id="DatabaseOperations-Timezonesupport">Timezone support</h3> 
+      <p>If you are using the <strong>8.xx.xx</strong> JDBC version, MySQL JDBC driver <strong>requires</strong> to know the timezone of the server it is connecting to. This leads to a situation where the returned timezone name is not <strong>IANA</strong> named, e.g. instead of <strong>Europe/Sofia</strong>, it is returned as <strong>EEST</strong> ( <strong>Eastert European Summer Time</strong> )</p> 
+      <p>This causes the JVM to throw an exception about missing timezone or timezone name, that references more than one actual timezone.</p> 
+      <p>ATS automatically tries to find the best possible match, but if some of your SQL types (Date, Timezone, etc) starts to look quirky, you can see the server time zone and set the appropriate value.</p> 
+      <p>This is done by passing a custom property to the MySQL database connection. Here is a little example:</p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Setting timezone for MySQL manually</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">...
+Map&lt;String, Object&gt; custProps = new HashMap&lt;String, Object&gt;();
+custProps.put(DbKeys.SERVER_TIMEZONE, "GMT+2"); // UTC works only without offset, so if you want UTC-3 just replace UTC with GMT and you are good to go
+// pass the custom properties where needed
+...</pre> 
+       </div> 
+      </div> 
+      <p>The symptoms of this type of problems are such logs (Warning and a possible exception after it):</p> 
+      <blockquote> 
+       <p>WARNING mysql.<u>DbConnMySQL: No server timezone specified. This can lead to an exception! </u></p> 
+       <p>INFO&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mysql.DbConnMySQL: MySQL datasource class will be 'com.mysql.cj.jdbc.MysqlConnectionPoolDataSource'. Begin datasource configuration</p> 
+       <p>ERROR&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; EXCEPTION</p> 
+       <p>&nbsp;&nbsp; USER message: axway.ats: [TestNG]: TEST FAILED</p> 
+       <p>&nbsp;&nbsp; CALL STACK:com.axway.ats.action.exceptions.DatabaseOperationsException: Error getting value from DB with query xxxxx</p> 
+       <p>&nbsp; at com.axway.ats.action.dbaccess.DatabaseOperations.getValue(DatabaseOperations.java:328)</p> 
+       <p>&nbsp; ...</p> 
+       <p>&nbsp; at org.testng.TestNG.runSuites(TestNG.java:1133)</p> 
+       <p>&nbsp; ...</p> 
+       <p>Caused by: com.axway.ats.core.dbaccess.exceptions.DbException: <u>Error while configuring MySQL's data source instance</u></p> 
+       <p>&nbsp; at com.axway.ats.core.dbaccess.mysql.DbConnMySQL.createDataSource(DbConnMySQL.java:285)</p> 
+       <p>&nbsp; at com.axway.ats.core.dbaccess.mysql.DbConnMySQL.getDataSource(DbConnMySQL.java:160)</p> 
+       <p>&nbsp; at com.axway.ats.core.dbaccess.ConnectionPool.getConnection(ConnectionPool.java:66)</p> 
+       <p>&nbsp; ...</p> 
+       <p>Caused by: java.text.ParseException:<u> Unparseable date</u>: "00:00:00 FLE Standard Time 2020"</p> 
+       <p>&nbsp; at java.base/java.text.DateFormat.parse(DateFormat.java:395)</p> 
+       <p>&nbsp; at com.axway.ats.core.dbaccess.mysql.DbConnMySQL.createDataSource(DbConnMySQL.java:258)</p> 
+       <p>&nbsp; ...</p> 
+       <p>&nbsp; 34 more</p> 
+      </blockquote> 
+      <p><br></p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

@@ -24,7 +24,7 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Runningsimultaneousactionqueues-Introduction">Introduction</h1> 
-      <p>In real life your users are doing different things at same moment, but our examples so far were doing the same thing - FTP upload.</p> 
+      <p>In real life, your users are doing different things at the same moment, but our examples so far were doing the same thing - FTP upload.</p> 
       <p>This page shows how you can run many simultaneous action queues and each queue can run its own actions.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
@@ -36,11 +36,11 @@
         <p>It is not important what our example actions do. Yours will do whatever you need</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Runningsimultaneousactionqueues-Extendourexampleperformanceaction">Extend our example performance action</h1> 
       <hr> 
-      <p>So far the <em>FileTransferActions</em> is able to do one thing - upload FTP files as you can see it <a href="Creating-an-Agent-Component.html">here</a></p> 
+      <p>So far the <em>FileTransferActions</em>&nbsp;is able to do one thing - upload FTP files as you can see it <a href="Creating-an-Agent-Component.html">here</a></p> 
       <p>Now we will extend it a little, so it can handle HTTP transfers as well. We will change only the <em>connect</em> method:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -63,15 +63,15 @@
 </pre> 
        </div> 
       </div> 
-      <p>The difference is that we have introduced one more input argument called <strong> <em>protocol</em> </strong> and in the method body we are asking the <strong> <em>FileTransferClient</em> </strong> class (part of ATS) to establish connection over FTP or HTTP.</p> 
-      <p>&nbsp;</p> 
+      <p>The difference is that we have introduced one more input argument called&nbsp;<strong><em>protocol&nbsp;</em></strong>and in the method body we are asking the <strong> <em>FileTransferClient</em> </strong> class (part of ATS) to establish a connection over FTP or HTTP.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Runningsimultaneousactionqueues-Deploythenewneedcode">Deploy the new need code</h1> 
       <p><a href="Building-and-deploying-an-Agent-Component.html">Here</a> are the steps in details</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Runningsimultaneousactionqueues-Runatestwithsimultaneousactionqueues">Run a test with simultaneous action queues</h1> 
-      <p>Lets have a look at this test code:</p> 
+      <p>Let's have a look at this test code:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">    import com.axway.ats.agent.webapp.client.ActionQueue;
@@ -107,25 +107,25 @@
 </pre> 
        </div> 
       </div> 
-      <p>Please spend some time to look through this code. Here is what we do:</p> 
+      <p>Please spend some time looking through this code. Here is what we do:</p> 
       <ul> 
        <li>We use different names for both queues, so they can be distinguished</li> 
        <li>The <strong><em>connect</em></strong> action is called with the appropriate arguments for each <em>protocol</em></li> 
-       <li>We are creating one Loader for each queue. Both queues have different actions. Note that you can freely use same or different actions from same or different action classes.</li> 
+       <li>We are creating one Loader for each queue. Both queues have different actions. Note that you can freely use the same or different actions from the same or different action classes.</li> 
       </ul> 
       <p>The 2nd argument in the threading pattern constructor is <strong> <em>false</em></strong>, while by default it is set to <strong> <em>true</em> </strong>. This argument specifies if we must wait when calling the <strong> <em>executeQueuedActions</em> </strong> method. <br>If we use <strong> <em>true</em> </strong> here, the first queue will get started and we will wait here until it is over. Then we will start the next queue.<br>But in our case we need simultaneous executions, that is why we use <em>false</em>. This way the test code will go on and start the second queue as soon as have started the first one.</p> 
       <ul> 
        <li>The last test line causes waiting until all(in our case both) action queues are completed</li> 
       </ul> 
       <h1 id="Runningsimultaneousactionqueues-Theresult">The result</h1> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="5"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496598/119496712.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="6"></span></p> 
       <p>Both queues have started at the same time, but their duration is significantly different</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>You can have as many action queues as needed</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

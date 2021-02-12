@@ -22,24 +22,31 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Systemmonitoring-Introduction">Introduction</h1> 
-      <p>During a test execution, the ATS <em>Monitoring service</em> allows you to collect various statistical information about:</p> 
+      <p>During test execution, the ATS <em>Monitoring service</em> allows you to collect various statistical information about:</p> 
       <ul> 
-       <li>State of one or more physical hosts. This includes the usage of CPU, memory, virtual memory, network activity etc</li> 
-       <li>State of one or more system process. Currently this means the CPU and memory usage</li> 
+       <li>State of one or more physical hosts. This includes the usage of CPU, memory, virtual memory, network activity, etc</li> 
+       <li>State of one or more system processes. Currently, this means the CPU and memory usage</li> 
        <li>Users activity. When running some kind of performance test, we usually simulate the activity of many simultaneous users. We are able to show how many users are running one or another action(step) at any given moment</li> 
-       <li>It is possible to write your own monitor which can be easily plugged into the current monitoring system. This way you can see some custom information, for example this could be the number of "<em>running jobs</em>" or the "<em>number of file transfers</em>" on the tested server</li> 
+       <li>It is possible to write your own monitor which can be easily plugged into the current monitoring system. This way you can see some custom information, for example, this could be the number of "<em>running jobs</em>" or the "<em>number of file transfers</em>" on the tested server</li> 
       </ul> 
       <p><br></p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>The monitoring process is done through the ATS Agent, so you need the Agent running on the host you will run monitoring at.</p> 
-        <p>In the context of this page ATS Agent and ATS Monitoring mean the same thing.</p> 
+        <p>In the context of this page, ATS Agent and ATS Monitoring mean the same thing.</p> 
        </div> 
       </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>The monitoring process is not tied to performance tests only.</p> 
         <p>It is indeed just one of the optional ATS components to use. You can start it prior to any kind of test and end it after the end of any type of test.</p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>It is generally not a good practice to monitor one host twice, e.g. monitoring one host via two agents, deployed on the same host.<br>This is once, a unnecessary repetition of information and second, ATS has problems displaying properly the data, since it is expected that for monitoring, there is one ATS Agent per host.</p> 
        </div> 
       </div> 
       <p><br></p> 
@@ -79,7 +86,7 @@ systemMonitor.stopMonitoring();
       <hr> 
       <h1 id="Systemmonitoring-TheresultasseeninTestExplorer">The result as seen in Test Explorer</h1> 
       <p>And here is some example of what you might get:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485353/119485568.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="9"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119485353/119485568.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="11"></span></p> 
       <p>Here you can see the change in the amount of free and used memory as well as the CPU usage percentage</p> 
       <p><br></p> 
       <hr> 
@@ -89,7 +96,7 @@ systemMonitor.stopMonitoring();
       <p><br></p> 
       <hr> 
       <h1 id="Systemmonitoring-Stoppingthemonitoringprocess">Stopping the monitoring process</h1> 
-      <p>All you need to do is to call the <strong> <em>stopMonitoring</em> </strong> method.<br>Note that after stop the SystemMonitor instance could not be reused and a new instance should be created for next monitoring session.</p> 
+      <p>All you need to do is to call the <strong> <em>stopMonitoring</em> </strong> method.<br>Note that after stop the SystemMonitor instance could not be reused and a new instance should be created for the next monitoring session.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="Systemmonitoring-UsingtheSystemmonitoringagent">Using the System monitoring agent</h1> 
@@ -103,7 +110,7 @@ systemMonitor.stopMonitoring();
       <h1 id="Systemmonitoring-Howtocallstartandstop">How to call start and stop</h1> 
       <h3 id="Systemmonitoring-Idletimebeforeandafterthetestexecution">Idle time before and after the test execution</h3> 
       <p>It is usually wise to see what the system state is before the test is started and after the test is over.</p> 
-      <p>That is why recommend to put some idle time just after calling the <em> <strong>startMonitoring</strong> </em> method and again just before calling the <em> <strong>stopMonitoring</strong> </em> method. This can be easily done using the <em> <strong>Thread.sleep()</strong> </em> method</p> 
+      <p>That is why recommend putting some idle time just after calling the <em> <strong>startMonitoring</strong> </em> method and again just before calling the <em> <strong>stopMonitoring</strong> </em> method. This can be easily done using the <em> <strong>Thread.sleep()</strong> </em> method</p> 
       <h3 id="Systemmonitoring-Therightplacetocallstartandstop">The right place to call start and stop</h3> 
       <p>It does not make sense to call the SystemMonitor methods in each scenario - there will be not needed code duplication. If using TestNG, the right place should be methods annotated with @BeforeMethod and @AfterMethod annotations</p> 
       <h3 id="Systemmonitoring-Example">Example</h3> 
@@ -155,9 +162,9 @@ public void afterTest() throws Exception {
       <p><br></p> 
       <hr> 
       <h1 id="Systemmonitoring-Performanceconsiderations">Performance considerations</h1> 
-      <p>Currently no performance issues are known when using the ATS monitoring service even with some intensive polling interval.</p> 
-      <p>However we recommend that you wisely choose the polling interval according to the test duration. For example if a test takes 5 days to complete, polling on each second will produce 432 000 values for <strong>each</strong> statistic and if you specify 20 or 30 different types of statistics you will get a very large amount of data going to the logging database.</p> 
-      <p>Combining this with potentially extensive logging (via test messages, also going to the ATS DB) you may hit logging overflow. For more details you may refer to <a href="Increasing-the-speed-we-send-some-events-to-the-log-DB.html">this</a> page.</p> 
+      <p>Currently, no performance issues are known when using the ATS monitoring service even with some intensive polling interval.</p> 
+      <p>However, we recommend that you wisely choose the polling interval according to the test duration. For example, if a test takes 5 days to complete, polling on each second will produce 432 000 values for <strong>each</strong> statistic and if you specify 20 or 30 different types of statistics you will get a very large amount of data going to the logging database.</p> 
+      <p>Combining this with potentially extensive logging (via test messages, also going to the ATS DB) you may hit logging overflow. For more details, you may refer to <a href="Increasing-the-speed-we-send-some-events-to-the-log-DB.html">this</a> page.</p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="ATS-Guide.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

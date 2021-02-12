@@ -24,7 +24,7 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Attachafiletothecurrenttestcase-Introduction">Introduction</h1> 
       <hr> 
-      <p>It is possible to attach some file to the current test case. This way you can check the file content from within your testcase in Test Explorer.</p> 
+      <p>It is possible to attach a file to the current test case. This way you can check the file content from within your testcase in Test Explorer.</p> 
       <p>Imagine while testing your server you want at some moment to have its log file. Now you can attach this file to the testcase, so while reviewing the testcase data you can also see the content of that log file.</p> 
       <p><br></p> 
       <hr> 
@@ -34,28 +34,32 @@
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.log.AtsDbLoggerUtilities;
 
-new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "TestExplorer-4.0.5", 8080 );
+boolean uploadSuccess = new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "TestExplorer-4.0.5", 8080 );
+if (! uploadSsuccess) {
+  // throw new Exception("message") to fail test 
+  // or just log warning if not important
+}
 </pre> 
        </div> 
       </div> 
       <p>where</p> 
       <ul style="list-style-type: square;"> 
-       <li>the first argument is the <em>absolute file location</em> on the local file system</li> 
-       <li>the second argument is <em>the name of the TestExplorer application context</em> e.g. for <a class="external-link" href="http://192.168.1.100/TestExplorer-4.0.2" rel="nofollow">http://192.168.1.100:8080/TestExplorer-4.0.5</a> the TestExplorer's context name is "<em> <span style="line-height: 1.42857;">TestExplorer-4.0.5</span> </em>". The Test Explorer hostname is automatically resolved from your <em>log4j.xml</em> where you have already defined for DB logging settings.</li> 
-       <li>an optional third argument is the port at which Test Explorer is running. If not specified, the default value used is 80</li> 
+       <li>the first argument is the <em>absolute file location</em> on the local file system;</li> 
+       <li>the second argument is <em>the name of the TestExplorer application context</em> e.g. for http://192.168.1.100:8080/TestExplorer-4.0.5/ the TestExplorer's context name is "<em> <span style="line-height: 1.42857;">TestExplorer-4.0.5</span> </em>". The Test Explorer hostname is automatically resolved from your <em>log4j.xml</em> where you have already defined for DB logging settings;</li> 
+       <li>an optional third argument is a port at which Test Explorer is running. If not specified, the default value used is 80.</li> 
       </ul> 
       <p><br></p> 
       <hr> 
       <h1 id="Attachafiletothecurrenttestcase-HereishowitmightlooklikeinTestExplorer:">Here is how it might look like in Test Explorer:</h1> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="14"></span></p> 
-      <p>As you can see we have an additional <em>Attachments</em> panel.</p> 
-      <p>If you click on a button with the name of your file, its content is displayed. Of course this is meaningful for text files.</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image" src="attachments/119484917/119484924.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="18"></span></p> 
+      <p>As you can see TestExplorer has an additional <em>Attachments</em> panel.</p> 
+      <p>If you click on a button with the name of your file, its content is displayed. This is possible for text files.</p> 
       <p>No matter if the file is text or binary, you can always download the file by clicking its link so can examine it with an appropriate viewer on your PC.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="Attachafiletothecurrenttestcase-Filesizeconsiderations">File size considerations</h1> 
-      <p>Currently the max file size supported is 10MB</p> 
-      <p>If your file is larger, we recommend that you either get only the last N lines or take just the new lines. ATS code is already available to achieve this</p> 
+      <p>Currently, the max file size supported is 10MB.</p> 
+      <p>If your file is larger, we recommend that you either get only the last N lines or take just the new lines. In order to limit the file size of uploaded files, you may compress them.</p> 
       <h3 id="Attachafiletothecurrenttestcase-GetjustthelastNlinesfromthelogfile">Get just the last N lines from the log file</h3> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -87,7 +91,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
        </div> 
       </div> 
       <p><br></p> 
-      <h3 id="Attachafiletothecurrenttestcase-Getjustthenewlinesfromatextfile(assumingthisissometypicalgrowinglogfile)">Get just the new lines from a text file(assuming this is some typical growing log file)</h3> 
+      <h3 id="Attachafiletothecurrenttestcase-Getjustthenewlinesfromatextfile(assumingthisissometypicalgrowinglogfile)">Get just the new lines from a text file( assuming this is some typical growing log file)</h3> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -118,7 +122,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
 
         // and now attaching the new file which contains the new lines only
         boolean isAttachedOk = new AtsDbLoggerUtilities().attachFileToCurrentTest( logChunk, "TestExplorer-4.0.5" );
-        // if needed, you can check whether the file was attached successfully</pre> 
+        // if needed, you can check whether the file was attached successfully and either throw exception or just log warning</pre> 
        </div> 
       </div> 
       <p><br></p> 
@@ -132,7 +136,7 @@ new AtsDbLoggerUtilities().attachFileToCurrentTest( "C:\\logFiles\\log.txt", "Te
 int lastExecutedTestcaseId = ActiveDbAppender.getCurrentInstance().getLastExecutedTestCaseId();
 
 // now call the attach method
-new AtsDbLoggerUtilities().attachFileToTestcase( lastExecutedTestcaseId, "C:\\logFiles\\log.txt", "TestExplorer-4.0.5" );</pre> 
+boolean isAttachedOK = new AtsDbLoggerUtilities().attachFileToTestcase( lastExecutedTestcaseId, "C:\\logFiles\\log.txt", "TestExplorer-4.0.5" );</pre> 
        </div> 
       </div> 
       <p><br></p> 

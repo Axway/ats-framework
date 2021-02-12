@@ -31,7 +31,7 @@
         <p>We suggest to always start with just one Loader. Use more when you find one is not sufficient.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RunningsameactionqueueonmorethanoneLoader-Codeexample">Code example</h1> 
       <p>Here is how you set running your actions on one Loader:</p> 
@@ -49,29 +49,29 @@
        </div> 
       </div> 
       <p><strong>This is all you have to change in your test code.</strong></p> 
-      <p><strong> <br> </strong></p> 
+      <p><strong> <br></strong></p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>ATS will automatically split as evenly as possible the number of threads based on the number of loaders.</p> 
-        <p>The Application Under Test will not make difference if you interact with it by using one or more Loaders.</p> 
+        <p>The Application Under Test will not make a difference if you interact with it by using one or more Loaders.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="RunningsameactionqueueonmorethanoneLoader-DrawbackusingmorethanoneLoader">Drawback using more than one Loader</h1> 
       <p>You will need to have more than one Agent and you will need to deploy your Agent components containing your actions at more than one Agent.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="RunningsameactionqueueonmorethanoneLoader-Howmanyloadersdoineed?">How many loaders do i need?</h1> 
-      <p>Unfortunately we can't give you the exact answer, but we can share some thoughts with you.</p> 
+      <h1 id="RunningsameactionqueueonmorethanoneLoader-HowmanyloadersdoIneed?">How many loaders do I need?</h1> 
+      <p>Unfortunately, we can't give you the exact answer, but we can share some thoughts with you.</p> 
       <p>The Loader itself can easily start hundreds or even thousands of threads as the ATS Agent(Loader) is a normal Java application.</p> 
       <p>Basically you can think in two directions regarding the number of Loaders and number of running threads(users):</p> 
       <ul> 
        <li>The work your actions do. Some action needs more power, some less. ATS does not know what your particular action will do - it will just run it.</li> 
-       <li>Limitations of your version of Java, your Operating system and Hardware.</li> 
+       <li>Limitations of your version of Java, your Operating system, and Hardware.</li> 
       </ul> 
-      <p>A general advice is to start with one Loader. If you find it not sufficient, then either use the one on a better hardware or just add another one.</p> 
-      <p>&nbsp;</p> 
+      <p>A bit of general advice is to start with one Loader. If you find it not sufficient, then either use it on better hardware or just add another one.</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

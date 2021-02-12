@@ -23,7 +23,7 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="RESTOperations-ParsingXMLbody-Introduction">Introduction</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-Introduction">Introduction</h1> 
       <p><a class="external-link" href="http://en.wikipedia.org/wiki/XML" rel="nofollow">XML</a> (Extensible Markup Language) is a markup language that defines a set of rules for encoding documents in a format that is both human-readable and machine-readable similar to JSON and YAML.</p> 
       <p>In this page we will use mostly the following example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -38,8 +38,8 @@
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-DifferentwaystospecifytheXMLbody">Different ways to specify the XML body</h1> 
-      <h3 id="RESTOperations-ParsingXMLbody-Javaobject:">Java object:</h3> 
+      <h1 id="RESTOperationsParsingXMLbody-DifferentwaystospecifytheXMLbody">Different ways to specify the XML body</h1> 
+      <h3 id="RESTOperationsParsingXMLbody-Javaobject:">Java object:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">Person xmlBody = new Person();
@@ -50,7 +50,7 @@ xmlBody.setAge( 40 );
        </div> 
       </div> 
       <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p> 
-      <h3 id="RESTOperations-ParsingXMLbody-Simpletext:">Simple text:</h3> 
+      <h3 id="RESTOperationsParsingXMLbody-Simpletext:">Simple text:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">String xmlBody = "&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;";
@@ -58,7 +58,7 @@ xmlBody.setAge( 40 );
        </div> 
       </div> 
       <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p> 
-      <h3 id="RESTOperations-ParsingXMLbody-XMLtext:">XML text:</h3> 
+      <h3 id="RESTOperationsParsingXMLbody-XMLtext:">XML text:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.xml.XmlText;
@@ -85,22 +85,22 @@ xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;"); </pre>
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-ConstructingXMLText">Constructing XMLText</h1> 
-      <h3 id="RESTOperations-ParsingXMLbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
+      <h1 id="RESTOperationsParsingXMLbody-ConstructingXMLText">Constructing XMLText</h1> 
+      <h3 id="RESTOperationsParsingXMLbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = client.get().getBodyAsXml();
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingXMLbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
+      <h3 id="RESTOperationsParsingXMLbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person id=\"121213266\"&gt;&lt;firstname&gt;Indiana&lt;/firstname&gt;&lt;lastname&gt;Jones&lt;/lastname&gt;&lt;age&gt;10&lt;/age&gt;&lt;/person&gt;"; );
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingXMLbody-Additemsonebyone">Add items one by one</h3> 
+      <h3 id="RESTOperationsParsingXMLbody-Additemsonebyone">Add items one by one</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">XmlText xmlBody = new XmlText("&lt;person/&gt;");
@@ -111,7 +111,7 @@ xmlBody.add("//person","&lt;age&gt;10&lt;/age&gt;");
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingXMLbody-Constructingcomplexcontent">Constructing complex content</h3> 
+      <h3 id="RESTOperationsParsingXMLbody-Constructingcomplexcontent">Constructing complex content</h3> 
       <p>Imagine you need to construct a more complex example like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -192,7 +192,7 @@ xmlBody.add("/","&lt;age&gt;10&lt;/age&gt;");
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-RetrievingcontentfromXmlText">Retrieving content from XmlText<strong><br> </strong></h1> 
+      <h1 id="RESTOperationsParsingXMLbody-RetrievingcontentfromXmlText">Retrieving content from XmlText<strong><br> </strong></h1> 
       <p>Here is how you can get some XML value:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -208,7 +208,7 @@ int age = xmlBody.getInt( "/department/person[1]/age");
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-Modifyingcontent">Modifying content</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-Modifyingcontent">Modifying content</h1> 
       <p>You can replace some values in the XML text:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -233,7 +233,7 @@ xmlBody.remove( "//person[@id='121213266']/firstname/age" );
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
       <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -253,7 +253,7 @@ xmlBody.getString( "/department/people[1]/firstname" );
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-ModifyingXMLattributes">Modifying XML attributes</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-ModifyingXMLattributes">Modifying XML attributes</h1> 
       <p>You can see all attributes for a certain XML element:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -278,7 +278,7 @@ xmlBody.removeAttribute("//department","country");</pre>
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-NicelyformattingtheXMLtext">Nicely formatting the XML text</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-NicelyformattingtheXMLtext">Nicely formatting the XML text</h1> 
       <p>You have the option to print the XML text as regular or as a well formatted text.</p> 
       <p>For example using the <em>toString()</em> method may give you output like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -306,7 +306,7 @@ xmlBody.removeAttribute("//department","country");</pre>
       </div> 
       <p>&nbsp;</p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingXMLbody-IteratingovertheXMLtextcontent">Iterating over the XML text content</h1> 
+      <h1 id="RESTOperationsParsingXMLbody-IteratingovertheXMLtextcontent">Iterating over the XML text content</h1> 
       <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 

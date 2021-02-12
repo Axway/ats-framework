@@ -25,9 +25,9 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Actionqueueswithsamenames-Introduction">Introduction</h1> 
       <hr> 
-      <p>In case you want to simulate complex behavior of real users, you may need to run more than one threading pattern. For example, imagine you have bank accountants who do some work in the morning, then then have a lunch break and do some other work after lunch. This is easy to achieve by running more than one action queue one after another(one for the morning and one for the afternoon accountants' work).</p> 
-      <p>But when you look at the Test Explorer statistics you may want to see all the user activity in same table. This is very easy to achieve and this page explains shows it.</p> 
-      <p>&nbsp;</p> 
+      <p>In case you want to simulate complex behavior of real users, you may need to run more than one threading pattern. For example, imagine you have bank accountants who do some work in the morning, then have a lunch break and do some other work after lunch. This is easy to achieve by running more than one action queue one after another(one for the morning and one for the afternoon accountants' work).</p> 
+      <p>But when you look at the Test Explorer statistics you may want to see all the user activity in the same table. This is very easy to achieve and this page explains shows it.</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Actionqueueswithsamenames-Twoseparateactionqueues">Two separate action queues</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -59,27 +59,27 @@
        </div> 
       </div> 
       <h3 id="Actionqueueswithsamenames-Theresult">The result</h3> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496855/119496931.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="3"></span></p> 
-      <p>As you can see we have "Morning bank operations" queue, half hour no work and then "Afternoon bank operations" queue. Of course your queue should last for few hours, not like ours here.</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496855/119496931.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
+      <p>As you can see we have "Morning bank operations" queue, half-hour no work and then "Afternoon bank operations" queue. Of course, your queue should last for a few hours, not like ours here.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>Both queues can contain same or different actions from same or different action classes.</p> 
-        <p>In our example both queues run actions from same action class(the imaginary BankActions). There is an action(called payCache) ran by both queues, but there is also an action ran by just one of the queues(called payWithCard).</p> 
+        <p>Both queues can contain the same or different actions from the same or different action classes.</p> 
+        <p>In our example, both queues run actions from the same action class(the imaginary BankActions). There is an action(called payCache) ran by both queues, but there is also an action ran by just one of the queues(called payWithCard).</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Actionqueueswithsamenames-Combinedactionqueues">Combined action queues</h1> 
-      <p>Now change the code by naming both queues with same name, for example "Complex bank operations" and run it again.</p> 
+      <p>Now change the code by naming both queues with the same name, for example, "Complex bank operations" and run it again.</p> 
       <h3 id="Actionqueueswithsamenames-Theresult.1">The result</h3> 
-      <p><br> <span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496855/119496932.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="3"></span></p> 
-      <p>The execution is the same in terms of threading patterns and actions, but both report tables are merged into a single one. Of course now it is not easy to understand which actions were run in the morning and which after noon.</p> 
+      <p><br><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119496855/119496932.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="4"></span></p> 
+      <p>The execution is the same in terms of threading patterns and actions, but both report tables are merged into a single one. Of course, now it is not easy to understand which actions were run in the morning and which afternoon.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>You can combine many patterns and these patterns can vary in type, number of users, actions etc.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

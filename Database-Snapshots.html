@@ -25,7 +25,7 @@
       <h1 id="DatabaseSnapshots-Introduction">Introduction</h1> 
       <p>In some cases you might be interested to know what changes were made on some database.</p> 
       <p>The regular example is when you want to test whether an upgrade of your Application Under Test did not cause any unwanted changes on the database.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Makesurethereisnochangeonthedatabase">Make sure there is no change on the database</h1> 
       <p>The following example makes a snapshot of two databases. An instance of TestBox is used to provide connection parameters to the databases.</p> 
@@ -47,16 +47,30 @@ DatabaseSnapshot snapshot1 = new DatabaseSnapshot( "snap1", testBox1 );
  If you do not have a way to handle them properly, you can specify a REGEX or a custom implementation of the Interface IndexNameMatcher to check if two indexes are the same
 */
 // via Java REGEX
-snapshot1.setIndexNameMatcher(SOME_REGEX);
+snapshot1.setIndexMatcher(SOME_REGEX);
 
-/*snapshot1.setIndexNameMatcher(new IndexNameMatcher() {
+// Note that if one if the IndexMatcher.isSame() method returns true, the other one will not be used at all.
+// The order is: first the isSame(String,String,String). If that returns false, then use the result from the other one
+
+/*snapshot1.setIndexNameMatcher(new IndexMatcher() {
     @Override
     public boolean isSame( String table, String firstName, String secondName ) {
         // some custom name to compare the names of the two indexes.
         // firstName -&gt; the name of the first table index (from the first snapshot), secondName -&gt; the name of the second table index (from the second snapshot)
         return false;
     }
+    
+@Override
+    public boolean isSame( String table, Properties firstProperties, Properties secondProperties ) {
+        // compare all of the index properties. The properties' keys can be found in XYZDbProvider.IndexProperties class
+        return false;
+    }
 });*/
+
+// skip information about this index for the specified table
+Properties indexProperties = new Properties();
+indexProperties.put(MysqlDbProvider.IndexProperties.COLUMN_NAME, "lname"); // for other DB types, change MysqlDbProvider to the appropriate type (PostgreSQL, Oracle, etc)
+snapshot1.skipTableIndex(TABLE_NAME, indexProperties); 
 
 // take first snapshot
 snapshot1.takeSnapshot();
@@ -73,6 +87,14 @@ snapshot2.takeSnapshot();
 
 // compare both snapshots
 snapshot2.compare( snapshot1 );
+
+// or specify some additional comparison options
+CompareOptions compareOptions = new CompareOptions();
+// here it is expected that TABLE_TWO will have 1 unique row. In other words either snapshot1 or shapshot2 will have this table with 1 more or less rows
+compareOptions.setExpectedTableMissingRowsCount(TABLE_TWO, 1, 1);
+// here the unique rows between shapshots is in the range 2-5, (including both values)
+compareOptions.setExpectedTableMissingRowsCount(TABLE_THREE, 2, 5);
+snapshot2.compare(snapshot1, compareOptions);
 </pre> 
        </div> 
       </div> 
@@ -99,7 +121,7 @@ Table indexes for 'Operations' table:
        <li>there is table with a different primary key column</li> 
        <li>there is a table which index has a different type</li> 
       </ul> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Whenisthedataloaded?">When is the data loaded?</h1> 
       <p>It is not clever to load all database data in the java memory as this might cause memory issues.</p> 
@@ -109,7 +131,7 @@ Table indexes for 'Operations' table:
        <li>when called <em>compare</em> method, we load the content of one table at a time for both databases. After comparing a pair of tables, we load data about the next pair and so on.</li> 
        <li>when called <em>saveToFile</em> method. We load one table at a time, save it into a file and then proceed to the next table</li> 
       </ul> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Donotchecksometable">Do not check some table</h1> 
       <p>By default all found tables in the pointed databases are checked. If you want to exclude a table from the check, you can do:</p> 
@@ -125,7 +147,7 @@ snapshot1.skipTables( new String[]{ "SomeTable1", "SomeTable2", "SomeTable3"} );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Donotchecksomecolumn(s)fromsometable">Do not check some column(s) from some table</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -138,7 +160,19 @@ snapshot1.skipTableColumns( "SomeTable1", "column1", "column2", "column3" );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
+      <hr> 
+      <h1 id="DatabaseSnapshots-Donotchecksomeindex(es)fromsometable">Do not check some index(es) from some table</h1> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">// skip one or more indexes
+Properties indexProperties = new Properties();
+indexProperties.put(MysqlDbProvider.IndexProperties.COLUMN_NAME, "lname"); // for other DB types, change MysqlDbProvider to the appropriate type (PostgreSQL, Oracle, etc)
+snapshot1.skipTableIndex(TABLE_NAME, indexProperties); 
+</pre> 
+       </div> 
+      </div> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Savethesnapshotintoafile">Save the snapshot into a file</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -154,7 +188,7 @@ snapshot1.saveToFile( "C:\\db_snapshot_backup.xml" );
         <p>Database backup files are in XML format, so are human readable.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Loadsnapshotfromfile">Load snapshot from file</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -164,13 +198,13 @@ snapshot1.loadFromFile( "snapshot_from_backup_file", "C:\\db_snapshot_backup.xml
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Checksamedatabaseattwodifferentmoments">Check same database at two different moments</h1> 
       <p>Sometimes you do not want to compare two databases, but one and same database at different moments.</p> 
       <p>If you just go ahead, make one snapshot, then take the another snapshot in some time, you will be unpleasantly surprised both snapshots are reported identical even if there is changed content. The reason is, as we described above, in the fact we do not load the table contents prior to calling the <em>compare</em> method. So in this case when we compare each table pairs, we will actually load the tables data at same moment for both snapshots from the same database and everything will be the same.</p> 
       <p>The way to go here is to make one snapshot and save it into a file, this guarantees you get the current tables content. When the seconds snapshot is made and <em>compare</em> is called, we will compare the second snapshot tables from the database versus the first snapshot tables from the backup file.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="DatabaseSnapshots-Makeyourownreportaboutthefounddifferences">Make your own report about the found differences</h1> 
       <p>If you do not like the way we present the found differences, you can make your own:</p> 
@@ -197,7 +231,7 @@ try {
 }</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

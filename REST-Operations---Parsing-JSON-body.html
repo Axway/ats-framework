@@ -23,7 +23,7 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="RESTOperations-ParsingJSONbody-Introduction">Introduction</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-Introduction">Introduction</h1> 
       <p><a class="external-link" href="http://en.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a> (JavaScript Object Notation) is a text-based open standard designed for human-readable data interchange similar to XML and YAML.</p> 
       <p>In this page we will use mostly the following example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -38,8 +38,8 @@
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1> 
-      <h3 id="RESTOperations-ParsingJSONbody-Javaobject:">Java object:</h3> 
+      <h1 id="RESTOperationsParsingJSONbody-DifferentwaystospecifytheJSONbody">Different ways to specify the JSON body</h1> 
+      <h3 id="RESTOperationsParsingJSONbody-Javaobject:">Java object:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">Person jsonBody = new Person();
@@ -50,7 +50,7 @@ jsonBody.setAge( 40 );
        </div> 
       </div> 
       <p>This is the easiest to use way, but sometimes the problem is that you do not have the jar with the needed class(in this example this is the Person class).</p> 
-      <h3 id="RESTOperations-ParsingJSONbody-Simpletext:">Simple text:</h3> 
+      <h3 id="RESTOperationsParsingJSONbody-Simpletext:">Simple text:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">String jsonBody = "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}";
@@ -58,7 +58,7 @@ jsonBody.setAge( 40 );
        </div> 
       </div> 
       <p>The formatting here is not always understandable. Additionally it will be very difficult to extract a value from such (String) response.</p> 
-      <h3 id="RESTOperations-ParsingJSONbody-JSONtext:">JSON text:</h3> 
+      <h3 id="RESTOperationsParsingJSONbody-JSONtext:">JSON text:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.json.JsonText;
@@ -85,22 +85,22 @@ jsonBody.add( "age", 10 );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1> 
-      <h3 id="RESTOperations-ParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
+      <h1 id="RESTOperationsParsingJSONbody-ConstructingJsonText">Constructing JsonText</h1> 
+      <h3 id="RESTOperationsParsingJSONbody-Fetchedasbodyofaresponse">Fetched as body of a response</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = client.get().getBodyAsJsonText();
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingJSONbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
+      <h3 id="RESTOperationsParsingJSONbody-Providetextcontentwhenconstructingtheinstance">Provide text content when constructing the instance</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText( "{\"firstName\":\"Indiana\",\"lastName\":\"Johnes\",\"age\":10}" );
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingJSONbody-Additemsonebyone">Add items one by one</h3> 
+      <h3 id="RESTOperationsParsingJSONbody-Additemsonebyone">Add items one by one</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">JsonText jsonBody = new JsonText();
@@ -110,7 +110,7 @@ jsonBody.add( "age", 10 );
 </pre> 
        </div> 
       </div> 
-      <h3 id="RESTOperations-ParsingJSONbody-Constructingcomplexcontent">Constructing complex content</h3> 
+      <h3 id="RESTOperationsParsingJSONbody-Constructingcomplexcontent">Constructing complex content</h3> 
       <p>Imagine you need to construct a more complex example like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -194,7 +194,7 @@ jsonBody.add( "age", 10 );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-RetrievingcontentfromJsonText">Retrieving content from JsonText</h1> 
       <p>Here is how you can get some JSON value:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -209,7 +209,7 @@ int age = jsonBody.getInt( "age" );
        </div> 
       </div> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-Modifyingcontent">Modifying content</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-Modifyingcontent">Modifying content</h1> 
       <p>You can replace some values in the JSON text:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -230,7 +230,7 @@ jsonBody.remove( "age" );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-Pointingdeeperinthecontent">Pointing deeper in the content</h1> 
       <p>We are using some simple expression language to point to the right key somewhere inside. Here are some examples:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -253,7 +253,7 @@ jsonBody.getInt( "department/temperature-this-week[3]" );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-JSONtoplevelarrays">JSON top level arrays</h1> 
       <p>In some cases you may need to work with JSON content which top level is an array of JSON objects like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -285,7 +285,7 @@ jsonBody.getString( "[1]/lastName" );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-NicelyformattingtheJSONtext">Nicely formatting the JSON text</h1> 
       <p>You have the option to print the JSON text as regular or as a well formatted text.</p> 
       <p>For example using the <em>toString()</em> method may give you output like the following:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -322,7 +322,7 @@ jsonBody.getString( "[1]/lastName" );
       </div> 
       <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-ParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1> 
+      <h1 id="RESTOperationsParsingJSONbody-IteratingovertheJSONtextcontent">Iterating over the JSON text content</h1> 
       <p>If you do not know the content, but want to explore it, you can use the following example as a starting point.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 

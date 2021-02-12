@@ -24,7 +24,7 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Supportedbrowsersandsettings-Introduction">Introduction</h1> 
-      <p>This pages gives a list of the supported browsers and some comments some special considerations when using some browsers on some operating systems</p> 
+      <p>This page gives a list of the supported browsers and some comments some special considerations when using some browsers on some operating systems</p> 
       <p><br></p> 
       <hr> 
       <h1 id="Supportedbrowsersandsettings-Supportedbrowsers">Supported browsers</h1> 
@@ -46,9 +46,9 @@
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Firefox</p></td> 
-          <td class="confluenceTd"><p>52-68</p></td> 
+          <td class="confluenceTd"><p>52-79</p></td> 
           <td class="confluenceTd"><p><strong> <em>FirefoxDriver</em> </strong></p></td> 
-          <td class="confluenceTd"><p>Runs a real Firefox browser on top of Selenium. You may install older versions from here: <a class="external-link" href="https://ftp.mozilla.org/pub/firefox/releases/" rel="nofollow">Firefox releases</a></p><p><strong>Note</strong> To use latest browsers always use latest available ATS version.</p></td> 
+          <td class="confluenceTd"><p>Runs a real Firefox browser on top of Selenium. You may install older versions from here: <a class="external-link" href="https://ftp.mozilla.org/pub/firefox/releases/" rel="nofollow">Firefox releases</a></p><p><strong>Note</strong> To use the latest browsers always use the latest available ATS version.</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>InternetExplorer</p></td> 
@@ -58,13 +58,13 @@
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Microsoft Edge</p></td> 
-          <td class="confluenceTd"><p>20.0</p></td> 
+          <td class="confluenceTd"><p>85</p></td> 
           <td class="confluenceTd"><p><strong> <em>EdgeDriver</em> </strong></p></td> 
           <td class="confluenceTd"><p>Runs a real Edge browser on top of Selenium</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Chrome</p></td> 
-          <td class="confluenceTd"><p>27 - 76</p></td> 
+          <td class="confluenceTd"><p>27 - 84</p></td> 
           <td class="confluenceTd"><p><strong> <em>ChromeDriver</em> </strong></p></td> 
           <td class="confluenceTd"><p>Runs a real Chrome browser on top of Selenium</p></td> 
          </tr> 
@@ -78,21 +78,22 @@
           <td class="confluenceTd"><p>PhantomJS</p></td> 
           <td class="confluenceTd"><p>-</p></td> 
           <td class="confluenceTd"><p><strong> <em>PhantomJSDriver</em> </strong></p></td> 
-          <td class="confluenceTd"><p><strong>Deprecated</strong>. Appropriate for systems without GUI support. PhantomJS is a headless WebKit scriptable with JavaScript.<br>As alternative you may use real browser in headless mode or HtmlUnit.</p></td> 
+          <td class="confluenceTd"><p><strong>Deprecated</strong> and will be removed due to lack of third-party library updates. Appropriate for systems without GUI support. PhantomJS is a headless WebKit scriptable with JavaScript.<br>As an alternative, you may use a real browser in headless mode or HtmlUnit.</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>Browser without a visual UI</p></td> 
-          <td class="confluenceTd"><p>Firefox 45</p></td> 
+          <td class="confluenceTd"><p>Firefox 60</p></td> 
           <td class="confluenceTd"><p><strong> <em>HiddenBrowserDriver</em> </strong></p></td> 
           <td class="confluenceTd"><p>Appropriate for systems without GUI support. Runs much faster as its using an internal Java browser. <br>This also means that in some cases it will not behave exactly as a real browser.</p></td> 
          </tr> 
         </tbody> 
        </table> 
+       Note that future browser versions might also work but need verification and also need latest Selenium WebDrivers.
       </div> 
       <p><br></p> 
       <hr> 
       <h1 id="Supportedbrowsersandsettings-Setupstepsforusingsomebrowsers">Setup steps for using some browsers</h1> 
-      <p>There is a mandatory step before using InternetExplorer, Chrome and newer Firefox drivers.</p> 
+      <p>There is a mandatory step before using InternetExplorer, Chrome, and newer Firefox drivers.</p> 
       <h3 id="Supportedbrowsersandsettings-Firefox">Firefox</h3> 
       <p>For newer Firefox installations Selenium should use Gecko WebDriver. Older versions used "Marionette" driver.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
@@ -120,8 +121,8 @@ System.setProperty( "webdriver.edge.driver", "D:\\bin\\MicrosoftWebDriver.exe" )
       </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>It is recommended to use 32 bit version, it works for 64bit Windows installations as well.</p> 
-        <p>The reason is that there is is an <a class="external-link" href="https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/5116" rel="nofollow">issue with typing</a> with 64 bit driver.</p> 
+        <p>It is recommended to use the 32-bit version, it works for 64-bit Windows installations as well.</p> 
+        <p>The reason is that there is is an <a class="external-link" href="https://github.com/seleniumhq/selenium-google-code-issue-archive/issues/5116" rel="nofollow">issue with typing</a> with the 64-bit driver.</p> 
        </div> 
       </div> 
       <div class="confluence-information-macro confluence-information-macro-warning"> 
@@ -132,7 +133,7 @@ System.setProperty( "webdriver.edge.driver", "D:\\bin\\MicrosoftWebDriver.exe" )
        </div> 
       </div> 
       <h3 id="Supportedbrowsersandsettings-PhantomJS">PhantomJS</h3> 
-      <p>If your system does not have GUI support, you can use this <em>headless driver</em>. First you need to download <a class="external-link" href="http://phantomjs.org/download.html" rel="nofollow">PhantomJS</a> server (a binary file) depending on the OS type and architecture.</p> 
+      <p>If your system does not have GUI support, you can use this <em>headless driver</em>. First, you need to download <a class="external-link" href="http://phantomjs.org/download.html" rel="nofollow">PhantomJS</a> server (a binary file) depending on the OS type and architecture.</p> 
       <p>The PhantomJS browser can run locally and remotely.</p> 
       <p><br></p> 
       <p>Here is how to start a PhantomJS server from a remote machine</p> 
@@ -148,7 +149,7 @@ $ ./phantomjs --webdriver=5678
 </pre> 
        </div> 
       </div> 
-      <p>There are additional command line options described <a class="external-link" href="https://phantomjs.org/api/command-line.html" rel="nofollow">here</a>. For example if want to support HTTPS:</p> 
+      <p>There are additional command line options described <a class="external-link" href="https://phantomjs.org/api/command-line.html" rel="nofollow">here</a>. For example, if want to support HTTPS:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">$ ./phantomjs  --ignore-ssl-errors=yes --ssl-protocol=any --web-security=false --webdriver=5678

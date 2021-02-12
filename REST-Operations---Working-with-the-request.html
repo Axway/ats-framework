@@ -25,7 +25,7 @@
      <div id="main-content" class="wiki-content group"> 
       <p>Usually prior to executing a REST method, you will need to set some special data to the request besides the URI.</p> 
       <hr> 
-      <h1 id="RESTOperations-Workingwiththerequest-Addheaderstotherequest">Add headers to the request</h1> 
+      <h1 id="RESTOperationsWorkingwiththerequest-Addheaderstotherequest">Add headers to the request</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">// the type of content we are sending
@@ -36,18 +36,26 @@ client.addRequestHeader( "Accept", "application/json" );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-Workingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1> 
+      <h1 id="RESTOperationsWorkingwiththerequest-Addqueryparameterstotherequest">Add query parameters to the request</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.addRequestParameter( "lang", "English" );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
+      <div class="confluence-information-macro confluence-information-macro-note"> 
+       <p class="title">Encoding of the request parameters</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>It is recommended, that you always encode values before adding them as request parameters.<br>You may use this method <strong>java.net.URLEncoder.encode(paramStr, “UTF-8”).<br><br></strong>This is required if the value of GET request parameter contains white-spaces or other non-alphabet/non-digit characters.<br>For example:<br>&nbsp;&nbsp; <code>client.addRequestParameter( "lang", "English UK" );</code><br>must be encoded like this:<br>&nbsp;&nbsp; <code>client.addRequestParameter( "lang", java.net.URLEncoder.encode("English UK", “UTF-8”) );</code></p> 
+       </div> 
+      </div> 
+      <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-Workingwiththerequest-Specifyrequestmediatype">Specify request media type</h1> 
+      <h1 id="RESTOperationsWorkingwiththerequest-Specifyrequestmediatype">Specify request media type</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">// send as text/xml
@@ -61,18 +69,18 @@ client.setRequestMediaType( RestMediaType.APPLICATION_JSON );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-Workingwiththerequest-Basicauthorization">Basic authorization</h1> 
+      <h1 id="RESTOperationsWorkingwiththerequest-Basicauthorization">Basic authorization</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">client.setBasicAuthorization( USER_NAME, USER_PASSWORD );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="RESTOperations-Workingwiththerequest-Navigatetointernalresource">Navigate to internal resource</h1> 
+      <h1 id="RESTOperationsWorkingwiththerequest-Navigatetointernalresource">Navigate to internal resource</h1> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">// make an instance of the REST client by specifying the target URI
@@ -98,7 +106,7 @@ RestResponse response = client.delete();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="REST-Operations.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

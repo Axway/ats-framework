@@ -24,7 +24,7 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="RemoteStorageOperations-Introduction">Introduction</h1> 
       <p><br></p> 
-      <p>ATS provides support for operations over <a class="external-link" href="https://aws.amazon.com/s3/" rel="nofollow">Amazon Simple Storage Service</a> (S3 storage) and compatible services. You may use <strong><em>S3Operations</em> </strong>for direct tasks. Current list of these tasks include:</p> 
+      <p>ATS provides support for operations over <a class="external-link" href="https://aws.amazon.com/s3/" rel="nofollow">Amazon Simple Storage Service</a> (S3 storage) and compatible services. You may use <strong><em>S3Operations</em> </strong>for direct tasks. The current list of these tasks include:</p> 
       <ul style="list-style-type: square;"> 
        <li><span>bucket operations - check for existence, create and delete;<br></span></li> 
        <li><span>object operations:<br></span> 
@@ -32,26 +32,26 @@
          <li><span>upload, download files/objects;</span></li> 
          <li><span>list remote objects;</span></li> 
          <li><span>move (rename), delete objects;</span></li> 
-         <li><span>get attributes which includes size, modification time, checksum (MD5/ETag);<br></span></li> 
+         <li><span>get attributes which include size, modification time, checksum (MD5/ETag);<br></span></li> 
         </ul></li> 
       </ul> 
-      <p><span>Below are details how to implement such operations.</span></p> 
+      <p><span>Below are the details on how to implement such operations.</span></p> 
       <h1 id="RemoteStorageOperations-Initialization">Initialization</h1> 
       <div> 
        <div class="syntaxhighlighter sh-confluence nogutter java"> 
         <p><br></p> 
-        <p>In order to use ATS S3Operations client you must add into tour classpath the <em>ats-s3-utilities</em> library. For Maven you should add this dependency in your <em>pom.xml</em> file:</p> 
+        <p>In order to use ATS S3Operations client, you must add this dependency into your classpath the <em>ats-s3-utilities</em> library. For Maven you should add this dependency in your <em>pom.xml</em> file:</p> 
         <div class="code panel pdl" style="border-width: 1px;"> 
          <div class="codeContent panelContent pdl"> 
           <pre class="syntaxhighlighter-pre" data-theme="Confluence">    &lt;dependency&gt;
         &lt;groupId&gt;com.axway.ats.framework.utilities&lt;/groupId&gt;
         &lt;artifactId&gt;ats-s3-utilities&lt;/artifactId&gt;
-        &lt;version&gt;${ats.version}&lt;/version&gt; &lt;!-- Refers property with exact ATS version like 4.0.3 --&gt;
+        &lt;version&gt;${ats.version}&lt;/version&gt; &lt;!-- Refers property with exact ATS version like 4.0.6 --&gt;
     &lt;/dependency&gt;</pre> 
          </div> 
         </div> 
         <p><br></p> 
-        <p>Then you may create instance of S3Operations client:</p> 
+        <p>Then you may create an instance of S3Operations client:</p> 
         <div class="table-wrap"> 
          <table class="wrapped confluenceTable"> 
           <colgroup> 
@@ -75,19 +75,19 @@ S3Operations s3OperationsClient = new S3Operations( endpoint, accessKey, secretK
           </tbody> 
          </table> 
         </div> 
-        <p class="auto-cursor-target">Where parameters are:</p> 
+        <p class="auto-cursor-target">What are the parameters:</p> 
         <ul style="list-style-type: square;"> 
          <li><strong>endpoint</strong> is the URL to the instance/server (URL with host and optional port like 12.34.56.78:5678) where S3 storage is set up and running. For Amazon S3 you may refer to this <a class="external-link" href="https://docs.aws.amazon.com/general/latest/gr/rande.html#s3_region" rel="nofollow">endpoints table</a>. Example: <em>s3.eu-west-1.amazonaws.com</em></li> 
          <li><strong>access key</strong> part of credentials</li> 
          <li><strong>secret key</strong> part of credentials</li> 
          <li><strong>region</strong> name related to the endpoint property. Refer to documentation. Example: <em>eu-west-1</em></li> 
-         <li><strong>bucket name</strong> the name of the bucket you want to work with. It might be not created yet. For naming conventions you may refer to <a class="external-link" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html" rel="nofollow">this document</a>. Notice that bucket name should be unique and could not be reused between different customers in same endpoint/region.</li> 
+         <li><strong>bucket name</strong> the name of the bucket you want to work with. It might be not created yet. For naming conventions, you may refer to <a class="external-link" href="https://docs.aws.amazon.com/AmazonS3/latest/dev/BucketRestrictions.html" rel="nofollow">this document</a>. Notice that bucket name should be unique and could not be reused between different customers in the same endpoint/region.</li> 
         </ul> 
        </div> 
       </div> 
       <h1 id="RemoteStorageOperations-Examples">Examples</h1> 
       <p><br></p> 
-      <p>Below is example of what you can do with this utility. For the full list please check the source code or JavaDoc.</p> 
+      <p>Below is an example of what you can do with this utility. For the full list please check the source code or JavaDoc.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.action.s3.S3Operations;
@@ -123,12 +123,12 @@ s3Ops.deleteObjects("" /* or null, no prefix path to be matched */, ".*" /* matc
 </pre> 
        </div> 
       </div> 
-      <p>Note that Amazon emulates folders by accepting separator character. ATS considers it to be the default, UNIX folder separator ("/", forward slash). However in order to root directory, the path prefix should be just empty string.</p> 
+      <p>Note that Amazon emulates folders by accepting separator character. ATS considers it to be the default, UNIX folder separator ("/", forward slash). However, in order to root directory, the path prefix should be just an empty string.</p> 
       <p><br></p> 
       <hr> 
       <h1 id="RemoteStorageOperations-Specialconsiderations">Special considerations</h1> 
       <p><br></p> 
-      <p>Working with remote files is tricky and you should consider optional concurrency cases. This could be true especially if you use ATS to verify that other system had already uploaded some file. In such case it is recommended to use polling and particularly our RBV client <em>named S3Verification</em>. More details are described in <a href="Remote-Storage-(S3)-Verifications.html">Remote Storage (S3) Verifications</a>.</p> 
+      <p>Working with remote files is tricky and you should consider optional concurrency cases. This could be true especially if you use ATS to verify that other systems had already uploaded some file. In such case, it is recommended to use polling and particularly our RBV client <em>named S3Verification</em>. More details are described in <a href="Remote-Storage-(S3)-Verifications.html">Remote Storage (S3) Verifications</a>.</p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

@@ -27,11 +27,11 @@
       <p><br></p> 
       <hr> 
       <h1 id="CreatinganAgentComponent-Creatingtheactions">Creating the actions</h1> 
-      <p>Each <em>Agent component</em> contains at least one <em>Agent action</em>. These actions are java methods, so they exist in regular java classes.</p> 
-      <p>Here we will make two java classes with actions. These will be used in the different user guide pages related to performance testing.</p> 
+      <p>Each <em>Agent component</em> contains at least one <em>Agent action</em>. These actions are Java methods, so they exist in regular Java classes.</p> 
+      <p>Here we will make two Java classes with actions. These will be used in the different user guide pages related to performance testing.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>If following the Maven conventions, the following classes should be placed into <em><strong>src/main/java</strong></em> sub folder of the project</p> 
+        <p>If following the Maven conventions, the following classes should be placed into <em><strong>src/main/java</strong></em> subfolder of the project</p> 
        </div> 
       </div> 
       <h3 id="CreatinganAgentComponent-Averysimpleactionclass">A very simple action class</h3> 
@@ -63,8 +63,8 @@ public class SimpleActions {
        </div> 
       </div> 
       <h3 id="CreatinganAgentComponent-ActionclassdoingfiletransfersoverFTP">Action class doing file transfers over FTP</h3> 
-      <p>This one is using the ATS <em>FileTransferClient</em> class which is able to transfer files over variety of protocols.</p> 
-      <p>But the ATS <em>FileTransferClient</em> class cannot run in parallel for many user, now we make a wrapper around it to make this possible.</p> 
+      <p>This one is using the ATS <em>FileTransferClient</em> class which is able to transfer files over a variety of protocols.</p> 
+      <p>But the ATS <em>FileTransferClient</em> class cannot run in parallel for many users, now we make a wrapper around it to make this possible.</p> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -111,14 +111,14 @@ public class FileTransferActions {
       <hr> 
       <h1 id="CreatinganAgentComponent-Importantdetailsaboutactions">Important&nbsp; details about actions</h1> 
       <ul> 
-       <li>A java method becomes an <em>action</em> when we annotate it properly.</li> 
+       <li>A Java method becomes an <em>action</em> when we annotate it properly.</li> 
        <li>Any input action arguments must be annotated properly as well.</li> 
        <li>The action method body can have any content you wish.</li> 
       </ul> 
       <p><br></p> 
       <hr> 
       <h1 id="CreatinganAgentComponent-Creatingacleanuphandler">Creating a cleanup handler</h1> 
-      <p>Each <em>Agent component</em> <strong>must</strong> contain one (and only one)<em> cleanup handler</em>. It is invoked at the end of restore operation (after restore DB tables and files) to complete&nbsp; restore logic common for the whole component.</p> 
+      <p>Each <em>Agent component</em> <strong>must</strong> contain one (and only one)<em> cleanup handler</em>. It is invoked at the end of restore operation (after restore DB tables and files) to complete restore logic common for the whole component.</p> 
       <p>Here we will create a default cleanup handler:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -139,7 +139,7 @@ public class SimpleCleanupHandler implements EnvironmentCleanupHandler {
       <hr> 
       <h1 id="CreatinganAgentComponent-CreatinganAgentdescriptorfile">&nbsp;Creating an Agent descriptor file</h1> 
       <p>Each Agent component has one description file called <em><strong>agent_descriptor.xml</strong></em></p> 
-      <p>See the one bellow:</p> 
+      <p>See the one below:</p> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -156,7 +156,7 @@ public class SimpleCleanupHandler implements EnvironmentCleanupHandler {
       </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>If following the Maven conventions, the <em><strong>agent_descriptor.xml</strong></em> file should be placed into <em><strong>src/main/resources</strong></em> sub folder of the project</p> 
+        <p>If following the Maven conventions, the <em><strong>agent_descriptor.xml</strong></em> file should be placed into <em><strong>src/main/resources</strong></em> subfolder of the project</p> 
        </div> 
       </div> 
       <p>Here are the important details:</p> 

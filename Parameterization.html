@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
  <head> 
-  <title>ATS : Parametrization</title> 
+  <title>ATS : Parametеrization</title> 
   <link rel="stylesheet" href="styles/site.css" type="text/css"> 
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
  </head> 
@@ -19,28 +19,28 @@
        <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
       </ol> 
      </div> 
-     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Parametrization </span> </h1> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Parametеrization </span> </h1> 
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="Parametrization-Introduction">Introduction</h1> 
+      <h1 id="Parametеrization-Introduction">Introduction</h1> 
       <p>When running many threads(users) you usually need to use different input parameters for your actions.</p> 
       <p>For example, when logging in you will need to specify different user names. When sending files you will need to pick different files etc.</p> 
       <p>This page shows you how to achieve automatic generation of input parameters</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>ATS provides different <em> <strong>parametrization patterns</strong> </em></p> 
+        <p>ATS provides different <em> <strong>parametеrization patterns</strong> </em></p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Rangegenerationpattern">Range generation pattern</h1> 
+      <h1 id="Parametеrization-Rangegenerationpattern">Range generation pattern</h1> 
       <p>The range generation pattern works for String or Integer parameter types. See the usage of the <strong> <em>RangeDataConfig</em> </strong> class in the following example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">    // define some informative constants
-    private static final String PARAMETRIZED_USER = "username";
-    private static final String PARAMETRIZED_FILE = "localFilePath";
+    private static final String PARAMETERIZED_USER = "username";
+    private static final String PARAMETERIZED_FILE = "localFilePath";
 
     @Test
     public void paremetrizedFileTransfers() throws Exception {
@@ -52,8 +52,8 @@
         loader.setThreadingPattern( new AllAtOncePattern( 5, true ) );
 
         // set as many as needed data configurators
-        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_USER, "vuser{0}", 10, 100 ) );
-        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
+        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETERIZED_USER, "vuser{0}", 10, 100 ) );
+        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETERIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
 
         // give a name to your action queue
         loader.startQueueing( "FTP transfer" );
@@ -62,8 +62,8 @@
         FileTransferActions ftActions = new FileTransferActions();
   
         // list all the actions you want to run
-        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
-        ftActions.upload( PARAMETRIZED_FILE );
+        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETERIZED_USER, USER_PASSWORD );
+        ftActions.upload( PARAMETERIZED_FILE );
         ftActions.disconnect();
   
         // now execute the requested action queue according to the threading pattern
@@ -72,21 +72,21 @@
 </pre> 
        </div> 
       </div> 
-      <p><br> When creating a new <strong> <em>RangeDataConfig</em> </strong>you need to provide:</p> 
-      <h3 id="Parametrization-Parametername">Parameter name</h3> 
-      <p>In our example these are the<strong> "</strong> <em>username</em>" and "<em>localFilePath</em>".</p> 
+      <p><br>When creating a new <strong> <em>RangeDataConfig</em> </strong>you need to provide:</p> 
+      <h3 id="Parametеrization-Parametername">Parameter name</h3> 
+      <p>In our example these are the<strong>&nbsp;</strong>"<em>username</em>" and "<em>localFilePath</em>".</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>The parameter name is name of the input argument of the Action method.</p> 
+        <p>The parameter name is the name of the input argument of the Action method.</p> 
         <p>Our example uses the connect method of the FileTransferAction class as presented <a href="Creating-an-Agent-Component.html">here</a> <em> </em>which comes with<em> <strong>"String username</strong> </em>" as its third argument. This is the one we parametrize.</p> 
        </div> 
       </div> 
-      <h3 id="Parametrization-Staticparametervalue">Static parameter value</h3> 
+      <h3 id="Parametеrization-Staticparametervalue">Static parameter value</h3> 
       <p>Here you specify the format of the passed values. As you see there is some static part - like <strong> <em>vuser</em>. </strong></p> 
       <p>But there is some place holder as well - <em> <strong>{0}</strong> </em>. This one will be replaced during the action executions by the Agent with the next value from the range.</p> 
-      <h3 id="Parametrization-Startandendrange">Start and end range</h3> 
+      <h3 id="Parametеrization-Startandendrange">Start and end range</h3> 
       <p>These two numbers define the actual range</p> 
-      <h3 id="Parametrization-Theresult">The result</h3> 
+      <h3 id="Parametеrization-Theresult">The result</h3> 
       <p>Running our test produces the following parameter values:</p> 
       <div class="table-wrap"> 
        <table class="wrapped confluenceTable"> 
@@ -132,18 +132,18 @@
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>What if the range is not enough to supply parameter for all threads(users)?</p> 
-        <p>It will simply start over. For example if you have a range from 1 to 10, but you run 15 threads, this mean the first 10 threads will get all the available range numbers (from 1 to 10), the 11th thread will get the number 1, the 12th number 2 and so forth</p> 
+        <p>It will simply start over. For example, if you have a range from 1 to 10, but you run 15 threads, this means the first 10 threads will get all the available range numbers (from 1 to 10), the 11th thread will get the number 1, the 12th number 2 and so forth</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Listgenerationpattern">List generation pattern</h1> 
+      <h1 id="Parametеrization-Listgenerationpattern">List generation pattern</h1> 
       <p>This pattern will generate input data based on some static list of values. See the usage of the <strong> <em>ListDataConfig</em> </strong> class in the following example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">    // define some informative constants
-    private static final String   PARAMETRIZED_USER = "username";
-    private static final String   PARAMETRIZED_FILE = "localFilePath";
+    private static final String   PARAMETERIZED_USER = "username";
+    private static final String   PARAMETERIZED_FILE = "localFilePath";
 
     private static final String[] USER_TOKENS       = new String[]{ "vuser10", "vuser11", "vuser12", "vuser13", "vuser14" };
 
@@ -157,8 +157,8 @@
         loader.setThreadingPattern( new AllAtOncePattern( 5, true ) );
 
         // set as many as needed data configurators
-        loader.addParameterDataConfigurator( new ListDataConfig( PARAMETRIZED_USER, USER_TOKENS ) );
-        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
+        loader.addParameterDataConfigurator( new ListDataConfig( PARAMETERIZED_USER, USER_TOKENS ) );
+        loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETERIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
 
         // give a name to your action queue
         loader.startQueueing( "FTP transfer" );
@@ -167,8 +167,8 @@
         FileTransferActions ftActions = new FileTransferActions();
   
         // list all the actions you want to run
-        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETRIZED_USER, USER_PASSWORD );
-        ftActions.upload( PARAMETRIZED_FILE );
+        ftActions.connect( SERVER_IP, SERVER_FTP_PORT, PARAMETERIZED_USER, USER_PASSWORD );
+        ftActions.upload( PARAMETERIZED_FILE );
         ftActions.disconnect();
   
         // now execute the requested action queue according to the threading pattern
@@ -182,20 +182,20 @@
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>The List data configurator is not suitable if the number of possible parameter values is too long.</p> 
-        <p>In such cases you'd better use Range.</p> 
+        <p>In such cases, it is preferred to use Range.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Usernamegenerationpattern">Username generation pattern</h1> 
+      <h1 id="Parametеrization-Usernamegenerationpattern">Username generation pattern</h1> 
       <p>When reviewing your testcase messages in Test Explorer you will see that there is a <em>thread</em> associated with each message:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495116.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="7"></span></p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495116.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic2.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="9"></span></p> 
       <p>In this example the messages come from 2 different hosts(machines).</p> 
       <p>The first host is the one that starts the tests and its thread is called <em>main</em>.</p> 
-      <p>The other host is where the actions are running which is the ATS Loader. A number of threads are started and the thread names are displayed next to each message they produce.<br> But in many cases it is preferable to see <em>user names</em> instead of&nbsp; <em>thread names</em>:</p> 
-      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495115.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="7"></span></p> 
+      <p>The other host is where the actions are running which is the ATS Loader. A number of threads are started and the thread names are displayed next to each message they produce.<br>But in many cases it is preferable to see <em>user names</em> instead of&nbsp; <em>thread names</em>:</p> 
+      <p><span class="confluence-embedded-file-wrapper"><img class="confluence-embedded-image confluence-content-image-border" src="attachments/119495011/119495115.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="pic1.png" data-linked-resource-content-type="image/png" data-linked-resource-container-version="9"></span></p> 
       <p>To achieve this, you need to add a <em> <strong>Username Data Configurator</strong> </em>. This can be done in two ways:</p> 
-      <h3 id="Parametrization-Usingastaticlistofusernames:">Using a static list of usernames:</h3> 
+      <h3 id="Parametеrization-Usingastaticlistofusernames:">Using a static list of usernames:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence"> private static String[] USER_TOKENS = new String[]{ "user1", "user2", "user3", "user4" };
@@ -204,7 +204,7 @@
 </pre> 
        </div> 
       </div> 
-      <h3 id="Parametrization-Usingarangeofusernames:">Using a range of usernames:</h3> 
+      <h3 id="Parametеrization-Usingarangeofusernames:">Using a range of usernames:</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence"> loader.addParameterDataConfigurator( new UsernameDataConfig( "user{0}", 1, 4 ) );
@@ -254,14 +254,14 @@
         <p>The <em> <strong>Username Data Configurator</strong> </em> operates only on action parameter with name <strong> <em>username</em> </strong></p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Filenamesgenerationpattern">File names generation pattern</h1> 
+      <h1 id="Parametеrization-Filenamesgenerationpattern">File names generation pattern</h1> 
       <p>This pattern is very useful when files are used for input data, usually when running file transfers.</p> 
       <p>Let's use the first test in this page, but replace:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
-        <pre class="syntaxhighlighter-pre" data-theme="Confluence">loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETRIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">loader.addParameterDataConfigurator( new RangeDataConfig( PARAMETERIZED_FILE, "C:/file{0}.txt", 1, 100 ) );
 </pre> 
        </div> 
       </div> 
@@ -269,43 +269,43 @@
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">loader.addParameterDataConfigurator(
-    new FileNamesDataConfig( PARAMETRIZED_FILE, "C:/temp/files/", ParameterProviderLevel.PER_INVOCATION ) );
+    new FileNamesDataConfig( PARAMETERIZED_FILE, "C:/temp/files/", ParameterProviderLevel.PER_INVOCATION ) );
 </pre> 
        </div> 
       </div> 
       <p>As you can see, now we do not need to know the names of the files, but only the folder they are located in.</p> 
       <p>Now each time we need to provide a file name, we will pick the next file available in the given folder.</p> 
       <p class="confluence-link">Here you can see more detailed examples of using this parametrization pattern.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Theparameterproviderlevel">The parameter provider level</h1> 
+      <h1 id="Parametеrization-Theparameterproviderlevel">The parameter provider level</h1> 
       <p>When parametrizing the action parameter values, you sometimes want each thread(user) to use its own value or maybe all the possible values.</p> 
-      <p>For example when running file transfers you will want:</p> 
+      <p>For example, when running file transfers you will want:</p> 
       <ul> 
-       <li>each thread to be associated with a dedicated <em>username</em>. This way all transfer done by one thread will use always same username</li> 
+       <li>each thread to be associated with a dedicated <em>username</em>. This way all transfers are done by one thread and will always use the same username</li> 
        <li>each transfer (even for same thread) to send a different file on each transfer</li> 
       </ul> 
       <p class="confluence-link"><a href="Parameter-provider-level.html">Here</a> we show you how to properly set this behavior.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Customparametergenerationpattern">Custom parameter generation pattern</h1> 
-      <p>Maybe none of the available patterns suite your needs. In such case you can develop your own parameter generation pattern.</p> 
+      <h1 id="Parametеrization-Customparametergenerationpattern">Custom parameter generation pattern</h1> 
+      <p>Maybe none of the available patterns suite your needs. In this case, you can develop your own parameter generation pattern.</p> 
       <p class="confluence-link"><a href="Custom-parameter-generation-pattern.html">Here</a> you can see some example which is not available with the framework distribution.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-DistributingparameterswhenusingmanyLoaders">Distributing parameters when using many Loaders</h1> 
+      <h1 id="Parametеrization-DistributingparameterswhenusingmanyLoaders">Distributing parameters when using many Loaders</h1> 
       <p>As you know, you can run your performance actions on one or more Agent loaders at once. In such cases, we will distribute the parameter values as evenly as possible.</p> 
       <p>Example: You have 5 available user names running on 2 Loaders. The first loader will get the first 2 available user names, the second one will get the rest.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>The File Names generation pattern cannot split the possible values, as we do not know them upfront.</p> 
-        <p>During the execution of the actions, we will pick the next file from the provided folder conainer.</p> 
+        <p>During the execution of the actions, we will pick the next file from the provided folder container.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Parametrization-Parametrizedinputdatawithmultiplecallstosameinputarguments">Parametrized input data with multiple calls to same input arguments</h1> 
-      <p>This is a kind of rare case, but still a possible one. Sometimes it turns out that in same queue of actions there is more than one parameter with same name.</p> 
+      <h1 id="Parametеrization-Parameterizedinputdatawithmultiplecallstosameinputarguments">Parameterized input data with multiple calls to same input arguments</h1> 
+      <p>This is a kind of rare case, but still a possible one. Sometimes it turns out that in the same queue of actions there is more than one parameter with the same name.</p> 
       <p><a href="Parametrized-input-data-with-multiple-calls-to-same-input-arguments.html">Here</a> is an example showing how to properly feed with data such parameters.</p> 
       <hr> 
       <p>Back to <a href="Running-performance-tests.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

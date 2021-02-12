@@ -23,20 +23,20 @@
     </div> 
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Introduction">Introduction</h1> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Introduction">Introduction</h1> 
       <p>Sometimes comparing files attributes is not enough.</p> 
       <p>Imagine you have instances of an XML file with identical content. If some of the XML nodes are moved around, we will tell you the files are different in terms of size and MD5, but the meaningful content is the same indeed.</p> 
       <p>This page shows how to compare the content of XML, Properties, INI and TEXT files without worrying about the file size and MD5 checksum.</p> 
       <hr> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Comparingpropertiesfiles">Comparing properties files</h1> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing">Skipped data while comparing</h3> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Comparingpropertiesfiles">Comparing properties files</h1> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Skippeddatawhilecomparing">Skipped data while comparing</h3> 
       <p>Following is some data that will not be taken into consideration while comparing:</p> 
       <ul> 
        <li>order of the key-value pairs</li> 
        <li>empty spaces around keys and values</li> 
        <li>commented lines</li> 
       </ul> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare">Samples files to compare</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Samplesfilestocompare">Samples files to compare</h3> 
       <p>Here is the first properties file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -60,7 +60,7 @@ db.parameters.name=testdb
 db.parameters.username=ATSUser</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult">Compare result</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Compareresult">Compare result</h3> 
       <p>If both properties files are present in your snapshot comparison, you will get some output like:</p> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -72,7 +72,7 @@ Different files:
     property key 'db.parameters.password': 'bestPa$$w0rd' - 'bestPassword'</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomeproperties">Do not compare some properties</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Donotcomparesomeproperties">Do not compare some properties</h3> 
       <p>If some properties are not of interest, there are ways to skip them while checking the content of the file</p> 
       <p>You can skip properties with some keys:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -103,8 +103,8 @@ snapshot1.properties.skipPropertyByValueMatchingText( "F1", "dbconnection.proper
        </div> 
       </div> 
       <hr> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-ComparingXMLfiles">Comparing XML files</h1> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing.1">Skipped data while comparing</h3> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-ComparingXMLfiles">Comparing XML files</h1> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Skippeddatawhilecomparing.1">Skipped data while comparing</h3> 
       <p>Note that the following data that will not be taken into consideration while comparing:</p> 
       <ul> 
        <li>order of the same XML nodes</li> 
@@ -112,7 +112,7 @@ snapshot1.properties.skipPropertyByValueMatchingText( "F1", "dbconnection.proper
        <li>commented nodes</li> 
        <li>double vs single empty nodes - for example "&lt;building&gt;&lt;/building&gt;" vs "&lt;building/&gt;"</li> 
       </ul> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare.1">Samples files to compare</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Samplesfilestocompare.1">Samples files to compare</h3> 
       <p>Here is the first XML file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -153,7 +153,7 @@ snapshot1.properties.skipPropertyByValueMatchingText( "F1", "dbconnection.proper
 &lt;/employees&gt;</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult.1">Compare result</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Compareresult.1">Compare result</h3> 
       <p>If both example XML files are present in your snapshot comparison, you will get some output like:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -184,7 +184,7 @@ Different files:
        <li>employee with id "008" is present in second snapshot, but not present first snapshot</li> 
        <li>employee with id "009" has a &lt;division&gt; sub-node in second snapshot, but not in first snapshot</li> 
       </ul> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomenodes">Do not compare some nodes</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Donotcomparesomenodes">Do not compare some nodes</h3> 
       <p>If some nodes are not of interest, there are ways to skip them while checking the content of the file</p> 
       <p>You can skip nodes with some specific attributes:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -222,17 +222,17 @@ snapshot1.xml.skipNodeByValueMatchingText( "F1", "employees.xml", "//division", 
       <hr> 
       <p>Back to <a href="File-System-Snapshots.html">parent page</a></p> 
       <hr> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-ComparingINIfiles">Comparing INI files</h1> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-ComparingINIfiles">Comparing INI files</h1> 
       <p>As <a class="external-link" href="https://en.wikipedia.org/wiki/INI_file" rel="nofollow">Wikipedia</a> advices the INI file format is an informal standard for configuration files for some platforms or software.</p> 
       <p>We expect that there are <em> <strong>sections</strong> </em> in the INI file which look in the form of <strong> <em>[some section name]</em> </strong>. Each section contains a number of key-value pairs in the form <strong>key=some value</strong>. Additionally each line starting the with <em> <strong>;</strong> </em> sign is considered to a comment.</p> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing.2">Skipped data while comparing</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Skippeddatawhilecomparing.2">Skipped data while comparing</h3> 
       <p>Following is some data that will not be taken into consideration while comparing:</p> 
       <ul> 
        <li>order of the key-value pairs</li> 
        <li>empty spaces around keys and values</li> 
        <li>commented lines</li> 
       </ul> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare.2">Samples files to compare</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Samplesfilestocompare.2">Samples files to compare</h3> 
       <p>Here is the first properties file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -257,7 +257,7 @@ CMCDLLNAME32=mapi32.dll
 00A=Spanish</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult.2">Compare result</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Compareresult.2">Compare result</h3> 
       <p>If both example XML files are present in your snapshot comparison, you will get some output like:</p> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -269,7 +269,7 @@ Different files:
     Section [Mail], presence of key 'OLEMessaging': YES - NO</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomeproperties.1">Do not compare some properties</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Donotcomparesomeproperties.1">Do not compare some properties</h3> 
       <p>If some INI properties are not of interest, there are ways to skip them while checking the content of the file</p> 
       <p>You can skip INI properties with some keys:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -309,15 +309,15 @@ snapshot1.ini.skipIniSectionMatchingText( "F1", "simple_ini_file.ini", "\\[Ma.*"
        </div> 
       </div> 
       <hr> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-ComparingTEXTfiles">Comparing TEXT files</h1> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-ComparingTEXTfiles">Comparing TEXT files</h1> 
       <p>This is the simplest comparison, each lines is processed as one unbreakable token.</p> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Skippeddatawhilecomparing.3">Skipped data while comparing</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Skippeddatawhilecomparing.3">Skipped data while comparing</h3> 
       <p>Following is some data that will not be taken into consideration while comparing:</p> 
       <ul> 
        <li>order of the text lines</li> 
        <li>empty spaces around keys and values</li> 
       </ul> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Samplesfilestocompare.3">Samples files to compare</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Samplesfilestocompare.3">Samples files to compare</h3> 
       <p>Here is the first properties file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -336,7 +336,7 @@ By William
    Shakespeare</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Compareresult.3">Compare result</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Compareresult.3">Compare result</h3> 
       <p>If both example TEXT files are present in your snapshot comparison, you will get some output like:</p> 
       <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -348,7 +348,7 @@ Different files:
     Presence of line By William: YES - NO</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Donotcomparesomelines">Do not compare some lines</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Donotcomparesomelines">Do not compare some lines</h3> 
       <p>If some text lines are not of interest, there are ways to skip them while checking the content of the file:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -362,14 +362,14 @@ snapshot1.text.skipTextLineContainingText( "F1", "file1.txt", "William" );
 snapshot1.text.skipTextLineMatchingText( "F1", "file1.txt", "By.*" );</pre> 
        </div> 
       </div> 
-      <h1 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Configuration">Configuration</h1> 
+      <h1 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Configuration">Configuration</h1> 
       <p>You can change the way this comparison works. You need to call some of the setter methods:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">ActionLibraryConfigurator.getInstance().snapshots.setXYZ...</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-SpecifywhichfilestobetreatedasTEXTfile">Specify which files to be treated as TEXT file</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-SpecifywhichfilestobetreatedasTEXTfile">Specify which files to be treated as TEXT file</h3> 
       <p>Based on the file extension, you can specify which files to be treated as TEXT files. By default all files with extension ".txt" are in the list:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -378,7 +378,7 @@ ActionLibraryConfigurator.getInstance().snapshots.setTextFileExtensions( ".txt",
        </div> 
       </div> 
       <p>Similarly you can work with the other supported types by calling <em> <strong>setXmlFileExtensions() </strong> </em>or <em> <strong>setPropertiesFileExtensions()</strong> </em> or <strong> <em>setIniFileExtensions()</em> </strong></p> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-Disablecheckingthecontentofsomefiletypes">Disable checking the content of some file types</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-Disablecheckingthecontentofsomefiletypes">Disable checking the content of some file types</h3> 
       <p>By default the content of all file types discussed on this page are checked. How ever, you can disable some of them:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -388,7 +388,7 @@ ActionLibraryConfigurator.getInstance().snapshots.setCheckIniFilesContent( false
 ActionLibraryConfigurator.getInstance().snapshots.setCheckTextFilesContent( false )</pre> 
        </div> 
       </div> 
-      <h3 id="FileSystemSnapshots-Inspectthecontentofsomefiletypes-SpecifyINIfilespecialcharacters">Specify INI file special characters</h3> 
+      <h3 id="FileSystemSnapshotsInspectthecontentofsomefiletypes-SpecifyINIfilespecialcharacters">Specify INI file special characters</h3> 
       <p>The<em><strong> default start character of INI section</strong></em> is '['. Here is how to change it:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 

@@ -17,7 +17,7 @@
        <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
        <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
        <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
-       <li> <span><a href="Parametrization.html">Parametrization</a></span> </li> 
+       <li> <span><a href="Parametеrization.html">Parametеrization</a></span> </li> 
       </ol> 
      </div> 
      <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Custom parameter generation pattern </span> </h1> 
@@ -25,11 +25,11 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Customparametergenerationpattern-Introduction">Introduction</h1> 
-      <p>ATS provides some ready-to-use parameter generation patterns which fulfill most of the needs. But still, in reality there are case when you need to implement your very own logic.</p> 
-      <p>Here we show such pattern which is not available with the ATS distribution, but can be used as starting point for creating your own custom pattern.</p> 
+      <p>ATS provides some ready-to-use parameter generation patterns which fulfill most of the needs. But still, in reality, there are cases when you need to implement your very own logic.</p> 
+      <p>Here we show such a pattern that is not available with the ATS distribution but can be used as a starting point for creating your own custom pattern.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>The code might look somewhat longer compared to most example in this user guide, but:</p> 
+        <p>The code might look somewhat longer compared to most examples in this user guide, but:</p> 
         <ul> 
          <li>you will rarely hit such need</li> 
          <li>code is not difficult</li> 
@@ -37,13 +37,13 @@
         </ul> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Customparametergenerationpattern-Whatdoesthiscustomexampledo?">What does this custom example do?</h1> 
       <p>Our example demonstrates how to create simple words. These words have some length and letters as defined by the test.</p> 
-      <p>Let's say you set all letters to be <em> <strong>7</strong> </em> character lone and all characters to fall in the range between <em> <strong>P</strong> </em> and <em> <strong>W</strong> </em>. The result is words like UQQRUPT, SQUPTQS, SVUURQP etc</p> 
+      <p>Let's say you set all letters to be <em> <strong>7 </strong>characters</em>&nbsp;long and all characters to fall in the range between <em> <strong>P</strong> </em> and <em> <strong>W</strong> </em>. The result is words like UQQRUPT, SQUPTQS, SVUURQP, etc</p> 
       <p>All values will be provided depending on the specified <a href="Parameter-provider-level.html">parameter provider level</a></p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Customparametergenerationpattern-Thetestcode">The test code</h1> 
       <p>Here is how our test will look like</p> 
@@ -61,8 +61,8 @@
 		loader.setThreadingPattern( new AllAtOncePattern( 10, true, 50, 1000 ) );
 
 		// call our custom parameter configurator
-		// the letters will be changing from 'O' to 'R'
-		// there will be 5 repeated letters in each produced value
+		// the letters will be changing from 'P' to 'W'
+		// there will be 7 repeated letters in each produced value
         loader.addParameterDataConfigurator( new RandomWordCreatorDataConfig( PARAMETRIZED_PARAM, 'P', 'W', 7, ParameterProviderLevel.PER_INVOCATION ) );
 
 		// give a name to your action queue
@@ -80,15 +80,15 @@
       <p>As you can see this test code looks as easy(or difficult) as any other example with the already available parameter generation patterns</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>Now in order to make it working you need to make your own instances of <em> <strong>CustomParameterDataConfig</strong> </em> and <em> <strong>CustomParameterDataProvider</strong> </em>classes</p> 
+        <p>Now in order to make it work you need to make your own instances of <em> <strong>CustomParameterDataConfig</strong> </em> and <em> <strong>CustomParameterDataProvider</strong> </em>classes</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Customparametergenerationpattern-Exampleofcustomdataconfiguration">Example of custom data configuration</h1> 
       <p>Please have a look at the code and the comments inside.</p> 
       <p>We basically remember the configuration as comes from the test. We also take care of distributing the values in case of using more than one loader.</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">import com.axway.ats.agent.core.model.EvenLoadDistributingUtils;
@@ -169,9 +169,9 @@ public class RandomWordCreatorDataConfig extends CustomParameterDataConfig {
 }</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="Customparametergenerationpattern-Exampleofcustomdataprovider">Example of custom data provider</h1> 
+      <h1 id="Customparametergenerationpattern-Exampleofacustomdataprovider">Example of a custom data provider</h1> 
       <p>Please have a look at the code and the comments inside.</p> 
       <p>The <em>doInitialize()</em> method reads the configuration as comes from the test.</p> 
       <p>The <em>createNewWord</em> method generates each value when requested. Here the parameter provider level plays its role, you must make your logic working in all cases.</p> 
@@ -267,9 +267,9 @@ public class RandomWordCreatorDataProvider extends CustomParameterDataProvider {
 }</pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <p>Back to <a href="Parametеrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 

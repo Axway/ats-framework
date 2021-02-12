@@ -23,12 +23,12 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Introduction">Introduction</h1> 
-      <p>This page shows how to use the ATS <em>UI Engine</em> in order to automate the functional testing of web application working on top of HTML and javascript</p> 
+      <p>This page shows how to use the ATS <em>UI Engine</em> in order to automate the functional testing of a web application working on top of HTML and javascript</p> 
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
        <div class="confluence-information-macro-body"> 
         <p>The current implementation uses internally <a class="external-link" href="http://seleniumhq.org/" rel="nofollow">Selenium</a>. Because of that Web UI tests require JavaSE 8 as a minimum JRE.</p> 
-        <p>If this get changed in the future, the <em>UI Engine</em> needs to make the change as transparent as possible.</p> 
+        <p>If this gets changed in the future, the <em>UI Engine</em> needs to make the change as transparent as possible.</p> 
        </div> 
       </div> 
       <p><br></p> 
@@ -38,7 +38,7 @@
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Supportedbrowsersandsettings">Supported browsers and settings</h1> 
-      <p><a href="Supported-browsers-and-settings.html">Here</a> you can see the list of supported browser. In order to use some of them you need to take some preparation steps</p> 
+      <p><a href="Supported-browsers-and-settings.html">Here</a> you can see the list of supported browsers. In order to use some of them, you need to take some preparation steps</p> 
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Usingdifferentbrowsers">Using different browsers</h1> 
@@ -69,8 +69,6 @@ if( browserType.equals( "FF" ) ) {
      driver = UiDriver.getEdgeDriver( "SOME URL" );
 } else if( browserType.equals( "SAFARI" ) ) {
      driver = UiDriver.getSafariDriver( "SOME URL" );
-} else if( browserType.equals( "PHANTOMJS" ) ) {
-     driver = UiDriver.getPhantomJSDriver( "SOME URL" );
 } else if( browserType.equals( "HIDDEN" ) ) {
      driver = UiDriver.getHiddenBrowserDriver( "SOME URL" );
 }
@@ -86,7 +84,6 @@ if( browserType.equals( "FF" ) ) {
       </div> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>PhantomJS driver operates over the headless <a class="external-link" href="http://phantomjs.org/" rel="nofollow">PhantomJS</a></p> 
         <p>Hidden driver operates over the headless <a class="external-link" href="http://htmlunit.sourceforge.net/" rel="nofollow">HtmlUnit</a></p> 
        </div> 
       </div> 
@@ -97,13 +94,13 @@ if( browserType.equals( "FF" ) ) {
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-FindingUIelements">Finding UI elements</h1> 
-      <p>There are many ways finding a UI element. This is the order we use to find the UI element.</p> 
+      <p>There are many ways to find a UI element. This is the order we use to find the UI element.</p> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-_css"><em> <strong>_css</strong> </em></h3> 
       <p>we will search by CSS<em> <strong> <br></strong> </em></p> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-xpath"><em> <strong>xpath</strong> </em></h3> 
       <p>we will search by XPATH</p> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-otherattributes">other attributes</h3> 
-      <p>We will search for UI element matching all provided attributes. For example, if provided <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em>, we will search for element having these <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em></p> 
+      <p>We will search for UI element matching all provided attributes. For example, if provided <em> <strong>name</strong> </em> and <em> <strong>value</strong></em>, we will search for an element having these <em> <strong>name</strong> </em> and <em> <strong>value</strong> </em></p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
         <p>You can search for a UI element by its HTML element in the HTML page. For example, some elements are &lt;input&gt; or &lt;a&gt; or &lt;div&gt; or &lt;span&gt; etc.</p> 
@@ -125,7 +122,7 @@ if( browserType.equals( "FF" ) ) {
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-SupportedUIelements">Supported UI elements</h1> 
-      <p>Following is the current list with all supported UI elements.<br>You can see the java classes per UI element, the list of actions you can run on each UI element and the list of attributes the needed to find the UI element.</p> 
+      <p>Following is the current list with all supported UI elements.<br>You can see the java classes per UI element, the list of actions you can run on each UI element, and the list of attributes needed to find the UI element.</p> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Button">Button</h3> 
       <p>A button</p> 
       <div class="table-wrap"> 
@@ -266,7 +263,7 @@ if( browserType.equals( "FF" ) ) {
       </div> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-TextArea">Text Area</h3> 
       <p>A multi-line box which value can be changed.</p> 
-      <p><strong>Note:</strong> All values provided by user or coming from the browser are normalized by replacing all "\r\n" with "\n" and trimming leading and trailing white spaces.</p> 
+      <p><strong>Note:</strong> All values provided by the user or coming from the browser are normalized by replacing all "\r\n" with "\n" and trimming leading and trailing white spaces.</p> 
       <div class="table-wrap"> 
        <table class="wrapped confluenceTable"> 
         <colgroup> 
@@ -702,7 +699,7 @@ if( browserType.equals( "FF" ) ) {
        </table> 
       </div> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Radiolist">Radio list</h3> 
-      <p>A group of radio buttons with same name. Only one can be selected at a time</p> 
+      <p>A group of radio buttons with the same name. Only one can be selected at a time</p> 
       <div class="table-wrap"> 
        <table class="wrapped confluenceTable"> 
         <colgroup> 
@@ -862,7 +859,7 @@ if( browserType.equals( "FF" ) ) {
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
        <div class="confluence-information-macro-body"> 
-        <p>Currently this method works on only through Filrefox and Chrome browsers on Windows OS</p> 
+        <p>Currently, this method works on only through Firefox and Chrome browsers on Windows OS</p> 
        </div> 
       </div> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Genericelement">Generic element</h3> 
@@ -924,7 +921,7 @@ if( browserType.equals( "FF" ) ) {
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>rightClick</p></td> 
-          <td class="confluenceTd"><p>right click mouse action on the element</p></td> 
+          <td class="confluenceTd"><p>right-click mouse action on the element</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>mouseOver</p></td> 
@@ -956,7 +953,7 @@ if( browserType.equals( "FF" ) ) {
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>dragAndDropTo</p></td> 
-          <td class="confluenceTd"><p>drag and drop an element on top of other element</p></td> 
+          <td class="confluenceTd"><p>drag and drop an element on top of another element</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>scrollTo</p></td> 
@@ -966,9 +963,9 @@ if( browserType.equals( "FF" ) ) {
        </table> 
       </div> 
       <h3 id="AutomatedtestingofHTMLandJavascriptapplication-Popups-Alerts,PromptsandConfirms">Popups - Alerts, Prompts and Confirms</h3> 
-      <p>Elements like <em>Alert</em>, <em>Prompt</em> and <em>Confirm</em> are handled differently than the other UI elements.</p> 
+      <p>Elements like <em>Alert</em>, <em>Prompt,</em> and <em>Confirm</em> are handled differently than the other UI elements.</p> 
       <p>First, you can have only one of them at a time, which means you do not need to provide attributes for finding them.</p> 
-      <p>Second, these elements <strong>must be expected before</strong> they are triggered. For example if we know that clicking some button will generate an <em>Alert</em> popup, we have to expect this Alert before clicking it in the following way:</p> 
+      <p>Second, these elements <strong>must be expected before</strong> they are triggered. For example, if we know that clicking some button will generate an <em>Alert</em> popup, we have to expect this Alert before clicking it in the following way:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Eclipse">// expect the Alert element before the action which triggers it
@@ -991,21 +988,21 @@ engine.getButton( "openAlertButton" ).click();
          <tr> 
           <td class="confluenceTd"> 
            <div class="content-wrapper"> 
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044145.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="alert.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="84"></span></p> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044145.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="alert.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="87"></span></p> 
            </div></td> 
           <td class="confluenceTd"><p>The <em>Alert</em> popup is just letting you know about some event</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"> 
            <div class="content-wrapper"> 
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044146.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="confirm.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="84"></span></p> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044146.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="confirm.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="87"></span></p> 
            </div></td> 
           <td class="confluenceTd"><p>The <em>Confirm</em> dialog is asking you a questions with predefined answers</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"> 
            <div class="content-wrapper"> 
-            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044147.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="prompt.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="84"></span></p> 
+            <p><span class="confluence-embedded-file-wrapper image-left-wrapper"><img class="confluence-embedded-image confluence-content-image-border image-left" src="attachments/107040534/107044147.png" data-unresolved-comment-count="0" data-linked-resource-version="1" data-linked-resource-default-alias="prompt.PNG" data-linked-resource-content-type="image/png" data-linked-resource-container-version="87"></span></p> 
            </div></td> 
           <td class="confluenceTd"><p>The <em>Prompt</em> dialog requests you to provide some info</p></td> 
          </tr> 
@@ -1125,7 +1122,7 @@ engine.getButton( "openAlertButton" ).click();
 </pre> 
        </div> 
       </div> 
-      <p>In this case when need to work with the "usernameTB" element, the <em>UI Engine</em> will navigate to a frame called "MyBottomLeftFrame" which is nested into the "MyBottomFrame" top frame and additionally the element will be searched into a form with id "theLoginFormId".<br>The "userpasswordTB" element will be searched into a form with name "theLoginFormName".</p> 
+      <p>In this case, when need to work with the "usernameTB" element, the <em>UI Engine</em> will navigate to a frame called "MyBottomLeftFrame" which is nested into the "MyBottomFrame" top frame and additionally the element will be searched into a form with id "theLoginFormId".<br>The "userpasswordTB" element will be searched into a form with the name "theLoginFormName".</p> 
       <p>If an element belongs to a form and this is not specified, it will be searched across all present forms and the first matching one will be chosen.</p> 
       <p>It is also possible to use XPATH locators for frames/iframes. For example: frame="//frame[contains(@name, '_test_frame')]"</p> 
       <p><br></p> 
@@ -1334,7 +1331,7 @@ engine.getButton( "openAlertButton" ).click();
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Getpagesource">Get page source</h1> 
-      <p>This method is helpful when using hidden browser driver and we doesn't see the loaded page or the changes on it.</p> 
+      <p>This method is helpful when using hidden browser driver and we don't see the loaded page or the changes on it.</p> 
       <div class="table-wrap"> 
        <table class="wrapped confluenceTable"> 
         <colgroup> 
@@ -1421,7 +1418,7 @@ engine.getButton( "openAlertButton" ).click();
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Configureaproxy">Configure a proxy</h1> 
-      <p>If you want to use proxy (e.g. <a class="external-link" href="http://fiddler2.com/fiddler2/" rel="nofollow">Fiddler</a>), you can use java system properties to set the proxy host and port. Here is how:</p> 
+      <p>If you want to use a proxy (e.g. <a class="external-link" href="http://fiddler2.com/fiddler2/" rel="nofollow">Fiddler</a>), you can use java system properties to set the proxy host and port. Here is how:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">// 1. configure proxy host and port
@@ -1439,12 +1436,12 @@ driver.start();
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Hints">Hints</h1> 
-      <p>For easy getting and testing XPaths on the html page, you can use some Firefox addons like <a class="external-link" href="http://xpath.alephzarro.com/" rel="nofollow">XPather</a></p> 
+      <p>For easy getting and testing XPaths on the HTML page, you can use some Firefox add-ons.</p> 
       <p>If there is a problem with finding elements by XPath (using 'xpath' property) make sure you are using two slashes // in the beginning of the xpath, not just one /</p> 
       <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofHTMLandJavascriptapplication-Troubleshooting">Troubleshooting</h1> 
-      <p>Here you can see some problems we have hit with some browsers</p> 
+      <p><a href="Known-issues.html">Here</a> you can see some problems we have hit with some browsers.</p> 
       <p><br></p> 
       <hr> 
       <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 

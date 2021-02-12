@@ -1,0 +1,177 @@
+<!doctype html>
+<html>
+ <head> 
+  <title>ATS : Azure Blob Storage Operations</title> 
+  <link rel="stylesheet" href="styles/site.css" type="text/css"> 
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+ </head> 
+ <body class="theme-default aui-theme-default"> 
+  <div id="page"> 
+   <div id="main" class="aui-page-panel"> 
+    <div id="main-header"> 
+     <a><img class="axway_logo" src="images/AxwayLogo.png" alt="Axway Inc"></a> 
+     <div id="breadcrumb-section"> 
+      <ol id="breadcrumbs"> 
+       <li class="first"> <span><a href="index.html">ATS</a></span> </li> 
+       <li> <span><a href="ATS-Documentation.html">ATS Documentation</a></span> </li> 
+       <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
+       <li> <span><a href="Basic-functionalities.html">Basic functionalities</a></span> </li> 
+      </ol> 
+     </div> 
+     <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Azure Blob Storage Operations </span> </h1> 
+    </div> 
+    <div id="content" class="view"> 
+     <div id="main-content" class="wiki-content group"> 
+      <p>ATS provides support for Microsoft Azure Blob Storage (<a class="external-link" href="https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction" rel="nofollow">https://docs.microsoft.com/en-us/azure/storage/blobs/storage-blobs-introduction</a>). You may use <strong>com.axway.ats.action.azure.BlobStorageOperations</strong> for direct tasks like:</p> 
+      <ul> 
+       <li>Container operations 
+        <ul> 
+         <li>create</li> 
+         <li>delete</li> 
+         <li>check for existence</li> 
+         <li>list blobs/folders</li> 
+         <li>list containers</li> 
+        </ul></li> 
+       <li>Blob operations 
+        <ul> 
+         <li>create&nbsp;</li> 
+         <li>delete</li> 
+         <li>upload and download</li> 
+         <li>append (if the blob type is APPEND_BLOB)</li> 
+         <li>get blob information (name, size, content type, content checksum, etc)</li> 
+         <li>check for blob existence</li> 
+         <li>add/update blob meta data</li> 
+        </ul></li> 
+      </ul> 
+      <p><br></p> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Using different blob types</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>You can create different blob (block, append, page), but the only implemented operation for a specific blob is appended. Other operations like commitBlockList, listBlock, etc are not implemented.</p> 
+        <p>Feel free to log a GitHub issue if such operations will be useful to you <img class="emoticon emoticon-smile" src="images/icons/emoticons/smile.svg" alt="(smile)"></p> 
+       </div> 
+      </div> 
+      <p><br></p> 
+      <p><br></p> 
+      <div class="confluence-information-macro confluence-information-macro-warning"> 
+       <p class="title">Folder operations</p> 
+       <span class="aui-icon aui-icon-small aui-iconfont-error confluence-information-macro-icon"></span> 
+       <div class="confluence-information-macro-body"> 
+        <p>Working with folders is currently implemented with some limitations.</p> 
+        <p>You can</p> 
+        <ul> 
+         <li>create blobs inside folder, by using the following as a blob name: &lt;folderName&gt;/&lt;blobName&gt;</li> 
+         <li>list and/or delete blob from a particular folder.</li> 
+        </ul> 
+        <p>And here the support for folders sadly ends.&nbsp;</p> 
+        <p>You cannot:</p> 
+        <ul> 
+         <li>delete folder,</li> 
+         <li>upload and/or download folder</li> 
+        </ul> 
+        <p>Yet again, feel free to log an issue, if more folder operations are needed by your team/project.</p> 
+       </div> 
+      </div> 
+      <hr> 
+      <h1 id="AzureBlobStorageOperations-Initialization">Initialization</h1> 
+      <p>In order to use ATS (Azure) Blob Storage client, it is needed to:</p> 
+      <ul> 
+       <li class="auto-cursor-target">&nbsp;Add the following dependency (ats-azure-utilities) in your classpath. For Maven, add this into your pom.xml:</li> 
+      </ul> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>pom.xml</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;dependency&gt;
+    &lt;groupId&gt;com.axway.ats.framework.utilities&lt;/groupId&gt;
+    &lt;artifactId&gt;ats-azure-utilities&lt;/artifactId&gt;
+    &lt;version&gt;4.0.7&lt;/version&gt; &lt;!-- Or the latest ATS Framework version. 4.0.7 is the minimum version supporting Azure Blob Storage --&gt;
+&lt;/dependency&gt;</pre> 
+       </div> 
+      </div> 
+      <ul> 
+       <li>Ensure that all of the<strong> io.netty jars</strong>, are coming from the <strong>azure-* dependencies</strong>.</li> 
+       <li>Ensure that <strong>jackson-annotations </strong>is the version, used by <strong>azure-* dependencies. </strong></li> 
+      </ul> 
+      <p class="auto-cursor-target">If an exception, from the package&nbsp;<strong>io.netty.handler, </strong>is thrown, some of the above steps were not successful.</p> 
+      <hr> 
+      <h1 class="auto-cursor-target" id="AzureBlobStorageOperations-Usage">Usage</h1> 
+      <p class="auto-cursor-target">Azure storage operations are handled by the class <strong>com.axway.ats.action.azure.BlobStorageOperations</strong></p> 
+      <div class="code panel pdl" style="border-width: 1px;"> 
+       <div class="codeHeader panelHeader pdl" style="border-bottom-width: 1px;"> 
+        <b>Azure Blob Storage operations example</b> 
+       </div> 
+       <div class="codeContent panelContent pdl"> 
+        <pre class="syntaxhighlighter-pre" data-theme="Confluence">...
+import com.axway.ats.action.azure.BlobStorageOperations;
+...
+
+BlobStorageOperations blobOps = new BlobStorageOperations(CONNECTION_STRING, SAS_TOKEN);
+
+// list containers
+// you can also specify some prefix for the names of the containers and even set time limit for the operation to complete, so you do not wait here for minutes when the connection is slow
+List&lt;String&gt; containers = blobOps.listContainers();
+
+// create empty container
+if (blobOps.doesContainerExist(CONTAINER_NAME)) {
+    // the container exists, so we will just purge it (deleting all blobs/folders inside)
+    blobOps.purgeContainer(CONTAINER_NAME);
+} else {
+    blobOps.createContainer(CONTAINER_NAME);
+}
+
+// upload blob
+blobOps.upload(CONTAINER_NAME, BLOB_NAME, LOCAL_FILE_TO_UPLOAD, true); // overwrite any existing blob with the same name
+
+// download blob
+blobOps.download(CONTAINER_NAME, BLOB_NAME, LOCAL_FILE_TO_DOWNLOAD, true); // overwrite any existing file, determined by LOCAL_FILE_TO_DOWNLOAD
+
+// if we will be constantly updating a blob with content, we can create and use append blob
+// let's upload some log file that is constantly being written to
+
+// first we have to create the append blob
+ blobOps.createAppendBlob(CONTAINER_NAME, APPEND_BLOB_NAME, true);
+
+// ensure that the blob exists
+if (!blobOps.doesBlobExist(CONTAINER_NAME, APPEND_BLOB_NAME)) {
+    throw new RuntimeException("Blob '" + APPEND_BLOB_NAME + "' does not exist");
+}
+
+// now start appending
+try (FileReader fr = new FileReader(new File(LOG_FILE))) {
+    char[] buffer = new char[16384];
+    while (fr.read(buffer) != -1) {
+        blobOps.appendToBlob(CONTAINER_NAME, APPEND_BLOB_NAME, new String(buffer).getBytes());
+    }
+}
+
+// now lets check some blob properties (metadata)
+BlobInfo bInfo = blobOps.getBlobInfo(CONTAINER_NAME, BLOB_NAME);
+log.info("blob size: " + bInfo.getSize());
+log.info("blob eTag: " + bInfo.getETag());
+log.info("blob content type: " + bInfo.getContentType());
+log.info("blob creation time: " + bInfo.getCreationTime().getTime());
+log.info("blob last modified: " + bInfo.getLastModified().getTime());
+log.info("blob MD5: " + bInfo.getMd5());
+
+// and finally lets clean all of the containers/blobs, created by the test
+
+if (blobOps.doesContainerExist(CONTAINER_NAME)) {
+    blobOps.deleteContainer(CONTAINER_NAME); // or just purge it blobOps.purgeContainer(CONTAINER_NAME);
+}
+
+</pre> 
+       </div> 
+      </div> 
+      <p class="auto-cursor-target">For more functionality, you may also refer to <a href="Azure-Blob-Storage-Verifications.html">Azure Blob Storage Verifications</a> page.</p> 
+      <hr> 
+      <p class="auto-cursor-target">Back to <a href="Basic-functionalities.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <hr> 
+     </div> 
+    </div> 
+   </div> 
+  </div>  
+ </body>
+</html>

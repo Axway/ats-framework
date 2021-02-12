@@ -17,7 +17,7 @@
        <li> <span><a href="ATS-Guide.html">ATS Guide</a></span> </li> 
        <li> <span><a href="Performance-testing.html">Performance testing</a></span> </li> 
        <li> <span><a href="Running-performance-tests.html">Running performance tests</a></span> </li> 
-       <li> <span><a href="Parametrization.html">Parametrization</a></span> </li> 
+       <li> <span><a href="Parametеrization.html">Parametеrization</a></span> </li> 
       </ol> 
      </div> 
      <h1 id="title-heading" class="pagetitle"> <span id="title-text"> ATS : Parameter provider level </span> </h1> 
@@ -26,18 +26,18 @@
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Parameterproviderlevel-Introduction">Introduction</h1> 
       <p>This page shows how to change what values you are getting for each action execution</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Parameterproviderlevel-Defaultbehavior">Default behavior</h1> 
-      <p>Each of the supported patterns comes with a several different constructors and some of them allow you to set the parameter provider level, while others do not.</p> 
-      <p>The following example will maintain a single user to each thread</p> 
+      <p>Each of the supported patterns comes with several different constructors and some of them allow you to set the parameter provider level, while others do not.</p> 
+      <p>The following example will maintain a single user for each thread</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" } );
 </pre> 
        </div> 
       </div> 
-      <p>while the next example does not care about threads, but just gives the next available <em>username</em>.</p> 
+      <p>while the next example does not care about threads but just gives the next available <em>username</em>.</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">new ListDataConfig( PARAMETRIZED_USER, new String[]{ "vuser10", "vuser11", "vuser12" }, ParameterProviderLevel.PER_INVOCATION );
@@ -60,11 +60,11 @@ loader.addParameterDataConfigurator( usersConfigurator );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Parameterproviderlevel-Possibleoptions">Possible options</h1> 
       <p>We will show these options using an example.</p> 
-      <p>Lets say we are running 2 threads with 3 possible values for username. The possible usernames are "<em>user1</em>", "<em>user2</em>" and "<em>user3</em>"</p> 
+      <p>Let's say we are running 2 threads with 3 possible values for username. The possible usernames are "<em>user1</em>", "<em>user2</em>" and "<em>user3</em>"</p> 
       <h3 id="Parameterproviderlevel-Parametersperthread">Parameters per thread</h3> 
       <p>Here is the result when using <strong> <em>ParameterProviderLevel.PER_THREAD</em> </strong></p> 
       <div class="table-wrap"> 
@@ -144,8 +144,8 @@ loader.addParameterDataConfigurator( usersConfigurator );
        </table> 
       </div> 
       <p>As you can see each thread gets assigned some value and keeps using only this value, no matter how many iterations are executed.</p> 
-      <p>This is the expected way when parametrizing the username, as usually each thread represents one user during all iterations.</p> 
-      <p>If we had a third thread, it would get assigned the "<em>user3</em>". If we we had a fourth thread, it would get assigned the "<em>user1</em>" and so forth.</p> 
+      <p>This is the expected way when parametrizing the username as usually, each thread represents one user during all iterations.</p> 
+      <p>If we had a third thread, it would get assigned the "<em>user3</em>". If we had a fourth thread, it would get assigned the "<em>user1</em>" and so forth.</p> 
       <h3 id="Parameterproviderlevel-Parametersperinvocation">Parameters per invocation</h3> 
       <p>Here is the result when&nbsp;using <strong> <em>ParameterProviderLevel.PER_INVOCATION</em> </strong></p> 
       <div class="table-wrap"> 
@@ -184,10 +184,10 @@ loader.addParameterDataConfigurator( usersConfigurator );
         </tbody> 
        </table> 
       </div> 
-      <p>As you can see here, there is no any respect to threads. Each new value is passed to whoever requested it.</p> 
-      <p>&nbsp;</p> 
+      <p>As you can see here, there is no separation between threads. Each new value is passed to whoever requested it.</p> 
+      <p><br></p> 
       <hr> 
-      <p>Back to <a href="Parametrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
+      <p>Back to <a href="Parametеrization.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
      </div> 
     </div> 

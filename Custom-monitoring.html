@@ -24,13 +24,13 @@
     <div id="content" class="view"> 
      <div id="main-content" class="wiki-content group"> 
       <h1 id="Custommonitoring-Introduction">Introduction</h1> 
-      <p>You can write your own logic and attach it to the Monitoring Service. Following are the needed steps to achieve it.</p> 
+      <p>You can write your own logic and attach it to the Monitoring Service. The steps following are required to achieve it.</p> 
       <div class="confluence-information-macro has-no-icon confluence-information-macro-note"> 
        <div class="confluence-information-macro-body"> 
-        <p>This is considered as advanced topic, so contact us if you need assistance</p> 
+        <p>This is considered an advanced topic, so contact us if you need assistance</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Custommonitoring-Createyourownmonitoringclass">Create your own monitoring class</h1> 
       <p>Write your own monitoring class which extends the <em> <strong>PerformanceMonitor</strong> </em> class. Here is an example:</p> 
@@ -125,7 +125,7 @@ public class MyCustomPerformanceMonitor extends PerformanceMonitor {
         if( freeDiskSpaceBean != null ) {
             ReadingBean freeDiskSpaceBean = freeDiskSpaceBean.getNewCopy();
             freeDiskSpaceBean.setValue( getFreeDiskSpace() );
-            results.add( freeDiskSpaceBasicBean );
+            results.add( freeDiskSpaceBean );
         }
 
         return results;
@@ -152,7 +152,7 @@ public class MyCustomPerformanceMonitor extends PerformanceMonitor {
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Custommonitoring-Createacustom.performance.configuration.xml">Create a custom.performance.configuration.xml</h1> 
       <p>This file describes your supported readings</p> 
@@ -160,7 +160,7 @@ public class MyCustomPerformanceMonitor extends PerformanceMonitor {
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">&lt;?xml version="1.0" encoding="utf-8"?&gt;
 &lt;configuration&gt;
-	&lt;monitor class="com.test.MyVeryCustomPerformanceMonitor"&gt;
+	&lt;monitor class="com.test.MyCustomPerformanceMonitor"&gt;
 		&lt;reading name="Important table size" unit="Number" /&gt;
 		&lt;reading name="Free disk space" unit="MB" /&gt;
 	&lt;/monitor&gt;
@@ -168,11 +168,11 @@ public class MyCustomPerformanceMonitor extends PerformanceMonitor {
 </pre> 
        </div> 
       </div> 
-      <p>Note that you may have multiple &lt;monitor&gt; nodes with multiple &lt;reading&gt; nodes.<br> This file goes in the classpath root and is recommended to be in the root of the&nbsp;custom monitor jar<em>.</em></p> 
-      <p>&nbsp;</p> 
+      <p>Note that you may have multiple &lt;monitor&gt; nodes with multiple &lt;reading&gt; nodes.<br>This file goes in the classpath root and is recommended to be in the root of the&nbsp;custom monitor jar<em>.</em></p> 
+      <p><br></p> 
       <hr> 
       <h1 id="Custommonitoring-Deploythecustommonitor">Deploy the custom monitor</h1> 
-      <p>Package your monitoring class into a jar and deploy it to the <strong> <em>&lt;AGENT HOME&gt;actions_dependencies</em> </strong>folder on the monitored host.</p> 
+      <p>Package your monitoring class into a JAR and deploy it to the <strong> <em>&lt;AGENT HOME&gt;/actions_dependencies</em> </strong>folder on the monitored host.</p> 
       <p>Now you can call your monitor in the same way as the regular ones:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
@@ -191,7 +191,7 @@ public class MyCustomPerformanceMonitor extends PerformanceMonitor {
        </div> 
       </div> 
       <p>Now go to Test Explorer UI to see your result</p> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="System-monitoring-details.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 

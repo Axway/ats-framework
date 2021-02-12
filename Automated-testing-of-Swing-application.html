@@ -27,11 +27,11 @@
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
        <div class="confluence-information-macro-body"> 
-        <p>The current implementation uses internally <a class="external-link" href="http://fest.easytesting.org/" rel="nofollow">FEST</a>, but this project was discontinued in 2013. Latest links are at <a class="external-link" href="https://code.google.com/archive/p/fest/" rel="nofollow">google code</a> and <a class="external-link" href="https://github.com/alexruiz/fest-swing-1.x" rel="nofollow">github</a>.</p> 
+        <p>The current implementation uses internally <a class="external-link" href="http://fest.easytesting.org/" rel="nofollow">FEST</a>, but this project was discontinued in 2013. The latest links are at <a class="external-link" href="https://code.google.com/archive/p/fest/" rel="nofollow">google code</a> and <a class="external-link" href="https://github.com/alexruiz/fest-swing-1.x" rel="nofollow">github</a>.</p> 
         <p>The proper replacement of FEST seems to be the forked <a class="external-link" href="http://joel-costigliola.github.io/assertj/assertj-swing.html" rel="nofollow">AssertJ</a>, but the ATS implementation is not migrated.</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-Quickexample">Quick example</h1> 
       <p>Here we will take a look at a simple example to see how a <em>Swing Engine</em> test look like</p> 
@@ -57,7 +57,7 @@ driver.stop();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-JNLPSwingbasedapplications">JNLP Swing based applications</h1> 
       <p>We are also able to load JNLP Swing applications from a local file or a remote URL</p> 
@@ -73,13 +73,13 @@ driver.start();
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
-      <h1 id="AutomatedtestingofSwingapplication-Changingbetweenwindows(frames,dialogs)andcontainers">Changing between windows (frames,dialogs) and containers</h1> 
+      <h1 id="AutomatedtestingofSwingapplication-Changingbetweenwindows(frames,dialogs)andcontainers">Changing between windows (frames, dialogs) and containers</h1> 
       <p>UI element is searched in some context and it is determined by:</p> 
       <ul> 
        <li>Current window. Window might be either Swing Frame or Dialog;</li> 
-       <li>Current container. This is some parent of searched element (like panel) but inside current window.</li> 
+       <li>Current container. This is some parent of searched element (like panel) but inside the current window.</li> 
       </ul> 
       <h3 id="AutomatedtestingofSwingapplication-Setworkingwindow(frameordialog)">Set working window (frame or dialog)</h3> 
       <div class="code panel pdl" style="border-width: 1px;"> 
@@ -110,7 +110,7 @@ engine.goToContainer( null );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-SupportedUIelements">Supported UI elements</h1> 
       <p>Here is the current list with all supported UI elements and their features.</p> 
@@ -135,23 +135,23 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. label - name of associated/paired element (via setLabelFor())</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. name and text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -196,13 +196,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -318,13 +318,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -381,13 +381,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -448,13 +448,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -511,23 +511,23 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. text,name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>5. index</p></td> 
          </tr> 
         </tbody> 
@@ -571,18 +571,18 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. index</p></td> 
          </tr> 
         </tbody> 
@@ -638,18 +638,18 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. index</p></td> 
          </tr> 
         </tbody> 
@@ -706,13 +706,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -773,18 +773,18 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name and text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. index</p></td> 
          </tr> 
         </tbody> 
@@ -830,28 +830,28 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. name,text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>5. path</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>6. index</p></td> 
          </tr> 
         </tbody> 
@@ -891,13 +891,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -949,13 +949,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -1016,13 +1016,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -1074,13 +1074,13 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. label</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. index</p></td> 
          </tr> 
         </tbody> 
@@ -1240,33 +1240,33 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>1. label,class</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>2. name,text,class</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>3. name,class</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>4. text,class</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>5. name</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>6. text</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>7. index</p></td> 
          </tr> 
         </tbody> 
@@ -1318,10 +1318,10 @@ engine.goToContainer( null );
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-Usage">Usage</h1> 
-      <p>To create the Swing Driver instance, you have to set the main class of swing application, which means the class which contains <em>main</em> method which starts the tested swing application in event-dispatching thread. For example:</p> 
+      <p>To create the Swing Driver instance, you have to set the main class of swing application, which means the class which contains <em>main</em> method which starts the tested swing application in an event-dispatching thread. For example:</p> 
       <div class="code panel pdl" style="border-width: 1px;"> 
        <div class="codeContent panelContent pdl"> 
         <pre class="syntaxhighlighter-pre" data-theme="Confluence">public class MainClassOfTestedSwingApp {
@@ -1343,14 +1343,14 @@ engine.goToContainer( null );
 </pre> 
        </div> 
       </div> 
-      <p>The root component of the Swing application <strong>must be</strong> <strong> <em>JFrame</em> </strong>.<br> When getting <em>SwingDriver</em> instance you may set the <em>JFrame</em> window title, to specify the window you want to work with, otherwise it will use the started unique <em>JFrame</em> window.</p> 
+      <p>The root component of the Swing application <strong>must be</strong> <strong> <em>JFrame</em> </strong>.<br>When getting <em>SwingDriver</em> instance you may set the <em>JFrame</em> window title, to specify the window you want to work with, otherwise, it will use the started unique <em>JFrame</em> window.</p> 
       <div class="confluence-information-macro confluence-information-macro-note"> 
        <span class="aui-icon aui-icon-small aui-iconfont-warning confluence-information-macro-icon"></span> 
        <div class="confluence-information-macro-body"> 
         <p>We consider this particular section as not very user friendly, so please ask for our assistance to help you get started</p> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-Componentsearchproperties">Component search properties</h1> 
       <div class="table-wrap"> 
@@ -1378,7 +1378,7 @@ engine.goToContainer( null );
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>class</p></td> 
-          <td class="confluenceTd"><p>Component class to search for. Its must be 'java.awt.Component' or a derived type</p></td> 
+          <td class="confluenceTd"><p>Component class to search for. It must be 'java.awt.Component' or a derived type</p></td> 
          </tr> 
          <tr> 
           <td class="confluenceTd"><p>visible</p></td> 
@@ -1391,7 +1391,7 @@ engine.goToContainer( null );
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-Utilities">Utilities</h1> 
       <div class="table-wrap"> 
@@ -1413,94 +1413,94 @@ engine.goToContainer( null );
           <td class="confluenceTd"><p>isElementPresent()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyExist()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyNotExist()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeExisting()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeExisting(int millis)</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeNotExisting()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeNotExisting(int millis)</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyVisible()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyNotVisible()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeVisible()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeNotVisible()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyEnabled()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>verifyDisabled()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeEnabled()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>waitToBecomeDisabled()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>isElementPresent()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>isElementVisible()</p></td> 
          </tr> 
          <tr> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
-          <td class="confluenceTd"><p>&nbsp;</p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
+          <td class="confluenceTd"><p><br></p></td> 
           <td class="confluenceTd"><p>isElementEnabled()</p></td> 
          </tr> 
         </tbody> 
        </table> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <h1 id="AutomatedtestingofSwingapplication-Swingcomponentinspector">Swing component inspector</h1> 
       <p>We have a simple component inspector. When you click some element, it prints the element class name, its available properties and their values, and the <em>index</em> in the component hierarchy tree calculated <span style="text-decoration: underline;">in the scope of the current container</span>.</p> 
@@ -1523,7 +1523,7 @@ engine.goToContainer( null );
 </pre> 
        </div> 
       </div> 
-      <p>&nbsp;</p> 
+      <p><br></p> 
       <hr> 
       <p>Back to <a href="UI-Testing.html">parent page</a><p>Go to <a href="./toc.html">Table of Contents</a></p></p> 
       <hr> 
