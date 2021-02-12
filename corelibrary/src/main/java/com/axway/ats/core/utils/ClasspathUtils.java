@@ -172,6 +172,7 @@ public class ClasspathUtils {
                 for (String jarPath : loadedJarEntry.getValue()) {
                     logMessage.append("\n\t").append(jarPath);
                 }
+                log.warn(logMessage);
             }
             if ("log4j".equalsIgnoreCase(loadedJarEntry.getKey()) && loadedJarEntry.getValue().size() > 1) {
                 String errorMsg = "Log4j library is supposed to be present only in lib_common subfolder. "
@@ -187,7 +188,6 @@ public class ClasspathUtils {
                 log.warn(errorMsg);
             }
         }
-        log.warn(logMessage);
     }
 
     /**
