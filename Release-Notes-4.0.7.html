@@ -142,6 +142,7 @@ div.rbtoc1613044958837 li {margin-left: 0px;padding-left: 0px;}
        <li>Logging library - <strong>AutoLogger</strong> class is now deleted. Use AtsDbLogger instead.</li> 
        <li>UI Engine - <strong>PhantomJS</strong> driver is now deleted because the third-party library used is outdated, without recent support.</li> 
        <li>UI Engine - UiEngineConfigurator.set/isWorkWithinvisibleElements() methods are deprecated. This feature is planned to be removed. Clicking on non-visible elements is&nbsp; not recommended. Also this feature relies on internal third-party library code which could be changed at any time.</li> 
+       <li>Logging - For next versions it is expected that ATS Framework will migrate to <string>Log4j 2.x</strong> (from Log4j 1.2.x ) which has some incompatibilities/limitations. Such example is if you use advanced topics like attaching appenders runtime. It is expected that in simple cases you will not need any code modifications (like when just using Logger.info("msg") ).</li>
       </ul> 
       <h3 id="ReleaseNotes4.0.7-Knownissuesandlimitations">Known issues and limitations</h3> 
       <ul> 
