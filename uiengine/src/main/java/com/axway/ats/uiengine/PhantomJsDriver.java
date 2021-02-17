@@ -26,16 +26,17 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.utils.IoUtils;
 
 /**
- * A driver operating over 
+ * <p></p>A driver operating over
  * <a href="http://phantomjs.org/">PhantomJS</a> browser
- * 
+ * >/p?
+ * Will be removed in future versions.
  * <br>
  * This is a headless(no UI) browser.<br />
  * <em>Note</em> that PahntomJS has no recent updates so it is deprecated and will be removed as supported driver.
  *
  */
 @PublicAtsApi
-@Deprecated
+@Deprecated( /* since="4.0.7", this attribute is Java 9+ feature */)
 public class PhantomJsDriver extends AbstractRealBrowserDriver {
 
     private static Logger         log                        = Logger.getLogger(PhantomJsDriver.class);

@@ -164,9 +164,10 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on the local host. <br>
-     * The process is found by a token which is contained in the start command.
-     * No regex supported.
+     * Killing external process(es) (already started) on the local host. <br>
+     * The process is found by a token which is contained in the start command. Make sure that it is long enough
+     * in order to match only desired processes. <br>
+     * RegEx is not supported.
      *
      * @param startCommandSnippet the token to search for in the process start command.
      * The minimum allowed length is 2 characters
@@ -183,11 +184,12 @@ public class ProcessExecutor {
     }
 
     /**
-     * Killing external process(such not started by us) on a remote host. <br>
-     * The process is found by a token which is contained in the start command.
-     * No regex supported.
+     * Killing external process(es) (already started) on a remote host where ATS agent is running. <br>
+     * The process is found by a token which is contained in the start command. Make sure that it is long enough
+     * in order to match only desired processes. <br>
+     * RegEx is not supported.
      *
-     * @param atsAgent the address of the remote ATS agent which will run the kill command
+     * @param atsAgent the address of the remote ATS agent where the the process kill will be executed
      * @param startCommandSnippet the token to search for in the process start command.
      * The minimum allowed length is 2 characters
      * @return the number of killed processes

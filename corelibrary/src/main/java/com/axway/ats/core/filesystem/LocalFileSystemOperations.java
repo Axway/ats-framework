@@ -1582,12 +1582,12 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     public String[] getLastLinesFromFile(
             String fileName,
             int numLinesToRead,
-            Charset chartset ) {
+            Charset charset ) {
 
         LinkedList<String> lastLinesList = new LinkedList<String>();
         ReversedLinesFileReader reversedReader = null;
         try {
-            reversedReader = new ReversedLinesFileReader(new File(fileName), 4096, chartset);
+            reversedReader = new ReversedLinesFileReader(new File(fileName), 4096, charset);
             while (lastLinesList.size() < numLinesToRead) {
                 String line = reversedReader.readLine();
                 // check if the file has less lines than the wanted
