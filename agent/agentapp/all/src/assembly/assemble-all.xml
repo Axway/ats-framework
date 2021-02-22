@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<assembly
-        xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="
-    http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-      http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
     <id>assemble-all</id>
 
@@ -19,10 +16,22 @@
             <directory>src/main/resources/scripts</directory>
             <outputDirectory>/</outputDirectory>
             <includes>
-                <include>**</include>
+                <include>agent.sh</include>
             </includes>
             <useDefaultExcludes>true</useDefaultExcludes>
-            <fileMode>0744</fileMode>
+            <fileMode>0754</fileMode> <!-- executable flag raised -->
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/scripts</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <excludes>
+                <exclude>agent.sh</exclude>
+            </excludes>
+            <fileMode>0644</fileMode> <!-- no executable flag raised -->
             <directoryMode>0755</directoryMode>
         </fileSet>
 
