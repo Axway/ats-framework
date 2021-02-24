@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@ package com.axway.ats.agent.core.configuration;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.testng.Assert.assertNull;
 
-import org.apache.log4j.BasicConfigurator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +26,8 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Test;
 
+import com.axway.ats.core.utils.ExceptionUtils;
+import com.axway.ats.log.Log4j2Utils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 public class Test_RemoteLoggingConfigurator {
@@ -35,14 +37,14 @@ public class Test_RemoteLoggingConfigurator {
     @After
     public void tearDown() {
 
-        LogManager.getLogger(loggerName).removeAllAppenders();
-        LogManager.getRootLogger().removeAllAppenders();
+        Log4j2Utils.removeAllAppendersFromLogger(loggerName);
+        Log4j2Utils.removeAllAppendersFromLogger(Log4j2Utils.getRootLogger().getName());
     }
 
     @AfterClass
     public static void tearDownTest_RemoteLoggingConfigurator() {
 
-        BasicConfigurator.configure();
+        //BasicConfigurator.configure();
     }
 
     @Test
@@ -56,20 +58,23 @@ public class Test_RemoteLoggingConfigurator {
     @Test
     public void testNeedsApplyWithAppenderExpectTrue() {
 
-        ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost("test");
-        appender.setDatabase("test");
-        appender.setUser("test");
-        appender.setPassword("test");
+        ActiveDbAppender appender = ActiveDbAppender.newBuilder()
+                                                    .setName("active-db-appender")
+                                                    .setHost("test")
+                                                    .setDatabase("test")
+                                                    .setUser("test")
+                                                    .setPassword("test")
+                                                    .build();
 
         Logger log = LogManager.getRootLogger();
-        log.addAppender(appender);
+        Log4j2Utils.addAppenderToLogger(appender, log.getName());
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender(appender);
+        //log.removeAppender(appender);
+        Log4j2Utils.removeAppenderFromLogger(log.getName(), appender.getName());
 
         assertTrue(remoteLoggingConfig.needsApplying());
     }
@@ -81,20 +86,22 @@ public class Test_RemoteLoggingConfigurator {
     @Test
     public void testApplyPositiveRootLogger() {
 
-        ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost("test");
-        appender.setDatabase("test");
-        appender.setUser("test");
-        appender.setPassword("test");
+        ActiveDbAppender appender = ActiveDbAppender.newBuilder()
+                                                    .setName("active-db-appender")
+                                                    .setHost("test")
+                                                    .setDatabase("test")
+                                                    .setUser("test")
+                                                    .setPassword("test")
+                                                    .build();
 
         Logger log = LogManager.getRootLogger();
-        log.addAppender(appender);
+        Log4j2Utils.addAppenderToLogger(appender, log.getName());
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender(appender);
+        Log4j2Utils.removeAppenderFromLogger(log.getName(), appender.getName());
 
         // check if needs to be applied - this sets the internal flags
         // so the next "apply" method will work as expected
@@ -107,9 +114,8 @@ public class Test_RemoteLoggingConfigurator {
             //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
             remoteLoggingConfig.apply();
         } catch (Exception e) {
-            if (!e.getCause()
-                  .getMessage()
-                  .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.")) {
+            if (!ExceptionUtils.containsMessage("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.",
+                                                e, true)) {
                 // an exception was caught, but its cause is not the expected one
                 // re-throw the exception
                 throw e;
@@ -125,45 +131,54 @@ public class Test_RemoteLoggingConfigurator {
     @Test
     public void testRevertPositiveRootLogger() {
 
-        ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost("test");
-        appender.setDatabase("test");
-        appender.setUser("test");
-        appender.setPassword("test");
+        String appenderName = "active-db-appender";
+
+        ActiveDbAppender appender = ActiveDbAppender.newBuilder()
+                                                    .setName(appenderName)
+                                                    .setHost("test")
+                                                    .setDatabase("test")
+                                                    .setUser("test")
+                                                    .setPassword("test")
+                                                    .build();
 
         Logger log = LogManager.getRootLogger();
-        log.addAppender(appender);
+        Log4j2Utils.addAppenderToLogger(appender, log.getName());
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender(appender);
+        Log4j2Utils.removeAppenderFromLogger(log.getName(), appender.getName());
+
+        assertNull(Log4j2Utils.getAppenderFromLogger(loggerName, appenderName));
 
         //apply the appender
         remoteLoggingConfig.apply();
         remoteLoggingConfig.revert();
 
-        assertFalse(log.getAllAppenders().hasMoreElements());
+        assertNull(Log4j2Utils.getAppenderFromLogger(loggerName, appenderName));
+
     }
 
     @Test
     public void testApplyPositive() {
 
-        ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost("test");
-        appender.setDatabase("test");
-        appender.setUser("test");
-        appender.setPassword("test");
+        ActiveDbAppender appender = ActiveDbAppender.newBuilder()
+                                                    .setName("active-db-appender")
+                                                    .setHost("test")
+                                                    .setDatabase("test")
+                                                    .setUser("test")
+                                                    .setPassword("test")
+                                                    .build();
 
         Logger log = LogManager.getLogger(loggerName);
-        log.addAppender(appender);
+        Log4j2Utils.addAppenderToLogger(appender, log.getName());
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender(appender);
+        Log4j2Utils.removeAppenderFromLogger(log.getName(), appender.getName());
 
         // check if needs to be applied - this sets the internal flags
         // so the next "apply" method will work as expected
@@ -194,26 +209,30 @@ public class Test_RemoteLoggingConfigurator {
     @Test
     public void testRevertPositive() {
 
-        ActiveDbAppender appender = new ActiveDbAppender();
-        appender.setHost("test");
-        appender.setDatabase("test");
-        appender.setUser("test");
-        appender.setPassword("test");
+        String appenderName = "active-db-appender";
+
+        ActiveDbAppender appender = ActiveDbAppender.newBuilder()
+                                                    .setName(appenderName)
+                                                    .setHost("test")
+                                                    .setDatabase("test")
+                                                    .setUser("test")
+                                                    .setPassword("test")
+                                                    .build();
 
         Logger log = LogManager.getLogger(loggerName);
-        log.addAppender(appender);
+        Log4j2Utils.addAppenderToLogger(appender, log.getName());
 
         //construct the configurator - an appender is present
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         //remove the appender, so the configurator will need to apply it
-        log.removeAppender(appender);
+        Log4j2Utils.removeAppenderFromLogger(log.getName(), appender.getName());
 
         //apply the appender
         remoteLoggingConfig.apply();
         remoteLoggingConfig.revert();
 
-        assertFalse(log.getAllAppenders().hasMoreElements());
+        assertNull(Log4j2Utils.getAppenderFromLogger(loggerName, appenderName));
     }
 
     @Test
@@ -223,20 +242,21 @@ public class Test_RemoteLoggingConfigurator {
         // Then we will check if there is change in the level of known loggers
 
         // add a new logger, but no level is specified, we will disregard it
-        LogManager.getLogger("fake.logger");
+        //LogManager.getLogger("fake.logger");
+        Log4j2Utils.getLogger("fake.logger");
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
         assertFalse(remoteLoggingConfig.needsApplying());
 
         // add logger and set its level
-        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
+        Log4j2Utils.setLoggerLevel("fake.logger", Level.INFO);
         // read the log4j configuration and remember that custom logger
         remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
         // set same level on same logger, not change is made
-        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
+        Log4j2Utils.setLoggerLevel("fake.logger", Level.INFO);
         assertFalse(remoteLoggingConfig.needsApplying());
 
         // change logger level, this is a significant change
-        LogManager.getLogger("fake.logger").setLevel(Level.DEBUG);
+        Log4j2Utils.setLoggerLevel("fake.logger", Level.DEBUG);
         assertTrue(remoteLoggingConfig.needsApplying());
     }
 
@@ -244,19 +264,19 @@ public class Test_RemoteLoggingConfigurator {
     public void tesApplyUserLoggerLevels() {
 
         // set the level
-        LogManager.getLogger("fake.logger").setLevel(Level.INFO);
+        Log4j2Utils.setLoggerLevel("fake.logger", Level.INFO);
 
         // read the configuration and remember the level
         RemoteLoggingConfigurator remoteLoggingConfig = new RemoteLoggingConfigurator(null, -1);
 
         // change the level in log4j
-        LogManager.getLogger("fake.logger").setLevel(Level.DEBUG);
-        assertTrue(LogManager.getLogger("fake.logger").getLevel().equals(Level.DEBUG));
+        Log4j2Utils.setLoggerLevel("fake.logger", Level.DEBUG);
+        assertTrue(Log4j2Utils.getLogger("fake.logger").getLevel().equals(Level.DEBUG));
         assertTrue(remoteLoggingConfig.needsApplying());
 
         // apply the remembered level
         remoteLoggingConfig.apply();
-        assertTrue(LogManager.getLogger("fake.logger").getLevel().equals(Level.INFO));
+        assertTrue(Log4j2Utils.getLogger("fake.logger").getLevel().equals(Level.INFO));
     }
 
     @Test

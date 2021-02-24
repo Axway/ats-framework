@@ -48,7 +48,7 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
         /** since we want to be able to execute actions on the agent even if there is no db appender attached,
          *  we skip the check whether that appender is attached, by passing true as a second argument
          */
-        log = AtsDbLogManager.getLogger(this.getClass().getName(), true);
+        log = AtsDbLogger.getLogger(this.getClass().getName(), true);
     }
 
     public abstract Object executeAction( ActionRequest actionRequest ) throws AgentException;

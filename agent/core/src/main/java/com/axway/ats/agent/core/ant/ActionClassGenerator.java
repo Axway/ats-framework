@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,14 +52,20 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
+/**
+ * Used to generate server and client stub classes for @Action methods.
+ */
 class ActionClassGenerator {
 
     static {
-//        PatternLayout layout = new PatternLayout("%m%n");
-//        BasicConfigurator.configure(new ConsoleAppender(layout));
+        // PatternLayout layout = new PatternLayout("%m%n");
+        // BasicConfigurator.configure(new ConsoleAppender(layout));
 
+        // Currently invoked from Ant build task so needs to be configured
         PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout
-                .newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
+                                                                                 .newBuilder()
+                                                                                 .withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n")
+                                                                                 .build();
         ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
 
         //init log4j

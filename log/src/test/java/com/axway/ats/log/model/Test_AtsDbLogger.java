@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@ package com.axway.ats.log.model;
 
 import static org.junit.Assert.assertNotNull;
 
-import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -28,7 +27,7 @@ public class Test_AtsDbLogger {
     @BeforeClass
     public static void setUpTest_AutoLogger() {
 
-        BasicConfigurator.configure();
+        //BasicConfigurator.configure();
     }
 
     @Test

@@ -17,6 +17,8 @@ package com.axway.ats.log.model;
 
 import org.apache.logging.log4j.Level;
 
+import com.axway.ats.log.Log4j2Utils;
+
 /**
  * This class adds one custom level to the log4j predefined levels
  * The level is called SYSTEM and is used when sending the custom events
@@ -26,12 +28,13 @@ import org.apache.logging.log4j.Level;
 public class SystemLogLevel {
 
     public final static String SYSTEM_NAME = "SYSTEM";
-    public final static int    SYSTEM_INT  = Level.FATAL.intLevel() + 10000;
+    public final static int    SYSTEM_INT  = Level.FATAL.intLevel() - 50;
     public final static Level  SYSTEM      = Level.forName(SYSTEM_NAME, SYSTEM_INT);
 
     /**
     Convert the string passed as argument to a level. If the
-    conversion fails, then this method returns {@link Level#DEBUG}.
+    conversion fails, then this method returns {@link Level#DEBUG}.</br>
+    <strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  String sArg ) {
@@ -42,7 +45,7 @@ public class SystemLogLevel {
     /**
       Convert an integer passed as argument to a level. If the
       conversion fails, then this method returns {@link Level#DEBUG}.
-    
+      </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  int val ) {
@@ -53,6 +56,7 @@ public class SystemLogLevel {
     /**
       Convert an integer passed as argument to a level. If the
       conversion fails, then this method returns the specified default.
+      </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  int val,
@@ -77,7 +81,8 @@ public class SystemLogLevel {
     /**
        Convert the string passed as argument to a level. If the
        conversion fails, then this method returns the value of
-       <code>defaultLevel</code>.  
+       <code>defaultLevel</code>.
+       </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  String sArg,

@@ -37,7 +37,7 @@ public class DbAppenderConfiguration implements Serializable {
     private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
     private String            host;
-    private String            port;
+    private String            port                                  = null;
     private String            database;
     private String            user;
     private String            password;
@@ -53,7 +53,7 @@ public class DbAppenderConfiguration implements Serializable {
     private boolean           enableCheckpoints                     = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    private Level   loggingThreshold;
+    private Level             loggingThreshold;
 
     public String getHost() {
 

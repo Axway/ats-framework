@@ -16,23 +16,21 @@
 package com.axway.ats.agentapp.standalone.log;
 
 import org.apache.logging.log4j.Level;
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
 
 /**
  * Filer logging of ATS logging DB &quot;SYSTEM level&quot; events
  */
-public class NoSystemLevelEventsFilter extends Filter {
-    public final static int SYSTEM_INT = Level.FATAL_INT + 10000; // prevent reference to com.axway.ats.log.model.SystemLogLevel
+public class NoSystemLevelEventsFilter extends AbstractFilter {
+    public final static int SYSTEM_INT = Level.FATAL.intLevel() + 10000; // prevent reference to com.axway.ats.log.model.SystemLogLevel
 
     @Override
-    public int decide(
-                       LoggingEvent loggingEvent ) {
+    public Filter.Result filter( LogEvent event ) {
 
-        if (loggingEvent.getLevel().toInt() == SYSTEM_INT) {
-            return DENY;
-        }
-
-        return NEUTRAL;
+        return (event.getLevel().intLevel() == SYSTEM_INT)
+                                                           ? Result.DENY
+                                                           : Result.NEUTRAL;
     }
 }

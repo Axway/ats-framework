@@ -1,249 +1,276 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>com.axway.ats.framework.agent.webapp</groupId>
-        <artifactId>ats-agent-webapp</artifactId>
-        <version>4.0.7-SNAPSHOT</version>
-    </parent>
+	<parent>
+		<groupId>com.axway.ats.framework.agent.webapp</groupId>
+		<artifactId>ats-agent-webapp</artifactId>
+		<version>4.0.7-SNAPSHOT</version>
+	</parent>
 
-    <artifactId>ats-agent-webapp-tomcatcontainer</artifactId>
-    <packaging>war</packaging>
-    <name>ATS-Agent-WebApp-TomcatContainer</name>
+	<artifactId>ats-agent-webapp-tomcatcontainer</artifactId>
+	<packaging>war</packaging>
+	<name>ATS-Agent-WebApp-TomcatContainer</name>
 
-    <build>
-        <plugins>
-            <plugin> <!-- extract WSDL from ats-agent-webapp-server -->
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>unpack-agent-server-resources</id>
-                        <goals>
-                            <goal>unpack-dependencies</goal>
-                        </goals>
-                        <phase>generate-resources</phase>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/extra-resources/wsdl
-                            </outputDirectory> <!-- TODO: strip META-INF from unpack -->
-                            <includeGroupIds>${project.groupId}</includeGroupIds>
-                            <includeArtifactIds>ats-agent-webapp-server</includeArtifactIds>
-                            <includes>META-INF/wsdl/**</includes>
-                            <excludeTransitive>true</excludeTransitive>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+	<build>
+		<plugins>
+			<plugin> <!-- extract WSDL from ats-agent-webapp-server -->
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>unpack-agent-server-resources</id>
+						<goals>
+							<goal>unpack-dependencies</goal>
+						</goals>
+						<phase>generate-resources</phase>
+						<configuration>
+							<outputDirectory>${project.build.directory}/extra-resources/wsdl
+							</outputDirectory> <!-- TODO: strip META-INF from unpack -->
+							<includeGroupIds>${project.groupId}</includeGroupIds>
+							<includeArtifactIds>ats-agent-webapp-server</includeArtifactIds>
+							<includes>META-INF/wsdl/**</includes>
+							<excludeTransitive>true</excludeTransitive>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <configuration> <!-- Needed for optional management of extra included resources like WSDL -->
-                    <webResources>
-                        <resource>
-                            <!-- Copy WSDL from META-INF/wsdl/ (from webapp-server artifact)
-                                to WEB-INF/wsdl/ -->
-                            <directory>${project.build.directory}/extra-resources/wsdl/META-INF/wsdl</directory>
-                            <targetPath>WEB-INF/wsdl</targetPath>
-                            <includes>
-                                <include>**</include>
-                            </includes>
-                        </resource>
-                    </webResources>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration> <!-- Needed for optional management of extra included resources like WSDL -->
+					<webResources>
+						<resource>
+							<!-- Copy WSDL from META-INF/wsdl/ (from webapp-server artifact) to 
+								WEB-INF/wsdl/ -->
+							<directory>${project.build.directory}/extra-resources/wsdl/META-INF/wsdl</directory>
+							<targetPath>WEB-INF/wsdl</targetPath>
+							<includes>
+								<include>**</include>
+							</includes>
+						</resource>
+					</webResources>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.axway.ats.framework.agent.webapp</groupId>
-            <artifactId>ats-agent-webapp-server</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+	<dependencies>
+		<dependency>
+			<groupId>com.axway.ats.framework.agent.webapp</groupId>
+			<artifactId>ats-agent-webapp-server</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>xalan</artifactId>
-        </dependency>
-        <!-- Needed for jTDS -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-dbcp2</artifactId>
-            <version>${apache.commons-dbcp.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-compress</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>commons-io</groupId>
-            <artifactId>commons-io</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sourceforge.jtds</groupId>
-            <artifactId>jtds</artifactId>
-            <version>${net.sourceforge.jtds.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>xerces</groupId>
+			<artifactId>xercesImpl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>xalan</groupId>
+			<artifactId>xalan</artifactId>
+		</dependency>
+		<!-- Needed for jTDS -->
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-dbcp2</artifactId>
+			<version>${apache.commons-dbcp.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-lang3</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>net.sourceforge.jtds</groupId>
+			<artifactId>jtds</artifactId>
+			<version>${net.sourceforge.jtds.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${org.postgresql.postgresql.version}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
+			<version>${org.postgresql.postgresql.version}</version>
+		</dependency>
 
-        <dependency>
-            <groupId>com.axway.ats.framework.agent</groupId>
-            <artifactId>ats-agent-core</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework.agent</groupId>
+			<artifactId>ats-agent-core</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-common</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-common</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-core</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-core</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-environmentcleanup</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-environmentcleanup</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>com.axway.ats.framework</groupId>
-            <artifactId>ats-log</artifactId>
-            <version>${project.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>*</groupId>
-                    <artifactId>*</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+		<dependency>
+			<groupId>com.axway.ats.framework</groupId>
+			<artifactId>ats-log</artifactId>
+			<version>${project.version}</version>
+			<scope>runtime</scope>
+			<exclusions>
+				<exclusion>
+					<groupId>*</groupId>
+					<artifactId>*</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
 
-        <dependency>
-            <groupId>org.glassfish.metro</groupId>
-            <artifactId>webservices-rt</artifactId>
-        </dependency>
-        <dependency> <!-- Exclude it. Relying that this is configured on server and not on app. level -->
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency> <!-- Exclude it. Relying that this is configured on server and not on app. level -->
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <scope>provided</scope>
-        </dependency>
+		<dependency>
+			<groupId>org.glassfish.metro</groupId>
+			<artifactId>webservices-rt</artifactId>
+		</dependency>
+		<!-- <dependency> Exclude it. Relying that this is configured on server 
+			and not on app. level <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-api</artifactId> 
+			<scope>provided</scope> </dependency> <dependency> Exclude it. Relying that 
+			this is configured on server and not on app. level <groupId>org.apache.logging.log4j</groupId> 
+			<artifactId>log4j-core</artifactId> <scope>provided</scope> </dependency> -->
 
-        <dependency> <!-- Needed for jaxws-rt -->
-            <groupId>org.glassfish.pfl</groupId>
-            <artifactId>pfl-basic</artifactId>
-            <version>4.0.1</version>
-        </dependency>
+		<dependency> <!-- Needed for jaxws-rt -->
+			<groupId>org.glassfish.pfl</groupId>
+			<artifactId>pfl-basic</artifactId>
+			<version>4.0.1</version>
+		</dependency>
 
-        <!-- Dependency for working with external processes -->
-        <dependency>
-            <groupId>com.axway.ats.expectj</groupId>
-            <artifactId>ats-expectj</artifactId>
-            <version>${ats-expectj.version}</version>
-            <exclusions>
-                <exclusion> <!-- older JSch version -->
-                    <groupId>com.jcraft</groupId>
-                    <artifactId>jsch</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency> <!-- Newer version of dependency needed for ExpectJ -->
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>${com.jcraft.jsch.version}</version>
-        </dependency>
+		<!-- Dependency for working with external processes -->
+		<dependency>
+			<groupId>com.axway.ats.expectj</groupId>
+			<artifactId>ats-expectj</artifactId>
+			<version>${ats-expectj.version}</version>
+			<exclusions>
+				<exclusion> <!-- older JSch version -->
+					<groupId>com.jcraft</groupId>
+					<artifactId>jsch</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency> <!-- Newer version of dependency needed for ExpectJ -->
+			<groupId>com.jcraft</groupId>
+			<artifactId>jsch</artifactId>
+			<version>${com.jcraft.jsch.version}</version>
+		</dependency>
 
-        <!-- REST dependencies -->
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>javax.ws.rs-api</artifactId>
-            <version>${javax.ws.rs-api.version}</version>
-            <!-- <scope>provided</scope> -->
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.containers</groupId>
-            <artifactId>jersey-container-servlet</artifactId>
-            <version>${org.glassfish.jersey.jersey-server.version}</version>
-            <!-- <scope>provided</scope> -->
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>${org.glassfish.jersey.jersey-server.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-moxy</artifactId>
-            <version>${org.glassfish.jersey.jersey-server.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.microsoft.sqlserver</groupId>
-            <artifactId>mssql-jdbc</artifactId>
-        </dependency>
-        <!-- this dependency is required after jersey 2.26 -->
-        <!-- <dependency>
-            <groupId>org.glassfish.jersey.inject</groupId>
-            <artifactId>jersey-hk2</artifactId>
-            <version>${org.glassfish.jersey.inject.version}</version>
-        </dependency> -->
-    </dependencies>
+		<!-- REST dependencies -->
+		<dependency>
+			<groupId>javax.ws.rs</groupId>
+			<artifactId>javax.ws.rs-api</artifactId>
+			<version>${javax.ws.rs-api.version}</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.containers</groupId>
+			<artifactId>jersey-container-servlet</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+			<!-- <scope>provided</scope> -->
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.core</groupId>
+			<artifactId>jersey-server</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.glassfish.jersey.media</groupId>
+			<artifactId>jersey-media-moxy</artifactId>
+			<version>${org.glassfish.jersey.jersey-server.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.microsoft.sqlserver</groupId>
+			<artifactId>mssql-jdbc</artifactId>
+		</dependency>
+		<!-- this dependency is required after jersey 2.26 -->
+		<!-- <dependency> <groupId>org.glassfish.jersey.inject</groupId> <artifactId>jersey-hk2</artifactId> 
+			<version>${org.glassfish.jersey.inject.version}</version> </dependency> -->
+
+
+
+
+		<!-- All hail the logging deps -->
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-1.2-api</artifactId>
+		</dependency>
+
+	</dependencies>
 </project>

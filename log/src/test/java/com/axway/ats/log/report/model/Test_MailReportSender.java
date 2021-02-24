@@ -34,8 +34,6 @@ import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.axway.ats.log.report.exceptions.MailReportSendException;
-import com.axway.ats.log.report.model.MailReportSender;
-import com.axway.ats.log.report.model.ReportConfigurator;
 
 @RunWith( PowerMockRunner.class)
 @PrepareForTest( { Transport.class, ReportConfigurator.class })

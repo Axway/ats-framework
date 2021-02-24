@@ -151,7 +151,8 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                             throw new AgentException(ae.getMessage());
                         } catch (Exception e) {
-                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": " + e.getMessage(), e);
+                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": "
+                                                     + e.getMessage(), e);
                         }
 
                         configuredAgents.add(atsAgent);
@@ -205,7 +206,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     private TestCaseState getCurrentTestCaseState() {
 
         /** We want to send event to the agents, even if db appender is not attached, so we skip that check **/
-        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogManager.getLogger(ActionClient.class.getName(), true)
+        com.axway.ats.log.autodb.TestCaseState testCaseState = AtsDbLogger.getLogger(ActionClient.class.getName(), true)
                                                                           .getCurrentTestCaseState();
         if (testCaseState == null) {
             return null;

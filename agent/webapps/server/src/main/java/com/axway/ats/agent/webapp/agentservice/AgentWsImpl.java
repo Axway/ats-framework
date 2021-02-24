@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ public class AgentWsImpl {
     /** skip check whether ActiveDbAppender appender is presented in the test executors log4j.xml in order to execute actions,
      * even if such appender is not presented
      */
-    private static final AtsDbLogger log                               = AtsDbLogManager.getLogger("com.axway.ats.agent.webapp.agentservice", true);
+    private static final AtsDbLogger log                               = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.agentservice", true);
 
     private static int               lastRunId                         = -1;
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class BaseRestServiceImpl {
     */
 
     /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
-    private AtsDbLogger                       dbLog    = AtsDbLogManager.getLogger(BaseRestServiceImpl.class.getName(),
+    private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
                                                                                true);
 
     public static Map<String, SessionData> sessions = Collections.synchronizedMap(new HashMap<String, SessionData>());

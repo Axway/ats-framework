@@ -90,7 +90,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
         @PluginBuilderAttribute( "port")
         @Required( message = "PassiveDbAppender: no port provided")
         @ValidPort
-        private int            port;
+        private int            port              = -1;
 
         @PluginBuilderAttribute( "database")
         @Required( message = "PassiveDbAppender: no database provided")
@@ -111,7 +111,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
         @PluginBuilderAttribute( "mode")
         private String         mode;
 
-        // Note that only "batch" value is supported
+        // Note that this is supported only if mode = 'batch'
         @PluginBuilderAttribute( "chunkSize")
         private String         chunkSize;
 
@@ -119,7 +119,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
         private int            events;
 
         @PluginBuilderAttribute( "enableCheckpoints")
-        private boolean        enableCheckpoints;
+        private boolean        enableCheckpoints = true;
 
         public String getName() {
 
@@ -270,7 +270,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
             return this.enableCheckpoints;
         }
 
-        public PassiveDbAppenderBuilder setChunkSize( boolean enableCheckpoints ) {
+        public PassiveDbAppenderBuilder setEnableCheckpoints( boolean enableCheckpoints ) {
 
             this.enableCheckpoints = enableCheckpoints;
 
@@ -282,7 +282,11 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
             DbAppenderConfiguration appenderConfiguration = new DbAppenderConfiguration();
             appenderConfiguration.setHost(this.host);
-            appenderConfiguration.setPort(this.port + "");
+            if (port == -1) {
+                appenderConfiguration.setPort(null);
+            } else {
+                appenderConfiguration.setPort(this.port + "");
+            }
             appenderConfiguration.setDatabase(this.database);
             appenderConfiguration.setUser(this.user);
             appenderConfiguration.setPassword(this.password);
@@ -306,6 +310,8 @@ public class PassiveDbAppender extends AbstractDbAppender {
         super(name, filter, layout, appenderConfiguration);
 
         this.caller = caller;
+
+        initializeDbLogging();
     }
 
     @Override

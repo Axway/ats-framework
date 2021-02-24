@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,8 +124,6 @@ public abstract class AbstractDbAppender extends AbstractAppender {
         }
 
         // set the threshold if there is such
-        // What if there is no filter? then NPE is thrown
-        // Is this what is really needed?!?
         if (this.hasFilter()) {
             if (this.getFilter() instanceof ThresholdFilter) {
                 appenderConfig.setLoggingThreshold( ((ThresholdFilter) this.getFilter()).getLevel());
@@ -141,7 +139,8 @@ public abstract class AbstractDbAppender extends AbstractAppender {
             }
 
         } else {
-            throw new RuntimeException("No Threshold filter provided!");
+            // nothing is filtered
+            //throw new RuntimeException("No Threshold filter provided!");
         }
 
         // the logging queue
@@ -153,8 +152,9 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     public boolean stop( long timeout, TimeUnit timeUnit ) {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && queueLogger.isInterrupted()) {
+        if (queueLogger != null && !queueLogger.isInterrupted()) {
             queueLogger.interrupt();
+            queueLogger = null;
         }
 
         return super.stop(timeout, timeUnit);
@@ -164,8 +164,9 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     protected boolean stop( long timeout, TimeUnit timeUnit, boolean changeLifeCycleState ) {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && queueLogger.isInterrupted()) {
+        if (queueLogger != null && !queueLogger.isInterrupted()) {
             queueLogger.interrupt();
+            queueLogger = null;
         }
 
         return super.stop(timeout, timeUnit, changeLifeCycleState);
@@ -175,8 +176,9 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     public void stop() {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && queueLogger.isInterrupted()) {
+        if (queueLogger != null && !queueLogger.isInterrupted()) {
             queueLogger.interrupt();
+            queueLogger = null;
         }
         super.stop();
     }
@@ -185,8 +187,9 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     protected boolean stop( Future<?> future ) {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && queueLogger.isInterrupted()) {
+        if (queueLogger != null && !queueLogger.isInterrupted()) {
             queueLogger.interrupt();
+            queueLogger = null;
         }
         return super.stop(future);
     }
@@ -215,6 +218,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
         }
 
         // start the logging thread
+        // can be moved to the start() method, but only if needed
         queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode);
         queueLogger.setDaemon(true);
         queueLogger.start();

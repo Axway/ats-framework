@@ -1,43 +1,38 @@
-<!DOCTYPE log4j:configuration PUBLIC
-        "-//APACHE//DTD LOG4J 1.2//EN"
-        "http://logging.apache.org/log4j/1.2/apidocs/org/apache/log4j/xml/doc-files/log4j.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
 
-<log4j:configuration
-        xmlns:log4j="http://jakarta.apache.org/log4j/">
-
-    <!-- Console appender -->
-    <appender name="console"
-              class="org.apache.log4j.ConsoleAppender">
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern"
-                   value="%-5p %d{HH:mm:ss} %c{2}: %m%n"/>
-        </layout>
-        <filter
+        <!-- Console appender -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%-5p %d{HH:mm:ss} %c{2}: %m%n" />
+				<filter
                 class="com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter"/>
-    </appender>
+		</Console>
+		<ActiveDbAppender name="db"
+		    host="localhost"
+            port="5432"
+		    database="AtsTestDb"
+		    user="AtsUser"
+			password="AtsPassword"
+			mode="batch"
+			driver="mssql">
+			
+			<PatternLayout pattern="%c{2}: %m%n" />
+			
+		</ActiveDbAppender>
+	</Appenders>
 
-    <!-- Test Explorer DB appender -->
-    <appender name="db"
-              class="com.axway.ats.log.appenders.ActiveDbAppender">
-        <param name="host" value="localhost"/>
-        <param name="database" value="AtsTestDb"/>
-        <param name="port" value="5432"/>
-        <param name="user" value="AtsUser"/>
-        <param name="password" value="AtsPassword"/>
-        <layout class="org.apache.log4j.PatternLayout">
-            <param name="ConversionPattern" value="%c{2}: %m%n"/>
-        </layout>
-    </appender>
 
-    <!-- Root logger configuration -->
-    <root>
-        <priority value="info"/>
 
-        <!-- enable logging into the console -->
-        <appender-ref ref="console"/>
+	<Loggers>
+		<Root level="info">
+		    <!-- enable logging into the console -->
+			<AppenderRef ref="Console" />
+			<!-- enable logging into the dedicated logging database -->
+			<AppenderRef ref="db" />
+		</Root>
+	</Loggers>
 
-        <!-- enable logging into the dedicated logging database -->
-        <appender-ref ref="db"/>
-    </root>
 
-</log4j:configuration>
+</Configuration>

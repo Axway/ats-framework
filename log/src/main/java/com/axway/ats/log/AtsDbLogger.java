@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package com.axway.ats.log;
 
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
@@ -25,15 +24,9 @@ import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.Filter.Result;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.core.reflect.ReflectionUtils;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
@@ -879,44 +872,29 @@ public class AtsDbLogger {
      * The reason is that we have to evaluate the result after the work of each passive appender and stop
      * calling these appenders when the first one(the only one serving this caller) has processed the event. 
      */
-    @SuppressWarnings( "unchecked")
     public TestCaseState getCurrentTestCaseState() {
 
         GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
 
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        Map<String, Appender> appenders = config.getAppenders();
-        if (appenders != null && appenders.size() > 0) {
-            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
-                Appender appender = entry.getValue();
-                if (appender != null) {
-                    if (appender instanceof ActiveDbAppender) {
-                        // Comes here on Test Executor side. There is just 1 Active appender
-                        return ((ActiveDbAppender) appender).getCurrentTestCaseState(event).getTestCaseState();
-                    }
-                    if (appender instanceof PassiveDbAppender) {
-                        
-                        /* [DS] Update
-                         * Since each PassiveDbAppender has a callerID,
-                         * Shouldn't this be taken into consideration when obtaining it?
-                         * As the code below does not do that and just returns the first PassiveDbAppender that is obtained form the enumeration 
-                        */
-                        // Comes here on Agent side. There will be 1 Passive appender per caller
-                        
-                        // Pass the event to any existing appender.
-                        // The correct one will return result, wrong appenders will return null.
-                        GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
-                        if (resultEvent != null) {
-                            // we found the right Passive appender
-                            return resultEvent.getTestCaseState();
-                        }
-                    }
-                }
+        PassiveDbAppender passiveDbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+
+        if (passiveDbAppender != null) {
+
+            // assume we are on the ATS Agent side
+            GetCurrentTestCaseEvent resultEvent = passiveDbAppender.getCurrentTestCaseState(event);
+            if (resultEvent != null) {
+                // we found the right Passive appender
+                return resultEvent.getTestCaseState();
+            }
+        } else {
+
+            ActiveDbAppender activeAppender = ActiveDbAppender.getCurrentInstance();
+
+            if (activeAppender != null) {
+                return activeAppender.getCurrentTestCaseState(event).getTestCaseState();
             }
         }
 
-        // no appropriate appender found
         return null;
     }
 
@@ -969,15 +947,13 @@ public class AtsDbLogger {
                             LogEvent event ) {
 
         // check if this level is allowed for the repository at all
-        LoggerContext context = (LoggerContext) LogManager.getContext(false);
-        LoggerConfig config = (LoggerConfig) context.getConfiguration();
-        if (config.getLevel().isLessSpecificThan(event.getLevel())) {
+        if (Log4j2Utils.getRootLogger().getLevel().isMoreSpecificThan(event.getLevel())) {
             return;
         }
 
         // check if the event level is allowed for this logger
-        if (event.getLevel().isLessSpecificThan(logger.getLevel())) { // or isMore?!?
-            context.getConfiguration().getLoggerConfig(logger.getName()).log(event);
+        if (event.getLevel().isMoreSpecificThan(logger.getLevel())) {
+            Log4j2Utils.getLoggerConfig(logger.getName()).log(event);
         }
     }
 

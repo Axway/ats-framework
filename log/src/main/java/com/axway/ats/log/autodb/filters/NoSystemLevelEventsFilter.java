@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 package com.axway.ats.log.autodb.filters;
 
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 
 import com.axway.ats.log.model.SystemLogLevel;
 
+/**
+ * Finer logging of ATS logging DB &quot;SYSTEM level&quot; events
+*/
 public class NoSystemLevelEventsFilter extends AbstractFilter {
 
     @Override
-    public Result filter( LogEvent event ) {
+    public Filter.Result filter( LogEvent event ) {
 
         return (event.getLevel().intLevel() == SystemLogLevel.SYSTEM_INT)
                                                                           ? Result.DENY

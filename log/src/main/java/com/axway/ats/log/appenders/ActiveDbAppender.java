@@ -100,7 +100,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         return new ActiveDbAppenderBuilder();
     }
 
-    // Note try to share this builder by both Active and Passive DbAppender
+    // Note: Try to share this builder by both Active and Passive DbAppender
     // Maybe create AbstractDbAppenderBuilder (note that this class is abstract)
     // And the two separate builders (children of the aforementioned builder) for both Active/Passive DB appenders
     public static class ActiveDbAppenderBuilder
@@ -125,7 +125,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         @PluginBuilderAttribute( "port")
         @Required( message = "ActiveDbAppender: no port provided")
         @ValidPort
-        private int            port;
+        private int            port              = -1;
 
         @PluginBuilderAttribute( "database")
         @Required( message = "ActiveDbAppender: no database provided")
@@ -146,7 +146,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         @PluginBuilderAttribute( "mode")
         private String         mode;
 
-        // Note that only "batch" value is supported
+        // Note that this is supported only if mode = 'batch'
         @PluginBuilderAttribute( "chunkSize")
         private String         chunkSize;
 
@@ -154,7 +154,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
         private int            events;
 
         @PluginBuilderAttribute( "enableCheckpoints")
-        private boolean        enableCheckpoints;
+        private boolean        enableCheckpoints = true;
 
         public String getName() {
 
@@ -317,7 +317,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
             DbAppenderConfiguration appenderConfiguration = new DbAppenderConfiguration();
             appenderConfiguration.setHost(this.host);
-            appenderConfiguration.setPort(this.port + "");
+            if (port == -1) {
+                appenderConfiguration.setPort(null);
+            } else {
+                appenderConfiguration.setPort(this.port + "");
+            }
             appenderConfiguration.setDatabase(this.database);
             appenderConfiguration.setUser(this.user);
             appenderConfiguration.setPassword(this.password);
@@ -355,11 +359,10 @@ public class ActiveDbAppender extends AbstractDbAppender {
             eventProcessor.setLayout(this.getLayout());
         }
 
-        initializeDbLogging();
     }
 
     /**
-     * Constructor
+     * Actual Constructor
      */
     public ActiveDbAppender( String name, Filter filter, Layout<? extends Serializable> layout,
                              DbAppenderConfiguration appenderConfiguration ) {

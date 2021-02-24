@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package com.axway.ats.agent.core;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 
 import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 
@@ -31,10 +30,23 @@ public class BaseTest {
     public final static String    RELATIVE_PATH_TO_TEST_SOURCES   = RELATIVE_PATH_TO_TESTS + "/java";
 
     static {
-        ConsoleAppender appender = new ConsoleAppender( new PatternLayout( "%-5p %d{HH:mm:ss-SSS} %c{2}: %m%n" ) );
-        appender.addFilter( new NoSystemLevelEventsFilter() );
+
+        org.apache.logging.log4j.core.layout.PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
+                                                                                                                      .withPattern("%-5p %d{HH:mm:ss-SSS} %c{2}: %m%n")
+                                                                                                                      .build();
+        org.apache.logging.log4j.core.appender.ConsoleAppender appender = org.apache.logging.log4j.core.appender.ConsoleAppender.newBuilder()
+                                                                                                                                .setLayout(layout)
+                                                                                                                                .setName("ConsoleAppender")
+                                                                                                                                .setFilter(new NoSystemLevelEventsFilter())
+                                                                                                                                .build();
 
         //init log4j
-        BasicConfigurator.configure( appender );
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
+        context.updateLoggers(); // TODO is this needed
+
     }
 }

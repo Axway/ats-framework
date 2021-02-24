@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,12 +41,12 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Filter.Result;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.AbstractAppender;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.filter.ThresholdFilter;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
@@ -330,6 +329,14 @@ public class LocalSystemOperations implements ISystemOperations {
                 Appender appender = entry.getValue();
                 if (appender != null) {
                     if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
+                        // assume that only ATS is going to attach filter to this appender
+                        // so remove the previous one and attach the new one
+                        if ( ((AbstractAppender) appender).hasFilter()) {
+                            Filter currentFilter = ((AbstractAppender) appender).getFilter();
+                            if (currentFilter != null) {
+                                ((AbstractAppender) appender).removeFilter(currentFilter);
+                            }
+                        }
                         ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold, Result.ACCEPT,
                                                                                              Result.DENY));
                     }
@@ -338,6 +345,14 @@ public class LocalSystemOperations implements ISystemOperations {
                         String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller",
                                                                                                 true);
                         if (callerId != null && callerId.equals(passiveDbAppenderCaller)) {
+                            // assume that only ATS is going to attach filter to this appender
+                            // so remove the previous one and attach the new one
+                            if ( ((AbstractAppender) appender).hasFilter()) {
+                                Filter currentFilter = ((AbstractAppender) appender).getFilter();
+                                if (currentFilter != null) {
+                                    ((AbstractAppender) appender).removeFilter(currentFilter);
+                                }
+                            }
                             ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold,
                                                                                                  Result.ACCEPT,
                                                                                                  Result.DENY));
@@ -352,9 +367,20 @@ public class LocalSystemOperations implements ISystemOperations {
 
         try {
             PatternLayout patternLayout = PatternLayout.newBuilder().withPattern(messageFormatPattern).build();
-            FileAppender fileAppender = FileAppender.newBuilder().setLayout(patternLayout).withFileName(filepath).build();
             final LoggerContext context = LoggerContext.getContext(false);
             final Configuration config = context.getConfiguration();
+
+            // this name may get too long
+            String name = "file-appender-" + ThreadsPerCaller.getCaller() + filepath.replace("\\", "_");
+
+            //TODO: a check should be made that such appender exists
+            
+            FileAppender fileAppender = FileAppender.newBuilder()
+                                                    .setName(name)
+                                                    .setLayout(patternLayout)
+                                                    .withFileName(filepath)
+                                                    .build();
+
             fileAppender.start();
             config.addAppender(fileAppender);
             // context.getRootLogger().addAppender(config.getAppender(fa.getName())); Is this needed?!?
