@@ -193,7 +193,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * Do not use this constructor.
      * It is implemented only to be used, when a dummy db event request processor is needed to be created.
-     * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j.xml
+     * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j2.xml
      * */
     public DbEventRequestProcessor() {
 

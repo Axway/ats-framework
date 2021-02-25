@@ -238,7 +238,7 @@ public class DbConnSQLServer extends DbConnection {
     }
 
     /**
-     * NOTE: This method must not use log4j for logging as this may cause locking issues
+     * NOTE: This method must not use log4j2 for logging as this may cause locking issues
      */
     @Override
     public DataSource getDataSource() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 
 /**
- * Logger sending messages through Log4j
+ * Logger sending messages through Log4j2
  */
 public class AtsLog4jLogger extends AbstractAtsLogger {
 
@@ -36,23 +36,21 @@ public class AtsLog4jLogger extends AbstractAtsLogger {
      * This is separate non-logger specific utility method
      */
     public static void setLog4JConsoleLoggingOnly() {
+
         PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
         ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
 
-        //init log4j
-        //BasicConfigurator.configure(appender);
         final LoggerContext context = LoggerContext.getContext(false);
         final Configuration config = context.getConfiguration();
         appender.start();
         config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
         context.updateLoggers();
     }
 
     public AtsLog4jLogger( Class<?> callingClass ) {
 
         if (callingClass == null) {
-            // this will probably never happen, as our code gives calling class when initializing log4j logger
+            // this will probably never happen, as our code gives calling class when initializing log4j2 logger
             log = LogManager.getLogger("ATS Logger");
         } else {
             log = LogManager.getLogger(callingClass);

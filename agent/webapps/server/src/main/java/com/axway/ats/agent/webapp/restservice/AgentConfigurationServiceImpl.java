@@ -58,7 +58,7 @@ import com.axway.ats.log.model.SystemLogLevel;
 @Path( "configuration")
 public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
-    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
+    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j2.xml **/
     protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName(),
                                                                             true);
 

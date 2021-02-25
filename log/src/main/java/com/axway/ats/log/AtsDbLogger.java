@@ -16,15 +16,11 @@
 package com.axway.ats.log;
 
 import java.util.List;
-import java.util.Map;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.threads.ThreadsPerCaller;
@@ -90,12 +86,12 @@ public class AtsDbLogger {
     private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
 
         this.logger = logger;
-        // check if the ActiveDbAppender is specified in log4j.xml
+        // check if the ActiveDbAppender is specified in log4j2.xml
         if (!skipAppenderCheck) {
             if (!ActiveDbAppender.isAttached) {
                 if (!isWarningMessageLogged) {
                     this.logger.warn(
-                                     "ATS Database appender is not attached in root logger element in log4j.xml file. "
+                                     "ATS Database appender is not attached in root logger element in log4j2.xml file. "
                                      + "No test data will be sent to ATS Log database and some methods from '"
                                      + AtsDbLogger.class.getName() + "' class will not work as expected");
                     isWarningMessageLogged = true;
@@ -131,7 +127,7 @@ public class AtsDbLogger {
 
     /**
      * This method is intended for internal (by ATS devs) usage only.
-     * @param logger the Apache log4j logger
+     * @param logger the Apache log4j2 logger
      * @param skipAppenderCheck enable/disable check for availability of db appender
      */
     public static synchronized AtsDbLogger getLogger(
@@ -868,7 +864,7 @@ public class AtsDbLogger {
     }
 
     /**
-     * This event can not go through the regular way of sending log4j events in the case with Passive DB appenders. 
+     * This event can not go through the regular way of sending log4j2 events in the case with Passive DB appenders. 
      * The reason is that we have to evaluate the result after the work of each passive appender and stop
      * calling these appenders when the first one(the only one serving this caller) has processed the event. 
      */

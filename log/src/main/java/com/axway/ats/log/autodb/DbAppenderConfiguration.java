@@ -119,7 +119,7 @@ public class DbAppenderConfiguration implements Serializable {
     }
 
     /**
-     * Read the "events" parameter value from log4j.xml.
+     * Read the "events" parameter value from log4j2.xml.
      * This value will be used for capacity of our logging queue.
      * 
      * Note: the new value cannot be bellow the default capacity.
@@ -219,7 +219,7 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (port == null) {
-            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, section for ATS ActiveDbAppender. "
+            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j2.xml file, section for ATS ActiveDbAppender. "
                                                   + "Assuming default value for Microsoft SQL Server databases ("
                                                   + DbConnSQLServer.DEFAULT_PORT + ")");
             this.port = DbConnSQLServer.DEFAULT_PORT + "";

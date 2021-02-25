@@ -259,7 +259,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
             if (queue.remainingCapacity() < 1) {
                 throw new IllegalStateException("There are too many messages queued"
                                                 + " for TestExplorer DB logging. Decrease messages count"
-                                                + " by lowering effective log4j severity or check whether"
+                                                + " by lowering effective log4j2 severity or check whether"
                                                 + " connection to DB is too slow", ex);
             } else {
                 throw ex;
@@ -273,7 +273,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     protected abstract EventRequestProcessorListener getEventRequestProcessorListener();
 
     /**
-     * log4j system reads the "events" parameter from the log4j.xml and calls
+     * log4j2 system reads the "events" parameter from the log4j2.xml and calls
      * this method
      *
      * @param maxNumberLogEvents
@@ -309,7 +309,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     }
 
     /**
-     * log4j system reads the "mode" parameter from the log4j.xml and calls this
+     * log4j2 system reads the "mode" parameter from the log4j2.xml and calls this
      * method
      *
      * Expected value is "batch", everything else is skipped.

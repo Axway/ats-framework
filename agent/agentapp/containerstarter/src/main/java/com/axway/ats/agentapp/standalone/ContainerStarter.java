@@ -342,7 +342,7 @@ public class ContainerStarter {
         String agentSeverity = (String) variables.get("logging.severity");
 
         /*
-         * If the log4j.xml file has user-defined/third-party filters, they must be in the classpath (inside container directory)
+         * If the log4j2.xml file has user-defined/third-party filters, they must be in the classpath (inside container directory)
          **/
         boolean enableLog4jConfigFile = Boolean.valueOf((String) variables.get("logging.enable.log4j2.file"));
         String log4JFileName = "log4j2.xml"; // on the same level as agent.sh/.bat
@@ -447,7 +447,7 @@ public class ContainerStarter {
 
             } else {
                 System.err.println("ERROR: '" + pattern
-                                   + "' is invalid pattern for log4j rolling file appender");
+                                   + "' is invalid pattern for log4j2 rolling file appender");
                 System.exit(1);
             }
         }

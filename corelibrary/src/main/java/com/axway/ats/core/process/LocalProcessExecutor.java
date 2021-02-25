@@ -393,8 +393,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log standard output also to the corresponding Log4j appenders
-     * @param logStandardOutput <code>true</code> - log the output read to the log4j too
+     * Log standard output also to the corresponding Log4j2 appenders
+     * @param logStandardOutput <code>true</code> - log the output read to the log4j2 too
      */
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
@@ -402,8 +402,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log error to corresponding log4j appenders
-     * @param logErrorOutput - <code>true</code> - log the error output to the log4j too
+     * Log error to corresponding log4j2 appenders
+     * @param logErrorOutput - <code>true</code> - log the error output to the log4j2 too
      */
     public void setLogErrorOutput( boolean logErrorOutput ) {
 

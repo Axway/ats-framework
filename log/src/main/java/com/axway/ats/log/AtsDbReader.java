@@ -55,7 +55,7 @@ import io.netty.util.internal.StringUtil;
 /**
  * <p>Utility class for obtaining test execution data from an ATS Log DB</p>
  * <p>Note that by default, using {@link AtsDbReader#getDefaultInstance()}, test execution data is obtained from the
- * current log database, specified in the ActiveDbAppender section on the log4j.xml file.<br>
+ * current log database, specified in the ActiveDbAppender section on the log4j2.xml file.<br>
  * So, if no such entry exists, or DB logging is disabled, you'll have to provide custom data for the log DB
  * via {@link AtsDbReader#getInstance(String, int, String, String, String, Map)}
  * </p>
@@ -119,7 +119,7 @@ public class AtsDbReader {
     }
 
     /**
-     * Create AtsDbReader, by using the default database login parameters from the ActiveDbAppender section in log4j.xml<br>
+     * Create AtsDbReader, by using the default database login parameters from the ActiveDbAppender section in log4j2.xml<br>
      * To use other log database, use {@link AtsDbReader#getInstance(String, int, String, String, String, Map)}
      *
      * @throws DatabaseAccessException - if error occurred while checking log db availability
@@ -409,7 +409,7 @@ public class AtsDbReader {
      * @return list of {@link CheckpointSummary}s
      * @throws IllegalArgumentException if any of the arguments is invalid
      * @throws DatabaseAccessException  if an error occurred while obtaining data from the DB
-     * @throws IllegalStateException    if {@link ActiveDbAppender} was not attached (not found in log4j.xml configuration file)
+     * @throws IllegalStateException    if {@link ActiveDbAppender} was not attached (not found in log4j2.xml configuration file)
      */
     @PublicAtsApi
     public CheckpointSummary
@@ -462,7 +462,7 @@ public class AtsDbReader {
      * @return list of {@link StatisticDescription}s
      * @throws IllegalArgumentException if any of the arguments is invalid
      * @throws DatabaseAccessException  if an error occurred while obtaining data from the DB
-     * @throws IllegalStateException    if {@link ActiveDbAppender} was not attached (not found in log4j.xml configuration file)
+     * @throws IllegalStateException    if {@link ActiveDbAppender} was not attached (not found in log4j2.xml configuration file)
      */
     @PublicAtsApi
     public StatisticDescription

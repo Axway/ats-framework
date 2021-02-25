@@ -105,7 +105,7 @@ public abstract class AbstractClientExecutor implements ClientExecutor {
                                        threadingPattern.getThreadCount());
         } catch (DatabaseAccessException e) {
             if (ActiveDbAppender.getCurrentInstance() == null) {
-                // The log4j DB appender is not attached
+                // The log4j2 DB appender is not attached
                 // We assume the user is running a performance test without DB logging
                 log.warn("Unable to register a performance queue with name '" + queueName
                          + "' in the loggging database."

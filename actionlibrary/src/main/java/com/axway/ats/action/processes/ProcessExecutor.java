@@ -326,7 +326,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Route the standard output to the log4j system
+     * Route the standard output to the log4j2 system
      *
      * @param logStandardOutput
      */
@@ -337,7 +337,7 @@ public class ProcessExecutor {
     }
 
     /**
-     * Route the error output to the log4j system
+     * Route the error output to the log4j2 system
      *
      * @param logErrorOutput
      */

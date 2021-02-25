@@ -50,7 +50,7 @@ public class RemoteLoggingConfigurator implements Configurator {
 
     private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG.intLevel();
 
-    // list of other logger levels defined by the user in their log4j configuration file
+    // list of other logger levels defined by the user in their log4j2 configuration file
     private Map<String, Integer>    otherLoggerLevels = new HashMap<String, Integer>();
 
     // flags telling us what exactly to configure
@@ -99,7 +99,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                         // user specified in the test the log level for this agent
                         atsDbLogLevel = customLogLevel.toInt();
                     } else if (loggerConfig.getLevel() != null) {
-                        // user specified the log level in log4j configuration file
+                        // user specified the log level in log4j2 configuration file
                         atsDbLogLevel = loggerConfig.getLevel().intLevel();
 
                     }
@@ -197,7 +197,7 @@ public class RemoteLoggingConfigurator implements Configurator {
             for (Entry<String, Integer> userLogger : otherLoggerLevels.entrySet()) {
                 /* 
                  * We want to set the level of this logger.
-                 * It is not important if this logger is already attached to log4j system or 
+                 * It is not important if this logger is already attached to log4j2 system or 
                  * not as the next code will obtain it(in case logger exists) or will create it 
                  * and then will set its level
                  */
@@ -312,8 +312,8 @@ public class RemoteLoggingConfigurator implements Configurator {
             }
         }
 
-        // in case we must reconfigure the custom loggers, here we should remove them from log4j, 
-        // but log4j does not provide a way to do it - so we do nothing here
+        // in case we must reconfigure the custom loggers, here we should remove them from log4j2, 
+        // but log4j2 does not provide a way to do it - so we do nothing here
     }
 
     @Override

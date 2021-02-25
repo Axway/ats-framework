@@ -326,7 +326,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
     }
 
     /* (non-Javadoc)
-     * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+     * @see org.apache.logging.log4j.core.appender.AbstractAppender#append(org.apache.logging.log4j.core.LogEvent)
      */
     @Override
     public void append(

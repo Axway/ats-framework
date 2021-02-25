@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class ReportAppender extends AbstractAppender {
     private static List<RunWrapper>   htmlReportsList        = new ArrayList<RunWrapper>();
 
     /**
-     * This token is searched in log4j.xml which defines the Report Appender.
+     * This token is searched in log4j2.xml which defines the Report Appender.
      *
      * The user has the option to specify a custom mail subject, in the special tokens
      * we will insert runtime info about the run

@@ -59,7 +59,7 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
- * This appender is bridge between Log4J events and ATS database. In addition it keeps the test execution state like
+ * This appender is bridge between Log4J2 events and ATS database. In addition it keeps the test execution state like
  * DB connection info, current run and testcase ID. 
  * <p><em>Note</em> that this class is internal for the framework and DB-related public operations are available via 
  * AtsDbLogger</p>
@@ -338,8 +338,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     /**
      * Constructor that creates a dummy appender.
-     * Actually this constructor is not invoked via the log4j library, but 
-     * is used, then there is no ActiveDbAppender entry in the log4j(2).xml file
+     * Actually this constructor is not invoked via the log4j2 library, but 
+     * is used, then there is no ActiveDbAppender entry in the log4j2.xml file
      * or such appender was not created during runtime.
      * In that way, the user can still use methods from this appender, and those will not result in a NPE being thrown.
      * But those methods will return dummy values, instead of some meaningful once
@@ -350,7 +350,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         /**
          * Create dummy event request processor.
-         * This processor will be replaced once config from log4j(2).xml is loaded
+         * This processor will be replaced once config from log4j2.xml is loaded
          * */
         eventProcessor = new DbEventRequestProcessor();
 
@@ -371,11 +371,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
         /**
          * Create dummy event request processor.
-         * This processor will be replaced once config from log4j(2).xml is loaded
+         * This processor will be replaced once config from log4j2.xml is loaded
          * */
         eventProcessor = new DbEventRequestProcessor();
 
-        /* this flag is changed here, since this is the first place where the Apache log4j package interacts with this class
+        /* this flag is changed here, since this is the first place where the Apache log4j2 package interacts with this class
          */
         // or modify this flag in the onStart() method(s) ?!?
         isAttached = true;
@@ -690,7 +690,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     /**
      * This method doesn't create a new instance,
-     * but returns the already created one (from log4j) or null if there is no such.
+     * but returns the already created one (from log4j2) or null if there is no such.
      *
      * @return the current DB appender instance
      */
@@ -720,17 +720,17 @@ public class ActiveDbAppender extends AbstractDbAppender {
         }
 
         /*
-         * Configuration in log4j(2).xml file was not found for ActiveDbAppender
+         * Configuration in log4j2.xml file was not found for ActiveDbAppender
          * A dummy com.axway.ats.log.autodb.DbEventRequestProcessor is
          * created in order to prevent NPE when invoking methods such as getRunId()
          */
         new AtsConsoleLogger(ActiveDbAppender.class).warn(
-                                                          "ATS Database appender is not specified in log4j(2).xml file. "
+                                                          "ATS Database appender is not specified in log4j2.xml file. "
                                                           + "Methods such as ActiveDbAppender@getRunId() will not work.");
 
         isAttached = false;
         /** create dummy appender configuration 
-         *  This configuration will be replaced with one from log4j(2).xml file
+         *  This configuration will be replaced with one from log4j2.xml file
          * */
         DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
         appenderConfig.setHost(DUMMY_DB_HOST);

@@ -142,7 +142,7 @@ public class QueueLoggerThread extends Thread {
                                && !isUnableToConnect) {
                         // We do not log the no connectivity problem on each failure, we do it just once.
                         // This case is likely to happen on a remote Agent host without set DNS servers - in such
-                        // case providing FQDN in the log4j.xml makes the DB logging impossible
+                        // case providing FQDN in the log4j2.xml makes the DB logging impossible
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
                                                                          "Error processing log event"));
 

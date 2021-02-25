@@ -19,9 +19,12 @@ import static org.junit.Assert.assertNotNull;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 import com.axway.ats.log.AtsDbLogger;
 
+// prevents linkage error
+@PowerMockIgnore("javax.management.*")
 public class Test_AtsDbLogger {
 
     @BeforeClass

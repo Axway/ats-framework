@@ -34,7 +34,7 @@ public class BaseRestServiceImpl {
      * and is discarded again when initializing DB connection if it has expired.
     */
 
-    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
+    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j2.xml **/
     private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
                                                                                true);
 

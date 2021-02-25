@@ -72,7 +72,7 @@ import com.axway.ats.log.autodb.TestCaseState;
 @WebService( name = "AgentService", targetNamespace = "http://agentservice/", serviceName = "AgentService", portName = "AgentServicePort")
 public class AgentWsImpl {
 
-    /** skip check whether ActiveDbAppender appender is presented in the test executors log4j.xml in order to execute actions,
+    /** skip check whether ActiveDbAppender appender is presented in the test executors log4j2.xml in order to execute actions,
      * even if such appender is not presented
      */
     private static final AtsDbLogger log                               = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.agentservice", true);

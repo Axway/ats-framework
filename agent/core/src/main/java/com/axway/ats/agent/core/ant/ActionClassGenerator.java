@@ -58,8 +58,6 @@ import com.axway.ats.core.utils.StringUtils;
 class ActionClassGenerator {
 
     static {
-        // PatternLayout layout = new PatternLayout("%m%n");
-        // BasicConfigurator.configure(new ConsoleAppender(layout));
 
         // Currently invoked from Ant build task so needs to be configured
         PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout
@@ -68,14 +66,12 @@ class ActionClassGenerator {
                                                                                  .build();
         ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
 
-        //init log4j
-        //BasicConfigurator.configure(appender);
+        //init log4j2
         final LoggerContext context = LoggerContext.getContext(false);
         final Configuration config = context.getConfiguration();
         appender.start();
         config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO needed
+        context.updateLoggers();
 
     }
 
