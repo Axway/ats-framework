@@ -165,28 +165,28 @@ public class ClasspathUtils {
         loadJarsFromClasspath();
 
         StringBuilder logMessage = new StringBuilder();
-        logMessage.append("The following libraries seems to be present more than once in the classpath: ");
         for (Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet()) {
             if (loadedJarEntry.getValue().size() > 1) {
                 logMessage.append("\n ").append(loadedJarEntry.getKey()).append(":");
                 for (String jarPath : loadedJarEntry.getValue()) {
                     logMessage.append("\n\t").append(jarPath);
                 }
-                log.warn(logMessage);
             }
             if ("log4j".equalsIgnoreCase(loadedJarEntry.getKey()) && loadedJarEntry.getValue().size() > 1) {
                 String errorMsg = "Log4j library is supposed to be present only in lib_common subfolder. "
                                   + "Otherwise it should cause no logging into the agent log file. Currently Log4j is found at: "
                                   + loadedJarEntry.getValue();
                 log.warn(errorMsg);
-                log.warn(errorMsg);
             }
             if (PROBLEMATIC_JARS.contains(loadedJarEntry.getKey())) {
                 String errorMsg = "The following libraries " + loadedJarEntry.getKey() + " located in "
                                   + loadedJarEntry.getValue() + ". These different jars can cause issues.";
                 log.warn(errorMsg);
-                log.warn(errorMsg);
             }
+        }
+        if (logMessage.length() > 0) { // log duplications if any
+            logMessage.insert(0, "The following libraries seems to be present more than once in the classpath: ");
+            log.warn(logMessage);
         }
     }
 
