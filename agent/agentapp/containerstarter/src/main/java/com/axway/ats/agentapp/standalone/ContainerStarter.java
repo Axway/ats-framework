@@ -57,7 +57,7 @@ import com.axway.ats.agentapp.standalone.utils.ThreadUtils;
 public class ContainerStarter {
 
     private static final Logger log                      = LogManager.getLogger(ContainerStarter.class);
-    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                    // NOTE: on change sync with AtsystemProperties
+    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                    // NOTE: on change sync with AtsSystemProperties
     private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                        // NOTE: on change sync with AtsSystemProperties
 
     /**
@@ -389,7 +389,7 @@ public class ContainerStarter {
             }
         }
 
-        String logPath = "./logs/ATSAgentAudit_" + agentPort+".log";
+        String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";
         PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n").build();
 
         Logger rootLogger = LogManager.getRootLogger();
@@ -401,21 +401,21 @@ public class ContainerStarter {
                                                       .setName("ats-audit-log-appender")
                                                       .setLayout(layout)
                                                       .withFilePattern(
-                                                                       logPath + "-%d{yyyy-MM-dd}-%i.log")
+                                                                       logPath + "'.'MM-dd'.log'")
                                                       .build();
             } else if ("hour".equals(pattern)) {
                 attachedAppender = RollingFileAppender.newBuilder()
                                                       .setName("ats-audit-log-appender")
                                                       .setLayout(layout)
                                                       .withFilePattern(
-                                                                       logPath + "-%d{yyyy-MM-dd-HH}-%i.log")
+                                                                       logPath + "'.'MM-dd-HH'.log'")
                                                       .build();
             } else if ("minute".equals(pattern)) {
                 attachedAppender = RollingFileAppender.newBuilder()
                                                       .setName("ats-audit-log-appender")
                                                       .setLayout(layout)
                                                       .withFilePattern(
-                                                                       logPath + "-%d{yyyy-MM-dd-HH-mm}-%i.log")
+                                                                       logPath + "'.'MM-dd-HH-mm'.log'")
                                                       .build();
             } else if (pattern.endsWith("kb") || pattern.endsWith("mb") || pattern.endsWith("gb")) {
 
@@ -471,7 +471,6 @@ public class ContainerStarter {
         Logger mortbayLogger = LogManager.getLogger("org.mortbay");
         ((org.apache.logging.log4j.core.Logger) mortbayLogger).setAdditive(false);
         Configurator.setLevel(mortbayLogger.getName(), Level.ERROR);
-        //mortbayLogger.setLevel(Level.ERROR);
         ((org.apache.logging.log4j.core.Logger) mortbayLogger).addAppender(attachedAppender);
 
     }

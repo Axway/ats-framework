@@ -17,6 +17,9 @@ package com.axway.ats.log.autodb.filters;
 
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.config.Node;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
 import org.apache.logging.log4j.core.filter.AbstractFilter;
 
 import com.axway.ats.log.model.SystemLogLevel;
@@ -24,7 +27,12 @@ import com.axway.ats.log.model.SystemLogLevel;
 /**
  * Finer logging of ATS logging DB &quot;SYSTEM level&quot; events
 */
+@Plugin( name = "NoSystemLevelEventsFilter", category = Node.CATEGORY, elementType = Filter.ELEMENT_TYPE, printObject = true)
 public class NoSystemLevelEventsFilter extends AbstractFilter {
+
+    public NoSystemLevelEventsFilter() {
+
+    }
 
     @Override
     public Filter.Result filter( LogEvent event ) {
@@ -33,6 +41,12 @@ public class NoSystemLevelEventsFilter extends AbstractFilter {
                                                                           ? Result.DENY
                                                                           : Result.NEUTRAL;
 
+    }
+
+    @PluginFactory
+    public static NoSystemLevelEventsFilter createFilter() {
+
+        return new NoSystemLevelEventsFilter();
     }
 
 }

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Appenders>
+
+		<!-- Console appender -->
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="%-5p %d{HH:mm:ss} %c{2}: %m%n" />
+			<NoSystemLevelEventsFilter />
+		</Console>
+
+		<ActiveDbAppender name="db" host="localhost"
+			port="5432" database="AtsTestDb" user="AtsUser"
+			password="AtsPassword" mode="batch" driver="mssql">
+
+			<PatternLayout pattern="%c{2}: %m%n" />
+
+		</ActiveDbAppender>
+	</Appenders>
+
+
+
+	<Loggers>
+		<Root level="info">
+			<!-- enable logging into the console -->
+			<AppenderRef ref="Console" />
+			<!-- enable logging into the dedicated logging database -->
+			<AppenderRef ref="db" />
+		</Root>
+	</Loggers>
+
+
+</Configuration>

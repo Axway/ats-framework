@@ -147,31 +147,4 @@ public class Log4j2Utils {
 
     }
 
-    /*
-    public static synchronized void setThresholdFilter( AbstractAppender appender, Level threshold ) {
-    
-        if (appender.hasFilter()) {
-            if (appender.getFilter() instanceof ThresholdFilter) {
-                ThresholdFilter filter = (ThresholdFilter) appender.getFilter();
-                if (filter.getLevel().intLevel() != threshold.intLevel()) {
-                    // TODO
-                }
-            } else if (appender.getFilter() instanceof CompositeFilter) {
-                Filter[] allAppliedFilters = ((CompositeFilter) appender.getFilter()).getFiltersArray();
-                for (Filter f : allAppliedFilters) {
-                    if (f instanceof ThresholdFilter) {
-                        // note what if there are multiple ThresholdFilter(s) ?!?
-                        break;
-                    }
-                }
-            }
-    
-        } else {
-            appender.addFilter(ThresholdFilter.createFilter(threshold, Result.ACCEPT, Result.DENY));
-            // should we update something as well?!?
-        }
-    
-    }
-    */
-
 }
