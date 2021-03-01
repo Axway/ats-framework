@@ -705,22 +705,35 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     /**
-     * Build full table name from schema and table.
-     * @param table table object
-     * @return Full SQL-friendly name "schema_name"."table_name"
+     * Build full table name from schema and table. Add quotes so it will work even for mixed-case names.
+     * @param table table object. Note that DbTable.getFullTableName() is not valid for PostgreSQL case.
+     * @return Full PostgreSQL-friendly name "schema_name"."table_name" which works not only for table named
+     *    "people_table" but also for "People_Table".
      */
     private String getFullTableName( DbTable table ) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("\"");
-        if (StringUtils.isNullOrEmpty(table.getTableSchema())) {
-            sb.append("public");
-        } else {
-            sb.append(table.getTableSchema());
+        String schema = table.getTableSchema();
+        if (StringUtils.isNullOrEmpty(schema)) {
+            schema = "public";
         }
-        sb.append("\".\"");
-        sb.append(table.getTableName());
-        sb.append("\"");
+        if (!schema.startsWith("\"")) { // add quotes if missing
+            sb.append("\"");
+            sb.append(schema);
+            sb.append("\"");
+        } else {
+            sb.append(schema);
+        }
+        sb.append(".");
+
+        if (!table.getTableName().startsWith("\"")) { // add quotes if missing
+            sb.append("\"");
+            sb.append(table.getTableName());
+            sb.append("\"");
+        } else {
+            sb.append(table.getTableName());
+        }
+
         return sb.toString();
     }
 
