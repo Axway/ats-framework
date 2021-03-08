@@ -37,12 +37,17 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.FileAppender;
 import org.apache.logging.log4j.core.appender.RollingFileAppender;
 import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
 import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
@@ -56,9 +61,18 @@ import com.axway.ats.agentapp.standalone.utils.ThreadUtils;
 
 public class ContainerStarter {
 
-    private static final Logger log                      = LogManager.getLogger(ContainerStarter.class);
-    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                    // NOTE: on change sync with AtsSystemProperties
-    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                        // NOTE: on change sync with AtsSystemProperties
+    static {
+        ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+        builder.setStatusLevel(Level.ERROR);
+        builder.setConfigurationName("ContainerStarterConfig");
+        builder.add(builder.newRootLogger(Level.INFO));
+        Configurator.initialize(builder.build());
+        log = LogManager.getLogger(ContainerStarter.class);
+    }
+
+    private static final Logger log;
+    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port"; // NOTE: on change sync with AtsSystemProperties
+    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                     // NOTE: on change sync with AtsSystemProperties
 
     /**
      * Entry point for the premain java agent starting the ATS Agent
@@ -390,7 +404,7 @@ public class ContainerStarter {
         }
 
         String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";
-        PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n").build();
+        PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{DEFAULT} - {%p} [%t] %c{2}: %m%n").build();
 
         Logger rootLogger = LogManager.getRootLogger();
         Appender attachedAppender = null;
@@ -461,10 +475,13 @@ public class ContainerStarter {
                                            .build();
 
         }
+
+        Configurator.setRootLevel(logLevel);
+        LoggerContext context = LoggerContext.getContext(true);
+        Configuration config = context.getConfiguration();
         //attachedAppender.activateOptions();
         // start() is almost the same as activateOptions()
         attachedAppender.start(); // Always start an Appender prior to adding it to a logger.
-        Configurator.setRootLevel(logLevel);
         ((org.apache.logging.log4j.core.Logger) rootLogger).addAppender(attachedAppender);
 
         // adding filter for Jetty messages
