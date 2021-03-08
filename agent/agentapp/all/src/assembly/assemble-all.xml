@@ -90,10 +90,10 @@
 			<useTransitiveDependencies>false</useTransitiveDependencies>
 		</dependencySet>
 
-		<!-- All of the Sigar objects (jar,dll,etc) are inside a zip archive which 
-			is unpacked in /ats-agent/actions_dependencies/ats-monitor/sigar. This separate 
-			step for Oshi is needed because we do not want the jar to be unpacked, but 
-			if included in the Sigar dependencySe, that is what will happen -->
+        <!-- All of the Sigar objects (jar,dll,etc) are inside a zip archive
+            which is unpacked in /ats-agent/actions_dependencies/ats-monitor/sigar.
+            This separate step for Oshi is needed because we do not want the jar to be unpacked, but if included in the Sigar dependencySe, that is what will happen
+         -->
 		<dependencySet>
 			<outputDirectory>/ats-agent/actions_dependencies/ats-monitor/oshi</outputDirectory>
 			<scope>provided</scope>

@@ -61,6 +61,7 @@ public class DatabaseVerificationTests extends BaseTestClass {
         dbServerBox.setDbName(configuration.getDatabaseName());
         dbServerBox.setDbUser(configuration.getDatabaseUser());
         dbServerBox.setDbPass(configuration.getDatabasePassword());
+        dbServerBox.setDbPort(String.valueOf(configuration.getDbPort()));
 
         // initialize this helper class 
         dbOperations = new DatabaseOperations(dbServerBox);

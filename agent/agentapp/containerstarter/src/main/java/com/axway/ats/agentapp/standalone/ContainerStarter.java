@@ -219,7 +219,11 @@ public class ContainerStarter {
          * Then Jetty will see this folder does not exist and will use the folder
          * pointed by the java.io.tmpdir system property
          */
-        new File(jettyWorkDir).mkdir();
+        if (new File(jettyWorkDir).mkdir()) {
+            System.err.println("Could not create subdirectory work in directory '" + jettyWorkDir
+                               + "'. Check current user's permissions for this directory. Jetty will generate ist work "
+                               + "directory inside OS temp directory.");
+        }
 
         return jettyWorkDir;
     }
@@ -542,11 +546,15 @@ public class ContainerStarter {
         try {
             appendMessage(systemInformation, "ATS version: '",
                           AtsVersionExtractor.getATSVersion(jettyHome + "/webapp/agentapp.war"));
-        } catch (Exception e) {}
+        } catch (Exception e) {
+            log.warn("Could not parse ATS version. Agent will continue the start operation", e);
+        }
         appendMessage(systemInformation, " os.name: '", System.getProperty("os.name"));
         appendMessage(systemInformation, " os.arch: '", System.getProperty("os.arch"));
         appendMessage(systemInformation, " java.version: '", System.getProperty("java.version"));
         appendMessage(systemInformation, " java.home: '", System.getProperty("java.home"));
+        appendMessage(systemInformation, " current directory: '", System.getProperty("user.dir"));
+        appendMessage(systemInformation, " current user name: '", System.getProperty("user.name"));
 
         List<String> ipList = new ArrayList<String>();
         for (InetAddress ip : getAllIPAddresses()) {

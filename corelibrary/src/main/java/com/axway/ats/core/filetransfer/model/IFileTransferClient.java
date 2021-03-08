@@ -24,7 +24,7 @@ import com.axway.ats.common.filetransfer.FileTransferException;
 public interface IFileTransferClient {
 
     /**
-     * Set the {@link com.axway.automation.ats.common.constants.TransferMode} that this protocol should use
+     * Set the {@link com.axway.ats.common.filetransfer.TransferMode} that this protocol should use
      *
      * @param mode
      * @throws FileTransferException

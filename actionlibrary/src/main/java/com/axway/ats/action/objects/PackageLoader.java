@@ -139,10 +139,10 @@ public class PackageLoader {
             return packageContent;
         } catch (DbRecordsException dbre) {
             throw new PackageException("Package with id '" + packageId
-                                       + "' does not exist in 'messages' DB");
+                                       + "' does not exist in 'messages' DB", dbre);
         } catch (DbException dbe) {
             throw new PackageException("Could not get package with id '" + packageId
-                                       + "' from the 'messages' DB");
+                                       + "' from the 'messages' DB", dbe);
         }
     }
 
@@ -154,7 +154,7 @@ public class PackageLoader {
             FileInputStream fileStream = new FileInputStream(packageFile);
             return fileStream;
         } catch (FileNotFoundException fnfe) {
-            throw new PackageException("Package '" + fileName + "' does not exist");
+            throw new PackageException("Package '" + fileName + "' does not exist", fnfe);
         }
     }
 }

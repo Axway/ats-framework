@@ -1,5 +1,5 @@
 /*
- * Copyright 2018-2019 Axway Software
+ * Copyright 2018-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,8 +167,8 @@ public class DifferentLoadPatternTests extends PerfBaseTestClass {
 
         // set FixedDurationAllAtOncePattern threading pattern
         // this one will run 5 threads(users) which will start together and will work for 30 seconds
-        // there will be no delay between each iteration
-        loader.setThreadingPattern(new FixedDurationAllAtOncePattern(5, true, 30, 0));
+        // there will be 100ms delay between each iteration
+        loader.setThreadingPattern(new FixedDurationAllAtOncePattern(5, true, 30, 100));
 
         loader.startQueueing("Some FTP transfers");
 
@@ -220,7 +220,8 @@ public class DifferentLoadPatternTests extends PerfBaseTestClass {
         // This one will start a total number of 5 threads(users), but not together.
         // Each 2000 ms it will start 1 more threads until start all the 5 threads.
         // Each thread will work for 30 seconds
-        loader.setThreadingPattern(new FixedDurationRampUpPattern(5, true, 30, 0, 2000, 1));
+        // there will be 100ms delay between each iteration
+        loader.setThreadingPattern(new FixedDurationRampUpPattern(5, true, 30, 100, 2000, 1));
 
         loader.startQueueing("Some FTP transfers");
 

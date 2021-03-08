@@ -68,9 +68,11 @@ public class HostUtils {
     private static Map<String, InetAddress> localHostPublicAddresses = new HashMap<String, InetAddress>();
 
     /**
+     * <em>Internal method</em> and could be changed at any time. You may use CommonConfigurator.setHostLocality().
      * Allows specifying externally(from the test code) whether some host is a local or remote one
      *
-     * @param host host name or IP address
+     * @param host host name or IP address. Currently does not expect and does not parse agent address (IP:port or
+     *             host:port)
      * @param isLocal whether this host should be treated as a local or remote one
      */
     public static void setHostLocality( String host, boolean isLocal ) {
@@ -426,8 +428,9 @@ public class HostUtils {
     }
 
     /**
-     * @param atsAgent
-     * @return whether the agent is located on the local host
+     * Checks if agent is local, on same host as the caller/test executor.
+     * @param atsAgent ATS agent address (hostname(IP) or hostname:port)
+     * @return whether the agent is located on the same  host as the caller
      */
     public static boolean isLocalAtsAgent( String atsAgent ) {
 

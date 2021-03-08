@@ -56,7 +56,7 @@ public class DatabaseOperationTests extends BaseTestClass {
         serverBox.setDbName(configuration.getDatabaseName());
         serverBox.setDbUser(configuration.getDatabaseUser());
         serverBox.setDbPass(configuration.getDatabasePassword());
-
+        serverBox.setDbPort(String.valueOf(configuration.getDbPort()));
         // establish DB connection
         dbOperations = new DatabaseOperations(serverBox);
 
