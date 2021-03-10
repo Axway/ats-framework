@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
 import org.powermock.reflect.Whitebox;
 
 import com.axway.ats.agent.core.BaseTest;
@@ -50,44 +50,58 @@ import com.axway.ats.core.utils.IoUtils;
 
 public class TemplateActionsBaseTest extends BaseTest {
 
-    protected static final Logger log                 = Logger.getLogger( TemplateActionsBaseTest.class );
+    protected static final Logger log                 = LogManager.getLogger(TemplateActionsBaseTest.class);
 
     protected static final String TEST_COMPONENT_NAME = "agentTestComponent";
 
     protected String              actionName;
 
     static {
-        PatternLayout layout = new PatternLayout( "%m%n" );
-        BasicConfigurator.configure( new ConsoleAppender( layout ) );
-        ConfigurationSettings.getInstance().setTemplateActionsMatchFilesByContent( true );
+        org.apache.logging.log4j.core.layout.PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
+                                                                                                                      .withPattern("%m%n")
+                                                                                                                      .build();
+        org.apache.logging.log4j.core.appender.ConsoleAppender appender = org.apache.logging.log4j.core.appender.ConsoleAppender.newBuilder()
+                                                                                                                                .setLayout(layout)
+                                                                                                                                .setName("ConsoleAppender")
+                                                                                                                                .build();
+
+        //init log4j
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
+        context.updateLoggers(); // TODO is this needed
+
+        ConfigurationSettings.getInstance().setTemplateActionsMatchFilesByContent(true);
     }
 
     private static String getTestResourcesHome( String currentDirPath ) {
 
-        File currentDir = new File( currentDirPath );
-        while( currentDir != null ) {
-            if( currentDir.isDirectory()
+        File currentDir = new File(currentDirPath);
+        while (currentDir != null) {
+            if (currentDir.isDirectory()
                 // Could be replaced with target/test-classes if Ant won't be used
-                && new File( currentDir.getAbsolutePath() + "/" + RELATIVE_PATH_TO_TEST_RESOURCES
-                             + "/com/" ).exists() ) {
+                && new File(currentDir.getAbsolutePath() + "/" + RELATIVE_PATH_TO_TEST_RESOURCES
+                            + "/com/").exists()) {
 
                 return currentDir.getAbsolutePath() + "/" + RELATIVE_PATH_TO_TEST_RESOURCES + "/";
             }
             currentDir = currentDir.getParentFile();
         }
-        throw new RuntimeException( "Can't find the Project Root directory, searchig backward from dir: "
-                                    + currentDirPath );
+        throw new RuntimeException("Can't find the Project Root directory, searchig backward from dir: "
+                                   + currentDirPath);
     }
 
     protected static final String TEST_RESOURCES_HOME;
     static {
         URL thisClassUrl = TemplateActionsBaseTest.class.getClassLoader()
-                                                        .getResource( TemplateActionsBaseTest.class.getCanonicalName()
-                                                                                                   .replaceAll( "\\.",
-                                                                                                                "/" )
-                                                                      + ".class" );
+                                                        .getResource(TemplateActionsBaseTest.class.getCanonicalName()
+                                                                                                  .replaceAll("\\.",
+                                                                                                              "/")
+                                                                     + ".class");
 
-        String resourcesHome = getTestResourcesHome( thisClassUrl.toString().substring( "file:".length() ) );
+        String resourcesHome = getTestResourcesHome(thisClassUrl.toString().substring("file:".length()));
         TEST_RESOURCES_HOME = resourcesHome + "com/axway/ats/agent/core/templateactions/";
     }
 
@@ -100,25 +114,25 @@ public class TemplateActionsBaseTest extends BaseTest {
 
     static {
         StringBuilder matcherString = new StringBuilder();
-        matcherString.append( "Check error log. The actual and expected " );
-        matcherString.append( MATCHER_DESCRIPTION_MULTY );
-        matcherString.append( " are not the same:" );
+        matcherString.append("Check error log. The actual and expected ");
+        matcherString.append(MATCHER_DESCRIPTION_MULTY);
+        matcherString.append(" are not the same:");
 
-        matcherString.append( "\nExpected " );
-        matcherString.append( MATCHER_DESCRIPTION_SINGLE );
-        matcherString.append( " - START\n" );
-        matcherString.append( MATCHER_EXPECTED_VALUE );
-        matcherString.append( "\nExpected " );
-        matcherString.append( MATCHER_DESCRIPTION_SINGLE );
-        matcherString.append( " - END" );
+        matcherString.append("\nExpected ");
+        matcherString.append(MATCHER_DESCRIPTION_SINGLE);
+        matcherString.append(" - START\n");
+        matcherString.append(MATCHER_EXPECTED_VALUE);
+        matcherString.append("\nExpected ");
+        matcherString.append(MATCHER_DESCRIPTION_SINGLE);
+        matcherString.append(" - END");
 
-        matcherString.append( "\nActual " );
-        matcherString.append( MATCHER_DESCRIPTION_SINGLE );
-        matcherString.append( " - START\n" );
-        matcherString.append( MATCHER_ACTUAL_VALUE );
-        matcherString.append( "\nActual " );
-        matcherString.append( MATCHER_DESCRIPTION_SINGLE );
-        matcherString.append( " - END" );
+        matcherString.append("\nActual ");
+        matcherString.append(MATCHER_DESCRIPTION_SINGLE);
+        matcherString.append(" - START\n");
+        matcherString.append(MATCHER_ACTUAL_VALUE);
+        matcherString.append("\nActual ");
+        matcherString.append(MATCHER_DESCRIPTION_SINGLE);
+        matcherString.append(" - END");
 
         MATCHER_STRING = matcherString.toString();
     }
@@ -126,43 +140,43 @@ public class TemplateActionsBaseTest extends BaseTest {
     protected void verifyResponseMatch( String expected, String actual, String descriptionSingle,
                                         String descriptionMulty ) {
 
-        if( !compareMixedLists( Arrays.asList( expected.split( "\n" ) ),
-                                new LinkedList<String>( Arrays.asList( actual.split( "\n" ) ) ) ) ) {
-            String errorMessage = MATCHER_STRING.replace( MATCHER_DESCRIPTION_MULTY, descriptionMulty )
-                                                .replace( MATCHER_DESCRIPTION_SINGLE, descriptionSingle )
-                                                .replace( MATCHER_EXPECTED_VALUE, expected )
-                                                .replace( MATCHER_ACTUAL_VALUE, actual );
-            if( expected != null && actual != null ) {
+        if (!compareMixedLists(Arrays.asList(expected.split("\n")),
+                               new LinkedList<String>(Arrays.asList(actual.split("\n"))))) {
+            String errorMessage = MATCHER_STRING.replace(MATCHER_DESCRIPTION_MULTY, descriptionMulty)
+                                                .replace(MATCHER_DESCRIPTION_SINGLE, descriptionSingle)
+                                                .replace(MATCHER_EXPECTED_VALUE, expected)
+                                                .replace(MATCHER_ACTUAL_VALUE, actual);
+            if (expected != null && actual != null) {
                 // clarify position with difference
-                int shortestStringLen = Math.min( expected.length(), actual.length() );
+                int shortestStringLen = Math.min(expected.length(), actual.length());
                 int currentLineIdx = 0, currentColumnIdx = 0;
                 StringBuilder currentLine = new StringBuilder();
                 StringBuilder previousLine = new StringBuilder();
                 int i = 0;
                 boolean end = false;
-                while( i < shortestStringLen && !end ) {
-                    char currentChar = expected.charAt( i );
-                    currentLine.append( currentChar );
+                while (i < shortestStringLen && !end) {
+                    char currentChar = expected.charAt(i);
+                    currentLine.append(currentChar);
 
-                    if( expected.charAt( i ) != actual.charAt( i ) ) {
-                        log.error( "Difference found on line " + ( currentLineIdx + 1 ) + ", column "
-                                   + ( currentColumnIdx + 1 ) + ", last matching text: \n" + previousLine
-                                   + currentLine + "\n Full strings will be printed below." );
-                        log.error( errorMessage );
+                    if (expected.charAt(i) != actual.charAt(i)) {
+                        log.error("Difference found on line " + (currentLineIdx + 1) + ", column "
+                                  + (currentColumnIdx + 1) + ", last matching text: \n" + previousLine
+                                  + currentLine + "\n Full strings will be printed below.");
+                        log.error(errorMessage);
                         end = true;
                         break;
                     }
-                    if( isNewLineChar( currentChar ) ) {
-                        previousLine.setLength( 0 ); // delete
-                        previousLine.append( currentLine );
+                    if (isNewLineChar(currentChar)) {
+                        previousLine.setLength(0); // delete
+                        previousLine.append(currentLine);
                         // get all successive new line chars
                         do {
-                            previousLine.append( currentChar );
-                            currentChar = expected.charAt( i );
+                            previousLine.append(currentChar);
+                            currentChar = expected.charAt(i);
                             i++;
-                        } while( isNewLineChar( currentChar ) && i < shortestStringLen );
+                        } while (isNewLineChar(currentChar) && i < shortestStringLen);
                         i--; // reset index so do not skip chars
-                        currentLine.setLength( 0 ); // reset for new current line
+                        currentLine.setLength(0); // reset for new current line
                         currentColumnIdx = -1;
                         currentLineIdx++;
                     }
@@ -171,18 +185,18 @@ public class TemplateActionsBaseTest extends BaseTest {
                 }
             }
 
-            throw new RuntimeException( errorMessage );
+            throw new RuntimeException(errorMessage);
         }
     }
 
     private boolean compareMixedLists( List<String> expected, List<String> actual ) {
 
-        for( String name : expected ) {
-            for( int i = 0; i < actual.size(); i++ ) {
-                if( actual.get( i ).trim().equals( name.trim() ) ) {
-                    actual.remove( i );
+        for (String name : expected) {
+            for (int i = 0; i < actual.size(); i++) {
+                if (actual.get(i).trim().equals(name.trim())) {
+                    actual.remove(i);
                     break;
-                } else if( i == actual.size() - 1 ) {
+                } else if (i == actual.size() - 1) {
                     return false;
                 }
             }
@@ -194,18 +208,18 @@ public class TemplateActionsBaseTest extends BaseTest {
 
         StringBuilder result = new StringBuilder();
 
-        FileInputStream fstream = new FileInputStream( filePath );
-        DataInputStream in = new DataInputStream( fstream );
-        BufferedReader br = new BufferedReader( new InputStreamReader( in ) );
+        FileInputStream fstream = new FileInputStream(filePath);
+        DataInputStream in = new DataInputStream(fstream);
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String strLine;
 
-        while( ( strLine = br.readLine() ) != null ) {
-            result.append( strLine );
-            result.append( "\n" );
+        while ( (strLine = br.readLine()) != null) {
+            result.append(strLine);
+            result.append("\n");
         }
-        IoUtils.closeStream( in );
+        IoUtils.closeStream(in);
 
-        return result.toString().replace( "\r\n", "\n" ).trim();
+        return result.toString().replace("\r\n", "\n").trim();
     }
 
     protected void resolveActionName( boolean deep ) {
@@ -220,9 +234,9 @@ public class TemplateActionsBaseTest extends BaseTest {
 
     protected String getDownloadsFolder() {
 
-        String tempDownloadsDir = IoUtils.normalizeDirPath( AtsSystemProperties.SYSTEM_USER_TEMP_DIR );
-        File tempDir = new File( tempDownloadsDir + this.actionName );
-        if( !tempDir.exists() ) {
+        String tempDownloadsDir = IoUtils.normalizeDirPath(AtsSystemProperties.SYSTEM_USER_TEMP_DIR);
+        File tempDir = new File(tempDownloadsDir + this.actionName);
+        if (!tempDir.exists()) {
             tempDir.mkdir();
         }
         return tempDownloadsDir;
@@ -230,7 +244,7 @@ public class TemplateActionsBaseTest extends BaseTest {
 
     private static boolean isNewLineChar( char currentChar ) {
 
-        if( currentChar == '\n' || currentChar == '\r' ) {
+        if (currentChar == '\n' || currentChar == '\r') {
             return true;
         } else {
             return false;
@@ -242,16 +256,16 @@ public class TemplateActionsBaseTest extends BaseTest {
 
         // construct the client
         List<ActionHeader> httpHeaders = new ArrayList<ActionHeader>();
-        httpHeaders.add( new ActionHeader( "User-Agent",
-                                           "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3" ) );
-        NetworkingStopWatch stopWatch = new NetworkingStopWatch( "action" );
-        stopWatch.step0_SetNewContext( "my_action[1]" );
+        httpHeaders.add(new ActionHeader("User-Agent",
+                                         "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.3"));
+        NetworkingStopWatch stopWatch = new NetworkingStopWatch("action");
+        stopWatch.step0_SetNewContext("my_action[1]");
         stopWatch.setStateFromBeforeStep1ToAfterStep4(); /// so it can be suspended for getting response
         stopWatch.step5_StartInterimTimer();
-        HttpClient client = new HttpClient( "http://", "GET", httpHeaders, stopWatch );
+        HttpClient client = new HttpClient("http://", "GET", httpHeaders, stopWatch);
 
         // inject a mock connection object
-        Whitebox.setInternalState( client, "urlConnection", mockHttpURLConnection );
+        Whitebox.setInternalState(client, "urlConnection", mockHttpURLConnection);
 
         return client;
     }
@@ -266,15 +280,15 @@ public class TemplateActionsBaseTest extends BaseTest {
 
         public MockHttpURLConnection() {
 
-            super( null );
+            super(null);
         }
 
         @Override
         public URL getURL() {
 
             try {
-                return new URL( "http://wwww.test.com" );
-            } catch( MalformedURLException e ) {}
+                return new URL("http://wwww.test.com");
+            } catch (MalformedURLException e) {}
             return super.url;
         }
 
@@ -339,8 +353,8 @@ public class TemplateActionsBaseTest extends BaseTest {
             String responseBytesFile = responseFilePath + AtsSystemProperties.SYSTEM_FILE_SEPARATOR
                                        + responseFileName;
 
-            byte[] bytes = getBytesFromFile( new File( responseBytesFile ) );
-            this.fakeInputStream = new ByteArrayInputStream( bytes );
+            byte[] bytes = getBytesFromFile(new File(responseBytesFile));
+            this.fakeInputStream = new ByteArrayInputStream(bytes);
 
             return responseBytesFile;
         }
@@ -350,25 +364,25 @@ public class TemplateActionsBaseTest extends BaseTest {
             InputStream is = null;
             byte[] bytes = null;
             try {
-                is = new FileInputStream( file );
+                is = new FileInputStream(file);
 
                 long length = file.length();
-                if( length > Integer.MAX_VALUE ) {}
+                if (length > Integer.MAX_VALUE) {}
 
-                bytes = new byte[( int ) length];
+                bytes = new byte[(int) length];
 
                 int offset = 0;
                 int numRead = 0;
-                while( offset < bytes.length
-                       && ( numRead = is.read( bytes, offset, bytes.length - offset ) ) >= 0 ) {
+                while (offset < bytes.length
+                       && (numRead = is.read(bytes, offset, bytes.length - offset)) >= 0) {
                     offset += numRead;
                 }
 
-                if( offset < bytes.length ) {
-                    throw new IOException( "Could not completely read file " + file.getName() );
+                if (offset < bytes.length) {
+                    throw new IOException("Could not completely read file " + file.getName());
                 }
             } finally {
-                if( is != null ) {
+                if (is != null) {
                     is.close();
                 }
             }

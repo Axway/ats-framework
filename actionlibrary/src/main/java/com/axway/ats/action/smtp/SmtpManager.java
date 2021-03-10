@@ -18,7 +18,8 @@ package com.axway.ats.action.smtp;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 
@@ -29,7 +30,7 @@ import com.axway.ats.common.PublicAtsApi;
 @PublicAtsApi
 public class SmtpManager {
 
-    private static final Logger          log = Logger.getLogger(SmtpManager.class);
+    private static final Logger          log = LogManager.getLogger(SmtpManager.class);
 
     private Map<Integer, SmtpConnection> connetionPool;
     private int                          connectionId;

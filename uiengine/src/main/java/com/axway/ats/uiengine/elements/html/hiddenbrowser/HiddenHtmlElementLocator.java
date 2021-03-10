@@ -17,7 +17,8 @@ package com.axway.ats.uiengine.elements.html.hiddenbrowser;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -33,7 +34,7 @@ import com.axway.ats.uiengine.internal.driver.InternalObjectsEnum;
 
 public class HiddenHtmlElementLocator {
 
-    private static Logger log = Logger.getLogger(HiddenHtmlElementLocator.class);
+    private static Logger log = LogManager.getLogger(HiddenHtmlElementLocator.class);
 
     public static HtmlUnitWebElement findElement( UiElement uiElement ) {
 

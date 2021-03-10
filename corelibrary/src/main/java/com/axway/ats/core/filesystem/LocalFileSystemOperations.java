@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
 import com.axway.ats.common.filesystem.FileMatchInfo;
@@ -109,8 +110,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     static final         int     READ_BUFFER_SIZE                     = 16384;
     static final         int     FILE_TRANSFER_BUFFER_SIZE            = 512 * 1024;
     static final         int     FILE_TRANSFER_TIMEOUT                = 60 * 1000;
-    private static final Logger  log                                  = Logger.getLogger(
-            LocalFileSystemOperations.class);
+    private static final Logger  log                                  =      LogManager.getLogger(LocalFileSystemOperations.class);
     //  line-terminator chars
     private static final byte    LINE_TERM_LF                         = '\n';
     private static final byte    LINE_TERM_CR                         = '\r';

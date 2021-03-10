@@ -18,7 +18,8 @@ package com.axway.ats.agentapp.standalone.utils;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 
 /**
@@ -27,7 +28,7 @@ import org.eclipse.jetty.server.Server;
  */
 public class CleaningThread extends Thread {
 
-    private static final Logger log = Logger.getLogger(CleaningThread.class);
+    private static final Logger log = LogManager.getLogger(CleaningThread.class);
 
     private final Server        server;
     private final Set<Long>     threadIDs;

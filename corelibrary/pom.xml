@@ -61,8 +61,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
@@ -193,8 +193,16 @@
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
                 </exclusion>
+				<exclusion>
+					<groupId>log4j</groupId>
+					<artifactId>log4j</artifactId>
+				</exclusion>
             </exclusions>
         </dependency>
+		<dependency> <!-- Replacement of log4j:log4j:1.2.x -->
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-1.2-api</artifactId>
+		</dependency>
         <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
@@ -224,6 +232,25 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
+		</dependency>
+
+
+		<!-- All these dependencies are responsible for rerouting all SLF4J and 
+			JUL (Java Util logging) to Log4j2 And since almost all ats submodules include 
+			this one, that why they are included here -->
+
+		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-slf4j-impl</artifactId>
+			<!-- artifactId>log4j-slf4j18-impl</artifactId -->
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jul-to-slf4j</artifactId>
         </dependency>
 
     </dependencies>

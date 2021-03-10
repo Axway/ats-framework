@@ -27,7 +27,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -52,7 +53,7 @@ public class DirectorySnapshot implements Serializable {
 
     private static final long              serialVersionUID  = 1L;
 
-    private static final Logger            log               = Logger.getLogger(DirectorySnapshot.class);
+    private static final Logger            log               = LogManager.getLogger(DirectorySnapshot.class);
 
     // absolute path to this directory
     private String                         path;

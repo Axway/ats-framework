@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.core.utils.IoUtils;
@@ -34,7 +35,7 @@ import com.axway.ats.environment.file.FileEnvironmentUnit;
 
 public class ComponentEnvironment {
 
-    private static final Logger           log                   = Logger.getLogger(ComponentEnvironment.class);
+    private static final Logger           log                   = LogManager.getLogger(ComponentEnvironment.class);
 
     private String                        componentName;
     private String                        environmentName;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,21 +15,38 @@
  */
 package com.axway.ats.log.autodb.filters;
 
-import org.apache.log4j.spi.Filter;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.config.Node;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.logging.log4j.core.filter.AbstractFilter;
 
 import com.axway.ats.log.model.SystemLogLevel;
 
-public class NoSystemLevelEventsFilter extends Filter {
+/**
+ * Finer logging of ATS logging DB &quot;SYSTEM level&quot; events
+*/
+@Plugin( name = "NoSystemLevelEventsFilter", category = Node.CATEGORY, elementType = Filter.ELEMENT_TYPE, printObject = true)
+public class NoSystemLevelEventsFilter extends AbstractFilter {
+
+    public NoSystemLevelEventsFilter() {
+
+    }
 
     @Override
-    public int decide(
-                       LoggingEvent loggingEvent ) {
+    public Filter.Result filter( LogEvent event ) {
 
-        if (loggingEvent.getLevel().toInt() == SystemLogLevel.SYSTEM_INT) {
-            return DENY;
-        }
+        return (event.getLevel().intLevel() == SystemLogLevel.SYSTEM_INT)
+                                                                          ? Result.DENY
+                                                                          : Result.NEUTRAL;
 
-        return NEUTRAL;
     }
+
+    @PluginFactory
+    public static NoSystemLevelEventsFilter createFilter() {
+
+        return new NoSystemLevelEventsFilter();
+    }
+
 }

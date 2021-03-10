@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
@@ -40,7 +41,7 @@ import com.axway.ats.harness.config.TestBox;
 @PublicAtsApi
 public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger       log = Logger.getLogger(DatabaseEnvironmentUnit.class);
+    private static final Logger       log = LogManager.getLogger(DatabaseEnvironmentUnit.class);
 
     private EnvironmentHandlerFactory environmentHandlerFactory;
 

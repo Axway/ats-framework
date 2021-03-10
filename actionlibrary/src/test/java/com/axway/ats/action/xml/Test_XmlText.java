@@ -21,7 +21,8 @@ import static org.testng.AssertJUnit.fail;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,7 +31,7 @@ import com.axway.ats.common.xml.XMLException;
 
 public class Test_XmlText extends BaseTest {
 
-    private static final Logger log = Logger.getLogger(Test_XmlText.class);
+    private static final Logger log = LogManager.getLogger(Test_XmlText.class);
 
     private static File file;
 

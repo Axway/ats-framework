@@ -26,7 +26,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
@@ -59,7 +60,7 @@ import com.datastax.driver.core.policies.TokenAwarePolicy;
  */
 public class CassandraDbProvider implements DbProvider {
 
-    private static final Logger log = Logger.getLogger(CassandraDbProvider.class);
+    private static final Logger log = LogManager.getLogger(CassandraDbProvider.class);
 
     private String              dbHost;
     private int                 dbPort;

@@ -55,7 +55,8 @@ public class MultiThreadedActionHandler {
      * Skip checking in db appender is attached, because we are on the agent and not the executor.
      * Also we want for actions to be executed on the agent even if data will not be sent to ATS Log database
      * */
-    private static final AtsDbLogger                       log                           = AtsDbLogger.getLogger(MultiThreadedActionHandler.class.getName(), true);
+    private static final AtsDbLogger                       log                           =
+            AtsDbLogger.getLogger(MultiThreadedActionHandler.class.getName(), true);
 
     // Map, holding all the MultiThreadedActionHandler instances for each Caller
     // < caller id, MultiThreadedActionHandler >

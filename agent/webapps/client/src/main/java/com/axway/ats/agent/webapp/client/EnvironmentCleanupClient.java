@@ -238,7 +238,6 @@ public class EnvironmentCleanupClient extends AbstractAgentClient {
      * Create backup for given component to specific backup folder
      *
      * @param componentName the name of the component
-     * @param environmentName the name of the environment configuration
      * @param folderPath backup folder path
      * @throws AgentException
      */

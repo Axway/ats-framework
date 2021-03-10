@@ -15,14 +15,15 @@
  */
 package com.axway.ats.core.filetransfer.model.ftp;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.jcraft.jsch.SftpProgressMonitor;
 
 /** Class used to log file transfer progress when debugMode is true (enabled) for @SftpClient **/
 public class SftpFileTransferProgressMonitor implements SftpProgressMonitor {
 
-    private static final Logger log                  = Logger.getLogger(SftpFileTransferProgressMonitor.class);
+    private static final Logger log                  = LogManager.getLogger(SftpFileTransferProgressMonitor.class);
 
     private String              source               = null;
     private String              destination          = null;

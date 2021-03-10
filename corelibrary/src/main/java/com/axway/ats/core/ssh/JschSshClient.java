@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.ssh.exceptions.JschSshClientException;
@@ -331,7 +332,7 @@ public class JschSshClient {
 
         StreamReader( InputStream is, Channel channel, String type ) {
 
-            log = Logger.getLogger(StreamReader.class.getSimpleName() + " <" + type + ">");
+            log = LogManager.getLogger(StreamReader.class.getSimpleName() + " <" + type + ">");
 
             this.is = is;
             this.type = type;

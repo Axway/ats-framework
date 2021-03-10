@@ -21,7 +21,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.Configurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -34,7 +35,7 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
  */
 public class RemoteConfigurationManager {
 
-    private static Logger log = Logger.getLogger(RemoteConfigurationManager.class);
+    private static Logger log = LogManager.getLogger(RemoteConfigurationManager.class);
 
     /**
      * Push the provided configuration to the remote Agent

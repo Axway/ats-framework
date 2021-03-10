@@ -17,12 +17,13 @@ package com.axway.ats.core.filetransfer.model.ftp;
 
 import org.apache.commons.net.ProtocolCommandEvent;
 import org.apache.commons.net.ProtocolCommandListener;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /** Class used to log sent commands and received responses, when debugMode is true (enabled) for @FtpClient or @FtpsClient **/
 public class FtpListener implements ProtocolCommandListener {
 
-    private static final Logger log = Logger.getLogger(FtpListener.class);
+    private static final Logger log = LogManager.getLogger(FtpListener.class);
 
     public FtpListener() {
 

@@ -28,7 +28,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
@@ -46,7 +47,7 @@ import com.axway.ats.environment.database.model.DbTable;
  */
 class CassandraEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log            = Logger.getLogger(CassandraEnvironmentHandler.class);
+    private static final Logger log            = LogManager.getLogger(CassandraEnvironmentHandler.class);
 
     private static final String HEX_PREFIX_STR = "0x";
 

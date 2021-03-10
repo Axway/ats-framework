@@ -15,7 +15,8 @@
  */
 package com.axway.ats.agent.core;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
@@ -33,7 +34,7 @@ public class ActionClassOne {
                          int value ) {
 
         ACTION_VALUE = value;
-        Logger.getLogger( ActionClassOne.class ).info( "Method action 1 has been executed" );
+        LogManager.getLogger( ActionClassOne.class ).info( "Method action 1 has been executed" );
     }
 
     @Action(name = "action array")
@@ -42,7 +43,7 @@ public class ActionClassOne {
                         int[] values ) {
 
         ACTION_VALUE = values[values.length - 1];
-        Logger.getLogger( ActionClassOne.class ).info( "Method action array has been executed" );
+        LogManager.getLogger( ActionClassOne.class ).info( "Method action array has been executed" );
 
         return ACTION_VALUE;
     }

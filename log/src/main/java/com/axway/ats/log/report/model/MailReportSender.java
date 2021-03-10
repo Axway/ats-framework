@@ -29,7 +29,8 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
 import com.axway.ats.log.report.exceptions.MailReportPropertyException;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.log.report.exceptions.MailReportSendException;
@@ -40,7 +41,7 @@ import com.axway.ats.log.report.model.ReportConfigurator;
  */
 public class MailReportSender {
 
-    private static final Logger log = Logger.getLogger(MailReportSender.class);
+    private static final Logger log = LogManager.getLogger(MailReportSender.class);
 
     private String              subject;
     private String              body;

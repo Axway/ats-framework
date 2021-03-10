@@ -15,8 +15,9 @@
  */
 package com.axway.ats.core.log;
 
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -31,18 +32,18 @@ public class AtsConsoleLogger {
     public static final String ATS_CONSOLE_MESSAGE_PREFIX = "*** ATS *** ";
     /**
      * Current level of the logger. Used for alternative logging when there is ATS Log4J blocking event like StartRun.
-     * If it is null, the Logger.getRootLogger().getLevel() value is used
+     * If it is null, the LogManager.getRootLogger().getLevel() value is used
      * */
-    private static      Level  level                      = null;
+    private static Level       level                      = null;
 
-    private Class<?> callingClass;
+    private Class<?>           callingClass;
 
-    private String[] classNameTokens;
-    private String   classNamePrefix; // one-time calculated class location prefix
+    private String[]           classNameTokens;
+    private String             classNamePrefix;                                 // one-time calculated class location prefix
 
-    private StringBuilder sb = new StringBuilder();
+    private StringBuilder      sb                         = new StringBuilder();
 
-    private Logger logger;
+    private Logger             logger;
 
     /**
      * Construct new AtsConsoleLogger
@@ -52,7 +53,7 @@ public class AtsConsoleLogger {
 
         this.callingClass = callingClass;
 
-        this.logger = Logger.getLogger(callingClass);
+        this.logger = LogManager.getLogger(callingClass);
 
         this.classNameTokens = this.callingClass.getName().split("\\.");
         this.classNamePrefix = generateClassNamePrefix(callingClass, classNameTokens);
@@ -172,9 +173,9 @@ public class AtsConsoleLogger {
     private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
-            return Level.toLevel(level).isGreaterOrEqual(AtsConsoleLogger.level);
+            return Level.toLevel(level).isLessSpecificThan(AtsConsoleLogger.level); // or isMore?!?
         } else {
-            return Logger.getRootLogger().isEnabledFor(Level.toLevel(level));
+            return LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.toLevel(level)); // or isMore?!?
         }
 
     }

@@ -19,7 +19,6 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 
 public class Test_DbAppenderConfiguration {

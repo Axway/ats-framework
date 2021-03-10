@@ -26,7 +26,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.ConnectionPool;
@@ -57,7 +58,7 @@ public class MysqlDbProvider extends AbstractDbProvider {
 
     }
 
-    private static final Logger log                    = Logger.getLogger(MysqlDbProvider.class);
+    private static final Logger log                    = LogManager.getLogger(MysqlDbProvider.class);
 
     public final static String  FUNC_CURRENT_TIMESTAMP = "CURRENT_TIMESTAMP()";
     public final static String  FUNC_NOW               = "NOW()";

@@ -15,7 +15,7 @@
  */
 package com.axway.ats.log;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 import com.axway.ats.common.PublicAtsApi;
 
@@ -29,37 +29,37 @@ public enum LogLevel {
      * TRACE log level
      */
     @PublicAtsApi
-    TRACE(Level.TRACE_INT),
+    TRACE(Level.TRACE.intLevel()),
 
     /**
      * DEBUG log level
      */
     @PublicAtsApi
-    DEBUG(Level.DEBUG_INT),
+    DEBUG(Level.DEBUG.intLevel()),
 
     /**
      * INFO log level
      */
     @PublicAtsApi
-    INFO(Level.INFO_INT),
+    INFO(Level.INFO.intLevel()),
 
     /**
      * WARN log level
      */
     @PublicAtsApi
-    WARN(Level.WARN_INT),
+    WARN(Level.WARN.intLevel()),
 
     /**
      * ERROR log level
      */
     @PublicAtsApi
-    ERROR(Level.ERROR_INT),
+    ERROR(Level.ERROR.intLevel()),
 
     /**
      * FATAL log level
      */
     @PublicAtsApi
-    FATAL(Level.FATAL_INT);
+    FATAL(Level.FATAL.intLevel());
 
     private int value;
 

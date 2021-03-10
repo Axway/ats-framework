@@ -26,7 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -56,7 +57,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class XmlText {
 
-    private static final Logger log = Logger.getLogger(XmlText.class);
+    private static final Logger log = LogManager.getLogger(XmlText.class);
 
     private Element             root;
 

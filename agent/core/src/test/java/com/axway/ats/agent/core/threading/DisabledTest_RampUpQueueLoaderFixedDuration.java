@@ -22,7 +22,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -40,7 +41,7 @@ import com.axway.ats.agent.core.threading.patterns.FixedDurationRampUpPattern;
 
 public class DisabledTest_RampUpQueueLoaderFixedDuration extends BaseTest {
 
-    static Logger                      log     = Logger.getLogger( DisabledTest_RampUpQueueLoaderFixedDuration.class );
+    static Logger                      log     = LogManager.getLogger( DisabledTest_RampUpQueueLoaderFixedDuration.class );
     private static final String        QUEUE_1 = "Performance queue";
     private QueueLoader                loader;
 

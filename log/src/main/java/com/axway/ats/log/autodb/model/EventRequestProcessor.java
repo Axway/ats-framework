@@ -17,7 +17,7 @@ package com.axway.ats.log.autodb.model;
 
 import java.sql.SQLException;
 
-import org.apache.log4j.Layout;
+import org.apache.logging.log4j.core.Layout;
 
 import com.axway.ats.log.autodb.exceptions.LoggingException;
 import com.axway.ats.log.autodb.logqueue.LogEventRequest;

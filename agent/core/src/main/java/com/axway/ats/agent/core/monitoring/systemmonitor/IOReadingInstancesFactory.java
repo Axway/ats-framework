@@ -20,7 +20,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hyperic.sigar.SigarException;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IFileSystem;
@@ -37,7 +38,7 @@ import com.axway.ats.core.utils.IoUtils;
  */
 public class IOReadingInstancesFactory {
 
-    private static final Logger  LOG           = Logger.getLogger(IOReadingInstancesFactory.class);
+    private static final Logger  LOG           = LogManager.getLogger(IOReadingInstancesFactory.class);
 
     private static final boolean IS_AIX_OS     = OperatingSystemType.getCurrentOsType()
                                                                     .equals(OperatingSystemType.AIX);

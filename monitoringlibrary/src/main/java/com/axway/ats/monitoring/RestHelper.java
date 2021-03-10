@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,7 +72,7 @@ public class RestHelper {
 
         // check if ActiveDbAppender is attached
         if (!ActiveDbAppender.isAttached) {
-            throw new IllegalStateException("Unable to execute monitoring operation.ATS DB Appender is not presented in log4j.xml");
+            throw new IllegalStateException("Unable to execute monitoring operation.ATS DB Appender is not presented in log4j2.xml");
         }
 
         RestResponse response = null;

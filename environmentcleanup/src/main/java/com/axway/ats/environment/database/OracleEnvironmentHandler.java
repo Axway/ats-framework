@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
@@ -72,7 +73,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
     }
 
-    private static final Logger log = Logger.getLogger(OracleEnvironmentHandler.class);
+    private static final Logger    log = LogManager.getLogger(OracleEnvironmentHandler.class);
 
     private List<TableConstraints> tablesConstraints;
 

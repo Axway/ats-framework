@@ -15,7 +15,8 @@
  */
 package com.axway.ats.agent.core.ant.component.agenttest;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.ant.component.agenttest.SecondActionClass;
 import com.axway.ats.agent.core.model.Action;
@@ -30,7 +31,7 @@ public class SecondActionClass {
     public void action1( @Parameter(name = "value") int value ) {
 
         ACTION_VALUE = value;
-        Logger.getLogger( SecondActionClass.class ).info( ( Object ) "Method action 1 has been executed" );
+        LogManager.getLogger( SecondActionClass.class ).info( ( Object ) "Method action 1 has been executed" );
     }
 
     @Action(name = "action checked exception")

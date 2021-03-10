@@ -17,7 +17,8 @@ package com.axway.ats.uiengine.elements;
 
 import java.util.Arrays;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.uiengine.UiDriver;
 import com.axway.ats.uiengine.exceptions.ErrorMatchingElementRules;
@@ -45,7 +46,7 @@ public abstract class UiElement {
         this.uiDriver = uiDriver;
         this.properties = properties;
 
-        log = Logger.getLogger(this.getClass());
+        log = LogManager.getLogger(this.getClass());
     }
 
     public UiDriver getUiDriver() {

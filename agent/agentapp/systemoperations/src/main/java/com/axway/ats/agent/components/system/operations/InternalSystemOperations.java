@@ -15,8 +15,7 @@
  */
 package com.axway.ats.agent.components.system.operations;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.model.Action;

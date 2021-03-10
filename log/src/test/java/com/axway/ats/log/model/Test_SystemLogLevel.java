@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,17 @@ package com.axway.ats.log.model;
 
 import static org.junit.Assert.assertTrue;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
 import org.junit.Test;
-
-import com.axway.ats.log.model.SystemLogLevel;
 
 public class Test_SystemLogLevel {
 
     @Test
     public void testSystemLevel() {
 
-        assertTrue(SystemLogLevel.SYSTEM_INT > Level.FATAL_INT);
+        // now it is ALL > TRACE > DEBUG > INFO > WARN > ERROR > FATAL > SYSTEM
+        // in log4j1.2.xyz it was the othre way around
+        assertTrue(SystemLogLevel.SYSTEM_INT < Level.FATAL.intLevel());
     }
 
     @Test

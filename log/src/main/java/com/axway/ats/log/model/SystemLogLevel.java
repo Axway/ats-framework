@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,9 @@
  */
 package com.axway.ats.log.model;
 
-import org.apache.log4j.Level;
+import org.apache.logging.log4j.Level;
+
+import com.axway.ats.log.Log4j2Utils;
 
 /**
  * This class adds one custom level to the log4j predefined levels
@@ -23,22 +25,16 @@ import org.apache.log4j.Level;
  * for starting runs, groups, test cases, etc.
  * This level is higher than the FATAL level, so it is always enabled
  */
-@SuppressWarnings( "serial")
-public class SystemLogLevel extends Level {
+public class SystemLogLevel {
 
-    public final static int            SYSTEM_INT = Level.FATAL_INT + 10000;
-    public final static SystemLogLevel SYSTEM     = new SystemLogLevel(SYSTEM_INT, "SYSTEM", 6);
-
-    SystemLogLevel( int level,
-                    String levelStr,
-                    int syslogEquivalent ) {
-
-        super(level, levelStr, syslogEquivalent);
-    }
+    public final static String SYSTEM_NAME = "SYSTEM";
+    public final static int    SYSTEM_INT  = Level.FATAL.intLevel() - 50;
+    public final static Level  SYSTEM      = Level.forName(SYSTEM_NAME, SYSTEM_INT);
 
     /**
     Convert the string passed as argument to a level. If the
-    conversion fails, then this method returns {@link #DEBUG}. 
+    conversion fails, then this method returns {@link Level#DEBUG}.</br>
+    <strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  String sArg ) {
@@ -48,8 +44,8 @@ public class SystemLogLevel extends Level {
 
     /**
       Convert an integer passed as argument to a level. If the
-      conversion fails, then this method returns {@link #DEBUG}.
-    
+      conversion fails, then this method returns {@link Level#DEBUG}.
+      </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  int val ) {
@@ -60,23 +56,33 @@ public class SystemLogLevel extends Level {
     /**
       Convert an integer passed as argument to a level. If the
       conversion fails, then this method returns the specified default.
+      </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  int val,
                                  Level defaultLevel ) {
 
-        switch (val) {
-            case SYSTEM_INT:
-                return SystemLogLevel.SYSTEM;
-            default:
-                return Level.toLevel(val, defaultLevel);
+        return (val == SYSTEM_INT)
+                                   ? SystemLogLevel.SYSTEM
+                                   : Level.toLevel(convertyIntValToName(val), defaultLevel);
+    }
+
+    private static String convertyIntValToName( int val ) {
+
+        Level[] levels = Level.values();
+        for (Level lvl : levels) {
+            if (lvl.intLevel() == val) {
+                return lvl.name();
+            }
         }
+        return null; // no problem, log4j2 handles null value for level name
     }
 
     /**
        Convert the string passed as argument to a level. If the
        conversion fails, then this method returns the value of
-       <code>defaultLevel</code>.  
+       <code>defaultLevel</code>.
+       </br><strong>FIXME:</strong> Maybe this method should be moved to {@link Log4j2Utils}
     */
     public static Level toLevel(
                                  String sArg,
@@ -87,7 +93,7 @@ public class SystemLogLevel extends Level {
 
         String s = sArg.toUpperCase();
 
-        if ("SYSTEM".equals(s)) {
+        if (SYSTEM_NAME.equals(s)) {
             return SystemLogLevel.SYSTEM;
         } else {
             return Level.toLevel(sArg, defaultLevel);

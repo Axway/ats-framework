@@ -19,21 +19,29 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
-
-import com.axway.ats.environment.EnvironmentUnit;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 
 public class BaseTest {
-    private final static Logger LOG = Logger.getLogger(BaseTest.class);
+    private final static Logger LOG = LogManager.getLogger(BaseTest.class);
 
     static {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
+
+        PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder().setLayout(layout).setName("ConsoleAppender").build();
 
         //init log4j
-        BasicConfigurator.configure(appender);
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
+        context.updateLoggers(); // TODO is this needed
+
     }
 
     protected String getTempBackupDir(

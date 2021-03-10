@@ -20,7 +20,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.rbv.executors.BasicExecutor;
 import com.axway.ats.rbv.executors.Executor;
@@ -31,7 +32,7 @@ import com.axway.ats.rbv.storage.Matchable;
 
 public class Monitor {
 
-    private static final Logger log              = Logger.getLogger(Monitor.class);
+    private static final Logger log              = LogManager.getLogger(Monitor.class);
 
     private String              name;
     private Matchable           matchable;

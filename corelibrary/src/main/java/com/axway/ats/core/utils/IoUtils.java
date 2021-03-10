@@ -34,7 +34,8 @@ import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -46,7 +47,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class IoUtils {
 
-    private static final Logger log = Logger.getLogger(IoUtils.class);
+    private static final Logger log = LogManager.getLogger(IoUtils.class);
 
     public static final String FORWARD_SLASH = "/";
 

@@ -28,7 +28,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.Alert;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
@@ -81,7 +82,7 @@ public abstract class AbstractRealBrowserDriver extends AbstractHtmlDriver {
 
     }
 
-    private static Logger         log                 = Logger.getLogger(AbstractRealBrowserDriver.class);
+    private static Logger         log                 = LogManager.getLogger(AbstractRealBrowserDriver.class);
 
     private String                url;
     private String                browserPath;

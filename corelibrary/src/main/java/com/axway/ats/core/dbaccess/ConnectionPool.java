@@ -22,7 +22,8 @@ import java.util.HashMap;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 
@@ -95,7 +96,7 @@ public class ConnectionPool {
         if (dataSourceMap.containsKey(dbConnection.getConnHash())) {
             dataSourceMap.remove(dbConnection.getConnHash());
         } else {
-            log = Logger.getLogger(ConnectionPool.class);
+            log = LogManager.getLogger(ConnectionPool.class);
 
             log.info("Cannot remove the connection " + dbConnection.hashCode()
                      + " from the pool, as it is not present in there");

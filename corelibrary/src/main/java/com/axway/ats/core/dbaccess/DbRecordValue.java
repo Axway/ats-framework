@@ -18,14 +18,15 @@ package com.axway.ats.core.dbaccess;
 import java.lang.reflect.Array;
 import java.sql.SQLException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Class representing a value in a recordset
  */
 public class DbRecordValue {
 
-    private static final Logger log                         = Logger.getLogger(DbRecordValue.class);
+    private static final Logger log                         = LogManager.getLogger(DbRecordValue.class);
 
     private DbColumn            dbColumn;
     private Object              value;

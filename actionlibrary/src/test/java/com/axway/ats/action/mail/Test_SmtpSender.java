@@ -25,7 +25,8 @@ import javax.mail.Transport;
 import javax.mail.URLName;
 import javax.mail.event.TransportEvent;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -43,7 +44,7 @@ import com.axway.ats.action.objects.model.WrongPackageException;
 import com.axway.ats.common.system.OperatingSystemType;
 
 public class Test_SmtpSender extends BaseTest {
-    private final static Logger LOG = Logger.getLogger(Test_SmtpSender.class);
+    private final static Logger LOG = LogManager.getLogger(Test_SmtpSender.class);
 
     private MailSender  mailSender;
     private MimePackage mail;
@@ -122,7 +123,7 @@ public class Test_SmtpSender extends BaseTest {
 
 class TransportMock extends Transport {
 
-    private static final Logger log = Logger.getLogger(TransportMock.class);
+    private static final Logger log = LogManager.getLogger(TransportMock.class);
 
     private DELIVERY_STATE deliveryState;
 

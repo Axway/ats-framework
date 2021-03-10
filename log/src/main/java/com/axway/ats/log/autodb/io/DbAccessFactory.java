@@ -35,7 +35,7 @@ public class DbAccessFactory {
     }
 
     /**
-     * Retrieves the DB info from the log4j system and then creates a new
+     * Retrieves the DB info from the log4j2 system and then creates a new
      * instance for writing into the DB
      * 
      * @return
@@ -46,7 +46,7 @@ public class DbAccessFactory {
         // Our DB appender keeps the DB connection info
         ActiveDbAppender loggingAppender = ActiveDbAppender.getCurrentInstance();
         if (loggingAppender == null) {
-            throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS ActiveDbAppender is not attached to log4j system");
+            throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS ActiveDbAppender is not attached to log4j2 system");
         }
 
         DbConnection dbConnection = null;
@@ -60,7 +60,7 @@ public class DbAccessFactory {
 
             // Create the database access layer
             if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(loggingAppender.getAppenderConfig().getDriver())) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 Map<String, Object> props = new HashMap<>();
                 props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
                 dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
@@ -74,7 +74,7 @@ public class DbAccessFactory {
                 return writeAccess;
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
                                                                                      .getDriver())) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 Map<String, Object> props = new HashMap<>();
                 props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS);
                 dbConnection = new DbConnSQLServer(loggingAppender.getHost(),
@@ -99,7 +99,7 @@ public class DbAccessFactory {
                                                                              loggingAppender.getUser(),
                                                                              loggingAppender.getPassword());
             if (pgsqlException == null) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 dbConnection = new DbConnPostgreSQL(loggingAppender.getHost(),
                                                     Integer.parseInt(loggingAppender.getPort()),
                                                     loggingAppender.getDatabase(),
@@ -125,7 +125,7 @@ public class DbAccessFactory {
     }
 
     /**
-     * Retrieves the DB info from the log4j system and then creates a new
+     * Retrieves the DB info from the log4j2 system and then creates a new
      * instance for writing into the DB
      * This method differs from the getNewDbWriteAccessObject(), 
      * because we use the PassiveDbAppender to retrieve the DB info
@@ -141,7 +141,7 @@ public class DbAccessFactory {
         if (loggingAppender == null) {
             throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS PassiveDbAppender for caller '"
                                               + ThreadsPerCaller.getCaller()
-                                              + "' is not attached to log4j system");
+                                              + "' is not attached to log4j2 system");
         }
 
         DbConnection dbConnection = null;
@@ -156,7 +156,7 @@ public class DbAccessFactory {
 
             // Create the database access layer
             if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(loggingAppender.getAppenderConfig().getDriver())) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 Map<String, Object> props = new HashMap<>();
                 props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_MICROSOFT);
                 dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
@@ -167,7 +167,7 @@ public class DbAccessFactory {
                 writeAccess = new SQLServerDbWriteAccessMSSQL(dbConnection, false);
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(loggingAppender.getAppenderConfig()
                                                                                      .getDriver())) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 Map<String, Object> props = new HashMap<>();
                 props.put(DbKeys.DRIVER, DbKeys.SQL_SERVER_DRIVER_JTDS);
                 dbConnection = new DbConnSQLServer(loggingAppender.getAppenderConfig().getHost(),
@@ -194,7 +194,7 @@ public class DbAccessFactory {
                                                                              loggingAppender.getAppenderConfig()
                                                                                             .getPassword());
             if (pgsqlException == null) {
-                // Create DB connection based on the log4j system settings
+                // Create DB connection based on the log4j2 system settings
                 dbConnection = new DbConnPostgreSQL(loggingAppender.getAppenderConfig().getHost(),
                                                     Integer.parseInt(loggingAppender.getAppenderConfig().getPort()),
                                                     loggingAppender.getAppenderConfig().getDatabase(),

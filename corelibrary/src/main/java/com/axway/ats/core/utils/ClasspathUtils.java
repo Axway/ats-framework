@@ -36,7 +36,8 @@ import java.util.jar.Manifest;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.system.OperatingSystemType;
 
@@ -45,7 +46,7 @@ import com.axway.ats.common.system.OperatingSystemType;
  */
 public class ClasspathUtils {
 
-    private static final Logger       log              = Logger.getLogger(ClasspathUtils.class);
+    private static final Logger       log              = LogManager.getLogger(ClasspathUtils.class);
 
     /**
      * A map containing all jars found in the classpath: <jar simple name, <list
@@ -174,16 +175,14 @@ public class ClasspathUtils {
                 }
             }
             if ("log4j".equalsIgnoreCase(loadedJarEntry.getKey()) && loadedJarEntry.getValue().size() > 1) {
-                String errorMsg = "Log4j library is supposed to be present only in lib_common subfolder. "
-                                  + "Otherwise it should cause no logging into the agent log file. Currently Log4j is found at: "
+                String errorMsg = "Log4j2 library is supposed to be present only in lib_common subfolder. "
+                                  + "Otherwise it should cause no logging into the agent log file. Currently Log4j2 is found at: "
                                   + loadedJarEntry.getValue();
-                log.warn(errorMsg);
                 log.warn(errorMsg);
             }
             if (PROBLEMATIC_JARS.contains(loadedJarEntry.getKey())) {
                 String errorMsg = "The following libraries " + loadedJarEntry.getKey() + " located in "
                                   + loadedJarEntry.getValue() + ". These different jars can cause issues.";
-                log.warn(errorMsg);
                 log.warn(errorMsg);
             }
         }

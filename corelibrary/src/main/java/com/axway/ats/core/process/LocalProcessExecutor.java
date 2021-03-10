@@ -26,8 +26,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.process.ProcessExecutorException;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -40,15 +40,15 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                            = Logger.getLogger(LocalProcessExecutor.class);
-    public static final  int    OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000; /* 1 hour */
-    private final static int    MAX_STRING_SIZE                = 100000;  // max chars used to limit process output
+    private static final Logger log                            = LogManager.getLogger(LocalProcessExecutor.class);
+    public static final int     OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000;                                  /* 1 hour */
+    private final static int    MAX_STRING_SIZE                = 100000;                                          // max chars used to limit process output
     private final static String SKIPPED_CHARACTERS             = "... skipped characters ..."
                                                                  + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
     private final static int    SKIPPED_CHARACTERS_LENGTH      = SKIPPED_CHARACTERS.length();
 
-    private List<String> commandTokens;
-    private String       commandDescription;
+    private List<String>        commandTokens;
+    private String              commandDescription;
 
     private ProcessOutputReader errorReaderThread;
     private ProcessOutputReader outputReaderThread;
@@ -57,15 +57,15 @@ public class LocalProcessExecutor implements IProcessExecutor {
     private boolean             logStandardOutput;
     private boolean             logErrorOutput;
 
-    private String workDirectory;
+    private String              workDirectory;
 
-    private Process        theProcess;
-    private ProcessBuilder processBuilder;
+    private Process             theProcess;
+    private ProcessBuilder      processBuilder;
 
-    private boolean suppressLogMessages;
-    private boolean doNotUseStandardInput;
+    private boolean             suppressLogMessages;
+    private boolean             doNotUseStandardInput;
 
-    private String caller;
+    private String              caller;
 
     public LocalProcessExecutor( String caller, String command, String... commandArguments ) {
 
@@ -106,8 +106,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
         if (!suppressLogMessages) {
             log.info("Executing '" + commandDescription + "'. We will " + (waitForCompletion
-                                                                           ? "wait"
-                                                                           : "not wait")
+                                                                                             ? "wait"
+                                                                                             : "not wait")
                      + " for its completion");
         }
 
@@ -197,7 +197,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
         if (startCommandSnippet == null || startCommandSnippet.length() < 2) {
 
             throw new IllegalStateException(
-                    "The process start command snippet is invalid. The minimum allowed length is 2 characters");
+                                            "The process start command snippet is invalid. The minimum allowed length is 2 characters");
         }
 
         int numberOfKilled = 0;
@@ -224,9 +224,9 @@ public class LocalProcessExecutor implements IProcessExecutor {
             pExecutor = new LocalProcessExecutor(HostUtils.LOCAL_HOST_IPv4, "cmd",
                                                  "/c",
                                                  "wmic process where (commandline like \"%"
-                                                 + startCommandSnippet
-                                                 + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
-                                                 + startCommandSnippet + "%\") call terminate <NUL");
+                                                       + startCommandSnippet
+                                                       + "%\") get commandLine,processId <NUL && echo --- <NUL && wmic process where (commandline like \"%"
+                                                       + startCommandSnippet + "%\") call terminate <NUL");
             startParsingLine = 1;
         } else {
 
@@ -278,11 +278,10 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 int retries = 100;
                 // the loop will brake when the temporary file exists and the delete operation is successful
                 // or if the number of retries exceeded
-                while (!(f.exists() && f.delete()) && retries-- > 0) {
+                while (! (f.exists() && f.delete()) && retries-- > 0) {
                     Thread.sleep(10);
                 }
-            } catch (Exception e) {
-            }
+            } catch (Exception e) {}
         }
 
         return numberOfKilled;
@@ -394,8 +393,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log standard output also to the corresponding Log4j appenders
-     * @param logStandardOutput <code>true</code> - log the output read to the log4j too
+     * Log standard output also to the corresponding Log4j2 appenders
+     * @param logStandardOutput <code>true</code> - log the output read to the log4j2 too
      */
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
@@ -403,8 +402,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log error to corresponding log4j appenders
-     * @param logErrorOutput - <code>true</code> - log the error output to the log4j too
+     * Log error to corresponding log4j2 appenders
+     * @param logErrorOutput - <code>true</code> - log the error output to the log4j2 too
      */
     public void setLogErrorOutput( boolean logErrorOutput ) {
 
@@ -462,30 +461,30 @@ public class LocalProcessExecutor implements IProcessExecutor {
 
     class ProcessOutputReader extends Thread {
 
-        private final Logger log;
+        private final Logger        log;
 
-        private String caller;
+        private String              caller;
 
-        private static final int READ_TIMEOUT = 60 * 1000;                  // in milliseconds
+        private static final int    READ_TIMEOUT = 60 * 1000;                  // in milliseconds
 
-        private final StringBuilder content = new StringBuilder();
+        private final StringBuilder content      = new StringBuilder();
 
-        private BufferedWriter bufWriterStream;
+        private BufferedWriter      bufWriterStream;
 
-        private boolean logOutput;
+        private boolean             logOutput;
 
-        private InputStream is;
+        private InputStream         is;
 
-        private String type;
+        private String              type;
 
-        private Process externalProcess;
+        private Process             externalProcess;
 
-        private CountDownLatch countdownLatchForExternalProcessCompletion;
+        private CountDownLatch      countdownLatchForExternalProcessCompletion;
 
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
 
-            log = Logger.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
+            log = LogManager.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
 
             this.caller = caller;
 
@@ -538,7 +537,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 String dataToLeave = null;
                 bufReaderStream = new BufferedReader(new InputStreamReader(is));
                 int pollingIntervalMs = AtsSystemProperties.getPropertyAsNonNegativeNumber(
-                        AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL, -1);
+                                                                                           AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL,
+                                                                                           -1);
                 if (pollingIntervalMs < 0 || pollingIntervalMs > OUTPUT_POLLING_INTERVAL_MAX_MS) {
                     pollingIntervalMs = AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT; // default value
                 } else { // explicitly set and acceptable value
@@ -653,8 +653,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
                     timeout = start + READ_TIMEOUT - System.currentTimeMillis();
                     if (timeout > 0) {
                         log.warn(
-                                "Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
-                                + timeout + " ms");
+                                 "Process output reader thread was interrupted while waiting for external process execution. We will wait again, now for "
+                                 + timeout + " ms");
                     }
                 }
             } while (timeout > 0);
