@@ -34,7 +34,6 @@ import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.client.AgentException_Exception;
 import com.axway.ats.agent.webapp.client.AgentService;
 import com.axway.ats.agent.webapp.client.AgentServicePool;
-import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.junit.BaseTestWebapps;
 

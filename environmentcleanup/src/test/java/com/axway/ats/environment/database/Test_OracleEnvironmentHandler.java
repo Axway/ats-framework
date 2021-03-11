@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,6 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
 import com.axway.ats.environment.BaseTest;
-import com.axway.ats.environment.database.MysqlEnvironmentHandler;
-import com.axway.ats.environment.database.OracleEnvironmentHandler;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;

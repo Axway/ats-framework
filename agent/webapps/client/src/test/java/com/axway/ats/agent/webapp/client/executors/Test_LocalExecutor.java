@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import com.axway.ats.agent.core.MultiThreadedActionHandler;
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.ActionClassOne;
-import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.junit.BaseTestWebapps;
 

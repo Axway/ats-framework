@@ -21,6 +21,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
+import com.axway.ats.core.log.AtsLog4jLogger;
 import com.axway.ats.log.AtsDbLogger;
 
 // prevents linkage error
@@ -30,7 +31,8 @@ public class Test_AtsDbLogger {
     @BeforeClass
     public static void setUpTest_AutoLogger() {
 
-        //BasicConfigurator.configure();
+        // or not ?!?
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 
     @Test

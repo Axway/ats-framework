@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,17 @@
 package com.axway.ats.agent.webapp;
 
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
+import com.axway.ats.core.log.AtsLog4jLogger;
 import com.axway.ats.core.validation.ValidationType;
 
 public class ActionClassOne {
+    
+    static {
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+    }
 
     public static int    ACTION_VALUE    = 0;
 

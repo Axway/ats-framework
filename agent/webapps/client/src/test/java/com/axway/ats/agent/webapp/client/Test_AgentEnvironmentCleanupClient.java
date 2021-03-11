@@ -28,7 +28,6 @@ import org.junit.runner.RunWith;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import com.axway.ats.agent.webapp.client.EnvironmentCleanupClient;
 import com.axway.ats.agent.webapp.client.executors.LocalExecutor;
 import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;

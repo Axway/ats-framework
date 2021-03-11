@@ -15,28 +15,11 @@
  */
 package com.axway.ats.rbv;
 
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.apache.logging.log4j.status.StatusLogger;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
 
-    
     static {
-        PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
-        ConsoleAppender appender = ConsoleAppender.newBuilder().setLayout(layout).setName("ConsoleAppender").build();
-
-        //init log4j
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        StatusLogger.getLogger().setLevel(Level.OFF);
-        appender.start();
-        config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO is this needed
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 }

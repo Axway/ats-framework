@@ -15,10 +15,7 @@
  */
 package com.axway.ats.agent.core;
 
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-
-import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
 
@@ -30,23 +27,6 @@ public class BaseTest {
     public final static String    RELATIVE_PATH_TO_TEST_SOURCES   = RELATIVE_PATH_TO_TESTS + "/java";
 
     static {
-
-        org.apache.logging.log4j.core.layout.PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
-                                                                                                                      .withPattern("%-5p %d{HH:mm:ss-SSS} %c{2}: %m%n")
-                                                                                                                      .build();
-        org.apache.logging.log4j.core.appender.ConsoleAppender appender = org.apache.logging.log4j.core.appender.ConsoleAppender.newBuilder()
-                                                                                                                                .setLayout(layout)
-                                                                                                                                .setName("ConsoleAppender")
-                                                                                                                                .setFilter(new NoSystemLevelEventsFilter())
-                                                                                                                                .build();
-
-        //init log4j
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        appender.start();
-        config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO is this needed
-
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 }

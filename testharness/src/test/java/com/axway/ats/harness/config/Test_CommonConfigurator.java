@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,10 +34,6 @@ import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.harness.BaseTest;
-import com.axway.ats.harness.config.CommonConfigurator;
-import com.axway.ats.harness.config.MailServer;
-import com.axway.ats.harness.config.MessagesBox;
-import com.axway.ats.harness.config.TestBox;
 
 import junit.framework.AssertionFailedError;
 

@@ -23,6 +23,7 @@ import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.status.StatusLogger;
 
 /**
  * Logger sending messages through Log4j2
@@ -34,11 +35,22 @@ public class AtsLog4jLogger extends AbstractAtsLogger {
     /**
      * Useful for test logging. Mostly could be set in (static blocks of) BaseTest classes of unit tests.
      * This is separate non-logger specific utility method
+     * Note that the StatusLogger's level is set to OFF, due to PowerMock errors causing Unit tests to take too long to execute
+     * causing them to fail.
+     * If you want more details about what exactly Log4j2 is doing, set this level to either DEBUG or TRACE
+     * Also the RootLogger level is set to INFO
      */
     public static void setLog4JConsoleLoggingOnly() {
+        
+        // Since this class is not available in the configuration submodule, in the com.axway.ats.config.BaseTest there, there is an exact copy of this static block
+        // So changing anything here should also be changed in com.axway.ats.config.BaseTest
+        
 
+        StatusLogger.getLogger().setLevel(Level.OFF);
         PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
         ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
+
+        Configurator.setRootLevel(Level.INFO);
 
         final LoggerContext context = LoggerContext.getContext(false);
         final Configuration config = context.getConfiguration();

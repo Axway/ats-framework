@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.junit.Test;
 import com.axway.ats.core.BaseTest;
 import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
-import com.axway.ats.core.validation.types.TypeInputStream;
 
 /**
  * This Unit test is used to verify the proper work of the

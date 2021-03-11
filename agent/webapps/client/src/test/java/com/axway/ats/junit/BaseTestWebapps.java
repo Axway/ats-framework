@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,23 +15,11 @@
  */
 package com.axway.ats.junit;
 
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTestWebapps {
 
     static {
-        PatternLayout layout = PatternLayout.newBuilder().withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n").build();
-        ConsoleAppender appender = ConsoleAppender.newBuilder().setLayout(layout).setName("ConsoleAppender").build();
-
-        //init log4j
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        appender.start();
-        config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO is this needed
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 }

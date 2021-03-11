@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.testng.annotations.Test;
 
 import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.testng.TestOptions;
-import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
 @TestOptions( dataFileFolder = TestDetails.DATA_FILES_FOLDER + "AnotherFolder2/")
 public class Test_BasicDataProvider2 extends BaseTest {

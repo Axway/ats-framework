@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import org.junit.Test;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.harness.BaseTest;
 import com.axway.ats.harness.testng.TestOptions;
-import com.axway.ats.harness.testng.dataproviders.ExcelParser;
 import com.axway.ats.harness.testng.exceptions.DataProviderException;
 
 public class Test_ExcelParser_xls extends BaseTest {

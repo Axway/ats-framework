@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,6 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.axway.ats.config.AbstractConfigurator;
-import com.axway.ats.config.ConfigurationRepository;
 import com.axway.ats.config.exceptions.ConfigSourceDoesNotExistException;
 import com.axway.ats.config.exceptions.ConfigurationException;
 import com.axway.ats.config.exceptions.NoSuchPropertyException;
