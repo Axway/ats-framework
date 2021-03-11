@@ -16,10 +16,12 @@
 package com.axway.ats.rbv;
 
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.logging.log4j.status.StatusLogger;
 
 public class BaseTest {
 
@@ -31,6 +33,7 @@ public class BaseTest {
         //init log4j
         final LoggerContext context = LoggerContext.getContext(false);
         final Configuration config = context.getConfiguration();
+        StatusLogger.getLogger().setLevel(Level.OFF);
         appender.start();
         config.addAppender(appender);
         // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
