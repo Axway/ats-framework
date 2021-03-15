@@ -53,7 +53,7 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  *  - INSERT into the testcase messages, statistics etc.
  *  - LEAVE testcase when it is over
  */
-@Plugin( name = "ActiveDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
+@Plugin( name = "PassiveDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class PassiveDbAppender extends AbstractDbAppender {
 
     /* 
