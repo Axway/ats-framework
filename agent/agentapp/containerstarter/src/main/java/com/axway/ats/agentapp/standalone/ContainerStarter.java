@@ -219,10 +219,13 @@ public class ContainerStarter {
          * Then Jetty will see this folder does not exist and will use the folder
          * pointed by the java.io.tmpdir system property
          */
-        if (new File(jettyWorkDir).mkdir()) {
-            System.err.println("Could not create subdirectory work in directory '" + jettyWorkDir
-                               + "'. Check current user's permissions for this directory. Jetty will generate ist work "
-                               + "directory inside OS temp directory.");
+        File workDirF = new File(jettyWorkDir);
+        if (! workDirF.exists()) {
+            if (!workDirF.mkdir()) {
+                System.err.println("Could not create work directory '" + jettyWorkDir
+                                   + "'. Check current user's permissions for this directory. Jetty will generate its work "
+                                   + "directory inside OS temp directory.");
+            }
         }
 
         return jettyWorkDir;
