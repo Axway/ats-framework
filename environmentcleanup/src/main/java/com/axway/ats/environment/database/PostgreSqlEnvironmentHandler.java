@@ -711,28 +711,54 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
      * @return Full PostgreSQL-friendly name "schema_name"."table_name" which works not only for table named
      *    "people_table" but also for "People_Table".
      */
-    private String getFullTableName( DbTable table ) {
+    static String getFullTableName( DbTable table ) {
 
         StringBuilder sb = new StringBuilder();
+        // schema quoting
         String schema = table.getTableSchema();
         if (StringUtils.isNullOrEmpty(schema)) {
             schema = "public";
         }
         if (!schema.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (schema.endsWith("\"")) {
+                LOG.warn("Db schema name does not start with quote but ends with such. Check provided schema name: " + schema);
+                addEndingQuote = false;
+            }
             sb.append("\"");
             sb.append(schema);
-            sb.append("\"");
-        } else {
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+
+        } else { // has leading quote
             sb.append(schema);
+            if (!schema.endsWith("\"")) {
+                LOG.warn("Db schema name starts with quote but does not end with such. Check provided schema name: " + schema);
+                sb.append("\"");
+            }
         }
         sb.append(".");
 
-        if (!table.getTableName().startsWith("\"")) { // add quotes if missing
+        // table name quoting
+        String tableName = table.getTableName();
+        if (!tableName.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (tableName.endsWith("\"")) {
+                LOG.warn("Db table name does not start with quote but ends with such. Check provided table name: " + tableName);
+                addEndingQuote = false;
+            }
             sb.append("\"");
-            sb.append(table.getTableName());
-            sb.append("\"");
-        } else {
-            sb.append(table.getTableName());
+            sb.append(tableName);
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+        } else { // has leading quote
+            sb.append(tableName);
+            if (!tableName.endsWith("\"")) {
+                LOG.warn("Db table name starts with quote but does not end with such. Check provided table name: " + tableName);
+                sb.append("\"");
+            }
         }
 
         return sb.toString();

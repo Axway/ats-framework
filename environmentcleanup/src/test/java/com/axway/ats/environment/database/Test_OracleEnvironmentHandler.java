@@ -54,7 +54,7 @@ import com.axway.ats.environment.database.model.DbTable;
 public class Test_OracleEnvironmentHandler extends BaseTest {
 
     private static final String LINE_SEPARATOR = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
-    private static final String EOL_MARKER     = MysqlEnvironmentHandler.EOL_MARKER;
+    private static final String EOL_MARKER     = AbstractEnvironmentHandler.EOL_MARKER;
 
     private DbConnOracle        mockDbConnection;
     private OracleDbProvider    mockDbProvider;
