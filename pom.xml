@@ -32,7 +32,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces
+        <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces 
             Java 8 class level artifacts -->
         <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
@@ -57,7 +57,7 @@
         <gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
         <gpg.executable>gpg2</gpg.executable>
 
-		<log4j.version>2.14.0</log4j.version>
+        <log4j.version>2.14.0</log4j.version>
         <slf4j.version>1.7.30</slf4j.version>
         <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
         <javax.mail.version>1.4.4</javax.mail.version>
@@ -193,26 +193,31 @@
                             </rules>
                         </configuration>
                     </execution>
-					<execution>
-						<id>enforce-banned-dependencies</id>
-						<phase>validate</phase>
-						<goals>
-							<goal>enforce</goal>
-						</goals>
-						<configuration>
-							<rules>
-								<bannedDependencies>
-									<excludes>
-										<exclude>log4j:log4j</exclude>
-										<exclude>org.slf4j:slf4j-log4j12</exclude>
-										<!--<exclude>groupId:artifactId</exclude> -->
-										<!--<exclude>*:badArtifact</exclude> -->
-									</excludes>
-								</bannedDependencies>
-							</rules>
-							<fail>true</fail> <!-- Fail build if such is found -->
-						</configuration>
-					</execution>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>log4j:log4j</exclude>
+                                        <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                        <exclude>org.slf4j:jcl-over-slf4j</exclude>
+                                        <exclude>org.slf4j:jul-to-slf4j</exclude>
+                                        <exclude>org.apache.logging.log4j:log4j-to-slf4j</exclude>
+                                        <exclude>org.slf4j:log4j-over-slf4j</exclude>
+                                        <exclude>ch.qos.logback:logback-core</exclude>
+                                        <!--<exclude>groupId:artifactId</exclude> -->
+                                        <!--<exclude>*:badArtifact</exclude> -->
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail> <!-- Fail build if such is found -->
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
             <!-- Travis CI plugin serverId must be the same as in settings.xml -->
@@ -390,35 +395,40 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-api</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-core</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-1.2-api</artifactId>
-				<version>${log4j.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.apache.logging.log4j</groupId>
-				<artifactId>log4j-slf4j-impl</artifactId>
-				<!-- artifactId>log4j-slf4j18-impl</artifactId -->
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-core</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-1.2-api</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-slf4j-impl</artifactId>
+                <!-- artifactId>log4j-slf4j18-impl</artifactId -->
                 <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-				<artifactId>slf4j-api</artifactId>
+                <artifactId>slf4j-api</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-				<artifactId>jul-to-slf4j</artifactId>
-                <version>${slf4j.version}</version>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-jul</artifactId>
+                <version>${log4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.logging.log4j</groupId>
+                <artifactId>log4j-jcl</artifactId>
+                <version>${log4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.apache.commons</groupId>
