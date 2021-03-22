@@ -27,7 +27,8 @@ import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.NewCookie;
 import javax.ws.rs.core.Response;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.exceptions.VerificationException;
 import com.axway.ats.common.xml.XMLException;
@@ -42,7 +43,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class RestResponse {
 
-    private static final Logger LOG = Logger.getLogger(RestResponse.class);
+    private static final Logger LOG = LogManager.getLogger(RestResponse.class);
 
     public static final int     RESPONSE_SIZE_BIG_WARN           = 104857600; // 100MB
     private static      boolean BIG_RESPONSE_SIZE_WARNING_LOGGED = false; // flag to log warning only once

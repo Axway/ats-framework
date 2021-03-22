@@ -18,7 +18,8 @@ package com.axway.ats.agent.core.monitoring.systemmonitor;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
 import com.axway.ats.core.monitoring.UnsupportedReadingException;
@@ -28,7 +29,7 @@ import com.axway.ats.core.monitoring.UnsupportedReadingException;
  */
 public class XmlReadingsRepository {
 
-    private static final Logger      log = Logger.getLogger(XmlReadingsRepository.class);
+    private static final Logger      log = LogManager.getLogger(XmlReadingsRepository.class);
 
     private Map<String, ReadingBean> readings;
 

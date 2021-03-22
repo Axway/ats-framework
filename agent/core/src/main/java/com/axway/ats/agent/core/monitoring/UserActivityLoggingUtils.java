@@ -31,9 +31,9 @@ import com.axway.ats.log.AtsDbLogger;
 public class UserActivityLoggingUtils {
 
     /*
-     * Skip checking in db appender is attached, because we are on the agent and not the executor.
-     * */
-    private static final AtsDbLogger dbLog           = AtsDbLogger.getLogger(UserActivityLoggingUtils.class.getName(), true);
+     * Skip checking if DB appender is attached, because we are on the agent and not the executor.
+     */
+    private static final AtsDbLogger dbLog = AtsDbLogger.getLogger(UserActivityLoggingUtils.class.getName(), true);
 
     // All Agents are presented as a single virtual host.
     // The reason is that user wants to know the total number of simulated

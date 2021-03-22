@@ -21,7 +21,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.context.ThreadContext;
 import com.axway.ats.agent.core.templateactions.exceptions.InvalidMatcherException;
@@ -31,7 +32,7 @@ import com.axway.ats.agent.core.templateactions.model.matchers.mode.TemplateHead
 
 public class HeaderMatcher extends ResponseMatcher {
 
-    private static final Logger     log                            = Logger.getLogger(HeaderMatcher.class);
+    private static final Logger     log                            = LogManager.getLogger(HeaderMatcher.class);
 
     private static final long       serialVersionUID               = 1;
 

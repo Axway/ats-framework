@@ -21,7 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.performance.monitor.beans.MonitorResults;
 import com.axway.ats.common.performance.monitor.beans.ReadingBean;
@@ -32,7 +33,7 @@ import com.axway.ats.core.threads.ThreadsPerCaller;
  */
 public class UserActionsMonitoringAgent {
 
-    private static Logger                                  log       = Logger.getLogger(UserActionsMonitoringAgent.class);
+    private static Logger                                  log       = LogManager.getLogger(UserActionsMonitoringAgent.class);
 
     // instance for each remote caller
     private static Map<String, UserActionsMonitoringAgent> instances = new HashMap<String, UserActionsMonitoringAgent>();
@@ -187,7 +188,7 @@ public class UserActionsMonitoringAgent {
      */
     class MonitoringThread extends Thread {
 
-        private Logger    log = Logger.getLogger(MonitoringThread.class);
+        private Logger    log = LogManager.getLogger(MonitoringThread.class);
 
         private long      currentTimestamp;
         private final int pollInterval;

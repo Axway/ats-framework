@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
@@ -55,7 +56,7 @@ public class SnapshotExecutor extends BasicExecutor {
     // excluded keys that are specified by the user and should not be considered during the matching process
     private List<String>                 explicitlyExcluded;
 
-    private static final Logger          log                         = Logger.getLogger(SnapshotExecutor.class);
+    private static final Logger          log                         = LogManager.getLogger(SnapshotExecutor.class);
 
     // log messages
     private static final String          SNAPSHOT_EVALUATION_START   = "Starting metadata snapshot evaluation ...";

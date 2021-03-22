@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 package com.axway.ats.uiengine;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
+
+    static {
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+    }
 
     public static String getResourcesFolder() {
 

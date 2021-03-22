@@ -22,7 +22,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.IoUtils;
@@ -38,7 +39,7 @@ import com.axway.ats.environment.EnvironmentUnit;
 @PublicAtsApi
 public class FileEnvironmentUnit extends EnvironmentUnit {
 
-    private static final Logger log = Logger.getLogger(FileEnvironmentUnit.class);
+    private static final Logger log = LogManager.getLogger(FileEnvironmentUnit.class);
 
     private String              origFileName;
     private String              backupDirPath;

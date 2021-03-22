@@ -54,7 +54,8 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 import javax.mail.internet.MimePart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.bouncycastle.cms.CMSException;
 import org.bouncycastle.mail.smime.SMIMESigned;
 
@@ -116,7 +117,7 @@ public class MimePackage implements Package {
      * The logger - it is initialized in the constructor, so that child classes
      * can log in the appropriate logger and not in the MimePackage logger
      */
-    private static final Logger   log                                = Logger.getLogger(MimePackage.class);
+    private static final Logger   log                                = LogManager.getLogger(MimePackage.class);
 
     private static final String   CONTENT_TYPE_MULTIPART_SIGNED      = "multipart/signed";                 // TODO move in security package
 

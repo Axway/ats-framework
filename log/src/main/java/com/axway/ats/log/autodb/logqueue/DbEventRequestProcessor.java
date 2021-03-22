@@ -29,11 +29,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Layout;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
-import org.apache.log4j.spi.ThrowableInformation;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.ConnectionPool;
@@ -117,7 +116,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * The layout according to which to format events
      */
-    private Layout                        layout;
+    private Layout                layout;
 
     /**
      * The current state of the event processor
@@ -194,7 +193,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     /**
      * Do not use this constructor.
      * It is implemented only to be used, when a dummy db event request processor is needed to be created.
-     * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j.xml
+     * Currently the only case that is needed is when ActiveDbAppender config info is not found in log4j2.xml
      * */
     public DbEventRequestProcessor() {
 
@@ -349,7 +348,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             return;
         }
 
-        LoggingEvent event = eventRequest.getEvent();
+        LogEvent event = eventRequest.getEvent();
         if (event instanceof AbstractLoggingEvent) {
             AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
 
@@ -551,11 +550,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             return EVENT_PROCESSING_ERROR_MESSAGE.replace("EVENT_CLASS_PLACEHOLDER",
                                                           dbAppenderEvent.getClass().getName())
                                                  .replace("MESSAGE_CONTENT_PLACEHOLDER",
-                                                          "with message:\n\t" + (String) ((InsertMessageEvent) dbAppenderEvent).getMessage())
+                                                          "with message:\n\t" + (String) ((InsertMessageEvent) dbAppenderEvent).getMessage()
+                                                                                                                               .getFormattedMessage())
                                                  .replace("SENDER_LOCATION_PLACEHOLDER",
-                                                          (dbAppenderEvent.getLocationInformation().fullInfo != null)
-                                                                                                                      ? dbAppenderEvent.getLocationInformation().fullInfo
-                                                                                                                      : "null")
+                                                          (dbAppenderEvent.getSource() != null)
+                                                                                                ? dbAppenderEvent.getSource()
+                                                                                                                 .toString()
+                                                                                                : "null")
                                                  .replace("RUN_ID_PLACEHOLDER", this.getRunId() + "")
                                                  .replace("SUITE_ID_PLACEHOLDER", this.getSuiteId() + "")
                                                  .replace("TESTCASE_ID_PLACEHOLDER", this.getTestCaseId() + "");
@@ -564,9 +565,10 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                           dbAppenderEvent.getClass().getName())
                                                  .replace("MESSAGE_CONTENT_PLACEHOLDER", "")
                                                  .replace("SENDER_LOCATION_PLACEHOLDER",
-                                                          (dbAppenderEvent.getLocationInformation().fullInfo != null)
-                                                                                                                      ? dbAppenderEvent.getLocationInformation().fullInfo
-                                                                                                                      : "null")
+                                                          (dbAppenderEvent.getSource() != null)
+                                                                                                ? dbAppenderEvent.getSource()
+                                                                                                                 .toString()
+                                                                                                : "null")
                                                  .replace("RUN_ID_PLACEHOLDER", this.getRunId() + "")
                                                  .replace("SUITE_ID_PLACEHOLDER", this.getSuiteId() + "")
                                                  .replace("TESTCASE_ID_PLACEHOLDER", this.getTestCaseId() + "");
@@ -1080,7 +1082,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private void insertMessage( LogEventRequest eventRequest, boolean escapeHtml,
                                 boolean isRunMessage ) throws LoggingException {
 
-        LoggingEvent event = eventRequest.getEvent();
+        LogEvent event = eventRequest.getEvent();
 
         // If test case is not open, just return - this is necessary because components which are not aware of this
         // appender may try to log before the client has a chance of opening a test case.
@@ -1135,20 +1137,18 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
     }
 
-    private String getLoggingMesage( LoggingEvent event ) {
+    private String getLoggingMesage( LogEvent event ) {
 
-        Throwable throwable = null;
-        ThrowableInformation throwableInfo = event.getThrowableInformation();
-        if (throwableInfo != null && throwableInfo.getThrowable() != null) {
+        Throwable throwable = event.getThrown();
+        if (throwable != null) {
             // logging through methods like error(new Exception);
-            throwable = throwableInfo.getThrowable();
-        } else if (event.getMessage() instanceof Throwable) {
+        } else if (event.getMessage() instanceof Throwable) { // not sure if this will work!
             // logging through methods like error("some message", new Exception);
             throwable = (Throwable) event.getMessage();
         }
 
         // first format the message using the layout
-        String message = layout.format(event);
+        String message = new String(layout.toByteArray(event));// TODO if this is working!
         // then append the exception stack trace
         if (throwable != null) {
             message = getExceptionMsg(throwable, message);
@@ -1230,25 +1230,24 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
     }
 
-    private int convertMsgLevel( org.apache.log4j.Level level ) {
+    private int convertMsgLevel( org.apache.logging.log4j.Level level ) {
 
-        switch (level.toInt()) {
-            case Level.FATAL_INT:
-                return 1;
-            case Level.ERROR_INT:
-                return 2;
-            case Level.WARN_INT:
-                return 3;
-            case Level.INFO_INT:
-                return 4;
-            case Level.DEBUG_INT:
-                return 5;
-            case Level.TRACE_INT:
-                return 6;
-            case SystemLogLevel.SYSTEM_INT:
-                return 7;
-            default:
-                return 4;
+        if (level.intLevel() == Level.FATAL.intLevel()) {
+            return 1;
+        } else if (level.intLevel() == Level.ERROR.intLevel()) {
+            return 2;
+        } else if (level.intLevel() == Level.WARN.intLevel()) {
+            return 3;
+        } else if (level.intLevel() == Level.INFO.intLevel()) {
+            return 4;
+        } else if (level.intLevel() == Level.DEBUG.intLevel()) {
+            return 5;
+        } else if (level.intLevel() == Level.TRACE.intLevel()) {
+            return 6;
+        } else if (level.intLevel() == SystemLogLevel.SYSTEM_INT) {
+            return 7;
+        } else {
+            return 4;
         }
     }
 
@@ -1318,7 +1317,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                                                      : run.hostName;
 
                 // construct the new pending UpdateRunEvent
-                actualUpdateRunEvent = new UpdateRunEvent(userProvidedUpdateRunEvent.getFQNOfLoggerClass(),
+                actualUpdateRunEvent = new UpdateRunEvent(userProvidedUpdateRunEvent.getLoggerFqcn(),
                                                           (Logger) userProvidedUpdateRunEvent.getLogger(),
                                                           runName, osName, productName, versionName,
                                                           buildName, userNote, hostName);

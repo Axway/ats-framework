@@ -22,6 +22,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.axway.ats.core.log.AtsLog4jLogger;
 import com.axway.ats.log.autodb.exceptions.CheckpointAlreadyStartedException;
 import com.axway.ats.log.autodb.exceptions.CheckpointNotStartedException;
 import com.axway.ats.log.autodb.exceptions.LoadQueueAlreadyStartedException;
@@ -31,6 +32,10 @@ import com.axway.ats.log.autodb.exceptions.ThreadAlreadyRegisteredWithLoadQueueE
 import com.axway.ats.log.autodb.exceptions.ThreadNotRegisteredWithLoadQueue;
 
 public class Test_LoadQueueState {
+
+    static {
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+    }
 
     private static final String  NAME_THREAD_14000 = "thread-14000";
 

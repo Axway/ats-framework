@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,22 +19,18 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import com.axway.ats.environment.EnvironmentUnit;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
-    private final static Logger LOG = Logger.getLogger(BaseTest.class);
 
     static {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
-
-        //init log4j
-        BasicConfigurator.configure(appender);
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
+
+    private final static Logger LOG = LogManager.getLogger(BaseTest.class);
 
     protected String getTempBackupDir(
                                        EnvironmentUnit env ) throws Exception {

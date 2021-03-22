@@ -17,7 +17,8 @@ package com.axway.ats.core.filesystem.snapshot.types;
 
 import java.io.Serializable;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -37,7 +38,7 @@ public class FileSnapshot implements Serializable {
 
     private static final long       serialVersionUID = 1L;
 
-    private static final Logger     log              = Logger.getLogger(FileSnapshot.class);
+    private static final Logger     log              = LogManager.getLogger(FileSnapshot.class);
 
     // list of important file attributes
     protected String                path;

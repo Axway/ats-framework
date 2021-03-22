@@ -17,11 +17,12 @@ package com.axway.ats.agent.core.templateactions.model.matchers;
 
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class TextBodyMatcher extends ResponseMatcher {
 
-    private static final Logger log              = Logger.getLogger(TextBodyMatcher.class);
+    private static final Logger log              = LogManager.getLogger(TextBodyMatcher.class);
 
     private static final long   serialVersionUID = 1;
 

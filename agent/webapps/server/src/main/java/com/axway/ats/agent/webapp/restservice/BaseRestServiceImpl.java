@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ public class BaseRestServiceImpl {
      * and is discarded again when initializing DB connection if it has expired.
     */
 
-    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
+    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j2.xml **/
     private AtsDbLogger                       dbLog    = AtsDbLogger.getLogger(BaseRestServiceImpl.class.getName(),
                                                                                true);
 

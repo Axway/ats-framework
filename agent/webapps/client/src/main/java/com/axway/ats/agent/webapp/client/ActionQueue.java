@@ -21,7 +21,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -40,7 +41,7 @@ import com.axway.ats.core.utils.HostUtils;
 @PublicAtsApi
 public class ActionQueue {
 
-    private static final Logger      log            = Logger.getLogger(ActionQueue.class);
+    private static final Logger      log            = LogManager.getLogger(ActionQueue.class);
 
     // queue instances
     private static List<ActionQueue> queueInstances = new ArrayList<ActionQueue>();

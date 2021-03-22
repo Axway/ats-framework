@@ -17,7 +17,8 @@ package com.axway.ats.core.process;
 
 import java.lang.reflect.Field;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jvnet.winp.WinProcess;
 
 import com.axway.ats.common.process.ProcessExecutorException;
@@ -30,7 +31,7 @@ import com.axway.ats.common.system.OperatingSystemType;
  */
 public class ProcessUtils {
 
-    private static final Logger log = Logger.getLogger(ProcessUtils.class);
+    private static final Logger log = LogManager.getLogger(ProcessUtils.class);
 
     private Process             theProcess;
     private String              commandDescription;

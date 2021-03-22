@@ -36,7 +36,8 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.exceptions.JmsMessageException;
 import com.axway.ats.action.jms.model.connections.ManagedConnection;
@@ -51,7 +52,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class JmsClient {
 
-    private static final Logger           log         = Logger.getLogger(JmsClient.class);
+    private static final Logger           log         = LogManager.getLogger(JmsClient.class);
 
     private static InitialContext         defaultStaticInitialcontext;
     private static String                 defaultStaticConnectionFactoryName;

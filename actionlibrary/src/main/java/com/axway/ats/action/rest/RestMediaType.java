@@ -20,7 +20,8 @@ import java.util.Map;
 
 import javax.ws.rs.core.MediaType;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.utils.StringUtils;
@@ -31,7 +32,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class RestMediaType {
 
-    private static final Logger log                         = Logger.getLogger(RestMediaType.class);
+    private static final Logger log                         = LogManager.getLogger(RestMediaType.class);
 
     /**
      * text/plain

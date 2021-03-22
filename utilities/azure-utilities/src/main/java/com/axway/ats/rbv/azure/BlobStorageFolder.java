@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.azure.BlobInfo;
 import com.axway.ats.action.azure.BlobStorageOperations;
@@ -39,7 +40,7 @@ import com.axway.ats.rbv.storage.Matchable;
  * */
 public class BlobStorageFolder implements Matchable {
 
-    private static final Logger        log = Logger.getLogger(BlobStorageFolder.class);
+    private static final Logger        log = LogManager.getLogger(BlobStorageFolder.class);
 
     private boolean                    isOpen;
     private String                     containerName;

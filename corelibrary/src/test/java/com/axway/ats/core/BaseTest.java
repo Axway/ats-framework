@@ -15,16 +15,11 @@
  */
 package com.axway.ats.core;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
 
     static {
-        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
-
-        //init log4j
-        BasicConfigurator.configure(appender);
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 }

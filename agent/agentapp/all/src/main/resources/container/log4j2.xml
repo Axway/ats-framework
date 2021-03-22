@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration
+	xmlns="http://logging.apache.org/log4j/2.0/config">
+
+	<Appenders>
+		<!-- Console appender suitable for running agent in a Docker container -->
+		<Console name="STDOUT" target="SYSTEM_OUT">
+			<PatternLayout
+				pattern="%-5p %d{HH:mm:ss:SSS} %c{2}: %m%n" />
+			<NoSystemLevelEventsFilter />
+		</Console>
+	</Appenders>
+
+	<Loggers>
+		<!-- When needed to dump content <logger name="org.apache.http.wire"> <level 
+			value="debug" /> </logger> -->
+
+		<logger name="org.mortbay">
+			<level value="error" />
+			<appender-ref ref="STDOUT" />
+		</logger>
+
+		<!-- For debugging purposes <logger name="com.amazonaws.request"> <level 
+			value="debug" /> </logger> <logger name="com.amazonaws.response"> <level 
+			value="debug" /> </logger> -->
+
+		<!-- Root logger configuration -->
+		<Root level="info">
+			<AppenderRef ref="STDOUT" />
+		</Root>
+	</Loggers>
+
+</Configuration>

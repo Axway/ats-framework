@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,12 +15,11 @@
  */
 package com.axway.ats.harness.config;
 
-import com.axway.ats.core.utils.HostUtils;
 import org.junit.Test;
 
 import com.axway.ats.config.exceptions.NullOrEmptyConfigurationPropertyException;
+import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.harness.BaseTest;
-import com.axway.ats.harness.config.TestBox;
 
 public class Test_TestBox extends BaseTest {
 

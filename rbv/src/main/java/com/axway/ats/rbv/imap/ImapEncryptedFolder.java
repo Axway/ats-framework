@@ -18,7 +18,8 @@ package com.axway.ats.rbv.imap;
 import javax.mail.Store;
 import javax.mail.internet.MimeMessage;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.objects.MimePackage;
 import com.axway.ats.action.objects.model.Package;
@@ -27,7 +28,7 @@ import com.axway.ats.rbv.model.RbvStorageException;
 
 public class ImapEncryptedFolder extends ImapFolder {
 
-    private static Logger    log = Logger.getLogger(ImapEncryptedFolder.class);
+    private static Logger    log = LogManager.getLogger(ImapEncryptedFolder.class);
 
     private PackageEncryptor packageEncryptor;
 

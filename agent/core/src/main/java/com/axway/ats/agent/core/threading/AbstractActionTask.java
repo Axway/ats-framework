@@ -111,7 +111,9 @@ public abstract class AbstractActionTask implements Runnable {
 
     /**
      * @param caller the remote caller
-     * @param actionInvokers list of action invokers
+     * @param queueName name of the Load queue
+     * @param threadsManager manager of threads
+     * @param itManager iterations
      * @param listeners
      * @throws ActionExecutionException
      * @throws NoCompatibleMethodFoundException

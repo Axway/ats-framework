@@ -18,7 +18,8 @@ package com.axway.ats.framework.examples.vm.actions;
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * A basic ATS Action
@@ -35,7 +36,7 @@ import org.apache.log4j.Logger;
 public class SimpleActions {
 
     // we can use this logger in order to log some messages
-    private static final Logger log = Logger.getLogger(SimpleActions.class);
+    private static final Logger log = LogManager.getLogger(SimpleActions.class);
 
     // Used to demonstrate how can call many actions and they can all operated on same data(session data alike)
     private Person person;

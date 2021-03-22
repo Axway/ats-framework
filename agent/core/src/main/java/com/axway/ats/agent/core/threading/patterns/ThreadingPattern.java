@@ -18,7 +18,8 @@ package com.axway.ats.agent.core.threading.patterns;
 import java.io.Serializable;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.threading.patterns.model.StartPattern;
 import com.axway.ats.common.PublicAtsApi;
@@ -79,7 +80,7 @@ public abstract class ThreadingPattern implements StartPattern, Serializable {
 
         this.intervalBetweenIterations = intervalBetweenIterations;
 
-        this.log = Logger.getLogger(this.getClass());
+        this.log = LogManager.getLogger(this.getClass());
 
         if (minIntervalBetweenIterations != -1) {
             // user specified a varying interval

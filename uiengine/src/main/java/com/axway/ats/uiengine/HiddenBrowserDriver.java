@@ -19,7 +19,8 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver.TargetLocator;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
@@ -51,7 +52,7 @@ import com.gargoylesoftware.htmlunit.util.WebConnectionWrapper;
 @PublicAtsApi
 public class HiddenBrowserDriver extends AbstractHtmlDriver {
 
-    private static Logger      log                    = Logger.getLogger(HiddenBrowserDriver.class);
+    private static Logger      log                    = LogManager.getLogger(HiddenBrowserDriver.class);
 
     public static final String ALLOW_META_REFRESH_TAG = "htmlunit.allow.meta.refresh.tag";
 

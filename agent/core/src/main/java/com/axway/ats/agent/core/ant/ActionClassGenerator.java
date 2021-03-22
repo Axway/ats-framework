@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2020 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,10 +33,12 @@ import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.PatternLayout;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.appender.ConsoleAppender;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.apache.tools.ant.BuildException;
 import org.xml.sax.SAXException;
 
@@ -50,14 +52,30 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 
+/**
+ * Used to generate server and client stub classes for @Action methods.
+ */
 class ActionClassGenerator {
 
     static {
-        PatternLayout layout = new PatternLayout("%m%n");
-        BasicConfigurator.configure(new ConsoleAppender(layout));
+
+        // Currently invoked from Ant build task so needs to be configured
+        PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout
+                                                                                 .newBuilder()
+                                                                                 .withPattern("%-5p %d{HH:MM:ss} %c{2}: %m%n")
+                                                                                 .build();
+        ConsoleAppender appender = ConsoleAppender.newBuilder().setName("ConsoleAppender").setLayout(layout).build();
+
+        //init log4j2
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        appender.start();
+        config.addAppender(appender);
+        context.updateLoggers();
+
     }
 
-    private static final Logger               log            = Logger.getLogger(ActionClassGenerator.class);
+    private static final Logger               log            = LogManager.getLogger(ActionClassGenerator.class);
 
     private final static String               LINE_SEPARATOR = AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
 

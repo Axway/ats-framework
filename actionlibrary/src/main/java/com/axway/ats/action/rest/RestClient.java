@@ -57,8 +57,10 @@ import org.apache.http.impl.conn.ManagedHttpClientConnectionFactory;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
@@ -126,7 +128,7 @@ public class RestClient {
     private static final String       APACHE_HTTP_HEADERS_LOGGER_NAME    = "org.apache.http.headers";
     private static final String       APACHE_HTTP_WIRE_LOGGER_NAME       = "org.apache.http.wire";
 
-    private static final Logger       log                                = Logger.getLogger(RestClient.class);
+    private static final Logger       log                                = LogManager.getLogger(RestClient.class);
 
     private static final String       COOKIE_HEADER_VALUE_DELIMITER      = "; ";
 
@@ -1272,8 +1274,8 @@ public class RestClient {
             if (isApache) {
 
                 // configure wire logging
-                Logger headersLogger = Logger.getLogger(APACHE_HTTP_HEADERS_LOGGER_NAME);
-                Logger wireLogger = Logger.getLogger(APACHE_HTTP_WIRE_LOGGER_NAME);
+                Logger headersLogger = LogManager.getLogger(APACHE_HTTP_HEADERS_LOGGER_NAME);
+                Logger wireLogger = LogManager.getLogger(APACHE_HTTP_WIRE_LOGGER_NAME);
 
                 if (headersLogger.isDebugEnabled() || wireLogger.isDebugEnabled()) {
                     if (!verbosityLevelMessageLogged) {
@@ -1289,11 +1291,11 @@ public class RestClient {
                     }
                 } else {
                     if ( (this.debugLevel & RESTDebugLevel.ALL) == RESTDebugLevel.ALL) {
-                        headersLogger.setLevel(Level.OFF);
-                        wireLogger.setLevel(Level.DEBUG);
+                        Configurator.setLevel(headersLogger.getName(), Level.OFF);
+                        Configurator.setLevel(wireLogger.getName(), Level.DEBUG);
                     } else if ( (this.debugLevel & RESTDebugLevel.BODY) == RESTDebugLevel.BODY) {
-                        headersLogger.setLevel(Level.OFF);
-                        wireLogger.setLevel(Level.OFF);
+                        Configurator.setLevel(headersLogger.getName(), Level.OFF);
+                        Configurator.setLevel(wireLogger.getName(), Level.OFF);
                         if (!bodyOnlyDebugLevelMessageLogged) {
                             bodyOnlyDebugLevelMessageLogged = true;
                             log.info("Debug level is set to BODY only. "
@@ -1301,14 +1303,14 @@ public class RestClient {
                                      + APACHE_HTTP_WIRE_LOGGER_NAME + "' Log4J loggers will be disabled.");
                         }
                     } else if ( (this.debugLevel & RESTDebugLevel.HEADERS) == RESTDebugLevel.HEADERS) {
-                        headersLogger.setLevel(Level.DEBUG);
-                        wireLogger.setLevel(Level.OFF);
+                        Configurator.setLevel(headersLogger.getName(), Level.DEBUG);
+                        Configurator.setLevel(wireLogger.getName(), Level.OFF);
                     } else if ( (this.debugLevel & RESTDebugLevel.TARGET_URI) == RESTDebugLevel.TARGET_URI) {
-                        headersLogger.setLevel(Level.OFF);
-                        wireLogger.setLevel(Level.OFF);
+                        Configurator.setLevel(headersLogger.getName(), Level.OFF);
+                        Configurator.setLevel(wireLogger.getName(), Level.OFF);
                     } else if ( (this.debugLevel & RESTDebugLevel.NONE) == RESTDebugLevel.NONE) {
-                        headersLogger.setLevel(Level.OFF);
-                        wireLogger.setLevel(Level.OFF);
+                        Configurator.setLevel(headersLogger.getName(), Level.OFF);
+                        Configurator.setLevel(wireLogger.getName(), Level.OFF);
                     }
                 }
 
@@ -1787,7 +1789,7 @@ public class RestClient {
 
     private class RequestFilter implements ClientRequestFilter {
 
-        private Logger log = Logger.getLogger(RestClient.class);
+        private Logger log = LogManager.getLogger(RestClient.class);
 
         @Override
         public void filter( ClientRequestContext context ) throws IOException {

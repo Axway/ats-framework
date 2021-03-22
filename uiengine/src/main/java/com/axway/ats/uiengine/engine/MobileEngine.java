@@ -18,7 +18,8 @@ package com.axway.ats.uiengine.engine;
 import java.time.Duration;
 
 import io.appium.java_client.ios.IOSDriver;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebElement;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -52,7 +53,7 @@ import io.appium.java_client.android.nativekey.KeyEvent;
  */
 @PublicAtsApi
 public class MobileEngine extends AbstractEngine {
-    private static final Logger LOG = Logger.getLogger(MobileEngine.class);
+    private static final Logger LOG = LogManager.getLogger(MobileEngine.class);
 
     private AppiumDriver<? extends WebElement> appiumDriver;
 

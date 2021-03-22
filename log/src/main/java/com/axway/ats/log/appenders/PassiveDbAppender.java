@@ -16,13 +16,26 @@
 
 package com.axway.ats.log.appenders;
 
-import java.util.Enumeration;
+import java.io.Serializable;
+import java.util.Map;
 
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggingEvent;
+import org.apache.logging.log4j.core.Appender;
+import org.apache.logging.log4j.core.Core;
+import org.apache.logging.log4j.core.Filter;
+import org.apache.logging.log4j.core.Layout;
+import org.apache.logging.log4j.core.LogEvent;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.plugins.Plugin;
+import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
+import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
+import org.apache.logging.log4j.core.config.plugins.PluginElement;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidHost;
+import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidPort;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.events.JoinTestCaseEvent;
@@ -40,6 +53,7 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  *  - INSERT into the testcase messages, statistics etc.
  *  - LEAVE testcase when it is over
  */
+@Plugin( name = "PassiveDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class PassiveDbAppender extends AbstractDbAppender {
 
     /* 
@@ -48,14 +62,256 @@ public class PassiveDbAppender extends AbstractDbAppender {
      */
     private String caller;
 
+    @PluginBuilderFactory
+    public static PassiveDbAppenderBuilder newBuilder() {
+
+        return new PassiveDbAppenderBuilder();
+    }
+
+    public static class PassiveDbAppenderBuilder
+            implements org.apache.logging.log4j.core.util.Builder<PassiveDbAppender> {
+
+        @PluginBuilderAttribute( "name")
+        @Required( message = "PassiveDbAppender: no name provided")
+
+        private String         name;
+
+        @PluginElement( "Layout")
+        private Layout<String> layout;
+
+        @PluginElement( "Filter")
+        private Filter         filter;
+
+        @PluginBuilderAttribute( "host")
+        @Required( message = "PassiveDbAppender: no host provided")
+        @ValidHost
+        private String         host;
+
+        @PluginBuilderAttribute( "port")
+        @Required( message = "PassiveDbAppender: no port provided")
+        @ValidPort
+        private int            port              = -1;
+
+        @PluginBuilderAttribute( "database")
+        @Required( message = "PassiveDbAppender: no database provided")
+        private String         database;
+
+        @PluginBuilderAttribute( "user")
+        @Required( message = "PassiveDbAppender: no user provided")
+        private String         user;
+
+        @PluginBuilderAttribute( "password")
+        @Required( message = "PassiveDbAppender: no password provided")
+        private String         password;
+
+        @PluginBuilderAttribute( "driver")
+        private String         driver;
+
+        // Note that only "batch" value is supported
+        @PluginBuilderAttribute( "mode")
+        private String         mode;
+
+        // Note that this is supported only if mode = 'batch'
+        @PluginBuilderAttribute( "chunkSize")
+        private String         chunkSize;
+
+        @PluginBuilderAttribute( "events")
+        private int            events;
+
+        @PluginBuilderAttribute( "enableCheckpoints")
+        private boolean        enableCheckpoints = true;
+
+        public String getName() {
+
+            return name;
+        }
+
+        public PassiveDbAppenderBuilder setName( String name ) {
+
+            this.name = name;
+
+            return this;
+        }
+
+        public Layout<String> getLayout() {
+
+            return layout;
+        }
+
+        public PassiveDbAppenderBuilder setLayout( Layout<String> layout ) {
+
+            this.layout = layout;
+
+            return this;
+        }
+
+        public Filter getFilter() {
+
+            return filter;
+        }
+
+        public PassiveDbAppenderBuilder setFilter( Filter filter ) {
+
+            this.filter = filter;
+
+            return this;
+        }
+
+        public String getHost() {
+
+            return host;
+        }
+
+        public PassiveDbAppenderBuilder setHost( String host ) {
+
+            this.host = host;
+
+            return this;
+        }
+
+        public int getPort() {
+
+            return port;
+        }
+
+        public PassiveDbAppenderBuilder setPort( int port ) {
+
+            this.port = port;
+
+            return this;
+        }
+
+        public String getDatabase() {
+
+            return database;
+        }
+
+        public PassiveDbAppenderBuilder setDatabase( String database ) {
+
+            this.database = database;
+
+            return this;
+        }
+
+        public String getUser() {
+
+            return user;
+        }
+
+        public PassiveDbAppenderBuilder setUser( String user ) {
+
+            this.user = user;
+
+            return this;
+        }
+
+        public String getPassword() {
+
+            return password;
+        }
+
+        public PassiveDbAppenderBuilder setPassword( String password ) {
+
+            this.password = password;
+
+            return this;
+        }
+
+        public String getDriver() {
+
+            return driver;
+        }
+
+        public PassiveDbAppenderBuilder setDriver( String driver ) {
+
+            this.driver = driver;
+
+            return this;
+        }
+
+        public String getMode() {
+
+            return mode;
+        }
+
+        public PassiveDbAppenderBuilder setMode( String mode ) {
+
+            this.mode = mode;
+
+            return this;
+        }
+
+        public String getChunkSize() {
+
+            return chunkSize;
+        }
+
+        public PassiveDbAppenderBuilder setChunkSize( String chunkSize ) {
+
+            this.chunkSize = chunkSize;
+
+            return this;
+        }
+
+        public int getEvents() {
+
+            return events;
+        }
+
+        public PassiveDbAppenderBuilder setEvents( int events ) {
+
+            this.events = events;
+
+            return this;
+        }
+
+        public boolean getEnableCheckpoints() {
+
+            return this.enableCheckpoints;
+        }
+
+        public PassiveDbAppenderBuilder setEnableCheckpoints( boolean enableCheckpoints ) {
+
+            this.enableCheckpoints = enableCheckpoints;
+
+            return this;
+        }
+
+        @Override
+        public PassiveDbAppender build() {
+
+            DbAppenderConfiguration appenderConfiguration = new DbAppenderConfiguration();
+            appenderConfiguration.setHost(this.host);
+            if (port == -1) {
+                appenderConfiguration.setPort(null);
+            } else {
+                appenderConfiguration.setPort(this.port + "");
+            }
+            appenderConfiguration.setDatabase(this.database);
+            appenderConfiguration.setUser(this.user);
+            appenderConfiguration.setPassword(this.password);
+            appenderConfiguration.setMode(this.mode);
+            appenderConfiguration.setDriver(this.driver);
+            appenderConfiguration.setChunkSize(this.chunkSize);
+            appenderConfiguration.setEnableCheckpoints(enableCheckpoints);
+            appenderConfiguration.setMaxNumberLogEvents(this.events + "");
+            // Note: logging threshold is set in the parent constructor
+            return new PassiveDbAppender(ThreadsPerCaller.getCaller(), name, filter, layout, appenderConfiguration);
+        }
+
+    }
+
     /**
      * Constructor
      */
-    public PassiveDbAppender( String caller ) {
+    public PassiveDbAppender( String caller, String name, Filter filter, Layout<? extends Serializable> layout,
+                              DbAppenderConfiguration appenderConfiguration ) {
 
-        super();
+        super(name, filter, layout, appenderConfiguration);
 
         this.caller = caller;
+
+        initializeDbLogging();
     }
 
     @Override
@@ -69,21 +325,12 @@ public class PassiveDbAppender extends AbstractDbAppender {
         return caller;
     }
 
-    @Override
-    public void activateOptions() {
-
-        super.activateOptions();
-
-        // create the queue logging thread and the DbEventRequestProcessor
-        initializeDbLogging();
-    }
-
     /* (non-Javadoc)
-     * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+     * @see org.apache.logging.log4j.core.appender.AbstractAppender#append(org.apache.logging.log4j.core.LogEvent)
      */
     @Override
-    protected void append(
-                           LoggingEvent event ) {
+    public void append(
+                        LogEvent event ) {
 
         if (!doWeServiceThisCaller()) {
             return;
@@ -157,18 +404,23 @@ public class PassiveDbAppender extends AbstractDbAppender {
      *
      * @return the current DB appender instance
      */
-    @SuppressWarnings( "unchecked")
     public static PassiveDbAppender getCurrentInstance(
                                                         String caller ) {
 
-        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
-        while (appenders.hasMoreElements()) {
-            Appender appender = appenders.nextElement();
+        final LoggerContext context = LoggerContext.getContext(false);
+        final Configuration config = context.getConfiguration();
+        Map<String, Appender> appenders = config.getAppenders();
+        // there is a method called -> context.getConfiguration().getAppender(java.lang.String name)
+        // maybe we should use this one to obtain Active and Passive DB appenders?
+        if (appenders != null && appenders.size() > 0) {
+            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
+                Appender appender = entry.getValue();
 
-            if (appender instanceof PassiveDbAppender) {
-                PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
-                if (passiveAppender.getCaller().equals(caller)) {
-                    return passiveAppender;
+                if (appender instanceof PassiveDbAppender) {
+                    PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
+                    if (passiveAppender.getCaller().equals(caller)) {
+                        return passiveAppender;
+                    }
                 }
             }
         }

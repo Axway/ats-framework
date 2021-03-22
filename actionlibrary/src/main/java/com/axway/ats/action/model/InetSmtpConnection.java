@@ -51,7 +51,8 @@ import javax.security.sasl.Sasl;
 import javax.security.sasl.SaslClient;
 import javax.security.sasl.SaslException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.exceptions.SmtpException;
 
@@ -94,7 +95,7 @@ public class InetSmtpConnection {
     /**
      * The logger used for SMTP protocol traces.
      */
-    public final Logger           log           = Logger.getLogger(this.getClass());
+    public final Logger           log           = LogManager.getLogger(this.getClass());
 
     /**
      * The underlying socket used for communicating with the server.

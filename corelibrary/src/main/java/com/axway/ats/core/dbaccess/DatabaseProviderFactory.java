@@ -23,7 +23,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -53,7 +54,7 @@ import com.axway.ats.core.utils.XmlUtils;
  */
 public class DatabaseProviderFactory {
 
-    private static final Logger          log                         = Logger.getLogger(DatabaseProviderFactory.class);
+    private static final Logger          log                         = LogManager.getLogger(DatabaseProviderFactory.class);
 
     private static Map<String, String[]> dbProviders                 = null;
 

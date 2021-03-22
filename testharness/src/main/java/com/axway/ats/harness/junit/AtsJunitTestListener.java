@@ -19,7 +19,8 @@ import java.lang.reflect.Method;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Ignore;
 import org.junit.runner.Description;
 import org.junit.runner.Result;
@@ -44,7 +45,7 @@ import com.axway.ats.log.model.TestCaseResult;
 @PublicAtsApi
 public class AtsJunitTestListener extends RunListener {
 
-    private static final Logger      log                              = Logger.getLogger(AtsJunitTestListener.class);
+    private static final Logger      log                              = LogManager.getLogger(AtsJunitTestListener.class);
 
     /*
      * skip checking whether ActiveDbAppender is attached in order for test execution to proceed

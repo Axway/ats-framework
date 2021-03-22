@@ -19,7 +19,8 @@ package com.axway.ats.rbv.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
@@ -34,7 +35,7 @@ import com.axway.ats.rbv.rules.Rule;
 public class MetaExecutor extends BasicExecutor {
 
     private boolean             endOnFirstMatch = true;
-    private static final Logger log             = Logger.getLogger(MetaExecutor.class);
+    private static final Logger log             = LogManager.getLogger(MetaExecutor.class);
 
     /**
      * Evaluates the {@link MetaData} received as a parameter against the rules

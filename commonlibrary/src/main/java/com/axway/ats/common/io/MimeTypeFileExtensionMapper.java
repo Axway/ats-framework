@@ -17,11 +17,12 @@ package com.axway.ats.common.io;
 
 import java.util.Properties;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class MimeTypeFileExtensionMapper {
 
-    private final static Logger     log                     = Logger.getLogger(MimeTypeFileExtensionMapper.class);
+    private final static Logger     log                     = LogManager.getLogger(MimeTypeFileExtensionMapper.class);
 
     public final static String      GZIP_CONTENT_ENCODING   = "gzip";
     public final static String      GZIP_FILE_EXTENSION     = "gzip";

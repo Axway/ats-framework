@@ -19,7 +19,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -38,7 +39,7 @@ import com.axway.ats.log.AtsDbLogger;
 
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                log = Logger.getLogger(TestcaseStateListener.class);
+    private static Logger                log = LogManager.getLogger(TestcaseStateListener.class);
 
     // list of configured agents
     private static List<String>          configuredAgents;
@@ -150,7 +151,8 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
                             throw new AgentException(ae.getMessage());
                         } catch (Exception e) {
-                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": " + e.getMessage(), e);
+                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": "
+                                                     + e.getMessage(), e);
                         }
 
                         configuredAgents.add(atsAgent);

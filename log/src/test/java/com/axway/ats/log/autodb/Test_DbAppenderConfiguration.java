@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,15 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import com.axway.ats.log.autodb.DbAppenderConfiguration;
+import com.axway.ats.core.log.AtsLog4jLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 
 public class Test_DbAppenderConfiguration {
 
+    static {
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+    }
+    
     @Test
     public void gettersAndSettersPositive() {
 

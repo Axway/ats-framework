@@ -21,7 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.ConfigurationSettings;
 import com.axway.ats.agent.core.configuration.TemplateActionsConfigurator;
@@ -51,7 +52,7 @@ import com.axway.ats.log.model.CheckpointResult;
  */
 public class TemplateActionMethod extends ActionMethod {
 
-    private static Logger     log                  = Logger.getLogger(TemplateActionMethod.class);
+    private static Logger     log                  = LogManager.getLogger(TemplateActionMethod.class);
 
     private String            actionClassName;                                                    // the java class name
     private String            actionMethodName;                                                   // the java method name

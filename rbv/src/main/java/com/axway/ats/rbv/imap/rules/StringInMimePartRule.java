@@ -26,7 +26,8 @@ import javax.mail.MessagingException;
 import javax.mail.internet.ContentType;
 import javax.mail.internet.MimePart;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.action.objects.MimePackage;
 import com.axway.ats.action.objects.model.PackageException;
@@ -37,7 +38,7 @@ import com.axway.ats.rbv.model.RbvException;
 
 public class StringInMimePartRule extends AbstractImapRule {
 
-    private static Logger       log               = Logger.getLogger(StringInMimePartRule.class);
+    private static Logger       log               = LogManager.getLogger(StringInMimePartRule.class);
 
     private String              expectedValue;
     private boolean             isValueRegularExpression;

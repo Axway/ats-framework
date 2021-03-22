@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  */
 package com.axway.ats.agent.core;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.ConsoleAppender;
-import org.apache.log4j.PatternLayout;
-
-import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
+import com.axway.ats.core.log.AtsLog4jLogger;
 
 public class BaseTest {
 
@@ -31,10 +27,6 @@ public class BaseTest {
     public final static String    RELATIVE_PATH_TO_TEST_SOURCES   = RELATIVE_PATH_TO_TESTS + "/java";
 
     static {
-        ConsoleAppender appender = new ConsoleAppender( new PatternLayout( "%-5p %d{HH:mm:ss-SSS} %c{2}: %m%n" ) );
-        appender.addFilter( new NoSystemLevelEventsFilter() );
-
-        //init log4j
-        BasicConfigurator.configure( appender );
+        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
     }
 }

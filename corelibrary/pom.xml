@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
@@ -16,12 +18,14 @@
     <properties>
         <!-- Apache FTP and FTPS Library. TODO: update to latest v3.7 -->
         <org.apache.commons.net.version>3.7.1</org.apache.commons.net.version>
-        <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, Error example: javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify -->
+        <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, 
+            Error example: javax.net.ssl.SSLException: closing inbound before receiving 
+            peer's close_notify -->
         <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
         <!-- jTDS dependency is defined in parent pom.xml -->
         <com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
-        <!-- Note that there is a possible issue to be monitored: Sometimes winp
-            is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
+        <!-- Note that there is a possible issue to be monitored: Sometimes 
+            winp is killing all processes on the machine. https://github.com/kohsuke/winp/issues/18 -->
         <org.jvnet.winp.version>1.23</org.jvnet.winp.version>
 
         <!-- PostgreSQL dependency is defined in parent pom.xml -->
@@ -61,8 +65,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-core</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.mail</groupId>
@@ -124,7 +128,7 @@
         <dependency>
             <groupId>com.oracle.jdbc</groupId>
             <artifactId>ojdbc7</artifactId>
-            <optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com
+            <optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com 
                 repo -->
             <exclusions>
                 <exclusion>
@@ -193,9 +197,18 @@
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
+        <dependency> <!-- Replacement of log4j:log4j:1.2.x -->
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-1.2-api</artifactId>
+        </dependency>
+        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP 
+                transfers -->
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>${com.jcraft.jsch.version}</version>
@@ -224,6 +237,29 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
+        </dependency>
+
+
+        <!-- All these dependencies are responsible for rerouting all SLF4J 
+            and JUL (Java Util logging) and JCL (Commons Logging) to Log4j2 And since almost all ATS submodules 
+            include this one, that why they are included here -->
+
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-slf4j-impl</artifactId>
+            <!-- artifactId>log4j-slf4j18-impl</artifactId -->
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jul</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-jcl</artifactId>
         </dependency>
 
     </dependencies>

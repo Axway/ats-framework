@@ -24,7 +24,8 @@ import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.xerces.parsers.DOMParser;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
@@ -43,7 +44,7 @@ import com.axway.ats.config.exceptions.ConfigurationException;
  */
 public class ConfigurationResource {
 
-    private static final Logger log = Logger.getLogger(ConfigurationResource.class);
+    private static final Logger log = LogManager.getLogger(ConfigurationResource.class);
 
     private Properties          properties;
 

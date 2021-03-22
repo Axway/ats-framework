@@ -21,7 +21,8 @@ package com.axway.ats.log.autodb.logqueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import org.apache.log4j.spi.LoggingEvent;
+
+import org.apache.logging.log4j.core.LogEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
@@ -97,7 +98,7 @@ public class QueueLoggerThread extends Thread {
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {
                     LoggingException le = (LoggingException) e;
-                    LoggingEvent event = logEventRequest.getEvent();
+                    LogEvent event = logEventRequest.getEvent();
                     if (event instanceof AbstractLoggingEvent) {
                         AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
                         LoggingEventType eventType = dbAppenderEvent.getEventType();
@@ -141,7 +142,7 @@ public class QueueLoggerThread extends Thread {
                                && !isUnableToConnect) {
                         // We do not log the no connectivity problem on each failure, we do it just once.
                         // This case is likely to happen on a remote Agent host without set DNS servers - in such
-                        // case providing FQDN in the log4j.xml makes the DB logging impossible
+                        // case providing FQDN in the log4j2.xml makes the DB logging impossible
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
                                                                          "Error processing log event"));
 

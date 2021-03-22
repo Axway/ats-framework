@@ -17,14 +17,15 @@ package com.axway.ats.rbv;
 
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.rbv.model.RbvException;
 
 public class SimpleMonitorListener implements MonitorListener {
 
-    private static final Logger log = Logger.getLogger(SimpleMonitorListener.class);
+    private static final Logger log = LogManager.getLogger(SimpleMonitorListener.class);
 
     private List<Monitor>       monitors;
     private int                 totalNumMonitors;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 
 import com.axway.ats.rbv.db.DbSearchTerm;
 import com.axway.ats.rbv.db.DbStorage;
@@ -37,6 +38,7 @@ import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.model.RbvStorageException;
 import com.axway.ats.rbv.storage.Matchable;
 
+@PowerMockIgnore("javax.management.*")
 public class Test_SimpleMonitorListener extends BaseTest {
     /*
      * Test failures history:

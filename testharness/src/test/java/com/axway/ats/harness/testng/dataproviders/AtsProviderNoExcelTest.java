@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 package com.axway.ats.harness.testng.dataproviders;
 
 import org.testng.annotations.Test;
-
-import com.axway.ats.harness.testng.dataproviders.AtsDataProvider;
 
 public class AtsProviderNoExcelTest {
 

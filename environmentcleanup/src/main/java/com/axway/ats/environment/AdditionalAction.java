@@ -15,7 +15,8 @@
  */
 package com.axway.ats.environment;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 
@@ -34,7 +35,7 @@ public abstract class AdditionalAction {
     public AdditionalAction( int sleepInterval ) {
 
         this.sleepInterval = sleepInterval;
-        this.log = Logger.getLogger(this.getClass());
+        this.log = LogManager.getLogger(this.getClass());
     }
 
     /**

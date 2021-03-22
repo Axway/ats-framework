@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,13 +30,13 @@ import javax.mail.Transport;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
 import com.axway.ats.log.report.exceptions.MailReportSendException;
-import com.axway.ats.log.report.model.MailReportSender;
-import com.axway.ats.log.report.model.ReportConfigurator;
 
+@PowerMockIgnore( "javax.management.*")
 @RunWith( PowerMockRunner.class)
 @PrepareForTest( { Transport.class, ReportConfigurator.class })
 public class Test_MailReportSender {

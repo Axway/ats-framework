@@ -71,7 +71,7 @@ public class LoadTestActionClass {
             threads.add( th.getName() );
         }
 
-        // Logger.getLogger( LoadTestActionClass.class ).info( sb ); // uncomment if need to debug the current threads
+        // LogManager.getLogger( LoadTestActionClass.class ).info( sb ); // uncomment if need to debug the current threads
 
         return threads;
     }

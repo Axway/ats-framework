@@ -17,7 +17,8 @@ package com.axway.ats.agent.core;
 
 import java.util.HashMap;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.agent.core.exceptions.ActionExecutionException;
 import com.axway.ats.agent.core.exceptions.AgentException;
@@ -31,7 +32,7 @@ import com.axway.ats.agent.core.model.EnvironmentCleanupHandler;
  */
 public class EnvironmentHandler {
 
-    private static final Logger                        log = Logger.getLogger(ActionHandler.class);
+    private static final Logger                        log = LogManager.getLogger(ActionHandler.class);
 
     private static EnvironmentHandler                  instance;
 

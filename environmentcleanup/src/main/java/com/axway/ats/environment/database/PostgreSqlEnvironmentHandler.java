@@ -36,7 +36,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -66,7 +67,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
     protected static final String GENERAL_INDEXES                           = "GENERAL_INDEXES";
     protected static final String CONSTRAINTS                               = "CONSTRAINTS";
 
-    private static final Logger   LOG                                       = Logger.getLogger(PostgreSqlEnvironmentHandler.class);
+    private static final Logger   LOG                                       = LogManager.getLogger(PostgreSqlEnvironmentHandler.class);
     private static final String   HEX_PREFIX_STR                            = "\\x";
 
     // used only when at least one table is about to be dropped
@@ -705,22 +706,61 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     /**
-     * Build full table name from schema and table.
-     * @param table table object
-     * @return Full SQL-friendly name "schema_name"."table_name"
+     * Build full table name from schema and table. Add quotes so it will work even for mixed-case names.
+     * @param table table object. Note that DbTable.getFullTableName() is not valid for PostgreSQL case.
+     * @return Full PostgreSQL-friendly name "schema_name"."table_name" which works not only for table named
+     *    "people_table" but also for "People_Table".
      */
-    private String getFullTableName( DbTable table ) {
+    static String getFullTableName( DbTable table ) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("\"");
-        if (StringUtils.isNullOrEmpty(table.getTableSchema())) {
-            sb.append("public");
-        } else {
-            sb.append(table.getTableSchema());
+        // schema quoting
+        String schema = table.getTableSchema();
+        if (StringUtils.isNullOrEmpty(schema)) {
+            schema = "public";
         }
-        sb.append("\".\"");
-        sb.append(table.getTableName());
-        sb.append("\"");
+        if (!schema.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (schema.endsWith("\"")) {
+                LOG.warn("Db schema name does not start with quote but ends with such. Check provided schema name: " + schema);
+                addEndingQuote = false;
+            }
+            sb.append("\"");
+            sb.append(schema);
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+
+        } else { // has leading quote
+            sb.append(schema);
+            if (!schema.endsWith("\"")) {
+                LOG.warn("Db schema name starts with quote but does not end with such. Check provided schema name: " + schema);
+                sb.append("\"");
+            }
+        }
+        sb.append(".");
+
+        // table name quoting
+        String tableName = table.getTableName();
+        if (!tableName.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (tableName.endsWith("\"")) {
+                LOG.warn("Db table name does not start with quote but ends with such. Check provided table name: " + tableName);
+                addEndingQuote = false;
+            }
+            sb.append("\"");
+            sb.append(tableName);
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+        } else { // has leading quote
+            sb.append(tableName);
+            if (!tableName.endsWith("\"")) {
+                LOG.warn("Db table name starts with quote but does not end with such. Check provided table name: " + tableName);
+                sb.append("\"");
+            }
+        }
+
         return sb.toString();
     }
 

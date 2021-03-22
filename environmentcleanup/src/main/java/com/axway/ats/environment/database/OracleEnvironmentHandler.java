@@ -34,7 +34,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.ColumnDescription;
@@ -72,7 +73,7 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
 
     }
 
-    private static final Logger log = Logger.getLogger(OracleEnvironmentHandler.class);
+    private static final Logger    log = LogManager.getLogger(OracleEnvironmentHandler.class);
 
     private List<TableConstraints> tablesConstraints;
 
@@ -241,11 +242,16 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                         if (column.isTypeBinary()) { // BLOB, CLOB, NCLOB
                             String varName = VAR_PREFIX + (variableIndex++);
                             String origValue = ((String) recordValue.getValue());
-                            long length = origValue.length();
+                            long length = (origValue != null)
+                                                              ? origValue.length()
+                                                              : -1;
                             stmtBlockBuilder.append(INDENTATION + varName + " := " + fieldValue + ";"
                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                            stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
-                                                    + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            // length == -1 means NULL object, so no need to create temporary blob/clob/nclob
+                            if (length != -1) {
+                                stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
+                                + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+                            }
                             String binaryMethod = "to_" + column.getType().toLowerCase();
                             if (length > MAX_BINARY_COLUMN_INSERT_LENGTH) {
                                 int currentBinaryIdx = 0;
