@@ -74,11 +74,11 @@
       <artifactId>ats-agent-core</artifactId>
       <version>${project.version}</version>
       <exclusions>
-        <!-- Remove exclusion after agent core is migrated to log4j2-->
-      	<exclusion> 
-      		<groupId>log4j</groupId>
-      		<artifactId>log4j</artifactId>
-      	</exclusion>
+        <!-- Remove exclusion after agent core is migrated to log4j2 -->
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
     <dependency>
@@ -92,11 +92,11 @@
       <version>${project.version}</version>
       <classifier>client</classifier>
       <exclusions>
-        <!-- Remove exclusion after agent core is migrated to log4j2-->
-      	<exclusion>
-      		<groupId>log4j</groupId>
-      		<artifactId>log4j</artifactId>
-      	</exclusion>
+        <!-- Remove exclusion after agent core is migrated to log4j2 -->
+        <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+        </exclusion>
       </exclusions>
     </dependency>
 

@@ -1,147 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<assembly
-	xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-    http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.2
-      http://maven.apache.org/xsd/assembly-1.1.2.xsd">
+<assembly xmlns="http://maven.apache.org/ASSEMBLY/2.1.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/ASSEMBLY/2.1.0 http://maven.apache.org/xsd/assembly-2.1.0.xsd">
 
-	<id>assemble-all</id>
+    <id>assemble-all</id>
 
-	<formats>
-		<format>zip</format>
-	</formats>
+    <formats>
+        <format>zip</format>
+    </formats>
 
-	<includeBaseDirectory>false</includeBaseDirectory>
+    <includeBaseDirectory>false</includeBaseDirectory>
 
-	<fileSets>
-		<fileSet>
-			<directory>src/main/resources/scripts</directory>
-			<outputDirectory>/</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<fileMode>0744</fileMode>
-			<directoryMode>0755</directoryMode>
-		</fileSet>
+    <fileSets>
+        <fileSet>
+            <directory>src/main/resources/scripts</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>agent.sh</include>
+            </includes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <fileMode>0754</fileMode> <!-- executable flag raised -->
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+        <fileSet>
+            <directory>src/main/resources/scripts</directory>
+            <outputDirectory>/</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <excludes>
+                <exclude>agent.sh</exclude>
+            </excludes>
+            <fileMode>0644</fileMode> <!-- no executable flag raised -->
+            <directoryMode>0755</directoryMode>
+        </fileSet>
 
-		<fileSet>
-			<directory>src/main/resources/container</directory>
-			<outputDirectory>/ats-agent/container</outputDirectory>
-			<includes>
-				<include>**</include>
-			</includes>
-			<useDefaultExcludes>true</useDefaultExcludes>
-			<fileMode>0644</fileMode>
-			<directoryMode>0755</directoryMode>
-		</fileSet>
-	</fileSets>
+        <fileSet>
+            <directory>src/main/resources/container</directory>
+            <outputDirectory>/ats-agent/container</outputDirectory>
+            <includes>
+                <include>**</include>
+            </includes>
+            <useDefaultExcludes>true</useDefaultExcludes>
+            <fileMode>0644</fileMode>
+            <directoryMode>0755</directoryMode>
+        </fileSet>
+    </fileSets>
 
-	<files>
-		<!-- <file> <source>src/main/resources/scripts/agent.sh</source> <outputDirectory>/</outputDirectory> 
-			<destName>agent.sh</destName> <fileMode>0774</fileMode> </file> -->
-		<!-- <file> <source>ats-agent-containerstarter-3.6.0-SNAPSHOT.jar</source> 
-			<outputDirectory>/ats-agent</outputDirectory> <destName>ats-agent-containerstarter.jar</destName> 
-			<fileMode>0664</fileMode> </file> -->
+    <files>
+        <!-- <file> <source>src/main/resources/scripts/agent.sh</source> <outputDirectory>/</outputDirectory>
+            <destName>agent.sh</destName> <fileMode>0774</fileMode> </file> -->
+        <!-- <file> <source>ats-agent-containerstarter-3.6.0-SNAPSHOT.jar</source>
+            <outputDirectory>/ats-agent</outputDirectory> <destName>ats-agent-containerstarter.jar</destName>
+            <fileMode>0664</fileMode> </file> -->
 
-	</files>
+    </files>
 
 
-	<dependencySets>
-		<dependencySet>
-			<outputDirectory>/ats-agent</outputDirectory>
-			<includes>
-				<include>com.axway.ats.framework.agent.standalone:ats-agent-standalone-containerstarter</include>
-			</includes>
-			<scope>provided</scope>
-			<outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
-			<!-- <outputFileNameMapping>ats-agent.jar</outputFileNameMapping> --><!-- old artifact name -->
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+    <dependencySets>
+        <dependencySet>
+            <outputDirectory>/ats-agent</outputDirectory>
+            <includes>
+                <include>com.axway.ats.framework.agent.standalone:ats-agent-standalone-containerstarter</include>
+            </includes>
+            <scope>provided</scope>
+            <outputFileNameMapping>${artifact.artifactId}.${artifact.extension}</outputFileNameMapping>
+            <!-- <outputFileNameMapping>ats-agent.jar</outputFileNameMapping> --><!-- old artifact name -->
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
-		<dependencySet>
-			<outputDirectory>/ats-agent/actions_dependencies/ats-monitor</outputDirectory>
-			<scope>provided</scope>
-			<includes>
-				<include>org.kaazing:sigar.dist</include>
-			</includes>
-			<!-- <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping> -->
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>true</useTransitiveDependencies>
-			<unpack>true</unpack>
-			<unpackOptions>
-				<excludes>
-					<exclude>sigar/log4j.jar</exclude>
-					<exclude>sigar/*.sigar*</exclude>
-				</excludes>
-			</unpackOptions>
-		</dependencySet>
+        <dependencySet>
+            <outputDirectory>/ats-agent/actions_dependencies/ats-monitor</outputDirectory>
+            <scope>provided</scope>
+            <includes>
+                <include>org.kaazing:sigar.dist</include>
+            </includes>
+            <!-- <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}</outputFileNameMapping> -->
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>true</useTransitiveDependencies>
+            <unpack>true</unpack>
+            <unpackOptions>
+                <excludes>
+                    <exclude>sigar/log4j.jar</exclude>
+                    <exclude>sigar/*.sigar*</exclude>
+                </excludes>
+            </unpackOptions>
+        </dependencySet>
 
-		<dependencySet>
-			<outputDirectory>/ats-agent/webapp</outputDirectory>
-			<includes>
-				<include>*:ats-agent-webapp-tomcatcontainer</include>
-			</includes>
-			<scope>provided</scope>
-			<outputFileNameMapping>agentapp.war</outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+        <dependencySet>
+            <outputDirectory>/ats-agent/webapp</outputDirectory>
+            <includes>
+                <include>*:ats-agent-webapp-tomcatcontainer</include>
+            </includes>
+            <scope>provided</scope>
+            <outputFileNameMapping>agentapp.war</outputFileNameMapping>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
         <!-- All of the Sigar objects (jar,dll,etc) are inside a zip archive
             which is unpacked in /ats-agent/actions_dependencies/ats-monitor/sigar.
             This separate step for Oshi is needed because we do not want the jar to be unpacked, but if included in the Sigar dependencySe, that is what will happen
          -->
-		<dependencySet>
-			<outputDirectory>/ats-agent/actions_dependencies/ats-monitor/oshi</outputDirectory>
-			<scope>provided</scope>
-			<includes>
-				<include>com.github.oshi:oshi-core</include>
-			</includes>
-			<outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
+        <dependencySet>
+            <outputDirectory>/ats-agent/actions_dependencies/ats-monitor/oshi</outputDirectory>
+            <scope>provided</scope>
+            <includes>
+                <include>com.github.oshi:oshi-core</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
-		<dependencySet>
-			<outputDirectory>/ats-agent/actions_dependencies/ats-systemoperations</outputDirectory>
-			<scope>provided</scope>
-			<includes>
-				<include>net.java.dev.jna:jna</include>
-				<include>net.java.dev.jna:jna-platform</include>
-				<include>org.dom4j:dom4j</include>
-			</includes>
-			<outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
+        <dependencySet>
+            <outputDirectory>/ats-agent/actions_dependencies/ats-systemoperations</outputDirectory>
+            <scope>provided</scope>
+            <includes>
+                <include>net.java.dev.jna:jna</include>
+                <include>net.java.dev.jna:jna-platform</include>
+                <include>org.dom4j:dom4j</include>
+            </includes>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
-		<dependencySet>
-			<outputDirectory>/ats-agent/webapp</outputDirectory>
-			<includes>
-				<include>*:ats-agent-webapp-tomcatcontainer</include>
-			</includes>
-			<scope>provided</scope>
-			<outputFileNameMapping>agentapp.war</outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+        <dependencySet>
+            <outputDirectory>/ats-agent/webapp</outputDirectory>
+            <includes>
+                <include>*:ats-agent-webapp-tomcatcontainer</include>
+            </includes>
+            <scope>provided</scope>
+            <outputFileNameMapping>agentapp.war</outputFileNameMapping>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
-		<dependencySet>
-			<outputDirectory>/ats-agent/actions</outputDirectory>
-			<includes>
-				<include>*:ats-agent-monitoring</include>
-				<include>*:ats-agent-systemoperations</include>
-			</includes>
-			<scope>provided</scope>
-			<outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
+        <dependencySet>
+            <outputDirectory>/ats-agent/actions</outputDirectory>
+            <includes>
+                <include>*:ats-agent-monitoring</include>
+                <include>*:ats-agent-systemoperations</include>
+            </includes>
+            <scope>provided</scope>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
         <dependencySet>
             <outputDirectory>/ats-agent/container</outputDirectory>
@@ -159,21 +168,21 @@
             <scope>provided</scope>
             <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
 
-		<dependencySet>
-			<outputDirectory>/ats-agent/endorsed</outputDirectory>
-			<includes>
-				<include>*:webservices-api</include>
-			</includes>
-			<scope>provided</scope>
-			<outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
+        <dependencySet>
+            <outputDirectory>/ats-agent/endorsed</outputDirectory>
+            <includes>
+                <include>*:webservices-api</include>
+            </includes>
+            <scope>provided</scope>
+            <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
-			<useProjectArtifact>true</useProjectArtifact>
-			<useTransitiveDependencies>false</useTransitiveDependencies>
-		</dependencySet>
-	</dependencySets>
+            <useProjectArtifact>true</useProjectArtifact>
+            <useTransitiveDependencies>false</useTransitiveDependencies>
+        </dependencySet>
+    </dependencySets>
 
 </assembly>

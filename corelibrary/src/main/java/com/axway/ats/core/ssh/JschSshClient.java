@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,7 @@ public class JschSshClient {
     private int                 port               = -1;
 
     private String              command;
+    private boolean             ptyEnabled = true;
 
     private StreamReader        stdoutThread;
     private StreamReader        stderrThread;
@@ -134,7 +135,7 @@ public class JschSshClient {
                 if (entry.getKey().startsWith("session.")) {
                     session.setConfig(entry.getKey().split("\\.")[1], entry.getValue());
                 } else if (!entry.getKey().startsWith("global.")) { // by default if global or session prefix is
-                                                                    // missing, we assume it is a session property
+                    // missing, we assume it is a session property
                     session.setConfig(entry.getKey(), entry.getValue());
                 }
             }
@@ -143,9 +144,9 @@ public class JschSshClient {
         } catch (Exception e) {
 
             throw new JschSshClientException(
-                                             e.getMessage() + "; Connection parameters are: user '" + user + "' at "
-                                             + host + " on port " + port,
-                                             e);
+                    e.getMessage() + "; Connection parameters are: user '" + user + "' at "
+                    + host + " on port " + port,
+                    e);
         }
     }
 
@@ -191,8 +192,9 @@ public class JschSshClient {
 
             execChannel.setCommand(command);
             execChannel.setInputStream(null);
-            execChannel.setPty(true); // Allocate a Pseudo-Terminal. Thus it supports login sessions. (eg. /bin/bash
-                                      // -l)
+            execChannel.setPty(
+                    ptyEnabled); // Allocate a Pseudo-Terminal. Thus it supports login sessions. (eg. /bin/bash
+            // -l)
 
             execChannel.connect(); // there is a bug in the other method channel.connect( TIMEOUT );
 
@@ -219,6 +221,11 @@ public class JschSshClient {
         }
 
         return -1;
+    }
+
+    public void setPtyEnabled( boolean ptyEnabled ) {
+
+        this.ptyEnabled = ptyEnabled;
     }
 
     /**
@@ -315,20 +322,20 @@ public class JschSshClient {
 
     class StreamReader extends Thread {
 
-        private final Logger     log;
+        private static final int    READ_BUFFER_SIZE          = 1024;
+        private static final int    READ_TIMEOUT              =
+                60 * 1000;                                  // in milliseconds
+        private static final int    MAX_STRING_SIZE           = 100000;                                     // max chars used to limit process output
+        private final        Logger log;
+        private final        String SKIPPED_CHARACTERS        = "... skipped characters ..."
+                                                                + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
+        private final        int    SKIPPED_CHARACTERS_LENGTH = SKIPPED_CHARACTERS.length();
 
-        private static final int READ_BUFFER_SIZE          = 1024;
-        private static final int READ_TIMEOUT              = 60 * 1000;                                  // in milliseconds
-        private static final int MAX_STRING_SIZE           = 100000;                                     // max chars used to limit process output
-        private final String     SKIPPED_CHARACTERS        = "... skipped characters ..."
-                                                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
-        private final int        SKIPPED_CHARACTERS_LENGTH = SKIPPED_CHARACTERS.length();
-
-        private StringBuilder    streamContent             = new StringBuilder();
-        private boolean          readFinished              = false;
-        private String           type;
-        private InputStream      is;
-        private Channel          channel;
+        private StringBuilder streamContent = new StringBuilder();
+        private boolean       readFinished  = false;
+        private String        type;
+        private InputStream   is;
+        private Channel       channel;
 
         StreamReader( InputStream is, Channel channel, String type ) {
 
@@ -355,8 +362,8 @@ public class JschSshClient {
                             int i = this.is.read(tmp, 0, READ_BUFFER_SIZE);
                             if (this.streamContent.length() > MAX_STRING_SIZE) {
                                 dataToLeave = this.streamContent
-                                                                .substring(this.streamContent.length()
-                                                                           - MAX_STRING_SIZE);
+                                        .substring(this.streamContent.length()
+                                                   - MAX_STRING_SIZE);
                                 this.streamContent.setLength(MAX_STRING_SIZE);
                                 this.streamContent.replace(0, SKIPPED_CHARACTERS_LENGTH, SKIPPED_CHARACTERS);
                                 this.streamContent.replace(SKIPPED_CHARACTERS_LENGTH,
@@ -408,8 +415,8 @@ public class JschSshClient {
                 }
                 if (!this.readFinished) {
                     throw new RuntimeException(
-                                               "The " + this.type + " was not read in " + READ_TIMEOUT / 1000
-                                               + " seconds");
+                            "The " + this.type + " was not read in " + READ_TIMEOUT / 1000
+                            + " seconds");
                 }
                 return this.streamContent.toString();
             }

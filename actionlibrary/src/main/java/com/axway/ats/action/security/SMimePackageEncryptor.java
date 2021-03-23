@@ -398,7 +398,8 @@ public class SMimePackageEncryptor implements PackageEncryptor {
 
                         signedMessage = (SMIMESigned) content;
                     } else if (content instanceof BASE64DecoderStream) {
-
+                        // com.sun.mail.util.BASE64DecoderStream - JavaMail API dependency. Seems still available
+                        //   in JavaMail 2.0 so not an issue if using other non-Oracle/OpenJDK JVMs
                         signedMessage = new SMIMESigned(decryptedMsg); // will throw exception if not signed
                     }
                 } catch (Exception e) {

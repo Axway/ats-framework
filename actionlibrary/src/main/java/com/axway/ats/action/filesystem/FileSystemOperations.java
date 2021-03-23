@@ -643,13 +643,21 @@ public class FileSystemOperations {
 
         // validate input parameters
         new Validator().validateMethodParameters(new Object[]{ filePath });
-
-        // execute action
         IFileSystemOperations operations = getOperationsImplementationFor(atsAgent);
-        operations.deleteFile(filePath);
 
-        // log the result of the operation
-        log.info("Successfully deleted " + filePath + getHostDescriptionSuffix());
+        if (doesFileExist(filePath)) {
+
+            operations.deleteFile(filePath);
+
+            // log the result of the operation
+            log.info("Successfully deleted " + filePath + getHostDescriptionSuffix());
+
+        } else {
+            String message =
+                    "Nothing to delete since file '" + filePath + "' does not exist " + getHostDescriptionSuffix();
+            log.info(message);
+        }
+
     }
 
     /**

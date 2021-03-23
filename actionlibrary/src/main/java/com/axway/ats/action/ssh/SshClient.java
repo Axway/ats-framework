@@ -19,6 +19,7 @@ import java.io.Closeable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.ssh.JschSshClient;
 import com.jcraft.jsch.JSch;
@@ -42,7 +43,7 @@ public class SshClient implements Closeable {
     private String              user;
     private String              password;
     private int                 port;
-
+    private boolean             ptyEnabled = false;
     private Map<String, String> sshClientConfigurationProperties;
 
     /**
@@ -90,7 +91,7 @@ public class SshClient implements Closeable {
      * equivalent to {@link Session#setConfig(String, String)}, example
      * <strong>session.StrictHostKeyChecking</strong>=no <br> Note that if there is no global. or session. prefix, the
      * property is assumed to be a session one</li> </ul> <p/>
-     * 
+     *
      * @param key configuration key
      * @param value configuration value
      */
@@ -117,13 +118,18 @@ public class SshClient implements Closeable {
      */
     @PublicAtsApi
     public void execute(
-                         String command ) {
+            String command ) {
 
         sshClient = createNewSshClient();
 
         sshClient.connect(user, password, host, port);
 
         sshClient.execute(command, true);
+    }
+
+    public void setPtyEnabled( boolean ptyEnabled ) {
+
+        this.ptyEnabled = ptyEnabled;
     }
 
     /**
@@ -173,7 +179,7 @@ public class SshClient implements Closeable {
     private JschSshClient createNewSshClient() {
 
         JschSshClient sshClient = new JschSshClient();
-
+        sshClient.setPtyEnabled(ptyEnabled);
         for (Entry<String, String> entry : sshClientConfigurationProperties.entrySet()) {
             sshClient.setConfigurationProperty(entry.getKey(), entry.getValue());
         }

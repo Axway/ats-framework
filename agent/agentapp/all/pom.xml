@@ -44,6 +44,10 @@
                     <groupId>com.google.code.maven-replacer-plugin</groupId>
                     <artifactId>replacer</artifactId>
                     <version>1.5.3</version>
+                    <configuration>
+                        <detail>true</detail>
+                        <quiet>false</quiet>
+                    </configuration>
                     <executions>
                         <execution>
                             <id>add-windows-java-home</id>
@@ -58,9 +62,7 @@
                                         <unescape>true</unescape>
                                         <token>%AGENT_HOME%</token>
                                         <!-- next tag must be on single line -->
-                                        <value>%AGENT_HOME%\n\n@SET JAVA_HOME=%AGENT_HOME%/jre\n@SET
-                                            PATH=%JAVA_HOME%/bin;%PATH%
-                                        </value>
+                                        <value>%AGENT_HOME%\n\n@SET JAVA_HOME=%AGENT_HOME%/jre\n@SET PATH=%JAVA_HOME%/bin;%PATH%</value>
                                     </replacement>
                                 </replacements>
                             </configuration>
@@ -78,10 +80,7 @@
                                         <unescape>true</unescape>
                                         <token># parse the input arguments</token>
                                         <!-- next tag must be on single line -->
-                                        <value># overwrite JAVA_HOME and PATH
-                                            environments\nJAVA_HOME=\\$SCRIPTPATH/jre\nPATH=\\$JAVA_HOME/bin:\\$PATH\n\n#
-                                            parse the input arguments
-                                        </value>
+                                        <value># overwrite JAVA_HOME and PATH environments\nJAVA_HOME=\\$SCRIPTPATH/jre\nPATH=\\$JAVA_HOME/bin:\\$PATH\n\n#parse the input arguments</value>
                                     </replacement>
                                 </replacements>
                             </configuration>
@@ -114,6 +113,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>assemble-all</id>
@@ -155,6 +155,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-assembly-plugin</artifactId>
+                        <version>3.3.0</version>
                         <executions>
                             <execution>
                                 <id>assemble-all</id>

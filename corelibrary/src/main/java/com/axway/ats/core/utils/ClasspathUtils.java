@@ -166,7 +166,6 @@ public class ClasspathUtils {
         loadJarsFromClasspath();
 
         StringBuilder logMessage = new StringBuilder();
-        logMessage.append("The following libraries seems to be present more than once in the classpath: ");
         for (Entry<String, List<String>> loadedJarEntry : loadedJarsMap.entrySet()) {
             if (loadedJarEntry.getValue().size() > 1) {
                 logMessage.append("\n ").append(loadedJarEntry.getKey()).append(":");
@@ -186,7 +185,10 @@ public class ClasspathUtils {
                 log.warn(errorMsg);
             }
         }
-        log.warn(logMessage);
+        if (logMessage.length() > 0) { // log duplications if any
+            logMessage.insert(0, "The following libraries seems to be present more than once in the classpath: ");
+            log.warn(logMessage);
+        }
     }
 
     /**
