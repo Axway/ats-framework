@@ -583,7 +583,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                     // check if this is the right exception
                     if (ExceptionUtils.containsMessage("\"sql_packages\" does not exist", e)) {
                         if (logForeignKeyQueryFailure) {
-                            LOG.warn("Foreign key query with regclass failed!");
+                            LOG.warn("Foreign key query with regclass failed! Trying workaround query.");
                             logForeignKeyQueryFailure = false;
                         }
 
@@ -618,7 +618,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             // throw only the 2nd one, since this one has all the relevant information
             throw exceptionWoRegclass;
         }
-
+        LOG.info("Workaround query successfully executed!"):
         return scripts;
 
     }
