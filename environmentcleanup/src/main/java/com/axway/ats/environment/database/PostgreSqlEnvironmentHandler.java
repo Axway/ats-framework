@@ -618,7 +618,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             // throw only the 2nd one, since this one has all the relevant information
             throw exceptionWoRegclass;
         }
-        LOG.info("Workaround query successfully executed!"):
+        
         return scripts;
 
     }
