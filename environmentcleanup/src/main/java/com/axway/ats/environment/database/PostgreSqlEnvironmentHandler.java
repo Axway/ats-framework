@@ -51,6 +51,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.dbaccess.postgresql.PostgreSqlColumnDescription;
 import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
@@ -292,7 +293,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 if (shouldDropTable(entry.getValue())) {
                     String fullTableName = getFullTableName(entry.getValue());
                     Map<String, Set<String>> scripts = getTableIndexesScripts(getFullTableName(entry.getValue()),
-                                                                                         connection);
+                                                                              connection);
                     tablesScripts.put(fullTableName, scripts);
 
                 }
@@ -308,14 +309,17 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             }
 
             // WRITE ALTER TABLE ONLY <TABLE_SCHEMA>.<TABLE> DISABLE TRIGGER ALL
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
+            // SET session_replication_role = replica;
+            fileWriter.write("SET session_replication_role = replica;" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            /*for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 if (!shouldDropTable(entry.getValue())) {
                     fileWriter.write("ALTER TABLE ONLY " + getFullTableName(entry.getValue()) + " DISABLE TRIGGER ALL;"
                                      + EOL_MARKER
                                      + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
-
-            }
+            
+            }*/
 
             // write DELETE statements
             if (this.includeDeleteStatements) {
@@ -465,14 +469,16 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             }
 
             // WRITE ALTER TABLE ONLY <TABLE_SCHEMA>.<TABLE> ENABLE TRIGGER ALL
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
+            fileWriter.write("SET session_replication_role = DEFAULT;" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            /*for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 if (!shouldDropTable(entry.getValue())) {
                     fileWriter.write("ALTER TABLE ONLY " + getFullTableName(entry.getValue()) + " ENABLE TRIGGER ALL;"
                                      + EOL_MARKER
                                      + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
-
-            }
+            
+            }*/
 
         } finally {
             DbUtils.closeConnection(connection);
@@ -497,47 +503,116 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
-        String sql = "SELECT c.conname, t.tablename "
-                     + "FROM pg_constraint as c "
-                     + "JOIN pg_catalog.pg_tables AS t ON c.conrelid = t.tablename::regclass "
-                     + "WHERE c.contype = 'f' "
-                     + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES " + tableName
-                     + "%' ) "
-                     + "AND t.schemaname = '" + tableSchema + "' " // move in the beginning of the where clause for optimization
-                     + "ORDER BY t.tablename::regclass;";
-        try {
-            PreparedStatement stmnt = null;
-            ResultSet rs = null;
+
+        /* Since in some versions of PostgreSQL, at least on 12+,
+         * using c.conrelid = t.tablename::regclass causes the exception "sql_packages" does not exist
+         * There is two variants of the query, where the only difference is that the afforementioned row is changed with
+         * c.conrelid::text = t.tablename instead of c.conrelid = t.tablename::regclass
+         * 
+         * And since I'm not sure in which exact versions this works, I'll leave both of them here.
+         * 
+         * As such the current behaviour will be as follows:
+         * 
+         * First try with the ::regclass query (sql_w_regclass)
+         * If an exception is thrown, try with the other query
+         * 
+         */
+        
+        String sql_w_regclass = "SELECT c.conname, t.tablename "
+                + "FROM pg_constraint as c "
+                + "JOIN pg_catalog.pg_tables AS t ON c.conrelid = t.tablename::regclass "
+                + "WHERE c.contype = 'f' "
+                + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES "
+                + tableName
+                + "%' ) "
+                + "AND t.schemaname = '" + tableSchema + "' " // move in the beginning of the where clause for optimization
+                + "ORDER BY t.tablename::regclass;";
+        
+        String sql_wo_regclass = "SELECT c.conname, t.tablename "
+                                 + "FROM pg_constraint as c "
+                                 + "JOIN pg_catalog.pg_tables AS t ON c.conrelid::text = t.tablename "
+                                 + "WHERE c.contype = 'f' "
+                                 + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES "
+                                 + tableName
+                                 + "%' ) "
+                                 + "AND t.schemaname = '" + tableSchema + "' " // move in the beginning of the where clause for optimization
+                                 + "ORDER BY t.tablename::regclass;";
+
+        DbException exceptionWRegclass = null;
+        DbException exceptionWoRegclass = null;
+        for (int i = 0; i < 2; i++) {
+
+            String sql = (i == 0)
+                                  ? sql_w_regclass
+                                  : sql_wo_regclass;
+
             try {
-                stmnt = connection.prepareStatement(sql);
-                rs = stmnt.executeQuery();
-                while (rs.next()) {
-                    String fkName = rs.getString("conname");
-                    if (alreadyCreatedForeignKeys.contains(fkName)) {
-                        continue;
+                PreparedStatement stmnt = null;
+                ResultSet rs = null;
+                try {
+                    stmnt = connection.prepareStatement(sql);
+                    rs = stmnt.executeQuery();
+                    while (rs.next()) {
+                        String fkName = rs.getString("conname");
+                        if (alreadyCreatedForeignKeys.contains(fkName)) {
+                            continue;
+                        }
+                        String refTableName = rs.getString("tablename");
+                        // should refTableName table be locked?
+                        String script = getForeignKeyIndexScript(tableSchema, refTableName, fkName, connection);
+                        if (!StringUtils.isNullOrEmpty(script)) {
+                            scripts.add(script);
+                        }
                     }
-                    String refTableName = rs.getString("tablename");
-                    // should refTableName table be locked?
-                    String script = getForeignKeyIndexScript(tableSchema, refTableName, fkName, connection);
-                    if (!StringUtils.isNullOrEmpty(script)) {
-                        scripts.add(script);
-                    }
+                } catch (SQLException e) {
+                    throw new DbException(
+                                          "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                          + e.getMessage(), e);
+                } finally {
+                    DbUtils.closeResultSet(rs);
+                    DbUtils.closeStatement(stmnt);
                 }
-            } catch (SQLException e) {
-                throw new DbException(
-                                      "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                      + e.getMessage(), e);
-            } finally {
-                DbUtils.closeResultSet(rs);
-                DbUtils.closeStatement(stmnt);
+                // no exception was thrown, so exit the loop
+                break;
+            } catch (Exception e) {
+                if (i == 0) {
+
+                    // check if this is the right exception
+                    if (ExceptionUtils.containsMessage("\"sql_packages\" does not exist", e)) {
+                        exceptionWRegclass = new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                                             + tableSchema + "'.'"
+                                                             + tableName
+                                                             + "'",
+                                                             e);
+                    } else {
+                        // there is another exception that should be thrown ASAP
+                        new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                        + tableSchema + "'.'"
+                                        + tableName
+                                        + "'",
+                                        e);
+                    }
+
+                } else {
+                    // since I do not know what exception (if any) is thrown here, just treat each exception as the result of the afforementioned cause for two queries
+                    exceptionWoRegclass = new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                                          + tableSchema + "'.'"
+                                                          + tableName
+                                                          + "'",
+                                                          e);
+                }
             }
-        } catch (Exception e) {
-            throw new DbException("Error while obtaining FOREIGN KEYs, referencing table '" + tableSchema + "'.'"
-                                  + tableName
-                                  + "'",
-                                  e);
         }
+
+        if (exceptionWoRegclass != null && exceptionWRegclass != null) {
+            // both queries failed, so throw an exception
+            // and since we know that the first exception (exceptionWoRegclass) is about the "sql_packages" error,
+            // throw only the 2nd one, since this one has all the relevant information
+            throw exceptionWoRegclass;
+        }
+
         return scripts;
+
     }
 
     private String getForeignKeyIndexScript( String tableSchema, String tableName, String foreignKeyName,
@@ -722,7 +797,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (!schema.startsWith("\"")) { // add quotes if missing
             boolean addEndingQuote = true;
             if (schema.endsWith("\"")) {
-                LOG.warn("Db schema name does not start with quote but ends with such. Check provided schema name: " + schema);
+                LOG.warn("Db schema name does not start with quote but ends with such. Check provided schema name: "
+                         + schema);
                 addEndingQuote = false;
             }
             sb.append("\"");
@@ -734,7 +810,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         } else { // has leading quote
             sb.append(schema);
             if (!schema.endsWith("\"")) {
-                LOG.warn("Db schema name starts with quote but does not end with such. Check provided schema name: " + schema);
+                LOG.warn("Db schema name starts with quote but does not end with such. Check provided schema name: "
+                         + schema);
                 sb.append("\"");
             }
         }
@@ -745,7 +822,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (!tableName.startsWith("\"")) { // add quotes if missing
             boolean addEndingQuote = true;
             if (tableName.endsWith("\"")) {
-                LOG.warn("Db table name does not start with quote but ends with such. Check provided table name: " + tableName);
+                LOG.warn("Db table name does not start with quote but ends with such. Check provided table name: "
+                         + tableName);
                 addEndingQuote = false;
             }
             sb.append("\"");
@@ -756,7 +834,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         } else { // has leading quote
             sb.append(tableName);
             if (!tableName.endsWith("\"")) {
-                LOG.warn("Db table name starts with quote but does not end with such. Check provided table name: " + tableName);
+                LOG.warn("Db table name starts with quote but does not end with such. Check provided table name: "
+                         + tableName);
                 sb.append("\"");
             }
         }
@@ -878,7 +957,6 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         // Possibility to remove this statement as TX commit should also revert behavior
         return "SET CONSTRAINTS ALL IMMEDIATE;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
     }
-
 
     private String getTableTableSpaceScript( String fullTableName, Connection connection ) {
 
