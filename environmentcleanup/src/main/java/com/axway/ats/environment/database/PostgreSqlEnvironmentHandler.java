@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Axway Software
+ * Copyright 2020-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,9 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     private static final Logger   LOG                                       = LogManager.getLogger(PostgreSqlEnvironmentHandler.class);
     private static final String   HEX_PREFIX_STR                            = "\\x";
+
+    // see getForeignKeysReferencingTable() method for details
+    private static boolean        logForeignKeyQueryFailure                 = true;
 
     // used only when at least one table is about to be dropped
     // keeps track of which FOREIGN KEY INDEX is created, so we do not end up with duplication error if we try to create it one more time
@@ -579,6 +582,11 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
                     // check if this is the right exception
                     if (ExceptionUtils.containsMessage("\"sql_packages\" does not exist", e)) {
+                        if (logForeignKeyQueryFailure) {
+                            LOG.warn("Foreign key query with regclass failed!");
+                            logForeignKeyQueryFailure = false;
+                        }
+
                         exceptionWRegclass = new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
                                                              + tableSchema + "'.'"
                                                              + tableName
@@ -586,11 +594,11 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                                              e);
                     } else {
                         // there is another exception that should be thrown ASAP
-                        new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
-                                        + tableSchema + "'.'"
-                                        + tableName
-                                        + "'",
-                                        e);
+                        throw new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                              + tableSchema + "'.'"
+                                              + tableName
+                                              + "'",
+                                              e);
                     }
 
                 } else {
