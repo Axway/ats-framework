@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package com.axway.ats.environment.database;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.cassandra.CassandraDbProvider;
 import com.axway.ats.core.dbaccess.cassandra.DbConnCassandra;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
@@ -71,12 +73,16 @@ public class EnvironmentHandlerFactory {
      * @throws DatabaseEnvironmentCleanupException
      */
     public BackupHandler createDbBackupHandler(
-            DbConnection dbConnection ) {
+                                                DbConnection dbConnection ) {
 
         switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
                 DbConnMySQL mysqlConnection = (DbConnMySQL) dbConnection;
                 return new MysqlEnvironmentHandler(mysqlConnection, new MysqlDbProvider(mysqlConnection));
+            }
+            case DbConnMariaDB.DATABASE_TYPE: {
+                DbConnMariaDB mariaDbConnection = (DbConnMariaDB) dbConnection;
+                return new MariaDbEnvironmentHandler(mariaDbConnection, new MariaDbDbProvider(mariaDbConnection));
             }
             case DbConnOracle.DATABASE_TYPE: {
                 DbConnOracle oracleConnection = (DbConnOracle) dbConnection;
@@ -114,12 +120,16 @@ public class EnvironmentHandlerFactory {
      * @throws DatabaseEnvironmentCleanupException
      */
     public RestoreHandler createDbRestoreHandler(
-            DbConnection dbConnection ) {
+                                                  DbConnection dbConnection ) {
 
         switch (dbConnection.getDbType()) {
             case DbConnMySQL.DATABASE_TYPE: {
                 DbConnMySQL mysqlConnection = (DbConnMySQL) dbConnection;
                 return new MysqlEnvironmentHandler(mysqlConnection, new MysqlDbProvider(mysqlConnection));
+            }
+            case DbConnMariaDB.DATABASE_TYPE: {
+                DbConnMariaDB mariaDbConnection = (DbConnMariaDB) dbConnection;
+                return new MariaDbEnvironmentHandler(mariaDbConnection, new MariaDbDbProvider(mariaDbConnection));
             }
             case DbConnOracle.DATABASE_TYPE: {
                 DbConnOracle oracleConnection = (DbConnOracle) dbConnection;

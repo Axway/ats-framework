@@ -113,6 +113,7 @@ public class PackageLoader {
         return new MimePackage(loadPackageFromFile(fileName));
     }
 
+    // Why MySQL?!?
     private static InputStream loadPackageFromDb(
                                                   int packageId,
                                                   String messagesHost,

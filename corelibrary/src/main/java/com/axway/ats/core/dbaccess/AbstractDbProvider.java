@@ -43,6 +43,7 @@ import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.dbaccess.snapshot.TableDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.exceptions.DbRecordsException;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
 import com.axway.ats.core.dbaccess.oracle.OracleDbProvider;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
@@ -748,8 +749,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                                                                      ? dbConnection.getUser()
                                                                      : null);
 
-            // MySQL -> The DB NAME is the TABLE SCHEMA
-            schemaPattern = (this instanceof MysqlDbProvider
+            // MySQL/MariaDB -> The DB NAME is the TABLE SCHEMA
+            schemaPattern = (this instanceof MysqlDbProvider || this instanceof MariaDbDbProvider
                                                              ? dbConnection.getDb()
                                                              : schemaPattern);
 

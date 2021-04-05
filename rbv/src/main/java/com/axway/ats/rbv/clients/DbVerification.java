@@ -22,6 +22,8 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
 import com.axway.ats.core.dbaccess.DbProvider;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
@@ -58,7 +60,7 @@ import com.axway.ats.rbv.model.RbvException;
 @PublicAtsApi
 public class DbVerification extends VerificationSkeleton {
 
-    private   String      host;
+    private String        host;
     // A custom encryption provider interface
     protected DbEncryptor dbEncryptor;
 
@@ -133,6 +135,13 @@ public class DbVerification extends VerificationSkeleton {
                                                                  password,
                                                                  customProperties));
                 break;
+            case DbConnMariaDB.DATABASE_TYPE:
+                dbProvider = new MariaDbDbProvider(new DbConnMariaDB(host,
+                                                                     database,
+                                                                     user,
+                                                                     password,
+                                                                     customProperties));
+                break;
             case DbConnSQLServer.DATABASE_TYPE:
                 dbProvider = new MssqlDbProvider(new DbConnSQLServer(host,
                                                                      database,
@@ -157,7 +166,8 @@ public class DbVerification extends VerificationSkeleton {
                 break;
             case DbConnPostgreSQL.DATABASE_TYPE:
                 dbProvider = new PostgreSqlDbProvider(
-                        new DbConnPostgreSQL(host, port, database, user, password, customProperties));
+                                                      new DbConnPostgreSQL(host, port, database, user, password,
+                                                                           customProperties));
                 break;
             default:
                 throw new RbvException("DB Provider '" + dbType + "' not supported!");
@@ -185,7 +195,7 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void setDbEncryptor(
-            DbEncryptor dbEncryptor ) {
+                                DbEncryptor dbEncryptor ) {
 
         this.dbEncryptor = dbEncryptor;
     }
@@ -199,9 +209,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
-            String tableName,
-            String fieldName,
-            String value ) {
+                                       String tableName,
+                                       String fieldName,
+                                       String value ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -222,9 +232,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
-            String tableName,
-            String fieldName,
-            boolean value ) {
+                                       String tableName,
+                                       String fieldName,
+                                       boolean value ) {
 
         DbBooleanFieldRule matchingRule = new DbBooleanFieldRule(tableName,
                                                                  fieldName,
@@ -243,9 +253,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
-            String tableName,
-            String fieldName,
-            Date value ) {
+                                       String tableName,
+                                       String fieldName,
+                                       Date value ) {
 
         DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
                                                            fieldName,
@@ -265,9 +275,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
-            String tableName,
-            String fieldName,
-            Number value ) {
+                                       String tableName,
+                                       String fieldName,
+                                       Number value ) {
 
         DbNumericFieldRule matchingRule = new DbNumericFieldRule(tableName,
                                                                  fieldName,
@@ -286,9 +296,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
-            String tableName,
-            String fieldName,
-            byte[] value ) {
+                                       String tableName,
+                                       String fieldName,
+                                       byte[] value ) {
 
         DbBinaryFieldRule matchingRule = new DbBinaryFieldRule(tableName,
                                                                fieldName,
@@ -307,9 +317,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
-            String tableName,
-            String fieldName,
-            String value ) {
+                                             String tableName,
+                                             String fieldName,
+                                             String value ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -330,9 +340,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
-            String tableName,
-            String fieldName,
-            Number value ) {
+                                             String tableName,
+                                             String fieldName,
+                                             Number value ) {
 
         DbNumericFieldRule matchingRule = new DbNumericFieldRule(tableName,
                                                                  fieldName,
@@ -351,9 +361,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
-            String tableName,
-            String fieldName,
-            byte[] value ) {
+                                             String tableName,
+                                             String fieldName,
+                                             byte[] value ) {
 
         DbBinaryFieldRule matchingRule = new DbBinaryFieldRule(tableName,
                                                                fieldName,
@@ -372,9 +382,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueRegex(
-            String tableName,
-            String fieldName,
-            String regex ) {
+                                      String tableName,
+                                      String fieldName,
+                                      String regex ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -395,9 +405,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueRegexDoesNotMatch(
-            String tableName,
-            String fieldName,
-            String regex ) {
+                                                  String tableName,
+                                                  String fieldName,
+                                                  String regex ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -418,9 +428,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueContains(
-            String tableName,
-            String fieldName,
-            String value ) {
+                                         String tableName,
+                                         String fieldName,
+                                         String value ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -441,9 +451,9 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotContain(
-            String tableName,
-            String fieldName,
-            String value ) {
+                                               String tableName,
+                                               String fieldName,
+                                               String value ) {
 
         DbStringFieldRule matchingRule = new DbStringFieldRule(tableName,
                                                                fieldName,
@@ -465,10 +475,10 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDateBefore(
-            String tableName,
-            String fieldName,
-            long timestamp,
-            String datePattern ) {
+                                           String tableName,
+                                           String fieldName,
+                                           long timestamp,
+                                           String datePattern ) {
 
         DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
                                                            fieldName,
@@ -491,10 +501,10 @@ public class DbVerification extends VerificationSkeleton {
      */
     @PublicAtsApi
     public void checkFieldValueDateAfter(
-            String tableName,
-            String fieldName,
-            long timestamp,
-            String datePattern ) {
+                                          String tableName,
+                                          String fieldName,
+                                          long timestamp,
+                                          String datePattern ) {
 
         DbDateFieldRule matchingRule = new DbDateFieldRule(tableName,
                                                            fieldName,
@@ -507,7 +517,7 @@ public class DbVerification extends VerificationSkeleton {
     }
 
     private void checkFieldValue(
-            DbFieldsRule matchingRule ) {
+                                  DbFieldsRule matchingRule ) {
 
         rootRule.addRule(matchingRule);
     }
