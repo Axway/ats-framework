@@ -189,8 +189,7 @@ public class RemoteLoggingConfigurator implements Configurator {
 
             attachedAppender.start();
 
-            // yet again could this cast fail?!?
-            ((org.apache.logging.log4j.core.Logger) log).addAppender(attachedAppender);
+            Log4j2Utils.addAppenderToLogger(attachedAppender, log.getName());
         }
 
         if (needsToConfigureUserLoggers) {
@@ -294,21 +293,10 @@ public class RemoteLoggingConfigurator implements Configurator {
                 }
             }
 
-            Logger log;
-            if (Log4j2Utils.getRootLogger().getName().equals(appenderLogger)) {
-                log = Log4j2Utils.getRootLogger();
-            } else {
-                log = Log4j2Utils.getLogger(appenderLogger);
-            }
-
             Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
             if (dbAppender != null) {
-                // stop the appender
-                dbAppender.stop();
-
-                // remove it
-                // Is it possible that this cast will fail?!?
-                Log4j2Utils.removeAppenderFromLogger(log.getName(), dbAppender.getName());
+                // stop and remove the appender
+                Log4j2Utils.removeAppender(dbAppender.getName());
             }
         }
 

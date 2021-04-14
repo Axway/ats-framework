@@ -148,14 +148,39 @@ public abstract class AbstractDbAppender extends AbstractAppender {
 
     }
 
-    @Override
-    public boolean stop( long timeout, TimeUnit timeUnit ) {
+    private void stopQueueLoggerThread() {
 
         // When the appender is unloaded, terminate the logging thread
         if (queueLogger != null && !queueLogger.isInterrupted()) {
             queueLogger.interrupt();
+            long initialWaitTime = TimeUnit.MINUTES.toMillis(AtsSystemProperties.getPropertyAsNonNegativeNumber(AtsSystemProperties.QUEUE_LOGGER_THREAD_KILL_WAIT_TIMEOUT,
+                                                                                                                1));
+            long timeToWait = initialWaitTime;
+            long sleepInterval = 1000;
+            while (queueLogger.isAlive()) {
+                try {
+                    if (timeToWait <= 0) {
+                        atsConsoleLogger.warn("QueueLoggerThread '"
+                                              + queueLogger.getName() + "' was not killed in "
+                                              + (initialWaitTime / 1000) + " seconds! This is OK, proceed.");
+                        break;
+                    }
+                    atsConsoleLogger.info("Waiting up to " + (timeToWait / 1000) + " seconds for QueueLoggerThread '"
+                                          + queueLogger.getName() + "' to be killed...");
+                    Thread.sleep(sleepInterval);
+                    timeToWait -= sleepInterval;
+                } catch (InterruptedException e) {}
+            }
             queueLogger = null;
         }
+
+    }
+
+    @Override
+    public boolean stop( long timeout, TimeUnit timeUnit ) {
+
+        // When the appender is unloaded, terminate the logging thread
+        stopQueueLoggerThread();
 
         return super.stop(timeout, timeUnit);
     }
@@ -164,10 +189,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     protected boolean stop( long timeout, TimeUnit timeUnit, boolean changeLifeCycleState ) {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && !queueLogger.isInterrupted()) {
-            queueLogger.interrupt();
-            queueLogger = null;
-        }
+        stopQueueLoggerThread();
 
         return super.stop(timeout, timeUnit, changeLifeCycleState);
     }
@@ -176,10 +198,8 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     public void stop() {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && !queueLogger.isInterrupted()) {
-            queueLogger.interrupt();
-            queueLogger = null;
-        }
+        stopQueueLoggerThread();
+
         super.stop();
     }
 
@@ -187,17 +207,15 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     protected boolean stop( Future<?> future ) {
 
         // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && !queueLogger.isInterrupted()) {
-            queueLogger.interrupt();
-            queueLogger = null;
-        }
+        stopQueueLoggerThread();
+
         return super.stop(future);
     }
 
     @Override
     public abstract void append( LogEvent event );
 
-    protected void initializeDbLogging() {
+    protected void initializeDbLogging( String caller ) {
 
         // enable batch mode at ATS Agent side only
         boolean isWorkingAtAgentSide = this instanceof PassiveDbAppender;
@@ -219,7 +237,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
 
         // start the logging thread
         // can be moved to the start() method, but only if needed
-        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode);
+        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode, caller);
         queueLogger.setDaemon(true);
         queueLogger.start();
     }

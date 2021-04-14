@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
+import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.utils.ExceptionUtils;
@@ -2565,5 +2566,26 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                                                   + name + "'", e);
             }
         }
+    }
+
+    @Override
+    public void disconnect() {
+
+        if (this.dbEventsCache != null) {
+            DbUtils.closeStatement(this.dbEventsCache.insertCheckpointStatement);
+            DbUtils.closeStatement(this.dbEventsCache.insertRunMessageStatement);
+            DbUtils.closeStatement(this.dbEventsCache.insertSuiteMessageStatement);
+            DbUtils.closeStatement(this.dbEventsCache.insertTestcaseMessageStatement);
+            DbUtils.closeConnection(this.dbEventsCache.connection);
+        }
+
+        DbUtils.closeConnection(this.connection);
+        if (this.dbConnectionFactory != null) {
+            this.dbConnectionFactory.disconnect();
+            ConnectionPool.removeConnection(dbConnectionFactory);
+        }
+        this.dbEventsCache = null;
+        this.dbConnectionFactory = null;
+        this.connection = null;
     }
 }

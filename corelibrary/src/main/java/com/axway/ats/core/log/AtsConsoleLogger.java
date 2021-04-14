@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,17 +165,22 @@ public class AtsConsoleLogger {
         log("", ExceptionUtils.getExceptionMsg(th, message)); // this message will be logged without log level
     }
 
-    public static void setLevel( Level newLevel ) {
+    public static synchronized void setLevel( Level newLevel ) {
 
         level = newLevel;
+    }
+
+    public static synchronized Level getLevel() {
+
+        return level;
     }
 
     private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
-            return Level.toLevel(level).isLessSpecificThan(AtsConsoleLogger.level); // or isMore?!?
+            return Level.toLevel(level).isLessSpecificThan(AtsConsoleLogger.level);
         } else {
-            return LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.toLevel(level)); // or isMore?!?
+            return LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.toLevel(level));
         }
 
     }

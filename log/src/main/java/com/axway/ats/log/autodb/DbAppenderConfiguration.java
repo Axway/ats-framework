@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,6 +243,23 @@ public class DbAppenderConfiguration implements Serializable {
 
         if (chunkSize == null) {
             this.chunkSize = AbstractDbAccess.DEFAULT_CHUNK_SIZE + "";
+        }
+
+        // despite the method name it actually is quite good in validating maxNumberLogEvents member
+        this.maxNumberLogEvents = getMaxNumberLogEvents() + "";
+
+        if (this.mode != "" && !this.mode.equalsIgnoreCase("batch")) {
+            boolean explicitEnableOfLogger = false;
+            if (AtsConsoleLogger.getLevel() == null) {
+                explicitEnableOfLogger = true;
+                AtsConsoleLogger.setLevel(Level.WARN);
+            }
+            new AtsConsoleLogger(getClass()).warn("Invalid value (" + this.mode
+                                                  + ") for ATS DB Appender paramenter 'mode'! Setting it to non-batch mode (empty string)");
+            this.mode = "";
+            if (explicitEnableOfLogger) {
+                AtsConsoleLogger.setLevel(null);
+            }
         }
     }
 

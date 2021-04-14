@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -130,7 +130,13 @@ public class AtsSystemProperties {
      * </ol>
      * 
      * */
-    public static final String SYSTEM_MONITORING_PROVIDER                                          = "ats.system.monitoring.provider";
+    public static final String SYSTEM_MONITORING_PROVIDER                                        = "ats.system.monitoring.provider";
+    
+    /**
+     * Specify the maximum amount of time (in minutes) for ATS wait for a QueueLoggerThread to be killed when a PassiveDbAppender is about to be removed
+     * Default value is 1 minute.
+     * */
+    public static final String QUEUE_LOGGER_THREAD_KILL_WAIT_TIMEOUT                             = "ats.log.queue.logger.thread.kill.wait.timeout";
 
     /**
      * @return the default ATS agent port number

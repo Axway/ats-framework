@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ public class QueueLoggerThread extends Thread {
 
     private boolean                             isUnableToConnect                      = false;
 
+    private String                              caller                                 = null;
+
     /**
      * The queue of events waiting to be logged into DB
      */
@@ -54,11 +56,12 @@ public class QueueLoggerThread extends Thread {
     private int                                 minorSqlExceptionsCounter              = 0;                                            // counter for minor SQL exceptions. Used to prevent flooding of the log
 
     public QueueLoggerThread( ArrayBlockingQueue<LogEventRequest> queue, EventRequestProcessor eventProcessor,
-                              boolean isBatchMode ) {
+                              boolean isBatchMode, String caller ) {
 
         this.queue = queue;
         this.eventProcessor = eventProcessor;
         this.isBatchMode = isBatchMode;
+        this.caller = caller;
 
         // It is the user's responsibility to close appenders before
         // exiting.
@@ -74,7 +77,11 @@ public class QueueLoggerThread extends Thread {
 
         CONSOLE_LOG.info(
                          "Started logger thread named '"
-                         + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
+                         + getName() + "'" + ( (this.caller != null)
+                                                                     ? " for caller '" + this.caller + "'"
+                                                                     : "")
+                         + " with queue of maximum "
+                         + queue.remainingCapacity() + queue.size()
                          + " events. Batch mode is " + (isBatchMode
                                                                     ? "enabled"
                                                                     : "disabled"));
@@ -93,7 +100,11 @@ public class QueueLoggerThread extends Thread {
             } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
                 CONSOLE_LOG.error(
-                                  "Logging thread is interrupted and will stop logging.");
+                                  "Logging thread " + ( (this.caller != null)
+                                                                              ? "for caller '" + this.caller + "'"
+                                                                              : "")
+                                  + " is interrupted and will stop logging.");
+                eventProcessor.releaseConnection();
                 break;
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {

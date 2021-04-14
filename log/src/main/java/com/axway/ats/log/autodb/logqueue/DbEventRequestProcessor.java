@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1376,5 +1376,31 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
 
         return run;
+    }
+
+    @Override
+    public void releaseConnection() {
+
+        if (this.dbAccess != null) {
+            if (this.isBatchMode) {
+                log.info("Flushing ATS LOG DB cache ...");
+                try {
+                    this.dbAccess.flushCache();
+                    log.info("ATS LOG DB cache successfully flushed.");
+                } catch (DatabaseAccessException e) {
+                    log.error("Could not flush ATS LOG DB cache.", e);
+                }
+                
+            }
+            this.dbAccess.disconnect();
+            this.dbAccess = null;
+        }
+
+        if (this.dbConnection != null) {
+            log.info("Releasing ATS LOG DB connection [" + this.dbConnection.getConnHash() + "]");
+            this.dbConnection.disconnect();
+            ConnectionPool.removeConnection(this.dbConnection);
+            this.dbConnection = null;
+        }
     }
 }
