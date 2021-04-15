@@ -465,9 +465,9 @@ public class PassiveDbAppender extends AbstractDbAppender {
                     // non-stopped PassiveDbAppender found
                     if ( ((PassiveDbAppender) appender).getCaller().equals(caller)) {
                         // return this appender ASAP
-                        consoleLogger.warn("Previous PassiveDbAppender for caller '"
+                        /*consoleLogger.warn("Previous PassiveDbAppender for caller '"
                                            + ((PassiveDbAppender) appender).getCaller()
-                                           + "' found in log4j2 configuration.");
+                                           + "' found in log4j2 configuration.");*/
                         if (explicitSetOfLevel) {
                             AtsConsoleLogger.setLevel(null);
                         }
