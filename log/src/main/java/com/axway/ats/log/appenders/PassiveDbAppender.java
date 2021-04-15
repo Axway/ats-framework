@@ -17,15 +17,18 @@
 package com.axway.ats.log.appenders;
 
 import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.Core;
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;
 import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.plugins.Plugin;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
 import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
@@ -34,7 +37,9 @@ import org.apache.logging.log4j.core.config.plugins.validation.constraints.Requi
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidHost;
 import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidPort;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ThreadsPerCaller;
+import com.axway.ats.log.Log4j2Utils;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
@@ -56,11 +61,15 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 @Plugin( name = "PassiveDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class PassiveDbAppender extends AbstractDbAppender {
 
+    private static final AtsConsoleLogger         consoleLogger = new AtsConsoleLogger(PassiveDbAppender.class);
+
+    private static Map<String, PassiveDbAppender> instances     = Collections.synchronizedMap(new HashMap<String, PassiveDbAppender>());
+
     /* 
      * The caller this appender is serving.
      * We are calling this constructor in a way which guarantees the provided caller is not null
      */
-    private String caller;
+    private String                                caller;
 
     @PluginBuilderFactory
     public static PassiveDbAppenderBuilder newBuilder() {
@@ -312,6 +321,18 @@ public class PassiveDbAppender extends AbstractDbAppender {
         this.caller = caller;
 
         initializeDbLogging(this.caller);
+
+        boolean explicitSetOfLevel = false;
+        if (AtsConsoleLogger.getLevel() == null) {
+            explicitSetOfLevel = true;
+            AtsConsoleLogger.setLevel(Level.WARN);
+        }
+        consoleLogger.info("PassiveDbAppender for caller '" + caller + "' is attached.");
+        if(explicitSetOfLevel) {
+            AtsConsoleLogger.setLevel(null);
+        }
+        // save the newly created PassiveDbAppender
+        instances.put(this.caller, this);
     }
 
     @Override
@@ -407,24 +428,103 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public static PassiveDbAppender getCurrentInstance(
                                                         String caller ) {
 
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        Map<String, Appender> appenders = config.getAppenders();
-        // there is a method called -> context.getConfiguration().getAppender(java.lang.String name)
-        // maybe we should use this one to obtain Active and Passive DB appenders?
-        if (appenders != null && appenders.size() > 0) {
-            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
-                Appender appender = entry.getValue();
+        boolean explicitSetOfLevel = false;
+        if (AtsConsoleLogger.getLevel() == null) {
+            explicitSetOfLevel = true;
+            AtsConsoleLogger.setLevel(Level.WARN);
+        }
 
+        // try via log4j2 configuration
+        Map<String, Appender> appenders = Log4j2Utils.getAllAppenders();
+        if (appenders != null) {
+            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
+                String appenderName = entry.getKey();
+                Appender appender = entry.getValue();
+                if (appender == null) {
+                    consoleLogger.warn("Null appender with name '" + appenderName
+                                       + "' found in log4j2 configuration. Removing the appender...");
+                    Log4j2Utils.removeAppender(appenderName);
+                    consoleLogger.warn("Appender with name '" + appenderName + "' successfully removed.");
+                    continue;
+                }
+                // non-null appender found. check if it is a instance of PassiveDbAppender
                 if (appender instanceof PassiveDbAppender) {
-                    PassiveDbAppender passiveAppender = (PassiveDbAppender) appender;
-                    if (passiveAppender.getCaller().equals(caller)) {
-                        return passiveAppender;
+                    // PassiveDbAppender found!
+                    if (appender.isStopped()) {
+                        // stopped PassiveDbAppender found. Remove it!
+                        consoleLogger.warn("Stopped PassiveDbAppender for caller '"
+                                           + ((PassiveDbAppender) appender).getCaller()
+                                           + "' found in log4j2 configuration. Removing the appender...");
+                        Log4j2Utils.removeAppender(appenderName);
+                        consoleLogger.warn("PassiveDbAppender for caller '" + ((PassiveDbAppender) appender).getCaller()
+                                           + "' successfully removed.");
+                        // remove the appender in the instances variables as well, since it can no longer be used
+                        instances.remove( ((PassiveDbAppender) appender).getCaller());
+                        continue;
+                    }
+                    // non-stopped PassiveDbAppender found
+                    if ( ((PassiveDbAppender) appender).getCaller().equals(caller)) {
+                        // return this appender ASAP
+                        consoleLogger.warn("Previous PassiveDbAppender for caller '"
+                                           + ((PassiveDbAppender) appender).getCaller()
+                                           + "' found in log4j2 configuration.");
+                        if (explicitSetOfLevel) {
+                            AtsConsoleLogger.setLevel(null);
+                        }
+                        return ((PassiveDbAppender) appender);
+                    }
+                }
+            }
+        } else {
+            consoleLogger.warn("No PassiveDbAppender found in log4j2 configuration. Trying workaround method....");
+            // no appender found in log4j2 configuration
+            // try using instances variables to obtain PassiveDbAppender
+            if (instances.containsKey(caller)) {
+                // PassiveDbAppender found! Check if it is non-null and still running
+                PassiveDbAppender dbAppender = instances.get(caller);
+                if (dbAppender == null) {
+                    consoleLogger.warn("Null PassiveDbAppender for caller '" + caller
+                                       + "' found via workaround. Removing the appender...");
+                    instances.remove(caller);
+                    consoleLogger.warn("Null PassiveDbAppender for caller '" + caller
+                                       + "' found via workaround successfully removed.");
+                    // since this was last chance to find a PassiveDbAppender for this caller.
+                    // and this appender was null, just return null
+                    if (explicitSetOfLevel) {
+                        AtsConsoleLogger.setLevel(null);
+                    }
+                    return null;
+                } else {
+                    if (dbAppender.isStopped()) {
+                        consoleLogger.warn("Stopped PassiveDbAppender for caller '" + caller
+                                           + "' found via workaround. Removing the appender...");
+                        instances.remove(caller);
+                        consoleLogger.warn("Stopped PassiveDbAppender for caller '" + caller
+                                           + "' found via workaround successfully removed.");
+                        // since this was last chance to find a PassiveDbAppender for this caller.
+                        // and this appender was null, just return null
+                        if (explicitSetOfLevel) {
+                            AtsConsoleLogger.setLevel(null);
+                        }
+                        return null;
+                    } else {
+                        // the appender was found, but why it is not in the log4j2 configuration?
+                        // One possible reason is that event if we have multiple passiveDbAppenders, they all have the same name
+                        consoleLogger.info("PassiveDbAppender for caller '" + caller + "' found via workaround. Attaching it to the log4j2 configuration...");
+                        Log4j2Utils.addAppenderToLogger(dbAppender, Log4j2Utils.getRootLogger().getName());
+                        consoleLogger.info("PassiveDbAppender for caller '" + caller + "' found via workaround successfully attached.");
+                        if (explicitSetOfLevel) {
+                            AtsConsoleLogger.setLevel(null);
+                        }
+                        return dbAppender;
                     }
                 }
             }
         }
 
+        if (explicitSetOfLevel) {
+            AtsConsoleLogger.setLevel(null);
+        }
         return null;
     }
 
@@ -441,4 +541,30 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
         return this.eventProcessor;
     }
+
+    @Override
+    public boolean stop( long timeout, TimeUnit timeUnit ) {
+        instances.remove(this.caller);
+        return super.stop(timeout, timeUnit);
+    }
+
+    @Override
+    protected boolean stop( long timeout, TimeUnit timeUnit, boolean changeLifeCycleState ) {
+        instances.remove(this.caller);
+        return super.stop(timeout, timeUnit, changeLifeCycleState);
+    }
+
+    @Override
+    public void stop() {
+        super.stop();
+        instances.remove(this.caller);
+    }
+
+    @Override
+    protected boolean stop( Future<?> future ) {
+        instances.remove(this.caller);
+        return super.stop(future);
+    }
+    
+    
 }

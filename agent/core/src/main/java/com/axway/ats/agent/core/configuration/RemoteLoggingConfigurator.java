@@ -180,7 +180,7 @@ public class RemoteLoggingConfigurator implements Configurator {
             builder.setMode( (appenderConfiguration.isBatchMode())
                                                                    ? "batch"
                                                                    : "");
-            builder.setName(PassiveDbAppender.class.getSimpleName());
+            builder.setName(PassiveDbAppender.class.getSimpleName() + "_" + ThreadsPerCaller.getCaller());
             builder.setPassword(appenderConfiguration.getPassword());
             builder.setPort(Integer.parseInt(appenderConfiguration.getPort()));
             builder.setUser(appenderConfiguration.getUser());
