@@ -1,12 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.axway.ats.framework</groupId>
     <artifactId>ats-framework</artifactId>
-    <version>4.0.8-SNAPSHOT</version>
+    <version>4.0.8</version>
     <packaging>pom</packaging>
     <name>ATS-Framework</name>
     <description>ATS Maven parent artifact. Used for sharing common settings and dependencies</description>
@@ -538,7 +536,7 @@
         <connection>scm:git:https://github.com/Axway/ats-framework.git</connection>
         <developerConnection>scm:git:git@github.com:Axway/ats-framework.git</developerConnection>
         <url>https://github.com/Axway/ats-framework</url>
-        <tag>HEAD</tag>
+        <tag>4.0.8</tag>
     </scm>
 
     <developers>
