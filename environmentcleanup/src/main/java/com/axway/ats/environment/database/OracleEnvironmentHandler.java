@@ -247,13 +247,10 @@ class OracleEnvironmentHandler extends AbstractEnvironmentHandler {
                                                               : -1;
                             stmtBlockBuilder.append(INDENTATION + varName + " := " + fieldValue + ";"
                                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                            // length == -1 means NULL object, so no need to create temporary blob/clob/nclob
-                            if (length != -1) {
-                                stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
-                                + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                            }
                             String binaryMethod = "to_" + column.getType().toLowerCase();
                             if (length > MAX_BINARY_COLUMN_INSERT_LENGTH) {
+                                stmtBlockBuilder.append(INDENTATION + "dbms_lob.createtemporary(" + varName + ",true);"
+                                        + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                                 int currentBinaryIdx = 0;
                                 while (currentBinaryIdx <= length) {
                                     if (currentBinaryIdx + MAX_BINARY_COLUMN_INSERT_LENGTH <= length) {
