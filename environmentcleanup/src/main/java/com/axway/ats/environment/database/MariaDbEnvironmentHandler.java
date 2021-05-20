@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
-import java.sql.CallableStatement;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,36 +35,33 @@ import com.axway.ats.core.dbaccess.ConnectionPool;
 import com.axway.ats.core.dbaccess.DbRecordValue;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
 import com.axway.ats.core.dbaccess.DbUtils;
-import com.axway.ats.core.dbaccess.MysqlColumnDescription;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
-import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
-import com.axway.ats.core.dbaccess.mysql.MysqlDbProvider;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbColumnDescription;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
 import com.axway.ats.environment.database.exceptions.DatabaseEnvironmentCleanupException;
 import com.axway.ats.environment.database.model.DbTable;
-import com.axway.ats.environment.database.mysql.MysqlColumnNames;
 
 /**
- * MySQL implementation of the environment handler
+ * MariaDB implementation of the environment handler
  */
-class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
+class MariaDbEnvironmentHandler extends AbstractEnvironmentHandler {
 
-    private static final Logger log            = Logger.getLogger(MysqlEnvironmentHandler.class);
+    private static final Logger log            = Logger.getLogger(MariaDbEnvironmentHandler.class);
     private static final String HEX_PREFIX_STR = "0x";
-    private boolean             isJDBC4;
 
     /**
      * Constructor
      *
      * @param dbConnection the database connection
      */
-    MysqlEnvironmentHandler( DbConnMySQL dbConnection,
-                             MysqlDbProvider dbProvider ) {
+    MariaDbEnvironmentHandler( DbConnMariaDB dbConnection,
+                               MariaDbDbProvider dbProvider ) {
 
         super(dbConnection, dbProvider);
-        isJDBC4 = checkDriverVersion(dbProvider);
     }
 
     public void restore( String backupFileName ) throws DatabaseEnvironmentCleanupException {
@@ -194,18 +189,18 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
         for (DbRecordValuesList columnMetaData : columnsMetaData) {
 
-            String columnName = (String) columnMetaData.get(MysqlColumnNames.COLUMN_NAME.getName(isJDBC4));
+            String columnName = (String) columnMetaData.get("COLUMN_NAME"); // or Field
 
             //check if the column should be skipped in the backup
             if (!table.getColumnsToExclude().contains(columnName)) {
 
-                ColumnDescription colDescription = new MysqlColumnDescription(columnName,
-                                                                              (String) columnMetaData.get(MysqlColumnNames.COLUMN_TYPE.getName(isJDBC4)));
+                ColumnDescription colDescription = new MariaDbColumnDescription(columnName,
+                                                                                (String) columnMetaData.get("COLUMN_TYPE")); // or Type
 
                 columnsToSelect.add(colDescription);
             } else {
                 //if this column has no default value, we cannot skip it in the backup
-                if (columnMetaData.get(MysqlColumnNames.DEFAULT_COLUMN.getName(isJDBC4)) == null) {
+                if (columnMetaData.get("COLUMN_DEFAULT") == null) { // or Default
                     log.error("Cannot skip columns with no default values while creating backup");
                     throw new ColumnHasNoDefaultValueException(table.getTableName(), columnName);
                 }
@@ -259,7 +254,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                              + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
 
             // If the table was locked, after using ALTER TABLE it becomes unlocked and will throw an error.
-            // ( explained here: http://dev.mysql.com/doc/refman/5.0/en/alter-table-problems.html )
+            // ( https://mariadb.com/kb/en/altering-tables-in-mariadb/ )
             // To handle this, lock the table again
             if (this.addLocks && table.isLockTable()) {
                 fileWriter.write("LOCK TABLES `" + table.getTableName() + "` WRITE;" + EOL_MARKER
@@ -332,7 +327,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         // Empty. Delete and lock are handled per table in writeTableToFile 
     }
 
-    // escapes the characters in the value string, according to the MySQL manual. This
+    // escapes the characters in the value string, according to the MariaDB manual. This
     // method escape each symbol *even* if the symbol itself is part of an escape sequence
     protected String escapeValue( String fieldValue ) {
 
@@ -381,7 +376,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
             // BIT type stores only two types of values - 0 and 1, we need to
             // extract them and pass them back as string
             if (column.isTypeBit()) {
-                // MySQL BIT type has possibility to store 1-64 bits. Represent value as hex number 0xnnnn
+                // MariaDB BIT type has possibility to store 1-64 bits. Represent value as hex number 0xnnnn
                 if (fieldValue.startsWith(HEX_PREFIX_STR)) {
                     // value already in hex notation. This is because for BIT(>1) resultSet.getObject(col) currently
                     // returns byte[]
@@ -406,7 +401,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
                 insertStatement.append(fieldValue);
             }
         } else if (column.isTypeBinary()) {
-            // value is already in hex mode. In MySQL apostrophes should not be used as boundaries
+            // value is already in hex mode. In MariaDB apostrophes should not be used as boundaries
             insertStatement.append(fieldValue);
         } else {
             // String variant. Needs escaping
@@ -434,35 +429,6 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         // return "SET FOREIGN_KEY_CHECKS = 1;" + EOL_MARKER + ATSSystemProperties.SYSTEM_LINE_SEPARATOR;
     }
 
-    private boolean checkDriverVersion( MysqlDbProvider dbProvider ) {
-
-        try {
-            Connection connection = dbProvider.getConnection();
-            DatabaseMetaData dmd = connection.getMetaData();
-            int majorVersion = dmd.getDriverMajorVersion();
-            int minorVersion = dmd.getDriverMinorVersion();
-            log.info(new StringBuilder().append("JDBC driver used is : ")
-                                        .append(majorVersion)
-                                        .append(".")
-                                        .append(minorVersion)
-                                        .toString());
-
-            // The older specification is used in drivers prior to 5.0 including 5.0
-            if (majorVersion < 5) {
-                return false;
-            } else if (majorVersion == 5 && minorVersion == 0) {
-                return false;
-            }
-        } catch (SQLException e) {
-            log.error("Unable to determine driver version, falling back to JDBC3 specs", e);
-            return false;
-        } catch (DbException e) {
-            log.error("Unable to determine driver version, falling back to JDBC3 specs", e);
-            return false;
-        }
-        return true;
-    }
-
     // DROP table (fast cleanup) functionality methods
     private void dropAndRecreateTable( Connection connection, String table, String schema ) {
 
@@ -479,13 +445,13 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     private String generateTableScript( String tableName, Connection connection ) throws DbException {
 
-        CallableStatement callableStatement = null;
+        PreparedStatement preparedStatement = null;
         ResultSet rs = null;
         try {
             String query = "SHOW CREATE TABLE " + tableName + ";";
-            callableStatement = connection.prepareCall(query);
+            preparedStatement = connection.prepareStatement(query);
 
-            rs = callableStatement.executeQuery();
+            rs = preparedStatement.executeQuery();
             String createQuery = new String();
             if (rs.next()) {
                 createQuery = rs.getString(2);
@@ -496,7 +462,7 @@ class MysqlEnvironmentHandler extends AbstractEnvironmentHandler {
         } catch (Exception e) {
             throw new DbException("Error while generating script for the table '" + tableName + "'.", e);
         } finally {
-            DbUtils.closeStatement(callableStatement);
+            DbUtils.closeStatement(preparedStatement);
         }
     }
 

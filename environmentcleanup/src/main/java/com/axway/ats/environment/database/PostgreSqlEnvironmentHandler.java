@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Axway Software
+ * Copyright 2020-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.dbaccess.postgresql.PostgreSqlColumnDescription;
 import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
+import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.environment.database.exceptions.ColumnHasNoDefaultValueException;
@@ -68,6 +69,9 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
 
     private static final Logger   LOG                                       = Logger.getLogger(PostgreSqlEnvironmentHandler.class);
     private static final String   HEX_PREFIX_STR                            = "\\x";
+
+    // see getForeignKeysReferencingTable() method for details
+    private static boolean        logForeignKeyQueryFailure                 = true;
 
     // used only when at least one table is about to be dropped
     // keeps track of which FOREIGN KEY INDEX is created, so we do not end up with duplication error if we try to create it one more time
@@ -290,8 +294,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 if (shouldDropTable(entry.getValue())) {
                     String fullTableName = getFullTableName(entry.getValue());
-                    Map<String, Set<String>> scripts = generateTableCreateIndexesScripts(getFullTableName(entry.getValue()),
-                                                                                         connection);
+                    Map<String, Set<String>> scripts = getTableIndexesScripts(getFullTableName(entry.getValue()),
+                                                                              connection);
                     tablesScripts.put(fullTableName, scripts);
 
                 }
@@ -307,14 +311,17 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             }
 
             // WRITE ALTER TABLE ONLY <TABLE_SCHEMA>.<TABLE> DISABLE TRIGGER ALL
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
+            // SET session_replication_role = replica;
+            fileWriter.write("SET session_replication_role = replica;" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            /*for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 if (!shouldDropTable(entry.getValue())) {
                     fileWriter.write("ALTER TABLE ONLY " + getFullTableName(entry.getValue()) + " DISABLE TRIGGER ALL;"
                                      + EOL_MARKER
                                      + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
-
-            }
+            
+            }*/
 
             // write DELETE statements
             if (this.includeDeleteStatements) {
@@ -464,14 +471,16 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             }
 
             // WRITE ALTER TABLE ONLY <TABLE_SCHEMA>.<TABLE> ENABLE TRIGGER ALL
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
+            fileWriter.write("SET session_replication_role = DEFAULT;" + EOL_MARKER
+                             + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
+            /*for (Entry<String, DbTable> entry : dbTables.entrySet()) {
                 if (!shouldDropTable(entry.getValue())) {
                     fileWriter.write("ALTER TABLE ONLY " + getFullTableName(entry.getValue()) + " ENABLE TRIGGER ALL;"
                                      + EOL_MARKER
                                      + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
                 }
-
-            }
+            
+            }*/
 
         } finally {
             DbUtils.closeConnection(connection);
@@ -496,47 +505,121 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         if (tableName.startsWith("\"") && tableName.endsWith("\"")) {
             tableName = tableName.substring(1, tableName.length() - 1);
         }
-        String sql = "SELECT c.conname, t.tablename "
-                     + "FROM pg_constraint as c "
-                     + "JOIN pg_catalog.pg_tables AS t ON c.conrelid = t.tablename::regclass "
-                     + "WHERE c.contype = 'f' "
-                     + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES " + tableName
-                     + "%' ) "
-                     + "AND t.schemaname = '" + tableSchema + "' "
-                     + "ORDER BY t.tablename::regclass;";
-        try {
-            PreparedStatement stmnt = null;
-            ResultSet rs = null;
+
+        /* Since in some versions of PostgreSQL, at least on 12+,
+         * using c.conrelid = t.tablename::regclass causes the exception "sql_packages" does not exist
+         * There is two variants of the query, where the only difference is that the afforementioned row is changed with
+         * c.conrelid::text = t.tablename instead of c.conrelid = t.tablename::regclass
+         * 
+         * And since I'm not sure in which exact versions this works, I'll leave both of them here.
+         * 
+         * As such the current behaviour will be as follows:
+         * 
+         * First try with the ::regclass query (sql_w_regclass)
+         * If an exception is thrown, try with the other query
+         * 
+         */
+        
+        String sql_w_regclass = "SELECT c.conname, t.tablename "
+                + "FROM pg_constraint as c "
+                + "JOIN pg_catalog.pg_tables AS t ON c.conrelid = t.tablename::regclass "
+                + "WHERE c.contype = 'f' "
+                + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES "
+                + tableName
+                + "%' ) "
+                + "AND t.schemaname = '" + tableSchema + "' " // move in the beginning of the where clause for optimization
+                + "ORDER BY t.tablename::regclass;";
+        
+        String sql_wo_regclass = "SELECT c.conname, t.tablename "
+                                 + "FROM pg_constraint as c "
+                                 + "JOIN pg_catalog.pg_tables AS t ON c.conrelid::text = t.tablename "
+                                 + "WHERE c.contype = 'f' "
+                                 + "AND ( SELECT pg_catalog.pg_get_constraintdef(c.oid, true) LIKE '% REFERENCES "
+                                 + tableName
+                                 + "%' ) "
+                                 + "AND t.schemaname = '" + tableSchema + "' " // move in the beginning of the where clause for optimization
+                                 + "ORDER BY t.tablename::regclass;";
+
+        DbException exceptionWRegclass = null;
+        DbException exceptionWoRegclass = null;
+        for (int i = 0; i < 2; i++) {
+
+            String sql = (i == 0)
+                                  ? sql_w_regclass
+                                  : sql_wo_regclass;
+
             try {
-                stmnt = connection.prepareStatement(sql);
-                rs = stmnt.executeQuery();
-                while (rs.next()) {
-                    String fkName = rs.getString("conname");
-                    if (alreadyCreatedForeignKeys.contains(fkName)) {
-                        continue;
+                PreparedStatement stmnt = null;
+                ResultSet rs = null;
+                try {
+                    stmnt = connection.prepareStatement(sql);
+                    rs = stmnt.executeQuery();
+                    while (rs.next()) {
+                        String fkName = rs.getString("conname");
+                        if (alreadyCreatedForeignKeys.contains(fkName)) {
+                            continue;
+                        }
+                        String refTableName = rs.getString("tablename");
+                        // should refTableName table be locked?
+                        String script = getForeignKeyIndexScript(tableSchema, refTableName, fkName, connection);
+                        if (!StringUtils.isNullOrEmpty(script)) {
+                            scripts.add(script);
+                        }
                     }
-                    String refTableName = rs.getString("tablename");
-                    // should refTableName table be locked?
-                    String script = getForeignKeyIndexScript(tableSchema, refTableName, fkName, connection);
-                    if (!StringUtils.isNullOrEmpty(script)) {
-                        scripts.add(script);
-                    }
+                } catch (SQLException e) {
+                    throw new DbException(
+                                          "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
+                                          + e.getMessage(), e);
+                } finally {
+                    DbUtils.closeResultSet(rs);
+                    DbUtils.closeStatement(stmnt);
                 }
-            } catch (SQLException e) {
-                throw new DbException(
-                                      "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
-                                      + e.getMessage(), e);
-            } finally {
-                DbUtils.closeStatement(stmnt);
-                DbUtils.closeResultSet(rs);
+                // no exception was thrown, so exit the loop
+                break;
+            } catch (Exception e) {
+                if (i == 0) {
+
+                    // check if this is the right exception
+                    if (ExceptionUtils.containsMessage("\"sql_packages\" does not exist", e)) {
+                        if (logForeignKeyQueryFailure) {
+                            LOG.warn("Foreign key query with regclass failed! Trying workaround query.");
+                            logForeignKeyQueryFailure = false;
+                        }
+
+                        exceptionWRegclass = new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                                             + tableSchema + "'.'"
+                                                             + tableName
+                                                             + "'",
+                                                             e);
+                    } else {
+                        // there is another exception that should be thrown ASAP
+                        throw new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                              + tableSchema + "'.'"
+                                              + tableName
+                                              + "'",
+                                              e);
+                    }
+
+                } else {
+                    // since I do not know what exception (if any) is thrown here, just treat each exception as the result of the afforementioned cause for two queries
+                    exceptionWoRegclass = new DbException("Error while obtaining FOREIGN KEYs, referencing table '"
+                                                          + tableSchema + "'.'"
+                                                          + tableName
+                                                          + "'",
+                                                          e);
+                }
             }
-        } catch (Exception e) {
-            throw new DbException("Error while obtaining FOREIGN KEYs, referencing table '" + tableSchema + "'.'"
-                                  + tableName
-                                  + "'",
-                                  e);
         }
+
+        if (exceptionWoRegclass != null && exceptionWRegclass != null) {
+            // both queries failed, so throw an exception
+            // and since we know that the first exception (exceptionWoRegclass) is about the "sql_packages" error,
+            // throw only the 2nd one, since this one has all the relevant information
+            throw exceptionWoRegclass;
+        }
+        
         return scripts;
+
     }
 
     private String getForeignKeyIndexScript( String tableSchema, String tableName, String foreignKeyName,
@@ -586,8 +669,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                       "SQL errorCode=" + e.getErrorCode() + " sqlState=" + e.getSQLState() + " "
                                       + e.getMessage(), e);
             } finally {
-                DbUtils.closeStatement(stmnt);
                 DbUtils.closeResultSet(rs);
+                DbUtils.closeStatement(stmnt);
             }
         } catch (Exception e) {
             throw new DbException("Error while obtaining FOREIGN KEYs for table '" + tableSchema + "'.'" + tableName
@@ -595,220 +678,6 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                   e);
         }
         return null;
-    }
-
-    /*private void deleteAllTables( Writer fileWriter ) throws IOException, DbException,
-                                                      DatabaseEnvironmentCleanupException {
-    
-        if (disableForeignKeys) {
-            fileWriter.write(disableForeignKeyChecksStart());
-        }
-    
-        for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-            DbTable dbTable = entry.getValue();
-    
-            // use both table schema (if presented) and table name for the final table name
-            String fullTableName = null;
-            if (dbTable != null) {
-                fullTableName = dbTable.getFullTableName();
-            }
-    
-            if (LOG.isDebugEnabled()) {
-                LOG.debug("Preparing data for backup of table " + fullTableName);
-            }
-            List<ColumnDescription> columnsToSelect = null;
-            columnsToSelect = getColumnsToSelect(dbTable, dbConnection.getUser());
-            if (columnsToSelect == null || columnsToSelect.size() == 0) {
-                // NOTE: if needed change behavior to continue if the table has no columns.
-                // Currently it is assumed that if the table is described for backup then
-                // it contains some meaningful data and so it has columns
-    
-                // NOTE: it is a good idea to print null instead of empty string for table name when table is null,
-                // so it is more obvious for the user that something is wrong
-                throw new DatabaseEnvironmentCleanupException("No columns to backup for table "
-                                                              + fullTableName);
-            }
-    
-            DbRecordValuesList[] records = new DbRecordValuesList[0];
-            if (!skipTableContent) {
-                StringBuilder selectQuery = new StringBuilder();
-                selectQuery.append("SELECT ");
-                selectQuery.append(getColumnsString(columnsToSelect));
-                selectQuery.append(" FROM ");
-                selectQuery.append(fullTableName);
-    
-                DbQuery query = new DbQuery(selectQuery.toString());
-                // assuming not very large tables
-                records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
-    
-            }
-    
-            writeTableToFile(columnsToSelect, dbTable, records, fileWriter);
-        }
-    
-        if (disableForeignKeys) {
-            fileWriter.write(disableForeignKeyChecksEnd());
-        }
-    
-    }*/
-
-    /*private void dropAllTables( Writer fileWriter ) throws IOException,
-                                                    DatabaseEnvironmentCleanupException,
-                                                    DbException, ParseException {
-    
-        if (disableForeignKeys) {
-            fileWriter.write(disableForeignKeyChecksStart());
-        }
-    
-        // write drop table statements first
-        for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-            if (shouldDropTable(entry.getValue())) {
-                // DROP TABLE <TABLE_NAME> CASCADE
-                fileWriter.write("DROP TABLE " + getFullTableName(entry.getValue()) + " CASCADE;" + EOL_MARKER
-                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            }
-        }
-    
-        Connection connection = null;
-        try {
-            connection = ConnectionPool.getConnection(dbConnection);
-            // write CREATE TABLE statements
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-                if (shouldDropTable(entry.getValue())) {
-                    String fullTableName = getFullTableName(entry.getValue());
-                    // CREATE TABLE <TABLE_NAME>
-                    String createTableScript = generateCreateTableScript(fullTableName,
-                                                                         connection);
-                    fileWriter.write(createTableScript + EOL_MARKER
-                                     + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                    String setOwnerScript = "ALTER TABLE " + getFullTableName(entry.getValue()) + " OWNER to \""
-                                            + dbConnection.getUser() + "\";";
-                    fileWriter.write(setOwnerScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-    
-                    // write CREATE TABLE <TABLE_NAME> PARTITION OF (if needed)
-                    List<String> tablePartitions = getTablePartitionsScript(fullTableName, connection);
-                    if (tablePartitions != null && !tablePartitions.isEmpty()) {
-                        for (String partition : tablePartitions) {
-                            fileWriter.write(partition + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                        }
-                    }
-    
-                }
-            }
-    
-            Map<String, Map<String, Set<String>>> tablesScripts = new LinkedHashMap<String, Map<String, Set<String>>>();
-    
-            // get ALL CREATE INDEX statements
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-                if (shouldDropTable(entry.getValue())) {
-                    String fullTableName = getFullTableName(entry.getValue());
-                    Map<String, Set<String>> scripts = generateTableCreateIndexesScripts(getFullTableName(entry.getValue()),
-                                                                                         connection);
-                    tablesScripts.put(fullTableName, scripts);
-    
-                }
-            }
-    
-            // write PRIMARY KEY INDEXES statements
-            for (Entry<String, Map<String, Set<String>>> entry : tablesScripts.entrySet()) {
-                //String fullTableName = entry.getKey();
-                Map<String, Set<String>> allTableScripts = entry.getValue();
-                // it is a Set<String> but in fact only one primary key script per table is available
-                Set<String> primaryKeyScript = allTableScripts.get(PRIMARY_KEY_INDEX);
-                if (primaryKeyScript != null && !primaryKeyScript.isEmpty()) {
-                    for (String script : primaryKeyScript) {
-                        fileWriter.write(script + EOL_MARKER
-                                         + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                    }
-                }
-            }
-    
-            // write ALTER TABLE ONLY <TABLE_SCHEMA>.<TABLE_NAME> ADD CONSTRAINT <CONSTRAINT_NAME> [CONSTRAINT OPTIONS]
-            for (Entry<String, Map<String, Set<String>>> entry : tablesScripts.entrySet()) {
-                //String fullTableName = entry.getKey();
-                Map<String, Set<String>> allTableScripts = entry.getValue();
-                Set<String> constraintsScripts = allTableScripts.get(CONSTRAINTS);
-                if (constraintsScripts != null && !constraintsScripts.isEmpty()) {
-                    for (String script : constraintsScripts) {
-                        fileWriter.write(script + EOL_MARKER
-                                         + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                    }
-                }
-            }
-    
-            // write GENERAL INDEXES statements
-            for (Entry<String, Map<String, Set<String>>> entry : tablesScripts.entrySet()) {
-                //String fullTableName = entry.getKey();
-                Map<String, Set<String>> allTableScripts = entry.getValue();
-                Set<String> generalIndexesScripts = allTableScripts.get(GENERAL_INDEXES);
-                if (generalIndexesScripts != null && !generalIndexesScripts.isEmpty()) {
-                    for (String script : generalIndexesScripts) {
-                        fileWriter.write(script + EOL_MARKER
-                                         + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                    }
-                }
-            }
-    
-            // write FOREIGN INDEXES statements
-            for (Entry<String, Map<String, Set<String>>> entry : tablesScripts.entrySet()) {
-                //String fullTableName = entry.getKey();
-                Map<String, Set<String>> allTableScripts = entry.getValue();
-                Set<String> foreignKeyScripts = allTableScripts.get(FOREIGN_KEYS_INDEXES);
-                if (foreignKeyScripts != null && !foreignKeyScripts.isEmpty()) {
-                    for (String script : foreignKeyScripts) {
-                        fileWriter.write(script + EOL_MARKER
-                                         + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-                    }
-                }
-            }
-    
-            for (Entry<String, DbTable> entry : dbTables.entrySet()) {
-                String fullTableName = getFullTableName(entry.getValue());
-    
-                // get table INSERT DATA
-                List<ColumnDescription> columnsToSelect = null;
-                columnsToSelect = getColumnsToSelect(entry.getValue(), dbConnection.getUser());
-                if (columnsToSelect == null || columnsToSelect.size() == 0) {
-                    // NOTE: if needed change behavior to continue if the table has no columns.
-                    // Currently it is assumed that if the table is described for backup then
-                    // it contains some meaningful data and so it has columns
-    
-                    // NOTE: it is a good idea to print null instead of empty string for table name when table is null,
-                    // so it is more obvious for the user that something is wrong
-                    throw new DatabaseEnvironmentCleanupException("No columns to backup for table "
-                                                                  + fullTableName);
-                }
-                DbRecordValuesList[] records = new DbRecordValuesList[0];
-                if (!skipTableContent) {
-                    StringBuilder selectQuery = new StringBuilder();
-                    selectQuery.append("SELECT ");
-                    selectQuery.append(getColumnsString(columnsToSelect));
-                    selectQuery.append(" FROM ");
-                    selectQuery.append(getFullTableName(entry.getValue()));
-    
-                    DbQuery query = new DbQuery(selectQuery.toString());
-                    // assuming not very large tables
-                    records = dbProvider.select(query, DbReturnModes.ESCAPED_STRING);
-    
-                    // lock table and write INSERT statements
-                    writeTableToFile(columnsToSelect, entry.getValue(), records, fileWriter);
-    
-                }
-            }
-    
-        } finally {
-            DbUtils.closeConnection(connection);
-        }
-    
-        if (disableForeignKeys) {
-            fileWriter.write(disableForeignKeyChecksEnd());
-        }
-    
-    }*/
-
-    private Map<String, Set<String>> generateTableCreateIndexesScripts( String fullTableName, Connection connection ) {
-
-        return getTableIndexesScripts(fullTableName, connection);
     }
 
     private String generateCreateTableScript( String fullTableName, Connection connection ) {
@@ -919,39 +788,67 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
     }
 
     /**
-     * Build full table name from schema and table.
-     * @param table table object
-     * @return Full SQL-friendly name "schema_name"."table_name"
+     * Build full table name from schema and table. Add quotes so it will work even for mixed-case names.
+     * @param table table object. Note that DbTable.getFullTableName() is not valid for PostgreSQL case.
+     * @return Full PostgreSQL-friendly name "schema_name"."table_name" which works not only for table named
+     *    "people_table" but also for "People_Table".
      */
-    private String getFullTableName( DbTable table ) {
+    static String getFullTableName( DbTable table ) {
 
         StringBuilder sb = new StringBuilder();
-        sb.append("\"");
-        if (StringUtils.isNullOrEmpty(table.getTableSchema())) {
-            sb.append("public");
-        } else {
-            sb.append(table.getTableSchema());
+        // schema quoting
+        String schema = table.getTableSchema();
+        if (StringUtils.isNullOrEmpty(schema)) {
+            schema = "public";
         }
-        sb.append("\".\"");
-        sb.append(table.getTableName());
-        sb.append("\"");
+        if (!schema.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (schema.endsWith("\"")) {
+                LOG.warn("Db schema name does not start with quote but ends with such. Check provided schema name: "
+                         + schema);
+                addEndingQuote = false;
+            }
+            sb.append("\"");
+            sb.append(schema);
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+
+        } else { // has leading quote
+            sb.append(schema);
+            if (!schema.endsWith("\"")) {
+                LOG.warn("Db schema name starts with quote but does not end with such. Check provided schema name: "
+                         + schema);
+                sb.append("\"");
+            }
+        }
+        sb.append(".");
+
+        // table name quoting
+        String tableName = table.getTableName();
+        if (!tableName.startsWith("\"")) { // add quotes if missing
+            boolean addEndingQuote = true;
+            if (tableName.endsWith("\"")) {
+                LOG.warn("Db table name does not start with quote but ends with such. Check provided table name: "
+                         + tableName);
+                addEndingQuote = false;
+            }
+            sb.append("\"");
+            sb.append(tableName);
+            if (addEndingQuote) {
+                sb.append("\"");
+            }
+        } else { // has leading quote
+            sb.append(tableName);
+            if (!tableName.endsWith("\"")) {
+                LOG.warn("Db table name starts with quote but does not end with such. Check provided table name: "
+                         + tableName);
+                sb.append("\"");
+            }
+        }
+
         return sb.toString();
     }
-
-    /*private void writeDropTableStatements( Writer fileWriter, String fullTableName,
-                                           Connection connection ) throws IOException {
-    
-        // generate script for restoring the exact table
-        String generateTableScript = generateTableScript(fullTableName, connection);
-    
-        // drop the table.
-        fileWriter.write("DROP TABLE " + fullTableName + ";" + EOL_MARKER
-                         + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-    
-        // create new table
-        fileWriter.write(generateTableScript + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-    
-    }*/
 
     @Override
     protected void writeDeleteStatements( Writer fileWriter ) {
@@ -1068,95 +965,6 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         return "SET CONSTRAINTS ALL IMMEDIATE;" + EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
     }
 
-    // DROP table (fast cleanup) functionality methods
-    /*private void dropAndRecreateTable( Connection connection, String table, String schema ) {
-    
-        String tableName = schema + "." + table;
-        // generate script for restoring the exact table
-        String generateTableScript = generateTableScript(tableName, connection);
-    
-        // drop the table
-        executeUpdate("DROP TABLE " + tableName + ";", connection);
-    
-        // create new table
-        executeUpdate(generateTableScript, connection);
-    }*/
-
-    /**
-     * Used for Drop table functionality.
-     * @param fullTableName "schema"."table"
-     * @param connection DB connection
-     * @return constructed generate table script
-     * @throws DbException in case of an error
-     */
-    /*private String generateTableScript( String fullTableName, Connection connection ) throws DbException {
-    
-        StringBuilder createTableScript = new StringBuilder();
-    
-        List<String> tableColumnScripts = getTableColumnScripts(fullTableName, connection);
-        Set<String> tableIndexesScripts = getTableIndexesScripts(fullTableName, connection);
-        String tablePartitionScript = getTablePartitionScript(fullTableName, connection);
-        String tableTableSpaceScript = getTableTableSpaceScript(fullTableName, connection);
-        List<String> tablePartitionsScripts = getTablePartitionsScript(fullTableName, connection);
-    
-        StringBuilder tableColumnsScript = new StringBuilder();
-        boolean firstTime = true;
-        for (String script : tableColumnScripts) {
-            if (firstTime) {
-                firstTime = false;
-                tableColumnsScript.append(script);
-            } else {
-                tableColumnsScript.append(",\n\t").append(script);
-            }
-        }
-    
-        StringBuilder tableIndexesScript = new StringBuilder();
-        firstTime = true;
-        for (String script : tableIndexesScripts) {
-            if (firstTime) {
-                firstTime = false;
-                tableIndexesScript.append(script)
-                                  .append(";")
-                                  .append(EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            } else {
-                tableIndexesScript.append("\n")
-                                  .append(script)
-                                  .append(";")
-                                  .append(EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            }
-        }
-    
-        StringBuilder tablePartitionsScript = new StringBuilder();
-        firstTime = true;
-        for (String script : tablePartitionsScripts) {
-            if (firstTime) {
-                firstTime = false;
-                tablePartitionsScript.append(script).append(EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            } else {
-                tablePartitionsScript.append("\n")
-                                     .append(script)
-                                     .append(EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR);
-            }
-        }
-    
-        createTableScript.append("CREATE TABLE ")
-                         .append(fullTableName)
-                         .append(" ( \n\t")
-                         .append(tableColumnsScript.toString())
-                         .append("\n) ")
-                         .append(tablePartitionScript)
-                         .append("\n\n")
-                         .append(tableTableSpaceScript)
-                         .append(";")
-                         .append(EOL_MARKER + AtsSystemProperties.SYSTEM_LINE_SEPARATOR)
-                         .append("\n\n")
-                         .append(tableIndexesScript.toString())
-                         .append("\n\n")
-                         .append(tablePartitionsScript.toString());
-    
-        return createTableScript.toString();
-    }*/
-
     private String getTableTableSpaceScript( String fullTableName, Connection connection ) {
 
         String schemaName = fullTableName.split(Pattern.quote("."))[0].replace("\"", "'");
@@ -1262,23 +1070,23 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
                                 allPartitionsIndexesAndConstraintsScripts.add(otherPartitionIndexEntry.getValue());
                                 for (String parentCreateIndexScript : parentTableIndexes) {
 
-                                    Map<String, String> parentMap = getIndexNamAndColumnList(parentTableName,
-                                                                                             parentCreateIndexScript.substring(0,
-                                                                                                                               parentCreateIndexScript.lastIndexOf("TABLESPACE")
-                                                                                                                                  - 2),
-                                                                                             connection);
+                                    Map<String, String> parentMap = getIndexNameAndColumnList(parentTableName,
+                                                                                              parentCreateIndexScript.substring(0,
+                                                                                                                                parentCreateIndexScript.lastIndexOf("TABLESPACE")
+                                                                                                                                   - 2),
+                                                                                              connection);
 
                                     if (parentMap == null || parentMap.isEmpty()) {
                                         continue;
                                     }
 
-                                    Map<String, String> partitionMap = getIndexNamAndColumnList(partitionName,
-                                                                                                otherPartitionIndexEntry.getValue()
-                                                                                                                        .substring(0,
-                                                                                                                                   otherPartitionIndexEntry.getValue()
-                                                                                                                                                           .lastIndexOf("TABLESPACE")
-                                                                                                                                      - 2),
-                                                                                                connection);
+                                    Map<String, String> partitionMap = getIndexNameAndColumnList(partitionName,
+                                                                                                 otherPartitionIndexEntry.getValue()
+                                                                                                                         .substring(0,
+                                                                                                                                    otherPartitionIndexEntry.getValue()
+                                                                                                                                                            .lastIndexOf("TABLESPACE")
+                                                                                                                                       - 2),
+                                                                                                 connection);
 
                                     if (partitionMap == null || partitionMap.isEmpty()) {
                                         continue;
@@ -1327,8 +1135,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
         return scripts;
     }
 
-    private Map<String, String> getIndexNamAndColumnList( String tableName, String indexScript,
-                                                          Connection connection ) {
+    private Map<String, String> getIndexNameAndColumnList( String tableName, String indexScript,
+                                                           Connection connection ) {
 
         Map<String, String> map = new HashMap<String, String>();
         String sql = "SELECT schemaname, tablename, indexname, oid, indkey, column_name, ordinal_position "
@@ -1740,8 +1548,8 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
             throw new DbException("Error while obtaining column information/scripts for table '" + fullTableName + "'",
                                   e);
         } finally {
-            DbUtils.closeStatement(stmnt);
             DbUtils.closeResultSet(rs);
+            DbUtils.closeStatement(stmnt);
         }
         return scripts;
     }

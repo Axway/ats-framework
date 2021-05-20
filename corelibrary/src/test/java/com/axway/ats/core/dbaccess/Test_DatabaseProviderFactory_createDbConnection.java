@@ -25,6 +25,7 @@ import org.junit.Test;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
 import com.axway.ats.core.BaseTest;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
 import com.axway.ats.core.dbaccess.oracle.DbConnOracle;
@@ -48,6 +49,24 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
         assertEquals("jdbc:mysql://host:" + DbConnMySQL.DEFAULT_PORT + "/db", dbConnection.getURL());
+    }
+
+    @Test
+    public void createMariaDbNoCustom() {
+
+        DbConnMariaDB dbConnection = (DbConnMariaDB) DatabaseProviderFactory.createDbConnection(DbConnMariaDB.DATABASE_TYPE,
+                                                                                                "host",
+                                                                                                DbConnMySQL.DEFAULT_PORT,
+                                                                                                "db",
+                                                                                                "user",
+                                                                                                "pass");
+
+        assertEquals(DbConnMariaDB.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mariadb://host:" + DbConnMySQL.DEFAULT_PORT + "/db", dbConnection.getURL());
     }
 
     @Test
@@ -126,6 +145,28 @@ public class Test_DatabaseProviderFactory_createDbConnection extends BaseTest {
         assertEquals("user", dbConnection.getUser());
         assertEquals("pass", dbConnection.getPassword());
         assertEquals("jdbc:mysql://host:123/db", dbConnection.getURL());
+    }
+
+    @Test
+    public void createMariaDbWithCustomProperties() {
+
+        Map<String, Object> customProperties = new HashMap<String, Object>();
+        customProperties.put(DbKeys.PORT_KEY, 123);
+
+        DbConnMariaDB dbConnection = (DbConnMariaDB) DatabaseProviderFactory.createDbConnection(DbConnMariaDB.DATABASE_TYPE,
+                                                                                                "host",
+                                                                                                DbConnMariaDB.DEFAULT_PORT,
+                                                                                                "db",
+                                                                                                "user",
+                                                                                                "pass",
+                                                                                                customProperties);
+
+        assertEquals(DbConnMariaDB.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mariadb://host:123/db", dbConnection.getURL());
     }
 
     @Test

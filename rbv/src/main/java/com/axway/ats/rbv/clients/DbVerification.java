@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,8 @@ import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
 import com.axway.ats.core.dbaccess.DbProvider;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
@@ -48,7 +50,7 @@ import com.axway.ats.rbv.model.RbvException;
  * Class used for base DB verifications
  * <p>Note that <code>check</code> methods add rules for match whereas actual rules
  * evaluation is done in one of the methods with <code>verify</code> prefix.</p>
-  *
+ *
  * <br><br>
  * <b>User guide</b> pages related to this class:<br>
  * <a href="https://axway.github.io/ats-framework/Common-test-verifications.html">RBV basics</a>
@@ -59,17 +61,16 @@ import com.axway.ats.rbv.model.RbvException;
 public class DbVerification extends VerificationSkeleton {
 
     private String        host;
-
     // A custom encryption provider interface
     protected DbEncryptor dbEncryptor;
 
     /**
      * Create a DB verification component using the data provided
      *
-     * @param testBox           the test box
-     * @param table             the table to search in
+     * @param testBox the test box
+     * @param table   the table to search in
      *
-     * @throws RbvException     thrown on error
+     * @throws RbvException thrown on error
      */
     @PublicAtsApi
     public DbVerification( TestBox testBox,
@@ -88,10 +89,10 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Create a DB verification component using the data provided
      *
-     * @param testBox           the test box
-     * @param searchTerm        the DbTerm which describes the SQL query used for retrieving the data
+     * @param testBox    the test box
+     * @param searchTerm the DbTerm which describes the SQL query used for retrieving the data
      *
-     * @throws RbvException     thrown on error
+     * @throws RbvException thrown on error
      */
     @PublicAtsApi
     public DbVerification( TestBox testBox,
@@ -126,7 +127,7 @@ public class DbVerification extends VerificationSkeleton {
         }
         DbProvider dbProvider;
         if (port != TestBox.DB_PORT_NOT_SPECIFIED) { // add custom port
-            customProperties.put(DbKeys.PORT_KEY, new Integer(port));
+            customProperties.put(DbKeys.PORT_KEY, Integer.valueOf(port));
         }
         switch (dbType) {
             case DbConnMySQL.DATABASE_TYPE:
@@ -135,6 +136,13 @@ public class DbVerification extends VerificationSkeleton {
                                                                  user,
                                                                  password,
                                                                  customProperties));
+                break;
+            case DbConnMariaDB.DATABASE_TYPE:
+                dbProvider = new MariaDbDbProvider(new DbConnMariaDB(host,
+                                                                     database,
+                                                                     user,
+                                                                     password,
+                                                                     customProperties));
                 break;
             case DbConnSQLServer.DATABASE_TYPE:
                 dbProvider = new MssqlDbProvider(new DbConnSQLServer(host,
@@ -159,7 +167,9 @@ public class DbVerification extends VerificationSkeleton {
                                                                    customProperties));
                 break;
             case DbConnPostgreSQL.DATABASE_TYPE:
-                dbProvider = new PostgreSqlDbProvider(new DbConnPostgreSQL(host, database, user, password));
+                dbProvider = new PostgreSqlDbProvider(
+                                                      new DbConnPostgreSQL(host, port, database, user, password,
+                                                                           customProperties));
                 break;
             default:
                 throw new RbvException("DB Provider '" + dbType + "' not supported!");
@@ -194,9 +204,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (string)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (string)
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
@@ -217,9 +227,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (boolean)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (boolean)
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
@@ -238,9 +248,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (Date)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (Date)
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
@@ -260,9 +270,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (numeric)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (numeric)
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
@@ -281,9 +291,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (binary)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (binary)
      */
     @PublicAtsApi
     public void checkFieldValueEquals(
@@ -302,9 +312,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is not the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (string)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (string)
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
@@ -325,9 +335,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is not the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (numeric)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (numeric)
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
@@ -346,9 +356,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is not the same as the given one
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the value expected (binary)
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the value expected (binary)
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotEqual(
@@ -367,8 +377,8 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is matched by the given regular expressions
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
      * @param regex
      */
     @PublicAtsApi
@@ -390,8 +400,8 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field is not matched by the given regular expressions
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
      * @param regex
      */
     @PublicAtsApi
@@ -413,9 +423,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field contains the given string
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the string that should be contained in the field
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the string that should be contained in the field
      */
     @PublicAtsApi
     public void checkFieldValueContains(
@@ -436,9 +446,9 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the value of the given field does not contain the given string
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param value         the string that should be contained in the field
+     * @param tableName the name of the table which the field is part of
+     * @param fieldName the field to check
+     * @param value     the string that should be contained in the field
      */
     @PublicAtsApi
     public void checkFieldValueDoesNotContain(
@@ -459,10 +469,10 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the given timestamp is before the date contained in the given field
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param timestamp     the expected timestamp (UNIX timestamp format)
-     * @param datePattern   the pattern in which the date is stored in the field - see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">Java date patterns</a>
+     * @param tableName   the name of the table which the field is part of
+     * @param fieldName   the field to check
+     * @param timestamp   the expected timestamp (UNIX timestamp format)
+     * @param datePattern the pattern in which the date is stored in the field - see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">Java date patterns</a>
      */
     @PublicAtsApi
     public void checkFieldValueDateBefore(
@@ -485,10 +495,10 @@ public class DbVerification extends VerificationSkeleton {
     /**
      * Add rule to check that the given timestamp is after the date contained in the given field
      *
-     * @param tableName     the name of the table which the field is part of
-     * @param fieldName     the field to check
-     * @param timestamp     the expected timestamp (UNIX timestamp format)
-     * @param datePattern   the pattern in which the date is stored in the field - see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">Java date patterns</a>
+     * @param tableName   the name of the table which the field is part of
+     * @param fieldName   the field to check
+     * @param timestamp   the expected timestamp (UNIX timestamp format)
+     * @param datePattern the pattern in which the date is stored in the field - see <a href="http://java.sun.com/j2se/1.4.2/docs/api/java/text/SimpleDateFormat.html">Java date patterns</a>
      */
     @PublicAtsApi
     public void checkFieldValueDateAfter(

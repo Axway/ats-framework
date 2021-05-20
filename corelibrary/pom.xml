@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.axway.ats.framework</groupId>
         <artifactId>ats-framework</artifactId>
-        <version>4.0.7-SNAPSHOT</version>
+        <version>4.0.10-M1-SNAPSHOT</version>
     </parent>
 
     <artifactId>ats-core</artifactId>
@@ -18,6 +18,7 @@
         <org.apache.commons.net.version>3.5</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590, Error example: javax.net.ssl.SSLException: closing inbound before receiving peer's close_notify -->
         <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
+        <mariadb-connector-java.version>2.7.2</mariadb-connector-java.version>
         <!-- jTDS dependency is defined in parent pom.xml -->
         <com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
         <!-- Note that there is a possible issue to be monitored: Sometimes winp
@@ -138,6 +139,11 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${mysql.mysql-connector-java.version}</version>
             <!-- TODO: make optional or runtime -->
+        </dependency>
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>${mariadb-connector-java.version}</version>
         </dependency>
         <!-- dependency for working with PostgreSQL databases -->
         <dependency>

@@ -16,6 +16,7 @@
 package com.axway.ats.action.dbaccess.snapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -43,6 +44,7 @@ import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValuesList;
+import com.axway.ats.core.dbaccess.postgresql.PostgreSqlDbProvider;
 import com.axway.ats.core.utils.StringUtils;
 import com.axway.ats.harness.config.TestBox;
 
@@ -458,7 +460,7 @@ public class DatabaseSnapshot {
                     // the user-provided index property is actually not found in the ones, obtained from DB.
                     // no reason to continue, so the index will not be skipped
                     log.warn("Index property '" + key + "' is not supported for table index for database of type "
-                              + this.dbProvider.getDbConnection().getDbType() + "!");
+                             + this.dbProvider.getDbConnection().getDbType() + "!");
                     found = false;
                     break;
                 }
@@ -1233,6 +1235,11 @@ public class DatabaseSnapshot {
 
         if (skipColumnsForThisTable == null) {
             String query = "SELECT * FROM ";
+            if (this.dbProvider instanceof PostgreSqlDbProvider) {
+                List<String> sortedColumns = new ArrayList<>(columns);
+                Collections.sort(sortedColumns);
+                query = "SELECT " + String.join(", ", sortedColumns) + " FROM ";
+            }
             // all columns are important
             if (table.getSchema() != null) {
                 query += table.getSchema() + ".";

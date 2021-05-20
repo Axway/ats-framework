@@ -36,6 +36,8 @@ import com.axway.ats.core.dbaccess.cassandra.DbConnCassandra;
 //import com.axway.ats.core.dbaccess.db2.Db2DbProvider;
 //import com.axway.ats.core.dbaccess.db2.DbConnDb2;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
+import com.axway.ats.core.dbaccess.mariadb.DbConnMariaDB;
+import com.axway.ats.core.dbaccess.mariadb.MariaDbDbProvider;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.mssql.MssqlDbProvider;
 import com.axway.ats.core.dbaccess.mysql.DbConnMySQL;
@@ -200,6 +202,12 @@ public class DatabaseProviderFactory {
                                                                                   customProperties));
                 break;
 
+            case DbConnMariaDB.DATABASE_TYPE:
+                dbProvider = new MariaDbDbProvider((DbConnMariaDB) createDbConnection(dbType, dbHost, dbPort,
+                                                                                      dbName, dbUser, dbPass,
+                                                                                      customProperties));
+                break;
+
             case DbConnOracle.DATABASE_TYPE:
                 dbProvider = new OracleDbProvider((DbConnOracle) createDbConnection(dbType, dbHost, dbPort,
                                                                                     dbName, dbUser, dbPass,
@@ -295,6 +303,8 @@ public class DatabaseProviderFactory {
      *            the type of the database
      * @param host
      *            the host to connect to
+     * @param port
+     *            the port to connect to
      * @param database
      *            the database name
      * @param user
@@ -328,6 +338,9 @@ public class DatabaseProviderFactory {
         switch (dbType) {
             case DbConnMySQL.DATABASE_TYPE: {
                 return new DbConnMySQL(host, port, database, user, password, customProperties);
+            }
+            case DbConnMariaDB.DATABASE_TYPE: {
+                return new DbConnMariaDB(host, port, database, user, password, customProperties);
             }
             case DbConnSQLServer.DATABASE_TYPE: {
                 return new DbConnSQLServer(host, port, database, user, password, customProperties);
