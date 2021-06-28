@@ -63,6 +63,18 @@ public class SwingDriverInternal extends SwingDriver {
     }
 
     /**
+     *
+     * @param jnlpLocation JNLP location. It can be local JNLP file path or a remote url
+     * @param cacheEnabled whether the JNLP is cached or not
+     */
+    public SwingDriverInternal( String jnlpLocation,
+                                String windowTitle,
+                                boolean cacheEnabled ) {
+
+        super( jnlpLocation, windowTitle, cacheEnabled );
+    }
+
+    /**
      * <strong>Internal method.</strong> Might be changed at any time.
      * Should not be used from tests<br />
      */
