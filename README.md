@@ -5,7 +5,7 @@
 **WORK IN PROGRESS - Initial testing is OK, but still more need to be done.
 Will be replacing master branch when done.
 
-Note that 4.0.8 and 4.0.9 will be the only two releases that use log4j2. Future releases will be exclusively log4j1 (as all the pre 4.0.8 releases)**
+**Note that 4.0.8 and 4.0.9 will be the only two releases that use log4j2. Future releases will be exclusively log4j1 (as all the pre 4.0.8 releases)
 
 **The Axway Automated Testing System** (ATS) is a Java open source testing framework. It was initially developed for the testing needs of most of the Axway products.
 
