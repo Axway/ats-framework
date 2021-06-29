@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -886,7 +885,7 @@ public class Test_FileSystemSnapshot extends BaseTest {
     public void checkPermissions() {
 
         if (new LocalSystemOperations().getOperatingSystemType().isWindows()) {
-            LogManager.getLogger(Test_FileSystemSnapshot.class)
+            Logger.getLogger(Test_FileSystemSnapshot.class)
                   .warn("We skip this test as it is not applicable for Windows OS");
             return;
         }

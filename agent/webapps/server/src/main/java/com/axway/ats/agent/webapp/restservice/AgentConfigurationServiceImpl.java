@@ -29,9 +29,11 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.Priority;
 
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
 import com.axway.ats.agent.core.context.ApplicationContext;
@@ -45,12 +47,9 @@ import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
-import com.axway.ats.log.Log4j2Utils;
 import com.axway.ats.log.appenders.PassiveDbAppender;
-import com.axway.ats.log.appenders.PassiveDbAppender.PassiveDbAppenderBuilder;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.TestCaseState;
-import com.axway.ats.log.model.SystemLogLevel;
 
 /**
  * Entry class for configurating the agent
@@ -58,9 +57,8 @@ import com.axway.ats.log.model.SystemLogLevel;
 @Path( "configuration")
 public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
-    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j2.xml **/
-    protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName(),
-                                                                            true);
+    /** skip test for checking if ActiveDbAppender is presented in test executor's log4j.xml **/
+    protected AtsDbLogger     dbLog                 = AtsDbLogger.getLogger(AgentConfigurationServiceImpl.class.getName(), true);
 
     private static int        lastRunId             = -1;
 
@@ -99,7 +97,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             newAppenderConfiguration.setUser(dbConnectionPojo.getDbUser());
             newAppenderConfiguration.setPassword(dbConnectionPojo.getDbPass());
             newAppenderConfiguration.setMode(dbConnectionPojo.getMode());
-            newAppenderConfiguration.setLoggingThreshold(SystemLogLevel.toLevel(dbConnectionPojo.getLoggingThreshold()));
+            newAppenderConfiguration.setLoggingThreshold(Priority.toPriority(dbConnectionPojo.getLoggingThreshold()));
             newAppenderConfiguration.setMaxNumberLogEvents(dbConnectionPojo.getMaxNumberLogEvents());
 
             PassiveDbAppender alreadyExistingAppender = PassiveDbAppender.getCurrentInstance(caller);
@@ -112,10 +110,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                      */
                     dbLog.debug("Remove previously attached PassiveDbAppender for caller '" + caller
                                 + "'.");
-
-                    PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance(caller);
-                    appender.stop();
-                    Log4j2Utils.removeAppenderFromLogger(Log4j2Utils.getRootLogger().getName(), appender.getName());
+                    Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
                     attachPassiveDbAppender(newAppenderConfiguration, dbConnectionPojo.getTimestamp());
                     dbLog.debug("Successfully attached new PassiveDbAppender for caller '" + caller + "'.");
                 }
@@ -149,9 +144,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         final String caller = getCaller(request, basePojo, false);
         ThreadsPerCaller.registerThread(caller);
         try {
-            PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance(caller);
-            appender.stop();
-            Log4j2Utils.removeAppenderFromLogger(Log4j2Utils.getRootLogger().getName(), appender.getName());
+            Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -239,6 +232,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                 return Response.ok("{\"status\": \"testcase already joined.\"}").build();
             }
 
+
         } catch (Exception e) {
             return Response.serverError().entity(new ErrorPojo(e)).build();
         } finally {
@@ -307,41 +301,21 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                           long timestamp ) {
 
         // create the new appender
-        PassiveDbAppenderBuilder builder = PassiveDbAppender.newBuilder();
-        //use a default pattern, as we log in the db
-        builder.setLayout(org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
-                                                                            .withPattern("%c{2}: %m%n")
-                                                                            .build());
+        PassiveDbAppender attachedAppender = new PassiveDbAppender(ThreadsPerCaller.getCaller());
 
-        builder.setChunkSize(appenderConfiguration.getChunkSize());
-        builder.setDatabase(appenderConfiguration.getDatabase());
-        builder.setDriver(appenderConfiguration.getDriver());
-        builder.setEnableCheckpoints(appenderConfiguration.getEnableCheckpoints());
-        builder.setEvents(appenderConfiguration.getMaxNumberLogEvents());
-        builder.setFilter(ThresholdFilter.createFilter(appenderConfiguration.getLoggingThreshold(),
-                                                       Filter.Result.ACCEPT, Filter.Result.DENY));
-        builder.setHost(appenderConfiguration.getHost());
-        builder.setMode( (appenderConfiguration.isBatchMode())
-                                                               ? "batch"
-                                                               : "");
-        builder.setName(PassiveDbAppender.class.getSimpleName());
-        builder.setPassword(appenderConfiguration.getPassword());
-        builder.setPort(Integer.parseInt(appenderConfiguration.getPort()));
-        builder.setUser(appenderConfiguration.getUser());
-
-        PassiveDbAppender attachedAppender = builder.build();
         // calculate the time stamp offset, between the test executor and the agent
         attachedAppender.calculateTimeOffset(timestamp);
 
         attachedAppender.setAppenderConfig(appenderConfiguration);
-
-        attachedAppender.start();
+        // use a default pattern, as we log in the db
+        attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
+        attachedAppender.activateOptions();
 
         // attach the appender to the logging system
-        Logger log = Log4j2Utils.getRootLogger();
-        Log4j2Utils.setRootLevel(SystemLogLevel.toLevel(appenderConfiguration.getLoggingThreshold().intLevel()));
-        // yet again could this cast fail?!?
-        ((org.apache.logging.log4j.core.Logger) log).addAppender(attachedAppender);
+        Category log = Logger.getRootLogger();
+
+        log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
+        log.addAppender(attachedAppender);
 
     }
 

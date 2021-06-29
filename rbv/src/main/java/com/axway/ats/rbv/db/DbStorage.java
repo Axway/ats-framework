@@ -15,8 +15,7 @@
  */
 package com.axway.ats.rbv.db;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.rbv.model.RbvStorageException;
@@ -26,7 +25,7 @@ import com.axway.ats.rbv.storage.Storage;
 
 public class DbStorage implements Storage {
 
-    private static final Logger log = LogManager.getLogger(DbStorage.class);
+    private static final Logger log = Logger.getLogger(DbStorage.class);
 
     private DbProvider          dbProvider;
 

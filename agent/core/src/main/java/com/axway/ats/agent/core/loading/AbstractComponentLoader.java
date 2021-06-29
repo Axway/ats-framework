@@ -17,8 +17,7 @@ package com.axway.ats.agent.core.loading;
 
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.Component;
 import com.axway.ats.agent.core.ComponentActionMap;
@@ -52,7 +51,7 @@ public abstract class AbstractComponentLoader implements ComponentLoader {
      */
     public AbstractComponentLoader( Object loadingMutex ) {
 
-        this.log = LogManager.getLogger(this.getClass());
+        this.log = Logger.getLogger(this.getClass());
         this.loadingMutex = loadingMutex;
     }
 

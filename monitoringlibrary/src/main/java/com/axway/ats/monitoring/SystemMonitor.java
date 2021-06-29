@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.action.rest.RestResponse;
 import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
@@ -50,7 +49,7 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
  */
 public class SystemMonitor {
 
-    private static final Logger log = LogManager.getLogger(SystemMonitor.class);
+    private static final Logger log = Logger.getLogger(SystemMonitor.class);
 
     /** All CPU related statistics */
     @PublicAtsApi
@@ -638,7 +637,7 @@ public class SystemMonitor {
 
     /**
      * Adds PassiveDbAppender on the agent with the local (on the Test executor
-     * side) log4j2 DB configuration, joins the current testcase, and initializes
+     * side) log4j DB configuration, joins the current testcase, and initializes
      * the monitoring.
      */
     private void performSetup(

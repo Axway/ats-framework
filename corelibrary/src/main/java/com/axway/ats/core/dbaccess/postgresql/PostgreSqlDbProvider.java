@@ -27,8 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValue;
@@ -60,7 +59,7 @@ public class PostgreSqlDbProvider extends AbstractDbProvider {
         public static final String IS_UNIQUE       = "IsUnique";        // result set index 4
     }
 
-    private static final Logger log               = LogManager.getLogger(PostgreSqlDbProvider.class);
+    private static final Logger log               = Logger.getLogger(PostgreSqlDbProvider.class);
 
     private Set<String>         partitionedTables = new HashSet<>();
 

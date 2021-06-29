@@ -22,8 +22,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.apache.poi.ss.usermodel.*;
 
 import com.axway.ats.harness.testng.exceptions.DataProviderException;
@@ -47,7 +46,7 @@ public class ExcelParser {
     /** The {@link String} used to indicate that the table rows are to be returned in Cartesian product */
     public static final String  MULTIPLY                     = "MULTIPLY";
 
-    Logger                      log                          = LogManager.getLogger(ExcelParser.class);
+    Logger                      log                          = Logger.getLogger(ExcelParser.class);
 
     private static final String ERROR_LOCATING_STARTING_CELL = "Unable to find test data starting cell. Such should have a comment containing "
                                                                + TEST_CASE_START;

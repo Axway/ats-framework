@@ -26,8 +26,8 @@ import java.util.*;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.process.ProcessExecutorException;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -40,7 +40,7 @@ import com.axway.ats.core.utils.StringUtils;
 
 public class LocalProcessExecutor implements IProcessExecutor {
 
-    private static final Logger log                            = LogManager.getLogger(LocalProcessExecutor.class);
+    private static final Logger log                            = Logger.getLogger(LocalProcessExecutor.class);
     public static final int     OUTPUT_POLLING_INTERVAL_MAX_MS = 60 * 60 * 1000;                                  /* 1 hour */
     private final static int    MAX_STRING_SIZE                = 100000;                                          // max chars used to limit process output
     private final static String SKIPPED_CHARACTERS             = "... skipped characters ..."
@@ -281,7 +281,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 while (! (f.exists() && f.delete()) && retries-- > 0) {
                     Thread.sleep(10);
                 }
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
         }
 
         return numberOfKilled;
@@ -393,8 +394,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log standard output also to the corresponding Log4j2 appenders
-     * @param logStandardOutput <code>true</code> - log the output read to the log4j2 too
+     * Log standard output also to the corresponding Log4j appenders
+     * @param logStandardOutput <code>true</code> - log the output read to the log4j too
      */
     public void setLogStandardOutput( boolean logStandardOutput ) {
 
@@ -402,8 +403,8 @@ public class LocalProcessExecutor implements IProcessExecutor {
     }
 
     /**
-     * Log error to corresponding log4j2 appenders
-     * @param logErrorOutput - <code>true</code> - log the error output to the log4j2 too
+     * Log error to corresponding log4j appenders
+     * @param logErrorOutput - <code>true</code> - log the error output to the log4j too
      */
     public void setLogErrorOutput( boolean logErrorOutput ) {
 
@@ -484,7 +485,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
         ProcessOutputReader( String caller, String type, Process externalProcess, InputStream is,
                              boolean logOutput, String outputFile ) {
 
-            log = LogManager.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
+            log = Logger.getLogger(ProcessOutputReader.class.getSimpleName() + " <" + type + ">");
 
             this.caller = caller;
 
@@ -537,8 +538,7 @@ public class LocalProcessExecutor implements IProcessExecutor {
                 String dataToLeave = null;
                 bufReaderStream = new BufferedReader(new InputStreamReader(is));
                 int pollingIntervalMs = AtsSystemProperties.getPropertyAsNonNegativeNumber(
-                                                                                           AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL,
-                                                                                           -1);
+                        AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL, -1);
                 if (pollingIntervalMs < 0 || pollingIntervalMs > OUTPUT_POLLING_INTERVAL_MAX_MS) {
                     pollingIntervalMs = AtsSystemProperties.ACTION__PROCESS_OUTPUT_POLL_INTERVAL_DEFAULT; // default value
                 } else { // explicitly set and acceptable value

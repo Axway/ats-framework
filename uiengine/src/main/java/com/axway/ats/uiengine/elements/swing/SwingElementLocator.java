@@ -48,8 +48,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JTree;
 import javax.swing.text.JTextComponent;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.fest.swing.core.BasicComponentFinder;
 import org.fest.swing.core.BasicRobot;
 import org.fest.swing.core.GenericTypeMatcher;
@@ -87,7 +86,7 @@ import com.axway.ats.uiengine.internal.driver.SwingDriverInternal;
 
 public class SwingElementLocator {
 
-    private static final Logger                                               log           = LogManager.getLogger(SwingElementLocator.class);
+    private static final Logger                                               log           = Logger.getLogger(SwingElementLocator.class);
 
     public static Map<Class<? extends UiElement>, Class<? extends Component>> componentsMap = new HashMap<Class<? extends UiElement>, Class<? extends Component>>();
 

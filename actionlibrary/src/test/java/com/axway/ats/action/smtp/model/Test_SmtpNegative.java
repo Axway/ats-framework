@@ -17,8 +17,7 @@ package com.axway.ats.action.smtp.model;
 
 import static org.junit.Assert.assertEquals;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -37,7 +36,7 @@ public class Test_SmtpNegative extends BaseTest {
     public void setUp() {
 
         smtp = new SmtpManager();
-        LogManager.getRootLogger()
+        Logger.getRootLogger()
               .info("--------------------------START TESTCASE----------------------------------------");
 
     }
@@ -45,7 +44,7 @@ public class Test_SmtpNegative extends BaseTest {
     @After
     public void tearDown() {
 
-        LogManager.getRootLogger()
+        Logger.getRootLogger()
               .info("--------------------------END TESTCASE----------------------------------------");
 
         smtp.closeConnection(-1);

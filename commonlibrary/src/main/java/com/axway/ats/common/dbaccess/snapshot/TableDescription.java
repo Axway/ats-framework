@@ -28,8 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -43,7 +42,7 @@ public class TableDescription {
 
     public static final String  INDEX_PROPERTIES_DELIMITER = ", ";
 
-    private static Logger       log                        = LogManager.getLogger(TableDescription.class);
+    private static Logger       log                        = Logger.getLogger(TableDescription.class);
 
     // snapshot this table belongs to
     private String              snapshotName;

@@ -108,14 +108,14 @@ public interface IProcessExecutor {
                                     String errorOutputFile );
 
     /**
-     * Log output to corresponding log4j2 appenders
+     * Log output to corresponding log4j appenders
      * @param logStandardOutput
      */
     public void setLogStandardOutput(
                                       boolean logStandardOutput );
 
     /**
-     * Log error to corresponding log4j2 appenders
+     * Log error to corresponding log4j appenders
      * @param logErrorOutput
      */
     public void setLogErrorOutput(

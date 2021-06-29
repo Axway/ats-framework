@@ -28,8 +28,7 @@ import java.util.Set;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -48,7 +47,7 @@ public class LocalFileSystemSnapshot implements IFileSystemSnapshot, Serializabl
 
     private static final long              serialVersionUID             = 1L;
 
-    private static Logger                  log                          = LogManager.getLogger(LocalFileSystemSnapshot.class);
+    private static Logger                  log                          = Logger.getLogger(LocalFileSystemSnapshot.class);
 
     /**
      * Skip checking the size of a file

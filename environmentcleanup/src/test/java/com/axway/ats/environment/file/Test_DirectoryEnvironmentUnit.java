@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -38,7 +37,7 @@ import com.axway.ats.environment.EnvironmentUnit;
 
 public class Test_DirectoryEnvironmentUnit extends BaseTest {
 
-    private static final Logger log = LogManager.getLogger(Test_DirectoryEnvironmentUnit.class);
+    private static final Logger log = Logger.getLogger(Test_DirectoryEnvironmentUnit.class);
     public static String        restoreDirPath;
     public static String        backupDirPath;
     public static String        backupDirName;
@@ -96,7 +95,7 @@ public class Test_DirectoryEnvironmentUnit extends BaseTest {
         assertEquals(new File(file1).length(), new File(tempBackupDir + "file1.txt").length());
 
         String emptyDir = IoUtils.normalizeDirPath(tempBackupDir + "emptydir/");
-        LogManager.getLogger(Test_DirectoryEnvironmentUnit.class)
+        org.apache.log4j.Logger.getLogger(Test_DirectoryEnvironmentUnit.class)
                                    .error("emptydir='" + emptyDir + "'");
         assertTrue(new File(emptyDir).exists());
 

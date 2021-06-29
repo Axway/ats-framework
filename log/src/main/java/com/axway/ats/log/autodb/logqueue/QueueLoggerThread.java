@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ package com.axway.ats.log.autodb.logqueue;
 
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExceptionUtils;
@@ -47,8 +46,6 @@ public class QueueLoggerThread extends Thread {
 
     private boolean                             isUnableToConnect                      = false;
 
-    private String                              caller                                 = null;
-
     /**
      * The queue of events waiting to be logged into DB
      */
@@ -56,12 +53,11 @@ public class QueueLoggerThread extends Thread {
     private int                                 minorSqlExceptionsCounter              = 0;                                            // counter for minor SQL exceptions. Used to prevent flooding of the log
 
     public QueueLoggerThread( ArrayBlockingQueue<LogEventRequest> queue, EventRequestProcessor eventProcessor,
-                              boolean isBatchMode, String caller ) {
+                              boolean isBatchMode ) {
 
         this.queue = queue;
         this.eventProcessor = eventProcessor;
         this.isBatchMode = isBatchMode;
-        this.caller = caller;
 
         // It is the user's responsibility to close appenders before
         // exiting.
@@ -77,11 +73,7 @@ public class QueueLoggerThread extends Thread {
 
         CONSOLE_LOG.info(
                          "Started logger thread named '"
-                         + getName() + "'" + ( (this.caller != null)
-                                                                     ? " for caller '" + this.caller + "'"
-                                                                     : "")
-                         + " with queue of maximum "
-                         + queue.remainingCapacity() + queue.size()
+                         + getName() + "' with queue of maximum " + queue.remainingCapacity() + queue.size()
                          + " events. Batch mode is " + (isBatchMode
                                                                     ? "enabled"
                                                                     : "disabled"));
@@ -100,16 +92,12 @@ public class QueueLoggerThread extends Thread {
             } catch (InterruptedException ie) {
                 // NOTE: In this method we talk to the user using console only as we cannot send it to the log DB
                 CONSOLE_LOG.error(
-                                  "Logging thread " + ( (this.caller != null)
-                                                                              ? "for caller '" + this.caller + "'"
-                                                                              : "")
-                                  + " is interrupted and will stop logging.");
-                eventProcessor.releaseConnection();
+                                  "Logging thread is interrupted and will stop logging.");
                 break;
             } catch (Exception e) {
                 if (e instanceof LoggingException && logEventRequest != null) {
                     LoggingException le = (LoggingException) e;
-                    LogEvent event = logEventRequest.getEvent();
+                    LoggingEvent event = logEventRequest.getEvent();
                     if (event instanceof AbstractLoggingEvent) {
                         AbstractLoggingEvent dbAppenderEvent = (AbstractLoggingEvent) event;
                         LoggingEventType eventType = dbAppenderEvent.getEventType();
@@ -153,7 +141,7 @@ public class QueueLoggerThread extends Thread {
                                && !isUnableToConnect) {
                         // We do not log the no connectivity problem on each failure, we do it just once.
                         // This case is likely to happen on a remote Agent host without set DNS servers - in such
-                        // case providing FQDN in the log4j2.xml makes the DB logging impossible
+                        // case providing FQDN in the log4j.xml makes the DB logging impossible
                         CONSOLE_LOG.error(ExceptionUtils.getExceptionMsg(e,
                                                                          "Error processing log event"));
 

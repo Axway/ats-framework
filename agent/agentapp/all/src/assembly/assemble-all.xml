@@ -108,6 +108,8 @@
             <scope>provided</scope>
             <includes>
                 <include>com.github.oshi:oshi-core</include>
+                <include>org.slf4j:slf4j-api</include>
+                <include>org.slf4j:slf4j-log4j12</include>
             </includes>
             <outputFileNameMapping>${artifact.artifactId}-${artifact.version}.${artifact.extension}
             </outputFileNameMapping>
@@ -156,13 +158,7 @@
             <outputDirectory>/ats-agent/container</outputDirectory>
             <includes>
                 <include>org.eclipse.jetty*:jetty-*</include>
-                <include>org.apache.logging.log4j:log4j-api</include>
-                <include>org.apache.logging.log4j:log4j-core</include>
-                <include>org.apache.logging.log4j:log4j-1.2-api</include>
-                <include>org.apache.logging.log4j:log4j-slf4j-impl</include>
-                <include>org.apache.logging.log4j:log4j-jul</include>
-                <include>org.apache.logging.log4j:log4j-jcl</include>
-                <include>org.slf4j:slf4j-api</include>
+                <include>log4j:log4j</include>
                 <include>*:servlet-api</include>
             </includes>
             <scope>provided</scope>

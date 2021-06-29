@@ -15,16 +15,16 @@
  */
 package com.axway.ats.log.autodb.logqueue;
 
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.log4j.spi.LoggingEvent;
 
 public class LogEventRequest {
 
     private String   threadName;
-    private LogEvent event;
+    private LoggingEvent event;
     private long     timestamp;
 
     public LogEventRequest( String threadName,
-                            LogEvent event,
+                            LoggingEvent event,
                             long timestamp ) {
 
         this.threadName = threadName;
@@ -37,7 +37,7 @@ public class LogEventRequest {
         return threadName;
     }
 
-    public LogEvent getEvent() {
+    public LoggingEvent getEvent() {
 
         return event;
     }

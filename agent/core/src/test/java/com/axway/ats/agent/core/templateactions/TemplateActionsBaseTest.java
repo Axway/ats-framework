@@ -33,10 +33,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 import org.powermock.reflect.Whitebox;
 
 import com.axway.ats.agent.core.BaseTest;
@@ -50,29 +50,15 @@ import com.axway.ats.core.utils.IoUtils;
 
 public class TemplateActionsBaseTest extends BaseTest {
 
-    protected static final Logger log                 = LogManager.getLogger(TemplateActionsBaseTest.class);
+    protected static final Logger log                 = Logger.getLogger( TemplateActionsBaseTest.class );
 
     protected static final String TEST_COMPONENT_NAME = "agentTestComponent";
 
     protected String              actionName;
 
     static {
-        org.apache.logging.log4j.core.layout.PatternLayout layout = org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
-                                                                                                                      .withPattern("%m%n")
-                                                                                                                      .build();
-        org.apache.logging.log4j.core.appender.ConsoleAppender appender = org.apache.logging.log4j.core.appender.ConsoleAppender.newBuilder()
-                                                                                                                                .setLayout(layout)
-                                                                                                                                .setName("ConsoleAppender")
-                                                                                                                                .build();
-
-        //init log4j
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        appender.start();
-        config.addAppender(appender);
-        // context.getRootLogger().addAppender(config.getAppender(appender.getName())); Is this needed?!?
-        context.updateLoggers(); // TODO is this needed
-
+        PatternLayout layout = new PatternLayout( "%m%n" );
+        BasicConfigurator.configure( new ConsoleAppender( layout ) );
         ConfigurationSettings.getInstance().setTemplateActionsMatchFilesByContent(true);
     }
 

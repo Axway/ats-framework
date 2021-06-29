@@ -26,8 +26,7 @@ import javax.mail.NoSuchProviderException;
 import javax.mail.Session;
 import javax.mail.Transport;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.mail.model.MailTransportListener;
@@ -55,7 +54,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class MailSender extends PackageSender {
 
-    private static final Logger             log            = LogManager.getLogger(MailSender.class);
+    private static final Logger             log            = Logger.getLogger(MailSender.class);
 
     private final ActionLibraryConfigurator configurator;
 

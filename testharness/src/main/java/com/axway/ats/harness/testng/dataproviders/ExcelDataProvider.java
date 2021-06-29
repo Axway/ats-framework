@@ -20,8 +20,7 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 
 import com.axway.ats.core.utils.IoUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.config.exceptions.ConfigurationException;
@@ -35,7 +34,7 @@ import com.axway.ats.harness.testng.exceptions.DataProviderException;
 @PublicAtsApi
 public class ExcelDataProvider extends BasicDataProvider implements IDataProvider {
 
-    Logger sLog = LogManager.getLogger(ExcelDataProvider.class);
+    Logger sLog = Logger.getLogger(ExcelDataProvider.class);
 
     /**
      * Returns a set of test data, depending on the {@link Method} that requires it. This specific implementation

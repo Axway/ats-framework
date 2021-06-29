@@ -16,7 +16,6 @@
 package com.axway.ats.agentapp.standalone;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -33,46 +32,28 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.appender.RollingFileAppender;
-import org.apache.logging.log4j.core.appender.rolling.DefaultRolloverStrategy;
-import org.apache.logging.log4j.core.appender.rolling.SizeBasedTriggeringPolicy;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.ConfigurationSource;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.log4j.DailyRollingFileAppender;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.xml.DOMConfigurator;
 import org.eclipse.jetty.server.Connector;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.webapp.WebAppContext;
 
 import com.axway.ats.agentapp.standalone.exceptions.AgentException;
+import com.axway.ats.agentapp.standalone.log.appenders.SizeRollingFileAppender;
 import com.axway.ats.agentapp.standalone.utils.AtsVersionExtractor;
 import com.axway.ats.agentapp.standalone.utils.CleaningThread;
 import com.axway.ats.agentapp.standalone.utils.ThreadUtils;
 
 public class ContainerStarter {
 
-    static {
-        ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-        builder.setStatusLevel(Level.ERROR);
-        builder.setConfigurationName("ContainerStarterConfig");
-        builder.add(builder.newRootLogger(Level.INFO));
-        Configurator.initialize(builder.build());
-        log = LogManager.getLogger(ContainerStarter.class);
-    }
-
-    private static final Logger log;
-    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port"; // NOTE: on change sync with AtsSystemProperties
-    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                     // NOTE: on change sync with AtsSystemProperties
+    private static final Logger log                      = Logger.getLogger(ContainerStarter.class);
+    private static final String DEFAULT_AGENT_PORT_KEY   = "ats.agent.default.port";                // NOTE: on change sync with ATSSystemProperties
+    private static final int    DEFAULT_AGENT_PORT_VALUE = 8089;                                    // NOTE: on change sync with ATSSystemProperties
 
     /**
      * Entry point for the premain java agent starting the ATS Agent
@@ -357,23 +338,20 @@ public class ContainerStarter {
     private static void addAppender() throws IOException {
 
         Map<Object, Object> variables = System.getProperties();
-        Level logLevel = Level.INFO;
         String pattern = (String) variables.get("logging.pattern");
         String agentPort = (String) variables.get("ats.agent.default.port");
         String agentSeverity = (String) variables.get("logging.severity");
 
         /*
-         * If the log4j2.xml file has user-defined/third-party filters, they must be in the classpath (inside container directory)
+         * If the log4j.xml file has user-defined/third-party filters, they must be in the classpath (inside container directory)
          **/
-        boolean enableLog4jConfigFile = Boolean.valueOf((String) variables.get("logging.enable.log4j2.file"));
-        String log4JFileName = "log4j2.xml"; // on the same level as agent.sh/.bat
+        boolean enableLog4jConfigFile = Boolean.valueOf((String) variables.get("logging.enable.log4j.file"));
+        String log4JFileName = "log4j.xml"; // on the same level as agent.sh/.bat
         File file = new File(log4JFileName);
         if (file.exists()) {
-            System.out.println("ContainerStarter: Found " + log4JFileName + " file in current directory ("
-                               + file.getAbsolutePath()
+            System.out.println("ContainerStarter: Found log4j.xml file in current directory (" + file.getAbsolutePath()
                                + ") and will be used instead of default ATS logging configuration.");
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream(file));
-            Configurator.initialize(null, source);
+            DOMConfigurator.configure(log4JFileName);
             // possibly manage log level of Jetty
             return;
         }
@@ -386,12 +364,12 @@ public class ContainerStarter {
                     fullPath.append("/");
                 }
             }
-            fullPath.append("ats-agent/container/log4j2.xml");
-            System.out.println("ContainerStarter: Loading log4j2.xml file from " + fullPath);
-            ConfigurationSource source = new ConfigurationSource(new FileInputStream(fullPath.toString()));
-            Configurator.initialize(null, source);
+            fullPath.append("ats-agent/container/log4j.xml");
+            System.out.println("ContainerStarter: Loading log4j.xml file from " + fullPath);
+            DOMConfigurator.configure(fullPath.toString());
         }
 
+        Level logLevel = Level.INFO;
         // check agent logging severity and set the appropriate level
         if (agentSeverity != null) {
             if ("INFO".equalsIgnoreCase(agentSeverity)) {
@@ -411,91 +389,44 @@ public class ContainerStarter {
         }
 
         String logPath = "./logs/ATSAgentAudit_" + agentPort + ".log";
-        PatternLayout layout = PatternLayout.newBuilder().withPattern("%d{DEFAULT} - {%p} [%t] %c{2}: %m%n").build();
+        PatternLayout layout = new PatternLayout("%d{ISO8601} - {%p} [%t] %c{2}: %x %m%n");
 
-        Logger rootLogger = LogManager.getRootLogger();
-        Appender attachedAppender = null;
+        Logger rootLogger = Logger.getRootLogger();
+        FileAppender attachedAppender = null;
         if (pattern != null && !pattern.trim().isEmpty()) {
             pattern = pattern.trim().toLowerCase();
             if ("day".equals(pattern)) {
-                attachedAppender = RollingFileAppender.newBuilder()
-                                                      .setName("ats-audit-log-appender")
-                                                      .setLayout(layout)
-                                                      .withFilePattern(
-                                                                       logPath + "'.'MM-dd'.log'")
-                                                      .build();
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd'.log'");
             } else if ("hour".equals(pattern)) {
-                attachedAppender = RollingFileAppender.newBuilder()
-                                                      .setName("ats-audit-log-appender")
-                                                      .setLayout(layout)
-                                                      .withFilePattern(
-                                                                       logPath + "'.'MM-dd-HH'.log'")
-                                                      .build();
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd-HH'.log'");
             } else if ("minute".equals(pattern)) {
-                attachedAppender = RollingFileAppender.newBuilder()
-                                                      .setName("ats-audit-log-appender")
-                                                      .setLayout(layout)
-                                                      .withFilePattern(
-                                                                       logPath + "'.'MM-dd-HH-mm'.log'")
-                                                      .build();
+                attachedAppender = new DailyRollingFileAppender(layout, logPath, "'.'MM-dd-HH-mm'.log'");
             } else if (pattern.endsWith("kb") || pattern.endsWith("mb") || pattern.endsWith("gb")) {
-
-                //attachedAppender = new SizeRollingFileAppender(layout, logPath, true);
-                //((SizeRollingFileAppender) attachedAppender).setMaxFileSize(pattern);
-                //((SizeRollingFileAppender) attachedAppender).setMaxBackupIndex(10);
-
-                attachedAppender = RollingFileAppender.newBuilder()
-                                                      .setName("ats-audit-log-appender")
-                                                      //.withAdvertise(true|false)
-                                                      //.withAdvertiseUri(advertiseUri)
-                                                      .withAppend(true)
-                                                      //.withBufferedIo(true|false)
-                                                      //.withBufferSize(bufferSize)
-                                                      //.setConfiguration(config)
-                                                      //.withFileName(fileName)
-                                                      .withFilePattern(pattern)
-                                                      //.setFilter(filter)
-                                                      //.setIgnoreExceptions(Booleans.parseBoolean(ignore, true))
-                                                      //.withImmediateFlush(Booleans.parseBoolean(immediateFlush, true)).setLayout(layout)
-                                                      //.withCreateOnDemand(false)
-                                                      //.withLocking(false)
-                                                      //.setName(name)
-                                                      .withPolicy(SizeBasedTriggeringPolicy.createPolicy(pattern))
-                                                      .withStrategy(DefaultRolloverStrategy.newBuilder()
-                                                                                           .withMax("10")
-                                                                                           .build())
-                                                      .build();
-
+                attachedAppender = new SizeRollingFileAppender(layout, logPath, true);
+                ((SizeRollingFileAppender) attachedAppender).setMaxFileSize(pattern);
+                ((SizeRollingFileAppender) attachedAppender).setMaxBackupIndex(10);
             } else {
                 System.err.println("ERROR: '" + pattern
-                                   + "' is invalid pattern for log4j2 rolling file appender");
+                                   + "' is invalid pattern for log4j rolling file appender");
                 System.exit(1);
             }
         }
         if (attachedAppender == null) {
-            //  default overwrite
-            attachedAppender = FileAppender.newBuilder()
-                                           .setName("ats-audit-log-appender")
-                                           .withFileName(logPath)
-                                           .setLayout(layout)
-                                           .withAppend(false)
-                                           .build();
 
+            attachedAppender = new FileAppender();
+            attachedAppender.setFile(logPath);
+            attachedAppender.setLayout(layout);
+            attachedAppender.setAppend(false);
         }
-
-        Configurator.setRootLevel(logLevel);
-        LoggerContext context = LoggerContext.getContext(true);
-        Configuration config = context.getConfiguration();
-        //attachedAppender.activateOptions();
-        // start() is almost the same as activateOptions()
-        attachedAppender.start(); // Always start an Appender prior to adding it to a logger.
-        ((org.apache.logging.log4j.core.Logger) rootLogger).addAppender(attachedAppender);
+        attachedAppender.activateOptions();
+        rootLogger.setLevel(logLevel);
+        rootLogger.addAppender(attachedAppender);
 
         // adding filter for Jetty messages
-        Logger mortbayLogger = LogManager.getLogger("org.mortbay");
-        ((org.apache.logging.log4j.core.Logger) mortbayLogger).setAdditive(false);
-        Configurator.setLevel(mortbayLogger.getName(), Level.ERROR);
-        ((org.apache.logging.log4j.core.Logger) mortbayLogger).addAppender(attachedAppender);
+        Logger mortbayLogger = Logger.getLogger("org.mortbay");
+        mortbayLogger.setAdditivity(false);
+        mortbayLogger.setLevel(Level.ERROR);
+        mortbayLogger.addAppender(attachedAppender);
 
     }
 

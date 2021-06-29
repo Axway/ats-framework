@@ -38,8 +38,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.FileEntity;
 import org.apache.http.util.EntityUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filetransfer.FileTransferException;
@@ -57,7 +56,7 @@ import com.axway.ats.core.utils.StringUtils;
 @PublicAtsApi
 public class FileTransferHttpClient extends HttpClient implements IFileTransferClient {
 
-    private static final Logger log                                   = LogManager.getLogger(FileTransferHttpClient.class);
+    private static final Logger log                                   = Logger.getLogger(FileTransferHttpClient.class);
 
     private static final int    DEFAULT_HTTP_PORT                     = 80;
 

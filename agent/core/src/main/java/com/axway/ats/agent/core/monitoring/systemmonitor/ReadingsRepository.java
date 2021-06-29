@@ -24,8 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -49,7 +48,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
  */
 public class ReadingsRepository {
 
-    private Logger log = LogManager.getLogger(ReadingsRepository.class);
+    private Logger log = Logger.getLogger(ReadingsRepository.class);
 
     /** We assign a unique id to each reading. 
      * This id is not the actual DB id

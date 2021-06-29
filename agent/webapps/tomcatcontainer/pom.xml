@@ -176,12 +176,12 @@
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-rt</artifactId>
         </dependency>
-        <!-- <dependency> Exclude it. Relying that this is configured on 
-            server and not on app. level <groupId>org.apache.logging.log4j</groupId> 
-            <artifactId>log4j-api</artifactId> <scope>provided</scope> </dependency> 
-            <dependency> Exclude it. Relying that this is configured on server and not 
-            on app. level <groupId>org.apache.logging.log4j</groupId> <artifactId>log4j-core</artifactId> 
-            <scope>provided</scope> </dependency> -->
+        <dependency> <!-- Exclude it. Relying that this is configured on server and not on app.
+				level -->
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency> <!-- Needed for jaxws-rt -->
             <groupId>org.glassfish.pfl</groupId>
@@ -198,10 +198,6 @@
                 <exclusion> <!-- older JSch version -->
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -239,42 +235,10 @@
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
         <!-- this dependency is required after jersey 2.26 -->
-        <!-- <dependency> <groupId>org.glassfish.jersey.inject</groupId> 
-            <artifactId>jersey-hk2</artifactId> <version>${org.glassfish.jersey.inject.version}</version> 
+        <!-- <dependency>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
+            <version>${org.glassfish.jersey.inject.version}</version>
             </dependency> -->
-
-
-
-
-        <!-- All hail the logging deps -->
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-jul</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-jcl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-        </dependency>
-
     </dependencies>
 </project>

@@ -57,7 +57,7 @@
                     </execution>
                 </executions>
                 <configuration>
-
+					
                     <packageName>com.axway.ats.agent.webapp.client</packageName>
                 </configuration>
             </plugin>

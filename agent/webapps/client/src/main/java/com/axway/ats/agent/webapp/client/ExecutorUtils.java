@@ -19,8 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
@@ -33,7 +32,7 @@ public class ExecutorUtils {
 
     private static String uniqueId;
 
-    private static Logger log = LogManager.getLogger(ExecutorUtils.class);
+    private static Logger log = Logger.getLogger(ExecutorUtils.class);
 
     public static synchronized String getUUID() {
 

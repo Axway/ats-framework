@@ -26,8 +26,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.mariadb.jdbc.MariaDbPoolDataSource;
 
 import com.axway.ats.common.dbaccess.DbKeys;
@@ -41,7 +40,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class DbConnMariaDB extends DbConnection {
 
-    private static Logger       log                                = LogManager.getLogger(DbConnMariaDB.class);
+    private static Logger       log                                = Logger.getLogger(DbConnMariaDB.class);
 
     public static final String  MARIADB_JDBS_DATASOURCE_CLASS_NAME = "org.mariadb.jdbc.MariaDbPoolDataSource";
     /**

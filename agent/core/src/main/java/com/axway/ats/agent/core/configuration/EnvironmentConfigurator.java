@@ -19,8 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.ComponentEnvironment;
 import com.axway.ats.agent.core.ComponentRepository;
@@ -34,7 +33,7 @@ import com.axway.ats.environment.database.DatabaseEnvironmentUnit;
 @SuppressWarnings( "serial")
 public class EnvironmentConfigurator implements Configurator {
 
-    private static final Logger log                    = LogManager.getLogger(EnvironmentConfigurator.class);
+    private static final Logger log                    = Logger.getLogger(EnvironmentConfigurator.class);
 
     public static final String  DB_CONFIGURATION_INDEX = "DB_CONFIGURATION_INDEX";
 

@@ -15,8 +15,7 @@
  */
 package com.axway.ats.uiengine.htmlengine;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Optional;
@@ -82,7 +81,7 @@ public class Test_Link extends HtmlEngineBaseTest {
     public void redirectToAnotherPage() throws Exception {
 
         String pageSource = webEngine.getPageSource();
-        Logger log = LogManager.getLogger(this.getClass());
+        Logger log = Logger.getLogger(this.getClass());
         log.info("Current page source: " + pageSource);
 
         UiLink linkOnInitialPage = webEngine.getLink("link2");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,8 @@
  */
 package com.axway.ats.core.log;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.utils.ExceptionUtils;
 import com.axway.ats.core.utils.StringUtils;
@@ -32,7 +31,7 @@ public class AtsConsoleLogger {
     public static final String ATS_CONSOLE_MESSAGE_PREFIX = "*** ATS *** ";
     /**
      * Current level of the logger. Used for alternative logging when there is ATS Log4J blocking event like StartRun.
-     * If it is null, the LogManager.getRootLogger().getLevel() value is used
+     * If it is null, the Logger.getRootLogger().getLevel() value is used
      * */
     private static Level       level                      = null;
 
@@ -53,7 +52,7 @@ public class AtsConsoleLogger {
 
         this.callingClass = callingClass;
 
-        this.logger = LogManager.getLogger(callingClass);
+        this.logger = Logger.getLogger(callingClass);
 
         this.classNameTokens = this.callingClass.getName().split("\\.");
         this.classNamePrefix = generateClassNamePrefix(callingClass, classNameTokens);
@@ -165,22 +164,17 @@ public class AtsConsoleLogger {
         log("", ExceptionUtils.getExceptionMsg(th, message)); // this message will be logged without log level
     }
 
-    public static synchronized void setLevel( Level newLevel ) {
+    public static void setLevel( Level newLevel ) {
 
         level = newLevel;
-    }
-
-    public static synchronized Level getLevel() {
-
-        return level;
     }
 
     private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
-            return Level.toLevel(level).isLessSpecificThan(AtsConsoleLogger.level);
+            return Level.toLevel(level).isGreaterOrEqual(AtsConsoleLogger.level);
         } else {
-            return LogManager.getRootLogger().getLevel().isLessSpecificThan(Level.toLevel(level));
+            return Logger.getRootLogger().isEnabledFor(Level.toLevel(level));
         }
 
     }

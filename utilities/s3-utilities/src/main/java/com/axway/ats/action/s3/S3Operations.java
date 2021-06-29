@@ -30,8 +30,7 @@ import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.amazonaws.AmazonClientException;
 import com.amazonaws.AmazonServiceException;
@@ -71,7 +70,7 @@ import com.axway.ats.core.utils.IoUtils;
 @PublicAtsApi
 public class S3Operations {
 
-    private static final Logger LOG = LogManager.getLogger(S3Operations.class);
+    private static final Logger LOG = Logger.getLogger(S3Operations.class);
 
     private String              accessKey;
     private String              secretKey;

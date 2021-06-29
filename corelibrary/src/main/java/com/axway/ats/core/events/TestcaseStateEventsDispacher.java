@@ -18,8 +18,7 @@ package com.axway.ats.core.events;
 import java.lang.reflect.Method;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * This singleton must stay in the Core library as it is referenced from Agent Webapp and Test Harness.
@@ -29,7 +28,7 @@ import org.apache.logging.log4j.Logger;
  */
 public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
 
-    private static final Logger                 log                                = LogManager.getLogger(TestcaseStateEventsDispacher.class);
+    private static final Logger                 log                                = Logger.getLogger(TestcaseStateEventsDispacher.class);
 
     private static TestcaseStateEventsDispacher instance;
 

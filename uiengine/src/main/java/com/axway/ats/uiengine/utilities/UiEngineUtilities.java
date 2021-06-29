@@ -17,8 +17,7 @@ package com.axway.ats.uiengine.utilities;
 
 import java.io.File;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
@@ -40,7 +39,7 @@ import io.appium.java_client.AppiumDriver;
 @PublicAtsApi
 public class UiEngineUtilities {
 
-    private static final Logger log = LogManager.getLogger(UiEngineUtilities.class);
+    private static final Logger log = Logger.getLogger(UiEngineUtilities.class);
 
     /**
      * Sleep for period equal to the UI commands delay as defined in the UI Engine configuration

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,15 @@
  */
 package com.axway.ats.log;
 
+import java.util.Enumeration;
 import java.util.List;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LogEvent;
+import org.apache.log4j.Appender;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -65,6 +65,7 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 import com.axway.ats.log.model.CheckpointResult;
 import com.axway.ats.log.model.LoadQueueResult;
+import com.axway.ats.log.model.SystemLogLevel;
 import com.axway.ats.log.model.TestCaseResult;
 
 /**
@@ -86,12 +87,12 @@ public class AtsDbLogger {
     private AtsDbLogger( Logger logger, boolean skipAppenderCheck ) {
 
         this.logger = logger;
-        // check if the ActiveDbAppender is specified in log4j2.xml
+        // check if the ActiveDbAppender is specified in log4j.xml
         if (!skipAppenderCheck) {
             if (!ActiveDbAppender.isAttached) {
                 if (!isWarningMessageLogged) {
                     this.logger.warn(
-                                     "ATS Database appender is not attached in root logger element in log4j2.xml file. "
+                                     "ATS Database appender is not attached in root logger element in log4j.xml file. "
                                      + "No test data will be sent to ATS Log database and some methods from '"
                                      + AtsDbLogger.class.getName() + "' class will not work as expected");
                     isWarningMessageLogged = true;
@@ -103,7 +104,7 @@ public class AtsDbLogger {
     @PublicAtsApi
     public static synchronized AtsDbLogger getLogger( String name ) {
 
-        return new AtsDbLogger(LogManager.getLogger(name), false);
+        return new AtsDbLogger(Logger.getLogger(name), false);
     }
 
     @PublicAtsApi
@@ -122,12 +123,12 @@ public class AtsDbLogger {
     public static synchronized AtsDbLogger getLogger(
                                                       String name, boolean skipAppenderCheck ) {
 
-        return new AtsDbLogger(LogManager.getLogger(name), skipAppenderCheck);
+        return new AtsDbLogger(Logger.getLogger(name), skipAppenderCheck);
     }
 
     /**
      * This method is intended for internal (by ATS devs) usage only.
-     * @param logger the Apache log4j2 logger
+     * @param logger the Apache log4j logger
      * @param skipAppenderCheck enable/disable check for availability of db appender
      */
     public static synchronized AtsDbLogger getLogger(
@@ -150,7 +151,8 @@ public class AtsDbLogger {
     public void debug(
                        Object message,
                        Throwable t ) {
-
+        
+        
         logger.debug(message, t);
     }
 
@@ -161,7 +163,7 @@ public class AtsDbLogger {
      */
     public void debug(
                        Object message ) {
-
+        
         logger.debug(message);
     }
 
@@ -233,7 +235,7 @@ public class AtsDbLogger {
         if (sendRunMessage) {
             sendEvent(new InsertMessageEvent(ATS_DB_LOGGER_CLASS_NAME,
                                              logger,
-                                             Level.INFO,
+                                             SystemLogLevel.INFO,
                                              getNonNullToString(message),
                                              null,
                                              false,
@@ -864,33 +866,36 @@ public class AtsDbLogger {
     }
 
     /**
-     * This event can not go through the regular way of sending log4j2 events in the case with Passive DB appenders. 
+     * This event can not go through the regular way of sending log4j events in the case with Passive DB appenders. 
      * The reason is that we have to evaluate the result after the work of each passive appender and stop
      * calling these appenders when the first one(the only one serving this caller) has processed the event. 
      */
+    @SuppressWarnings( "unchecked")
     public TestCaseState getCurrentTestCaseState() {
 
         GetCurrentTestCaseEvent event = new GetCurrentTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
 
-        PassiveDbAppender passiveDbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+        Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+        while (appenders.hasMoreElements()) {
+            Appender appender = appenders.nextElement();
 
-        if (passiveDbAppender != null) {
+            if (appender instanceof ActiveDbAppender) {
+                // Comes here on Test Executor side. There is just 1 Active appender
+                return ((ActiveDbAppender) appender).getCurrentTestCaseState(event).getTestCaseState();
+            } else if (appender instanceof PassiveDbAppender) {
+                // Comes here on Agent side. There will be 1 Passive appender per caller
 
-            // assume we are on the ATS Agent side
-            GetCurrentTestCaseEvent resultEvent = passiveDbAppender.getCurrentTestCaseState(event);
-            if (resultEvent != null) {
-                // we found the right Passive appender
-                return resultEvent.getTestCaseState();
-            }
-        } else {
-
-            ActiveDbAppender activeAppender = ActiveDbAppender.getCurrentInstance();
-
-            if (activeAppender != null) {
-                return activeAppender.getCurrentTestCaseState(event).getTestCaseState();
+                // Pass the event to any existing appender.
+                // The correct one will return result, wrong appenders will return null.
+                GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
+                if (resultEvent != null) {
+                    // we found the right Passive appender
+                    return resultEvent.getTestCaseState();
+                }
             }
         }
 
+        // no appropriate appender found
         return null;
     }
 
@@ -940,16 +945,16 @@ public class AtsDbLogger {
      * @param event the event to send
      */
     private void sendEvent(
-                            LogEvent event ) {
-
+                            LoggingEvent event ) {
+    
         // check if this level is allowed for the repository at all
-        if (Log4j2Utils.getRootLogger().getLevel().isMoreSpecificThan(event.getLevel())) {
+        if (LogManager.getLoggerRepository().isDisabled(event.getLevel().toInt())) {
             return;
         }
-
+    
         // check if the event level is allowed for this logger
-        if (event.getLevel().isMoreSpecificThan(logger.getLevel())) {
-            Log4j2Utils.getLoggerConfig(logger.getName()).log(event);
+        if (event.getLevel().isGreaterOrEqual(logger.getEffectiveLevel())) {
+            logger.callAppenders(event);
         }
     }
 

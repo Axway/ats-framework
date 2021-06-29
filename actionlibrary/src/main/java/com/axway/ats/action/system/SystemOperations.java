@@ -27,9 +27,11 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.system.OperatingSystemType;
@@ -55,7 +57,7 @@ public class SystemOperations {
 
     private String  atsAgent;
 
-    private Logger  log      = LogManager.getLogger(SystemOperations.class);
+    private Logger  log      = Logger.getLogger(SystemOperations.class);
 
     @PublicAtsApi
     public Mouse    mouse    = new Mouse();

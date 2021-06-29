@@ -21,8 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.axway.ats.core.utils.StringUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.filesystem.EndOfLineStyle;
@@ -52,7 +51,7 @@ import com.axway.ats.core.validation.Validator;
 @PublicAtsApi
 public class FileSystemOperations {
 
-    private static final Logger log = LogManager.getLogger(FileSystemOperations.class);
+    private static final Logger log = Logger.getLogger(FileSystemOperations.class);
 
     private static final String LOCAL_HOST_NAME_AND_PORT = HostUtils.LOCAL_HOST_NAME + ":0000";
 

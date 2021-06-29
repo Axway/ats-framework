@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.ssh.exceptions.JschSshClientException;
@@ -322,11 +321,11 @@ public class JschSshClient {
 
     class StreamReader extends Thread {
 
+        private final Logger     log;
+
         private static final int    READ_BUFFER_SIZE          = 1024;
-        private static final int    READ_TIMEOUT              =
-                60 * 1000;                                  // in milliseconds
+        private static final int READ_TIMEOUT              = 60 * 1000;                                  // in milliseconds
         private static final int    MAX_STRING_SIZE           = 100000;                                     // max chars used to limit process output
-        private final        Logger log;
         private final        String SKIPPED_CHARACTERS        = "... skipped characters ..."
                                                                 + AtsSystemProperties.SYSTEM_LINE_SEPARATOR;
         private final        int    SKIPPED_CHARACTERS_LENGTH = SKIPPED_CHARACTERS.length();
@@ -339,7 +338,7 @@ public class JschSshClient {
 
         StreamReader( InputStream is, Channel channel, String type ) {
 
-            log = LogManager.getLogger(StreamReader.class.getSimpleName() + " <" + type + ">");
+            log = Logger.getLogger(StreamReader.class.getSimpleName() + " <" + type + ">");
 
             this.is = is;
             this.type = type;

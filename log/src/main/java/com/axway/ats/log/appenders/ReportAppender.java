@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package com.axway.ats.log.appenders;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,17 +23,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Core;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.Property;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.logging.log4j.core.config.plugins.PluginFactory;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
+import org.apache.log4j.spi.ErrorCode;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.log.autodb.entities.Testcase;
 import com.axway.ats.log.autodb.events.EndRunEvent;
@@ -49,8 +41,11 @@ import com.axway.ats.log.report.model.ReportFormatter;
 import com.axway.ats.log.report.model.RunWrapper;
 import com.axway.ats.log.report.model.SuiteWrapper;
 
-@Plugin( name = "ReportAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
-public class ReportAppender extends AbstractAppender {
+/**
+ * This appender used for gathering all Run and Suite data.
+ * It sends an email notification with the formatted report result.
+ */
+public class ReportAppender extends AppenderSkeleton {
 
     private static final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
@@ -70,7 +65,7 @@ public class ReportAppender extends AbstractAppender {
     private static List<RunWrapper>   htmlReportsList        = new ArrayList<RunWrapper>();
 
     /**
-     * This token is searched in log4j2.xml which defines the Report Appender.
+     * This token is searched in log4j.xml which defines the Report Appender.
      *
      * The user has the option to specify a custom mail subject, in the special tokens
      * we will insert runtime info about the run
@@ -82,24 +77,35 @@ public class ReportAppender extends AbstractAppender {
     /**
      * Constructor
      */
-    protected ReportAppender( String name, Filter filter, Layout<? extends Serializable> layout,
-                              boolean ignoreExceptions, Property[] properties ) {
+    public ReportAppender() {
 
-        super(name, filter, layout, ignoreExceptions, properties);
+        super();
         isReportAppenderActive = true;
     }
 
-    @PluginFactory
-    public static ReportAppender createAppender(
-                                                 @PluginAttribute( "name") String name,
-                                                 @PluginElement( "Filter") Filter filter,
-                                                 @PluginElement( "Layout") Layout layout ) {
+    /* (non-Javadoc)
+     * @see org.apache.log4j.AppenderSkeleton#close()
+     */
+    public void close() {
 
-        /* since there is no requireLayout() method
-         * hopefully either NPE will be thrown later then a null layout is used,
-         * or some default one will be used that causes an error, either in the tests or visually when comparing this and the old implementation
-        */
-        return new ReportAppender(name, filter, layout, false, null);
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.log4j.AppenderSkeleton#requiresLayout()
+     */
+    public boolean requiresLayout() {
+
+        return true;
+    }
+
+    /* (non-Javadoc)
+     * @see org.apache.log4j.AppenderSkeleton#setLayout(org.apache.log4j.Layout)
+     */
+    @Override
+    public void setLayout(
+                           Layout layout ) {
+
+        super.setLayout(layout);
     }
 
     public String getMailSubjectFormat() {
@@ -121,8 +127,12 @@ public class ReportAppender extends AbstractAppender {
         return isReportAppenderActive;
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+     */
     @Override
-    public void append( LogEvent event ) {
+    protected void append(
+                           LoggingEvent event ) {
 
         // All events from all threads come into here.
         if (event instanceof AbstractLoggingEvent) {
@@ -141,7 +151,7 @@ public class ReportAppender extends AbstractAppender {
                     run.buildName = startRunEvent.getBuildName();
                     run.os = startRunEvent.getOsName();
                     run.runName = startRunEvent.getRunName();
-                    run.setStartTimestamp(startRunEvent.getTimestamp());
+                    run.setStartTimestamp(startRunEvent.getTimeStamp());
                     break;
 
                 case START_SUITE:
@@ -152,7 +162,7 @@ public class ReportAppender extends AbstractAppender {
                         SuiteWrapper newSuite = new SuiteWrapper();
                         newSuite.name = startSuiteEvent.getSuiteName();
                         newSuite.packageName = startSuiteEvent.getPackage();
-                        newSuite.setStartTimestamp(startSuiteEvent.getTimestamp());
+                        newSuite.setStartTimestamp(startSuiteEvent.getTimeStamp());
                         suitesMap.put(newSuite.packageName + "." + newSuite.name, newSuite);
 
                         run.addSuite(newSuite);
@@ -194,7 +204,7 @@ public class ReportAppender extends AbstractAppender {
                     SuiteWrapper currentSuite = getCurrentSuite();
                     if (currentSuite != null) {
                         currentSuite.calculateFinalStatistics();
-                        currentSuite.setEndTimestamp(endSuiteEvent.getTimestamp());
+                        currentSuite.setEndTimestamp(endSuiteEvent.getTimeStamp());
                         currentSuite.testcasesPassedPercent = "0";
                         if (currentSuite.testcasesTotal > 0) {
                             currentSuite.testcasesPassedPercent = String.valueOf( (currentSuite.testcasesTotal
@@ -216,7 +226,7 @@ public class ReportAppender extends AbstractAppender {
                     EndRunEvent endRunEvent = (EndRunEvent) event;
 
                     run.calculateFinalStatistics();
-                    run.setEndTimestamp(endRunEvent.getTimestamp());
+                    run.setEndTimestamp(endRunEvent.getTimeStamp());
                     run.testcasesPassedPercent = "0";
                     if (run.testcasesTotal > 0) {
                         run.testcasesPassedPercent = String.valueOf( (run.testcasesTotal
@@ -240,23 +250,19 @@ public class ReportAppender extends AbstractAppender {
                                 htmlReportsList.add(run);
                             }
                         } catch (Exception e) {
-                            /**
-                             * apparently using the error handler from the parent, which is DefaultErrorHandler
-                             * is preferable, since it prevents the console to be flooded with messages,
-                             * e.g. there is a default (5ns) interval between calls to any error() method
-                             */
-                            error("Error processing/mailing log report", e);
+                            errorHandler.error("Error processing/mailing log report",
+                                               e,
+                                               ErrorCode.GENERIC_FAILURE);
                         }
                     }
                     break;
             }
         }
-
     }
 
     /**
-     * Set if you will use AtsReportListener or not.
-     */
+         * Set if you will use AtsReportListener or not.
+         */
     public static void setCombinedHtmlMailReport(
                                                   boolean useAtsReportListener ) {
 
@@ -291,5 +297,4 @@ public class ReportAppender extends AbstractAppender {
                                 .replaceAll("\\{OS\\}", run.os)
                                 .replaceAll("\\{STATE\\}", runState);
     }
-
 }

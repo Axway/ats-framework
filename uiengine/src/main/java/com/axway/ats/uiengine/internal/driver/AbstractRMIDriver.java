@@ -18,8 +18,7 @@ package com.axway.ats.uiengine.internal.driver;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.uiengine.JavaSecurityUtils;
 import com.axway.ats.uiengine.UiDriver;
@@ -32,7 +31,7 @@ import com.axway.ats.uiengine.exceptions.RmiException;
  */
 public abstract class AbstractRMIDriver extends UiDriver {
 
-    private Logger   log                   = LogManager.getLogger( this.getClass() );
+    private Logger   log                   = Logger.getLogger( this.getClass() );
 
     private Registry registry;
 

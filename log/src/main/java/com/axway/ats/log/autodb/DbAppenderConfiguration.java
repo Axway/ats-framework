@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
-import org.apache.logging.log4j.Level;
+import org.apache.log4j.Level;
+import org.apache.log4j.Priority;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
 import com.axway.ats.log.autodb.io.AbstractDbAccess;
-import com.axway.ats.log.model.SystemLogLevel;
 
 /**
  * Hold the configuration data for this db appender
@@ -37,7 +37,7 @@ public class DbAppenderConfiguration implements Serializable {
     private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
     private String            host;
-    private String            port                                  = null;
+    private String             port;
     private String            database;
     private String            user;
     private String            password;
@@ -53,7 +53,7 @@ public class DbAppenderConfiguration implements Serializable {
     private boolean           enableCheckpoints                     = true;
 
     //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    private Level             loggingThreshold;
+    transient private Priority loggingThreshold;
 
     public String getHost() {
 
@@ -119,7 +119,7 @@ public class DbAppenderConfiguration implements Serializable {
     }
 
     /**
-     * Read the "events" parameter value from log4j2.xml.
+     * Read the "events" parameter value from log4j.xml.
      * This value will be used for capacity of our logging queue.
      * 
      * Note: the new value cannot be bellow the default capacity.
@@ -176,13 +176,13 @@ public class DbAppenderConfiguration implements Serializable {
         this.enableCheckpoints = enableCheckpoints;
     }
 
-    public Level getLoggingThreshold() {
+    public Priority getLoggingThreshold() {
 
         return loggingThreshold;
     }
 
     public void setLoggingThreshold(
-                                     Level loggingThreshold ) {
+                                     Priority loggingThreshold ) {
 
         this.loggingThreshold = loggingThreshold;
     }
@@ -219,7 +219,7 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (port == null) {
-            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j2.xml file, section for ATS ActiveDbAppender. "
+            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, section for ATS ActiveDbAppender. "
                                                   + "Assuming default value for Microsoft SQL Server databases ("
                                                   + DbConnSQLServer.DEFAULT_PORT + ")");
             this.port = DbConnSQLServer.DEFAULT_PORT + "";
@@ -243,23 +243,6 @@ public class DbAppenderConfiguration implements Serializable {
 
         if (chunkSize == null) {
             this.chunkSize = AbstractDbAccess.DEFAULT_CHUNK_SIZE + "";
-        }
-
-        // despite the method name it actually is quite good in validating maxNumberLogEvents member
-        this.maxNumberLogEvents = getMaxNumberLogEvents() + "";
-
-        if (this.mode != "" && !this.mode.equalsIgnoreCase("batch")) {
-            boolean explicitEnableOfLogger = false;
-            if (AtsConsoleLogger.getLevel() == null) {
-                explicitEnableOfLogger = true;
-                AtsConsoleLogger.setLevel(Level.WARN);
-            }
-            new AtsConsoleLogger(getClass()).warn("Invalid value (" + this.mode
-                                                  + ") for ATS DB Appender paramenter 'mode'! Setting it to non-batch mode (empty string)");
-            this.mode = "";
-            if (explicitEnableOfLogger) {
-                AtsConsoleLogger.setLevel(null);
-            }
         }
     }
 
@@ -333,7 +316,7 @@ public class DbAppenderConfiguration implements Serializable {
 
         s.defaultReadObject();
         int levelInt = s.readInt();
-        loggingThreshold = SystemLogLevel.toLevel(levelInt);
+        loggingThreshold = Level.toLevel(levelInt);
     }
 
     /**
@@ -349,7 +332,7 @@ public class DbAppenderConfiguration implements Serializable {
             // should be set in RemoteLoggingConfiguration
             throw new IllegalStateException("Logging level should not be null");
         }
-        s.writeInt(loggingThreshold.intLevel());
+        s.writeInt(loggingThreshold.toInt());
     }
 
 }

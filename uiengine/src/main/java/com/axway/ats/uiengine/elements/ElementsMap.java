@@ -23,8 +23,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -38,7 +37,7 @@ import com.axway.ats.uiengine.exceptions.ElementsMapException;
 
 public class ElementsMap {
 
-    private Logger             log                  = LogManager.getLogger(ElementsMap.class);
+    private Logger             log                  = Logger.getLogger(ElementsMap.class);
 
     /**
      * The singleton instance.

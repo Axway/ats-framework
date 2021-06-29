@@ -15,16 +15,16 @@
  */
 package com.axway.ats.agent.webapp.agentservice;
 
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.ConsoleAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-
-import com.axway.ats.core.log.AtsLog4jLogger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
 
 public class BaseTestWebapps {
 
     static {
-        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+        ConsoleAppender appender = new ConsoleAppender(new PatternLayout("%-5p %d{HH:MM:ss} %c{2}: %m%n"));
+
+        //init log4j
+        BasicConfigurator.configure(appender);
     }
 }

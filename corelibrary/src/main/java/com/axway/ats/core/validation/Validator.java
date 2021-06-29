@@ -24,8 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.reflect.AmbiguousMethodException;
 import com.axway.ats.core.reflect.MethodFinder;
@@ -56,7 +55,7 @@ public class Validator {
 
     protected static final String VALIDATION_ERROR_MESSAGE   = "Validation failed while validating argument ";
 
-    private static Logger         log                        = LogManager.getLogger(Validator.class);
+    private static Logger         log                        = Logger.getLogger(Validator.class);
 
     private final List<BaseType>  typeValidators;
 

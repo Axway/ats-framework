@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
@@ -180,7 +179,7 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
 
         checkPausedTransferRunning(true);
 
-        final Logger log = LogManager.getLogger(AbstractFileTransferClient.class);
+        final Logger log = Logger.getLogger(AbstractFileTransferClient.class);
 
         while (!canResume) {
             try {
@@ -220,7 +219,7 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
 
         final Thread uploadThread = new Thread("Upload Thread") {
 
-            private final Logger log = LogManager.getLogger(this.getName());
+            private final Logger log = Logger.getLogger(this.getName());
 
             @Override
             public void run() {

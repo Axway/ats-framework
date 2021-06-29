@@ -19,15 +19,14 @@ package com.axway.ats.core.filesystem;
 import com.axway.ats.common.filesystem.FileSystemOperationException;
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.core.utils.IoUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import java.io.*;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 
 public class FileTransferReader {
-    private final static Logger              log     = LogManager.getLogger(FileTransferReader.class);
+    private final static Logger              log     = Logger.getLogger(FileTransferReader.class);
     private final static OperatingSystemType OS_TYPE = OperatingSystemType.getCurrentOsType();
 
     /**

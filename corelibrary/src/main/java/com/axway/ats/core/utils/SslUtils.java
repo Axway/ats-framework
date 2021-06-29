@@ -49,8 +49,7 @@ import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
 
 import org.apache.http.HttpException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import com.axway.ats.common.dbaccess.OracleKeys;
@@ -61,7 +60,7 @@ import com.axway.ats.common.dbaccess.OracleKeys;
 */
 public class SslUtils {
 
-    private static final Logger log                                = LogManager.getLogger(SslUtils.class);
+    private static final Logger log                                = Logger.getLogger(SslUtils.class);
 
     private static final String DEFAULT_PROTOCOL                   = "TLS";
 

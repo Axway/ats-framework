@@ -31,8 +31,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.action.azure.BlobInfo.BlobType;
 import com.axway.ats.action.filesystem.FileSystemOperations;
@@ -64,7 +63,7 @@ import com.azure.storage.blob.specialized.PageBlobAsyncClient;
 @PublicAtsApi
 public class BlobStorageOperations {
 
-    private static final Logger log                    = LogManager.getLogger(BlobStorageOperations.class);
+    private static final Logger log                    = Logger.getLogger(BlobStorageOperations.class);
     private static final long   DEFAULT_TIMEOUT_IN_SEC = 5 * 60;                                       // in seconds
 
     private BlobServiceClient   serviceClient;

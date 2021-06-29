@@ -26,8 +26,9 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.*;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
@@ -36,7 +37,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
  */
 public class HostUtils {
 
-    private static final Logger      log                 = LogManager.getLogger(HostUtils.class);
+    private static final Logger log = Logger.getLogger(HostUtils.class);
 
     public static final String       LOCAL_HOST_NAME     = "localhost";
     public static final String       LOCAL_HOST_IPv4     = "127.0.0.1";
@@ -240,8 +241,7 @@ public class HostUtils {
             } finally {
                 if (log.isTraceEnabled()) {
                     log.trace(
-                              "Total duration to enumerate network interfaces and check locality for host: " + host
-                              + ": "
+                            "Total duration to enumerate network interfaces and check locality for host: " + host + ": "
                               + (System.currentTimeMillis() - startTimeMs) + " ms");
                 }
             }
@@ -402,7 +402,8 @@ public class HostUtils {
                     if (socket != null) {
                         try {
                             socket.close();
-                        } catch (IOException e) {}
+                        } catch (IOException e) {
+                        }
                     }
                 }
             }

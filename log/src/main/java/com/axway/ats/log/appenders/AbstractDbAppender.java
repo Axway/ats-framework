@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,10 @@
 
 package com.axway.ats.log.appenders;
 
-import java.io.Serializable;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Filter.Result;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.filter.CompositeFilter;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.Layout;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -42,8 +34,11 @@ import com.axway.ats.log.autodb.logqueue.LogEventRequest;
 import com.axway.ats.log.autodb.logqueue.QueueLoggerThread;
 import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 
-//@Plugin( name = "AbstractDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
-public abstract class AbstractDbAppender extends AbstractAppender {
+/**
+ * This appender is capable of arranging the database storage and storing
+ * messages into it. It works on the Test Executor side.
+ */
+public abstract class AbstractDbAppender extends AppenderSkeleton {
 
     protected AtsConsoleLogger                    atsConsoleLogger          = new AtsConsoleLogger(getClass());
 
@@ -102,19 +97,27 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     /**
      * Constructor
      */
-    protected AbstractDbAppender( String name, Filter filter, Layout<? extends Serializable> layout,
-                                  DbAppenderConfiguration appenderConfiguration ) {
+    public AbstractDbAppender() {
 
-        super(name, filter, layout, false, null); // or maybe true?!?
+        super();
 
         // init the appender configuration
         // it will be populated when the setters are called
-        this.appenderConfig = appenderConfiguration;
+        appenderConfig = new DbAppenderConfiguration();
 
         testCaseState = new TestCaseState();
 
         isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
                                                                            false);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.log4j.AppenderSkeleton#activateOptions()
+     */
+    @Override
+    public void activateOptions() {
 
         // check whether the configuration is valid first
         try {
@@ -124,98 +127,14 @@ public abstract class AbstractDbAppender extends AbstractAppender {
         }
 
         // set the threshold if there is such
-        if (this.hasFilter()) {
-            if (this.getFilter() instanceof ThresholdFilter) {
-                appenderConfig.setLoggingThreshold( ((ThresholdFilter) this.getFilter()).getLevel());
-            } else if (this.getFilter() instanceof CompositeFilter) {
-                Filter[] allAppliedFilters = ((CompositeFilter) this.getFilter()).getFiltersArray();
-                for (Filter f : allAppliedFilters) {
-                    if (f instanceof ThresholdFilter) {
-                        appenderConfig.setLoggingThreshold( ((ThresholdFilter) f).getLevel());
-                        // note what if there are multiple ThresholdFilter(s) ?!?
-                        break;
-                    }
-                }
-            }
-
-        } else {
-            // nothing is filtered
-            //throw new RuntimeException("No Threshold filter provided!");
-        }
+        appenderConfig.setLoggingThreshold(getThreshold());
 
         // the logging queue
         queue = new ArrayBlockingQueue<LogEventRequest>(getMaxNumberLogEvents());
 
     }
 
-    private void stopQueueLoggerThread() {
-
-        // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null && !queueLogger.isInterrupted()) {
-            queueLogger.interrupt();
-            long initialWaitTime = TimeUnit.MINUTES.toMillis(AtsSystemProperties.getPropertyAsNonNegativeNumber(AtsSystemProperties.QUEUE_LOGGER_THREAD_KILL_WAIT_TIMEOUT,
-                                                                                                                1));
-            long timeToWait = initialWaitTime;
-            long sleepInterval = 1000;
-            while (queueLogger.isAlive()) {
-                try {
-                    if (timeToWait <= 0) {
-                        atsConsoleLogger.warn("QueueLoggerThread '"
-                                              + queueLogger.getName() + "' was not killed in "
-                                              + (initialWaitTime / 1000) + " seconds! This is OK, proceed.");
-                        break;
-                    }
-                    atsConsoleLogger.info("Waiting up to " + (timeToWait / 1000) + " seconds for QueueLoggerThread '"
-                                          + queueLogger.getName() + "' to be killed...");
-                    Thread.sleep(sleepInterval);
-                    timeToWait -= sleepInterval;
-                } catch (InterruptedException e) {}
-            }
-            queueLogger = null;
-        }
-
-    }
-
-    @Override
-    public boolean stop( long timeout, TimeUnit timeUnit ) {
-
-        // When the appender is unloaded, terminate the logging thread
-        stopQueueLoggerThread();
-
-        return super.stop(timeout, timeUnit);
-    }
-
-    @Override
-    protected boolean stop( long timeout, TimeUnit timeUnit, boolean changeLifeCycleState ) {
-
-        // When the appender is unloaded, terminate the logging thread
-        stopQueueLoggerThread();
-
-        return super.stop(timeout, timeUnit, changeLifeCycleState);
-    }
-
-    @Override
-    public void stop() {
-
-        // When the appender is unloaded, terminate the logging thread
-        stopQueueLoggerThread();
-
-        super.stop();
-    }
-
-    @Override
-    protected boolean stop( Future<?> future ) {
-
-        // When the appender is unloaded, terminate the logging thread
-        stopQueueLoggerThread();
-
-        return super.stop(future);
-    }
-
-    @Override
-    public abstract void append( LogEvent event );
-
-    protected void initializeDbLogging( String caller ) {
+    protected void initializeDbLogging() {
 
         // enable batch mode at ATS Agent side only
         boolean isWorkingAtAgentSide = this instanceof PassiveDbAppender;
@@ -227,17 +146,15 @@ public abstract class AbstractDbAppender extends AbstractAppender {
         // create new event processor
         try {
             eventProcessor = new DbEventRequestProcessor(appenderConfig,
-                                                         this.getLayout(),
+                                                         layout,
                                                          getEventRequestProcessorListener(),
                                                          isBatchMode);
-
         } catch (DatabaseAccessException e) {
             throw new RuntimeException("Unable to create DB event processor", e);
         }
 
         // start the logging thread
-        // can be moved to the start() method, but only if needed
-        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode, caller);
+        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode);
         queueLogger.setDaemon(true);
         queueLogger.start();
     }
@@ -277,7 +194,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
             if (queue.remainingCapacity() < 1) {
                 throw new IllegalStateException("There are too many messages queued"
                                                 + " for TestExplorer DB logging. Decrease messages count"
-                                                + " by lowering effective log4j2 severity or check whether"
+                                                + " by lowering effective log4j severity or check whether"
                                                 + " connection to DB is too slow", ex);
             } else {
                 throw ex;
@@ -290,8 +207,48 @@ public abstract class AbstractDbAppender extends AbstractAppender {
 
     protected abstract EventRequestProcessorListener getEventRequestProcessorListener();
 
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.log4j.AppenderSkeleton#close()
+     */
+    public void close() {
+
+        // When the appender is unloaded, terminate the logging thread
+        if (queueLogger != null) {
+            queueLogger.interrupt();
+        }
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.log4j.AppenderSkeleton#requiresLayout()
+     */
+    public boolean requiresLayout() {
+
+        return true;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see org.apache.log4j.AppenderSkeleton#setLayout(org.apache.log4j.Layout)
+     */
+    @Override
+    public void setLayout(
+                           Layout layout ) {
+
+        super.setLayout(layout);
+
+        // set the layout to the event processor as well
+        if (eventProcessor != null) {
+            eventProcessor.setLayout(layout);
+        }
+    }
+
     /**
-     * log4j2 system reads the "events" parameter from the log4j2.xml and calls
+     * log4j system reads the "events" parameter from the log4j.xml and calls
      * this method
      *
      * @param maxNumberLogEvents
@@ -327,7 +284,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
     }
 
     /**
-     * log4j2 system reads the "mode" parameter from the log4j2.xml and calls this
+     * log4j system reads the "mode" parameter from the log4j.xml and calls this
      * method
      *
      * Expected value is "batch", everything else is skipped.
@@ -417,7 +374,7 @@ public abstract class AbstractDbAppender extends AbstractAppender {
                                    DbAppenderConfiguration appenderConfig ) {
 
         this.appenderConfig = appenderConfig;
-        this.addFilter(ThresholdFilter.createFilter(appenderConfig.getLoggingThreshold(), Result.ACCEPT, Result.DENY)); // or Result.NEUTRAL ?!?
+        this.threshold = appenderConfig.getLoggingThreshold();
     }
 
     public void calculateTimeOffset(
@@ -425,5 +382,4 @@ public abstract class AbstractDbAppender extends AbstractAppender {
 
         this.timeOffset = (System.currentTimeMillis() - executorTimestamp);
     }
-
 }

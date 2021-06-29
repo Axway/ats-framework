@@ -19,8 +19,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 /**
  * Shares some data between different reading types.
@@ -29,7 +28,7 @@ public class SharedReadingBean extends ReadingBean {
 
     private static final long          serialVersionUID = 1L;
 
-    private Logger                     log              = LogManager.getLogger(this.getClass());
+    private Logger                     log              = Logger.getLogger(this.getClass());
 
     // format the given float CPU usage values, output 4 digits after decimal point
     // which are later multiplied by 100

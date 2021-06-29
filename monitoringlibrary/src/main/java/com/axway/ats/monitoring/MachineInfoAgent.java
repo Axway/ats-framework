@@ -15,8 +15,7 @@
  */
 package com.axway.ats.monitoring;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.components.system.operations.clients.MachineDescriptionOperations;
 import com.axway.ats.common.PublicAtsApi;
@@ -33,7 +32,7 @@ import com.axway.ats.log.autodb.io.SQLServerDbWriteAccess;
 @PublicAtsApi
 public class MachineInfoAgent {
 
-    private static final Logger log = LogManager.getLogger(MachineInfoAgent.class);
+    private static final Logger log = Logger.getLogger(MachineInfoAgent.class);
 
     /**
      * Retrieves static info about a machine and stores this info into the

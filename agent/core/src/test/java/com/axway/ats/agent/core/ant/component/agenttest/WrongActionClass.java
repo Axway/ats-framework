@@ -15,8 +15,7 @@
  */
 package com.axway.ats.agent.core.ant.component.agenttest;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
@@ -26,14 +25,14 @@ public class WrongActionClass {
     @Action(name = "action duplicate")
     public void actionDup1( @Parameter(name = "value") int value ) {
 
-        LogManager.getLogger( WrongActionClass.class )
+        Logger.getLogger( WrongActionClass.class )
               .info( ( Object ) "Method action duplicate has been executed" );
     }
 
     @Action(name = "action duplicate")
     public void actionDup2( @Parameter(name = "value") int value ) {
 
-        LogManager.getLogger( FirstActionClass.class )
+        Logger.getLogger( FirstActionClass.class )
               .info( ( Object ) "Method action duplicate has been executed" );
     }
 }

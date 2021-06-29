@@ -15,8 +15,7 @@
  */
 package com.axway.ats.agent.webapp.client;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.utils.HostUtils;
 
@@ -34,7 +33,7 @@ public abstract class AbstractAgentClient {
 
     protected AbstractAgentClient( String atsAgent, String component ) {
 
-        this.log = LogManager.getLogger(this.getClass());
+        this.log = Logger.getLogger(this.getClass());
 
         if (LOCAL_JVM.equals(atsAgent)) {
             // we will work in the local JVM, so no running external instance of ATS Agent

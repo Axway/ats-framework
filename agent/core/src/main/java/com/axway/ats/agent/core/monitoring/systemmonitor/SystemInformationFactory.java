@@ -19,8 +19,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.ISystemInformation;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.exceptions.SystemInformationException;
@@ -42,7 +41,7 @@ public class SystemInformationFactory {
         MONITORING_PROVIDERS_MAP.put("sigar", SigarSystemInformation.class.getName());
     }
 
-    private static final Logger LOG = LogManager.getLogger(SystemInformationFactory.class);
+    private static final Logger LOG = Logger.getLogger(SystemInformationFactory.class);
 
     /**
      * Depending on the System property {@link AtsSystemProperties.SYSTEM_INFORMATION_CLASS}, a {@link ISystemInformation} will be returned.</br>

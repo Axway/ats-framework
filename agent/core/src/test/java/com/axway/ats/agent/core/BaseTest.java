@@ -15,7 +15,11 @@
  */
 package com.axway.ats.agent.core;
 
-import com.axway.ats.core.log.AtsLog4jLogger;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.PatternLayout;
+
+import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
 
 public class BaseTest {
 
@@ -27,6 +31,10 @@ public class BaseTest {
     public final static String    RELATIVE_PATH_TO_TEST_SOURCES   = RELATIVE_PATH_TO_TESTS + "/java";
 
     static {
-        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
+        ConsoleAppender appender = new ConsoleAppender( new PatternLayout( "%-5p %d{HH:mm:ss-SSS} %c{2}: %m%n" ) );
+        appender.addFilter( new NoSystemLevelEventsFilter() );
+
+        //init log4j
+        BasicConfigurator.configure( appender );
     }
 }

@@ -23,8 +23,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import com.axway.ats.agent.core.BaseTest;
@@ -33,7 +32,7 @@ public class Test_ThreadsManager extends BaseTest {
 
     // logging is disabled by default
     static final boolean   LOGGING_ALLOWED                  = false;
-    private static Logger  log                              = LogManager.getLogger( Test_ThreadsManager.class );
+    private static Logger  log                              = Logger.getLogger( Test_ThreadsManager.class );
 
     // number of threads has been tried as high as 5000 for 30 iterations
     static final int       N_THREADS                        = 100;
@@ -162,7 +161,7 @@ public class Test_ThreadsManager extends BaseTest {
 }
 
 class IterationListener {
-    private static Logger log = LogManager.getLogger( IterationListener.class );
+    private static Logger log = Logger.getLogger( IterationListener.class );
 
     public void onFinish() {
 
@@ -186,7 +185,7 @@ class IterationListener {
 
 class TestWorker implements Runnable {
 
-    private static Logger     log = LogManager.getLogger( TestWorker.class );
+    private static Logger     log = Logger.getLogger( TestWorker.class );
 
     private ThreadsManager    threadsManager;
     private IterationListener listener;

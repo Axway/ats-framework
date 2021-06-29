@@ -18,8 +18,7 @@ package com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.siga
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.hyperic.sigar.CpuPerc;
 import org.hyperic.sigar.FileSystem;
 import org.hyperic.sigar.Mem;
@@ -43,7 +42,7 @@ import com.axway.ats.core.monitoring.MonitorConfigurationException;
 
 public class SigarSystemInformation implements ISystemInformation {
 
-    private static final Logger log             = LogManager.getLogger(SigarSystemInformation.class);
+    private static final Logger log             = Logger.getLogger(SigarSystemInformation.class);
 
     private Sigar               sigar;
 

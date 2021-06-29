@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,23 +32,18 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Filter.Result;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.appender.FileAppender;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
-import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.common.system.OperatingSystemType;
 import com.axway.ats.common.system.SystemOperationException;
@@ -63,7 +58,7 @@ import com.axway.ats.core.utils.HostUtils;
 
 public class LocalSystemOperations implements ISystemOperations {
 
-    private static final Logger                  log                         = LogManager.getLogger(LocalSystemOperations.class);
+    private static final Logger                  log                         = Logger.getLogger(LocalSystemOperations.class);
 
     private static final String                  DATE_FORMAT                 = "MM/dd/yy HH:mm:ss";
 
@@ -319,44 +314,19 @@ public class LocalSystemOperations implements ISystemOperations {
 
     public void setAtsDbAppenderThreshold( Level threshold ) {
 
-        final LoggerContext context = LoggerContext.getContext(false);
-        final Configuration config = context.getConfiguration();
-        Map<String, Appender> appenders = config.getAppenders();
-        // there is a method called -> context.getConfiguration().getAppender(java.lang.String name)
-        // maybe we should use this one to obtain Active and Passive DB appenders?
-        if (appenders != null && appenders.size() > 0) {
-            for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
-                Appender appender = entry.getValue();
+        Logger rootLogger = Logger.getRootLogger();
+        Enumeration<Appender> appenders = rootLogger.getAllAppenders();
+        while (appenders.hasMoreElements()) {
+            Appender appender = appenders.nextElement();
                 if (appender != null) {
                     if (appender.getClass().getName().equals("com.axway.ats.log.appenders.ActiveDbAppender")) {
-                        // assume that only ATS is going to attach filter to this appender
-                        // so remove the previous one and attach the new one
-                        if ( ((AbstractAppender) appender).hasFilter()) {
-                            Filter currentFilter = ((AbstractAppender) appender).getFilter();
-                            if (currentFilter != null) {
-                                ((AbstractAppender) appender).removeFilter(currentFilter);
-                            }
-                        }
-                        ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold, Result.ACCEPT,
-                                                                                             Result.DENY));
+                    ((AppenderSkeleton) appender).setThreshold(threshold);
                     }
                     if (appender.getClass().getName().equals("com.axway.ats.log.appenders.PassiveDbAppender")) {
                         String callerId = ThreadsPerCaller.getCaller();
-                        String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller",
-                                                                                                true);
+                    String passiveDbAppenderCaller = (String) ReflectionUtils.getFieldValue(appender, "caller", true);
                         if (callerId != null && callerId.equals(passiveDbAppenderCaller)) {
-                            // assume that only ATS is going to attach filter to this appender
-                            // so remove the previous one and attach the new one
-                            if ( ((AbstractAppender) appender).hasFilter()) {
-                                Filter currentFilter = ((AbstractAppender) appender).getFilter();
-                                if (currentFilter != null) {
-                                    ((AbstractAppender) appender).removeFilter(currentFilter);
-                                }
-                            }
-                            ((AbstractAppender) appender).addFilter(ThresholdFilter.createFilter(threshold,
-                                                                                                 Result.ACCEPT,
-                                                                                                 Result.DENY));
-                        }
+                        ((AppenderSkeleton) appender).setThreshold(threshold);
                     }
                 }
             }
@@ -366,26 +336,8 @@ public class LocalSystemOperations implements ISystemOperations {
     public void attachFileAppender( String filepath, String messageFormatPattern ) {
 
         try {
-            PatternLayout patternLayout = PatternLayout.newBuilder().withPattern(messageFormatPattern).build();
-            final LoggerContext context = LoggerContext.getContext(false);
-            final Configuration config = context.getConfiguration();
-
-            // this name may get too long
-            String name = "file-appender-" + ThreadsPerCaller.getCaller() + filepath.replace("\\", "_");
-
-            //TODO: a check should be made that such appender exists
-            
-            FileAppender fileAppender = FileAppender.newBuilder()
-                                                    .setName(name)
-                                                    .setLayout(patternLayout)
-                                                    .withFileName(filepath)
-                                                    .build();
-
-            fileAppender.start();
-            config.addAppender(fileAppender);
-            // context.getRootLogger().addAppender(config.getAppender(fa.getName())); Is this needed?!?
-            context.updateLoggers();
-
+            Logger rootLogger = Logger.getRootLogger();
+            rootLogger.addAppender(new FileAppender(new PatternLayout(messageFormatPattern), filepath));
         } catch (Exception e) {
             throw new RuntimeException("Could not attach file appender '" + filepath + "'", e);
         }

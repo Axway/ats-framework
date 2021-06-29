@@ -18,8 +18,7 @@ package com.axway.ats.uiengine.utilities.hiddenbrowser;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitKeyboard;
@@ -36,7 +35,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlInput;
 @PublicAtsApi
 public class HiddenHtmlElementUtils {
 
-    private static Logger log = LogManager.getLogger(HiddenHtmlElementUtils.class);
+    private static Logger log = Logger.getLogger(HiddenHtmlElementUtils.class);
 
     @PublicAtsApi
     public static void mouseClick(

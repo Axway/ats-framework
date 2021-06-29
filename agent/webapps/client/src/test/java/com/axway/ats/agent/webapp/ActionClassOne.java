@@ -15,18 +15,13 @@
  */
 package com.axway.ats.agent.webapp;
 
-import org.apache.logging.log4j.LogManager;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.model.Action;
 import com.axway.ats.agent.core.model.Parameter;
-import com.axway.ats.core.log.AtsLog4jLogger;
 import com.axway.ats.core.validation.ValidationType;
 
 public class ActionClassOne {
-    
-    static {
-        AtsLog4jLogger.setLog4JConsoleLoggingOnly();
-    }
 
     public static int    ACTION_VALUE    = 0;
 
@@ -37,7 +32,7 @@ public class ActionClassOne {
                          @Parameter( name = "valueToMatch") int value ) {
 
         ACTION_VALUE = value;
-        LogManager.getLogger(ActionClassOne.class).info("Method action 1 has been executed");
+        Logger.getLogger(ActionClassOne.class).info("Method action 1 has been executed");
     }
 
     @Action( name = "action array")
@@ -45,7 +40,7 @@ public class ActionClassOne {
                         @Parameter( name = "valueToMatch", validation = ValidationType.NUMBER_CONSTANT, args = { "VALID_CONSTANTS" }) int[] values ) {
 
         ACTION_VALUE = values[values.length - 1];
-        LogManager.getLogger(ActionClassOne.class).info("Method action array has been executed");
+        Logger.getLogger(ActionClassOne.class).info("Method action array has been executed");
 
         return ACTION_VALUE;
     }

@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.BasicConfigurator;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -51,7 +52,7 @@ public class Test_EnvironmentConfigurator {
     @BeforeClass
     public static void beforeClass() {
 
-        //BasicConfigurator.configure();
+        BasicConfigurator.configure();
     }
 
     @Before

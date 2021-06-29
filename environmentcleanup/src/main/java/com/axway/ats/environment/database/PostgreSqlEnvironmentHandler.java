@@ -36,8 +36,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbQuery;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
@@ -68,7 +67,7 @@ class PostgreSqlEnvironmentHandler extends AbstractEnvironmentHandler {
     protected static final String GENERAL_INDEXES                           = "GENERAL_INDEXES";
     protected static final String CONSTRAINTS                               = "CONSTRAINTS";
 
-    private static final Logger   LOG                                       = LogManager.getLogger(PostgreSqlEnvironmentHandler.class);
+    private static final Logger   LOG                                       = Logger.getLogger(PostgreSqlEnvironmentHandler.class);
     private static final String   HEX_PREFIX_STR                            = "\\x";
 
     // see getForeignKeysReferencingTable() method for details

@@ -28,8 +28,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.core.monitoring.MonitorConfigurationException;
 
@@ -38,7 +37,7 @@ import com.axway.ats.core.monitoring.MonitorConfigurationException;
  */
 public class MBeanWrapper {
 
-    private static final Logger    log        = LogManager.getLogger(MBeanWrapper.class);
+    private static final Logger    log        = Logger.getLogger(MBeanWrapper.class);
 
     private static Set<ObjectName> mBeanNames = null;
 

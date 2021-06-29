@@ -19,61 +19,59 @@ package com.axway.ats.rbv.executors;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.RbvException;
 import com.axway.ats.rbv.rules.Rule;
 
 /**
- * The {@link MetaExecutor} is responsible for executing the verification
- * over each piece of {@link MetaData} that was received from the {@link IMatchable}.
+ * The {@link MetaExecutor} is responsible for executing the verification over
+ * each piece of {@link MetaData} that was received from the {@link IMatchable}.
  * It contains the root {@link Rule} which would carry all the logic needed to
  * evaluate the {@link MetaData} pieces.
  */
 public class MetaExecutor extends BasicExecutor {
 
-    private boolean             endOnFirstMatch = true;
-    private static final Logger log             = LogManager.getLogger(MetaExecutor.class);
+	private boolean endOnFirstMatch = true;
+	private static final Logger log = Logger.getLogger(MetaExecutor.class);
 
-    /**
-     * Evaluates the {@link MetaData} received as a parameter against the rules
-     * that were previously set.
-     * @param metaData the {@link List} of {@link MetaData} to be verified
-     *
-     * @see com.axway.ats.rbv.executors.Executor#evaluate(java.util.List)
-     */
-    public List<MetaData> evaluate(
-                                    List<MetaData> metaData ) throws RbvException {
+	/**
+	 * Evaluates the {@link MetaData} received as a parameter against the rules that
+	 * were previously set.
+	 * 
+	 * @param metaData the {@link List} of {@link MetaData} to be verified
+	 *
+	 * @see com.axway.ats.rbv.executors.Executor#evaluate(java.util.List)
+	 */
+	public List<MetaData> evaluate(List<MetaData> metaData) throws RbvException {
 
-        List<MetaData> matched = new ArrayList<MetaData>();
+		List<MetaData> matched = new ArrayList<MetaData>();
 
-        for (MetaData currentMeta : metaData) {
-            if (this.rootRule.isMatch(currentMeta)) {
+		for (MetaData currentMeta : metaData) {
+			if (this.rootRule.isMatch(currentMeta)) {
 
-                log.info("Matched a meta data!");
+				log.info("Matched a meta data!");
 
-                // we matched a piece of MetaData - add it to the
-                // collection that would be returned as a result
-                matched.add(currentMeta);
+				// we matched a piece of MetaData - add it to the
+				// collection that would be returned as a result
+				matched.add(currentMeta);
 
-                if (this.endOnFirstMatch) {
-                    return matched;
-                }
-            }
-        }
+				if (this.endOnFirstMatch) {
+					return matched;
+				}
+			}
+		}
 
-        return matched;
-    }
+		return matched;
+	}
 
-    /**
-     * @see com.axway.ats.rbv.executors.Executor#setRootRule(com.axway.ats.rbv.rules.Rule)
-     */
-    public void setRootRule(
-                             Rule rule ) {
+	/**
+	 * @see com.axway.ats.rbv.executors.Executor#setRootRule(com.axway.ats.rbv.rules.Rule)
+	 */
+	public void setRootRule(Rule rule) {
 
-        this.rootRule = rule;
-    }
+		this.rootRule = rule;
+	}
 
 }

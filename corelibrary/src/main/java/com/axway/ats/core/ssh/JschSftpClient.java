@@ -40,7 +40,7 @@ public class JschSftpClient {
                                                                                                    false);
     /*
      * If called from ATS plugin, it will log into plugin console, otherwise will
-     * log into log4j2
+     * log into log4j
      */
     private static AbstractAtsLogger log                = AbstractAtsLogger.getDefaultInstance(JschSftpClient.class);
 

@@ -32,8 +32,7 @@ import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
@@ -46,7 +45,7 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 @PublicAtsApi
 public class AtsDbLoggerUtilities {
 
-    private static final Logger logger                     = LogManager.getLogger(AtsDbLoggerUtilities.class);
+    private static final Logger logger                     = Logger.getLogger(AtsDbLoggerUtilities.class);
 
     private final long          MAX_FILE_SIZE              = 10 * 1024 * 1024;                                                // 10MB
 

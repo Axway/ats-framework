@@ -15,8 +15,7 @@
  */
 package com.axway.ats.uiengine.engine;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.fest.swing.fixture.ContainerFixture;
 import org.fest.swing.fixture.WindowFixture;
 
@@ -54,7 +53,7 @@ import com.axway.ats.uiengine.utilities.swing.SwingElementState;
 @PublicAtsApi
 public class SwingEngine extends AbstractEngine {
 
-    private static final Logger  log = LogManager.getLogger(SwingEngine.class);
+    private static final Logger  log = Logger.getLogger(SwingEngine.class);
     private SwingElementsFactory swingElementsFactory;
 
     public SwingEngine( UiDriver uiDriver ) {

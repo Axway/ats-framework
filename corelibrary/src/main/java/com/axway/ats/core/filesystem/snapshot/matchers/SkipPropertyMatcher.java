@@ -22,8 +22,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
 
@@ -33,7 +32,7 @@ import com.axway.ats.common.filesystem.snapshot.equality.FileTrace;
  */
 public class SkipPropertyMatcher extends SkipContentMatcher {
 
-    private static final Logger     log = LogManager.getLogger(SkipPropertyMatcher.class);
+    private static final Logger     log = Logger.getLogger(SkipPropertyMatcher.class);
 
     // < property key , match type >
     private Map<String, MATCH_TYPE> keysMap;

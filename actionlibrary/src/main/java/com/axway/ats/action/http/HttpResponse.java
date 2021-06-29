@@ -26,8 +26,7 @@ import javax.mail.internet.MimePart;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.io.IOUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 
 import com.axway.ats.action.exceptions.VerificationException;
@@ -61,7 +60,7 @@ public class HttpResponse {
      */
     private byte[]              body;
 
-    private static final Logger log = LogManager.getLogger(HttpResponse.class);
+    private static final Logger log = Logger.getLogger(HttpResponse.class);
 
     /**
      * Construct a HTTPResponse when there is a response body.

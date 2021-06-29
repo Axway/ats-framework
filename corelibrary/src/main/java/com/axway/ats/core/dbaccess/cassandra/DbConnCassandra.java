@@ -20,8 +20,7 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.CassandraKeys;
 import com.axway.ats.common.dbaccess.DbKeys;
@@ -32,7 +31,7 @@ import com.axway.ats.core.dbaccess.DbConnection;
  */
 public class DbConnCassandra extends DbConnection {
 
-    private static Logger      log           = LogManager.getLogger(DbConnCassandra.class);
+    private static Logger      log           = Logger.getLogger(DbConnCassandra.class);
 
     private boolean            allowFiltering;
 

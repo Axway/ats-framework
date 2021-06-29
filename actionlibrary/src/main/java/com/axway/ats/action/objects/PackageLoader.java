@@ -20,8 +20,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
 import com.axway.ats.action.objects.model.PackageException;
@@ -40,7 +39,7 @@ import com.axway.ats.harness.config.MessagesBox;
 @PublicAtsApi
 public class PackageLoader {
 
-    private static final Logger log = LogManager.getLogger(PackageLoader.class);
+    private static final Logger log = Logger.getLogger(PackageLoader.class);
 
     /**
      * Private constructor to prevent instantiation

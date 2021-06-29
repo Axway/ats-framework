@@ -27,8 +27,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.AbstractDbProvider;
@@ -65,7 +64,7 @@ public class MssqlDbProvider extends AbstractDbProvider {
         public static final String IS_UNIQUE_CONSTRAINT = "IsUniqueConstraint";
     }
     
-    private static final Logger log = LogManager.getLogger(MssqlDbProvider.class);
+    private static final Logger log = Logger.getLogger(MssqlDbProvider.class);
 
     /**
      * Constructor to create authenticated connection to a database.

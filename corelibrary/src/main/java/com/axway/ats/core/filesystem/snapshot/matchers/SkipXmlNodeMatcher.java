@@ -19,8 +19,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.dom4j.Attribute;
 import org.dom4j.Element;
 
@@ -31,7 +30,7 @@ import com.axway.ats.core.filesystem.snapshot.XmlNode;
  */
 public class SkipXmlNodeMatcher extends SkipContentMatcher {
 
-    private static final Logger        log = LogManager.getLogger(SkipXmlNodeMatcher.class);
+    private static final Logger        log = Logger.getLogger(SkipXmlNodeMatcher.class);
 
     // list of node matchers
     private List<NodeValueMatcher>     nodeValueMatchers;

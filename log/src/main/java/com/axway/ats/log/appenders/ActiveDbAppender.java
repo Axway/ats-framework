@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2019 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,14 @@
 
 package com.axway.ats.log.appenders;
 
-import java.io.Serializable;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Core;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.Layout;
-import org.apache.logging.log4j.core.LogEvent;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.plugins.Plugin;
-import org.apache.logging.log4j.core.config.plugins.PluginBuilderAttribute;
-import org.apache.logging.log4j.core.config.plugins.PluginBuilderFactory;
-import org.apache.logging.log4j.core.config.plugins.PluginElement;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.Required;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidHost;
-import org.apache.logging.log4j.core.config.plugins.validation.constraints.ValidPort;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.dbaccess.DbConnection;
@@ -45,7 +32,6 @@ import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.TimeUtils;
-import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.events.DeleteTestCaseEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
@@ -59,13 +45,12 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
 import com.axway.ats.log.autodb.model.IDbReadAccess;
 
 /**
- * This appender is bridge between Log4J2 events and ATS database. In addition it keeps the test execution state like
+ * This appender is bridge between Log4J events and ATS database. In addition it keeps the test execution state like
  * DB connection info, current run and testcase ID. 
  * <p><em>Note</em> that this class is internal for the framework and DB-related public operations are available via 
  * AtsDbLogger</p>
  * It is used only on the Test Executor side and not on ATS Agents.
  */
-@Plugin( name = "ActiveDbAppender", category = Core.CATEGORY_NAME, elementType = Appender.ELEMENT_TYPE)
 public class ActiveDbAppender extends AbstractDbAppender {
 
     /**
@@ -94,290 +79,35 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     private static IDbReadAccess    dbReadAccess;
 
-    @PluginBuilderFactory
-    public static ActiveDbAppenderBuilder newBuilder() {
-
-        return new ActiveDbAppenderBuilder();
-    }
-
-    // Note: Try to share this builder by both Active and Passive DbAppender
-    // Maybe create AbstractDbAppenderBuilder (note that this class is abstract)
-    // And the two separate builders (children of the aforementioned builder) for both Active/Passive DB appenders
-    public static class ActiveDbAppenderBuilder
-            implements org.apache.logging.log4j.core.util.Builder<ActiveDbAppender> {
-
-        @PluginBuilderAttribute( "name")
-        @Required( message = "ActiveDbAppender: no name provided")
-
-        private String         name;
-
-        @PluginElement( "Layout")
-        private Layout<String> layout;
-
-        @PluginElement( "Filter")
-        private Filter         filter;
-
-        @PluginBuilderAttribute( "host")
-        @Required( message = "ActiveDbAppender: no host provided")
-        @ValidHost
-        private String         host;
-
-        @PluginBuilderAttribute( "port")
-        @Required( message = "ActiveDbAppender: no port provided")
-        @ValidPort
-        private int            port              = -1;
-
-        @PluginBuilderAttribute( "database")
-        @Required( message = "ActiveDbAppender: no database provided")
-        private String         database;
-
-        @PluginBuilderAttribute( "user")
-        @Required( message = "ActiveDbAppender: no user provided")
-        private String         user;
-
-        @PluginBuilderAttribute( "password")
-        @Required( message = "ActiveDbAppender: no password provided")
-        private String         password;
-
-        @PluginBuilderAttribute( "driver")
-        private String         driver;
-
-        // Note that only "batch" value is supported
-        @PluginBuilderAttribute( "mode")
-        private String         mode;
-
-        // Note that this is supported only if mode = 'batch'
-        @PluginBuilderAttribute( "chunkSize")
-        private String         chunkSize;
-
-        @PluginBuilderAttribute( "events")
-        private int            events;
-
-        @PluginBuilderAttribute( "enableCheckpoints")
-        private boolean        enableCheckpoints = true;
-
-        public String getName() {
-
-            return name;
-        }
-
-        public ActiveDbAppenderBuilder setName( String name ) {
-
-            this.name = name;
-
-            return this;
-        }
-
-        public Layout<String> getLayout() {
-
-            return layout;
-        }
-
-        public ActiveDbAppenderBuilder setLayout( Layout<String> layout ) {
-
-            this.layout = layout;
-
-            return this;
-        }
-
-        public Filter getFilter() {
-
-            return filter;
-        }
-
-        public ActiveDbAppenderBuilder setFilter( Filter filter ) {
-
-            this.filter = filter;
-
-            return this;
-        }
-
-        public String getHost() {
-
-            return host;
-        }
-
-        public ActiveDbAppenderBuilder setHost( String host ) {
-
-            this.host = host;
-
-            return this;
-        }
-
-        public int getPort() {
-
-            return port;
-        }
-
-        public ActiveDbAppenderBuilder setPort( int port ) {
-
-            this.port = port;
-
-            return this;
-        }
-
-        public String getDatabase() {
-
-            return database;
-        }
-
-        public ActiveDbAppenderBuilder setDatabase( String database ) {
-
-            this.database = database;
-
-            return this;
-        }
-
-        public String getUser() {
-
-            return user;
-        }
-
-        public ActiveDbAppenderBuilder setUser( String user ) {
-
-            this.user = user;
-
-            return this;
-        }
-
-        public String getPassword() {
-
-            return password;
-        }
-
-        public ActiveDbAppenderBuilder setPassword( String password ) {
-
-            this.password = password;
-
-            return this;
-        }
-
-        public String getDriver() {
-
-            return driver;
-        }
-
-        public ActiveDbAppenderBuilder setDriver( String driver ) {
-
-            this.driver = driver;
-
-            return this;
-        }
-
-        public String getMode() {
-
-            return mode;
-        }
-
-        public ActiveDbAppenderBuilder setMode( String mode ) {
-
-            this.mode = mode;
-
-            return this;
-        }
-
-        public String getChunkSize() {
-
-            return chunkSize;
-        }
-
-        public ActiveDbAppenderBuilder setChunkSize( String chunkSize ) {
-
-            this.chunkSize = chunkSize;
-
-            return this;
-        }
-
-        public int getEvents() {
-
-            return events;
-        }
-
-        public ActiveDbAppenderBuilder setEvents( int events ) {
-
-            this.events = events;
-
-            return this;
-        }
-
-        public boolean getEnableCheckpoints() {
-
-            return this.enableCheckpoints;
-        }
-
-        public ActiveDbAppenderBuilder setChunkSize( boolean enableCheckpoints ) {
-
-            this.enableCheckpoints = enableCheckpoints;
-
-            return this;
-        }
-
-        @Override
-        public ActiveDbAppender build() {
-
-            DbAppenderConfiguration appenderConfiguration = new DbAppenderConfiguration();
-            appenderConfiguration.setHost(this.host);
-            if (port == -1) {
-                appenderConfiguration.setPort(null);
-            } else {
-                appenderConfiguration.setPort(this.port + "");
-            }
-            appenderConfiguration.setDatabase(this.database);
-            appenderConfiguration.setUser(this.user);
-            appenderConfiguration.setPassword(this.password);
-            appenderConfiguration.setMode(this.mode);
-            appenderConfiguration.setDriver(this.driver);
-            appenderConfiguration.setChunkSize(this.chunkSize);
-            appenderConfiguration.setEnableCheckpoints(enableCheckpoints);
-            appenderConfiguration.setMaxNumberLogEvents(this.events + "");
-            // Note: logging threshold is set in the parent constructor
-            return new ActiveDbAppender(name, filter, layout, appenderConfiguration);
-        }
-
-    }
-
     /**
-     * Constructor that creates a dummy appender.
-     * Actually this constructor is not invoked via the log4j2 library, but 
-     * is used, then there is no ActiveDbAppender entry in the log4j2.xml file
-     * or such appender was not created during runtime.
-     * In that way, the user can still use methods from this appender, and those will not result in a NPE being thrown.
-     * But those methods will return dummy values, instead of some meaningful once
+     * Constructor
      */
-    public ActiveDbAppender( DbAppenderConfiguration appenderConfiguration ) {
+    public ActiveDbAppender() {
 
-        super("ActiveDbAppender", null, null, appenderConfiguration);
+        super();
+
+        /** create dummy appender configuration 
+         *  This configuration will be replaced with one from log4j.xml file
+         * */
+        appenderConfig.setHost(DUMMY_DB_HOST);
+        appenderConfig.setDatabase(DUMMY_DB_DATABASE);
+        appenderConfig.setUser(DUMMY_DB_USER);
+        appenderConfig.setPassword(DUMMY_DB_PASSWORD);
 
         /**
          * Create dummy event request processor.
-         * This processor will be replaced once config from log4j2.xml is loaded
+         * This processor will be replaced once config from log4j.xml is loaded
          * */
         eventProcessor = new DbEventRequestProcessor();
-
-        // set the layout to the event processor as well
-        if (eventProcessor != null) {
-            eventProcessor.setLayout(this.getLayout());
-        }
-
     }
 
-    /**
-     * Actual Constructor
-     */
-    public ActiveDbAppender( String name, Filter filter, Layout<? extends Serializable> layout,
-                             DbAppenderConfiguration appenderConfiguration ) {
+    @Override
+    public void activateOptions() {
 
-        super(name, filter, layout, appenderConfiguration);
+        super.activateOptions();
 
-        /**
-         * Create dummy event request processor.
-         * This processor will be replaced once config from log4j2.xml is loaded
-         * */
-        eventProcessor = new DbEventRequestProcessor();
-
-        /* this flag is changed here, since this is the first place where the Apache log4j2 package interacts with this class
+        /* this flag is changed here, since this is the first place where the Apache log4j package interacts with this class
          */
-        // or modify this flag in the onStart() method(s) ?!?
         isAttached = true;
     }
 
@@ -387,8 +117,11 @@ public class ActiveDbAppender extends AbstractDbAppender {
         return new SimpleEventRequestProcessorListener(listenerMutex);
     }
 
+    /* (non-Javadoc)
+     * @see org.apache.log4j.AppenderSkeleton#append(org.apache.log4j.spi.LoggingEvent)
+     */
     @Override
-    public void append( LogEvent event ) {
+    protected void append( LoggingEvent event ) {
 
         // All events from all threads come into here
         long eventTimestamp;
@@ -450,21 +183,21 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
-                    Level level = LogManager.getRootLogger().getLevel();
-                    Configurator.setRootLevel(Level.OFF);
+                    Level level = Logger.getRootLogger().getLevel();
+                    Logger.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.setLevel(level);
 
                     // create the queue logging thread and the DbEventRequestProcessor
                     if (queueLogger == null) {
-                        initializeDbLogging(null);
+                        initializeDbLogging();
                     }
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, false);
                     //this event has already been through the queue
 
                     /*Revert Logger's level*/
-                    Configurator.setRootLevel(level);
+                    Logger.getRootLogger().setLevel(level);
                     AtsConsoleLogger.setLevel(level);
 
                     return;
@@ -479,15 +212,15 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                           + " event completion");
 
                     /** disable root logger's logging in order to prevent deadlock **/
-                    level = LogManager.getRootLogger().getLevel();
-                    Configurator.setRootLevel(Level.OFF);
+                    level = Logger.getRootLogger().getLevel();
+                    Logger.getRootLogger().setLevel(Level.OFF);
 
                     AtsConsoleLogger.setLevel(level);
 
                     waitForEventToBeExecuted(packedEvent, dbLoggingEvent, true);
 
                     /*Revert Logger's level*/
-                    Configurator.setRootLevel(level);
+                    Logger.getRootLogger().setLevel(level);
                     AtsConsoleLogger.setLevel(level);
 
                     //this event has already been through the queue
@@ -532,7 +265,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                                                                         appenderConfig.getUser(),
                                                                         appenderConfig.getPassword());
             if (mssqlException == null) {
-
+                
                 Map<String, Object> props = new HashMap<>();
                 props.put(DbKeys.DRIVER, appenderConfig.getDriver().toUpperCase());
                 dbConnection = new DbConnSQLServer(appenderConfig.getHost(),
@@ -579,7 +312,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
      * @param packedEvent
      * @param event
      */
-    private void waitForEventToBeExecuted( LogEventRequest packedEvent, LogEvent event,
+    private void waitForEventToBeExecuted( LogEventRequest packedEvent, LoggingEvent event,
                                            boolean waitMoreTime ) {
 
         synchronized (listenerMutex) {
@@ -690,27 +423,22 @@ public class ActiveDbAppender extends AbstractDbAppender {
 
     /**
      * This method doesn't create a new instance,
-     * but returns the already created one (from log4j2) or null if there is no such.
+     * but returns the already created one (from log4j) or null if there is no such.
      *
      * @return the current DB appender instance
      */
+    @SuppressWarnings( "unchecked")
     public static ActiveDbAppender getCurrentInstance() {
 
         if (instance == null) {
-            final LoggerContext context = LoggerContext.getContext(false);
-            final Configuration config = context.getConfiguration();
-            Map<String, Appender> appenders = config.getAppenders();
-            // there is a method called -> context.getConfiguration().getAppender(java.lang.String name)
-            // maybe we should use this one to obtain Active and Passive DB appenders?
-            if (appenders != null && appenders.size() > 0) {
-                for (Map.Entry<String, Appender> entry : appenders.entrySet()) {
-                    Appender appender = entry.getValue();
+            Enumeration<Appender> appenders = Logger.getRootLogger().getAllAppenders();
+            while (appenders.hasMoreElements()) {
+                Appender appender = appenders.nextElement();
 
-                    if (appender instanceof ActiveDbAppender) {
-                        instance = (ActiveDbAppender) appender;
-                        isAttached = true;
-                        return instance;
-                    }
+                if (appender instanceof ActiveDbAppender) {
+                    instance = (ActiveDbAppender) appender;
+                    isAttached = true;
+                    return instance;
                 }
             }
         }
@@ -720,24 +448,16 @@ public class ActiveDbAppender extends AbstractDbAppender {
         }
 
         /*
-         * Configuration in log4j2.xml file was not found for ActiveDbAppender
+         * Configuration in log4j.xml file was not found for ActiveDbAppender
          * A dummy com.axway.ats.log.autodb.DbEventRequestProcessor is
          * created in order to prevent NPE when invoking methods such as getRunId()
          */
         new AtsConsoleLogger(ActiveDbAppender.class).warn(
-                                                          "ATS Database appender is not specified in log4j2.xml file. "
+                                                          "ATS Database appender is not specified in log4j.xml file. "
                                                           + "Methods such as ActiveDbAppender@getRunId() will not work.");
 
         isAttached = false;
-        /** create dummy appender configuration 
-         *  This configuration will be replaced with one from log4j2.xml file
-         * */
-        DbAppenderConfiguration appenderConfig = new DbAppenderConfiguration();
-        appenderConfig.setHost(DUMMY_DB_HOST);
-        appenderConfig.setDatabase(DUMMY_DB_DATABASE);
-        appenderConfig.setUser(DUMMY_DB_USER);
-        appenderConfig.setPassword(DUMMY_DB_PASSWORD);
-        instance = new ActiveDbAppender(appenderConfig);
+        instance = new ActiveDbAppender();
         return instance;
     }
 

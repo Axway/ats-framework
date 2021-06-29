@@ -15,28 +15,24 @@
  */
 package com.axway.ats.agent.core.configuration;
 
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.Appender;
-import org.apache.logging.log4j.core.Filter;
-import org.apache.logging.log4j.core.appender.AbstractAppender;
-import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.filter.ThresholdFilter;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Category;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
 
 import com.axway.ats.core.threads.ThreadsPerCaller;
-import com.axway.ats.log.Log4j2Utils;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.appenders.AbstractDbAppender;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
-import com.axway.ats.log.appenders.PassiveDbAppender.PassiveDbAppenderBuilder;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.filters.NoSystemLevelEventsFilter;
-import com.axway.ats.log.model.SystemLogLevel;
 
 /**
  * This configurator is used for configuring logging on remote systems
@@ -48,9 +44,9 @@ public class RemoteLoggingConfigurator implements Configurator {
     private DbAppenderConfiguration appenderConfiguration;
     private String                  appenderLogger;
 
-    private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG.intLevel();
+    private static final int        DEFAULT_LOG_LEVEL = Level.DEBUG_INT;
 
-    // list of other logger levels defined by the user in their log4j2 configuration file
+    // list of other logger levels defined by the user in their log4j configuration file
     private Map<String, Integer>    otherLoggerLevels = new HashMap<String, Integer>();
 
     // flags telling us what exactly to configure
@@ -63,6 +59,7 @@ public class RemoteLoggingConfigurator implements Configurator {
      * @param customLogLevel log level specified in the test ( or use AgentConfigurationLandscape.getInstance(atsAgent).getDbLogLevel() )
      * @param chunkSize chunk size (for batch db logging) specified in the test ( or use AgentConfigurationLandscape.getInstance(atsAgent).getChunkSize() )
      */
+    @SuppressWarnings( "unchecked")
     public RemoteLoggingConfigurator( LogLevel customLogLevel, int chunkSize ) {
 
         /*
@@ -74,14 +71,13 @@ public class RemoteLoggingConfigurator implements Configurator {
          */
 
         // look for the DB appender
-        LoggerConfig loggerConfig = Log4j2Utils.getLoggerConfig("com.axway.ats");
+        Category log = Logger.getLogger("com.axway.ats");
         boolean dbAppenderIsProcessed = false;
-        // get all logger's appender
-        while (loggerConfig != null && !dbAppenderIsProcessed) {
+        while (log != null && !dbAppenderIsProcessed) {
 
-            Map<String, Appender> appenders = loggerConfig.getAppenders();
-
-            for (Appender appender : appenders.values()) {
+            Enumeration<Appender> appenders = log.getAllAppenders();
+            while (appenders.hasMoreElements()) {
+                Appender appender = appenders.nextElement();
 
                 if (appender.getClass() == ActiveDbAppender.class // running on Test Executor side
                     || appender.getClass() == PassiveDbAppender.class // running on Agent side 
@@ -92,51 +88,59 @@ public class RemoteLoggingConfigurator implements Configurator {
                         // should a warning be logged here if the chunk size is not valid?
                         appenderConfiguration.setChunkSize(chunkSize + "");
                     }
-                    appenderLogger = loggerConfig.getName();
+                    appenderLogger = log.getName();
 
                     int atsDbLogLevel = DEFAULT_LOG_LEVEL;
                     if (customLogLevel != null) {
                         // user specified in the test the log level for this agent
                         atsDbLogLevel = customLogLevel.toInt();
-                    } else if (loggerConfig.getLevel() != null) {
-                        // user specified the log level in log4j2 configuration file
-                        atsDbLogLevel = loggerConfig.getLevel().intLevel();
+                    } else if (log.getLevel() != null) {
+                        // user specified the log level in log4j configuration file
+                        atsDbLogLevel = log.getLevel().toInt();
 
                     }
 
                     //set the effective logging level for threshold if new one is set
                     if (appenderConfiguration.getLoggingThreshold() == null
-                        || appenderConfiguration.getLoggingThreshold().intLevel() != atsDbLogLevel) {
+                        || appenderConfiguration.getLoggingThreshold().toInt() != atsDbLogLevel) {
 
-                        final Level currentLevelBackup = loggerConfig.getLevel();
-                        loggerConfig.setLevel(SystemLogLevel.toLevel(atsDbLogLevel));
-                        appenderConfiguration.setLoggingThreshold(loggerConfig.getLevel());
-                        loggerConfig.setLevel(currentLevelBackup);
-
+                        /*
+                         * Log4j is deprecating the Priority class used by setLoggingThreshold,
+                         * but we cannot make an instance of this class as its constructor is not public.
+                         * 
+                         * So here we first change the log level on the Test Executor,
+                         * then get the Priority object, then restore back the value on the Test Executor
+                         */
+                        final Level currentLevelBackup = log.getLevel();
+                        log.setLevel(Level.toLevel(atsDbLogLevel));
+                        appenderConfiguration.setLoggingThreshold(log.getEffectiveLevel());
+                        log.setLevel(currentLevelBackup);
                     }
 
                     //exit the loop
                     dbAppenderIsProcessed = true;
                     break;
                 }
+                }
 
+            log = log.getParent();
             }
 
-            loggerConfig = loggerConfig.getParent();
-
-        }
         // look for any user loggers
-        // should this be done in the previous for cycle?!?
-        for (LoggerConfig logger : Log4j2Utils.getAllLoggers().values()) {
+        Enumeration<Logger> allLoggers = Logger.getRootLogger().getLoggerRepository().getCurrentLoggers();
+        while (allLoggers.hasMoreElements()) {
+            Logger logger = allLoggers.nextElement();
+
             Level level = logger.getLevel();
             if (level != null) {
                 // user explicitly specified a level for this logger
-                otherLoggerLevels.put(logger.getName(), level.intLevel());
+                otherLoggerLevels.put(logger.getName(), level.toInt());
             }
         }
     }
 
     @Override
+    @SuppressWarnings( "unchecked")
     public void apply() {
 
         /*
@@ -144,69 +148,56 @@ public class RemoteLoggingConfigurator implements Configurator {
          */
 
         if (needsToConfigureDbAppender) {
-            //first get all appenders and apply the filter which will deny logging of system events
-            Map<String, Appender> appenders = Log4j2Utils.getAllAppenders();
-            for (Appender appender : appenders.values()) {
+            //first get all appenders in the root category and apply the filter
+            //which will deny logging of system events
+            Logger rootLogger = Logger.getRootLogger();
+            Enumeration<Appender> appenders = rootLogger.getAllAppenders();
+            while (appenders.hasMoreElements()) {
+                Appender appender = appenders.nextElement();
                 if (! (appender instanceof AbstractDbAppender)) {
                     // apply this filter on all appenders which are not coming from ATS
-                    ((AbstractAppender) appender).addFilter(new NoSystemLevelEventsFilter());
+                    appender.addFilter(new NoSystemLevelEventsFilter());
                 }
             }
 
             //attach the appender to the logging system
-            Logger log;
-            if ("".equals(appenderLogger)) { // don't ask me why, but the root loggerConfig's name is not root, but and empty String!
-                log = Log4j2Utils.getRootLogger();
+            Category log;
+            if ("root".equals(appenderLogger)) {
+                log = Logger.getRootLogger();
             } else {
-                log = Log4j2Utils.getLogger(appenderLogger);
+                log = Logger.getLogger(appenderLogger);
             }
-            Log4j2Utils.setLoggerLevel(log.getName(),
-                                       SystemLogLevel.toLevel(appenderConfiguration.getLoggingThreshold().intLevel()));
 
-            PassiveDbAppenderBuilder builder = PassiveDbAppender.newBuilder();
-            //use a default pattern, as we log in the db
-            builder.setLayout(org.apache.logging.log4j.core.layout.PatternLayout.newBuilder()
-                                                                                .withPattern("%c{2}: %m%n")
-                                                                                .build());
+            log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
 
-            builder.setChunkSize(appenderConfiguration.getChunkSize());
-            builder.setDatabase(appenderConfiguration.getDatabase());
-            builder.setDriver(appenderConfiguration.getDriver());
-            builder.setEnableCheckpoints(appenderConfiguration.getEnableCheckpoints());
-            builder.setEvents(appenderConfiguration.getMaxNumberLogEvents());
-            builder.setFilter(ThresholdFilter.createFilter(appenderConfiguration.getLoggingThreshold(),
-                                                           Filter.Result.ACCEPT, Filter.Result.DENY));
-            builder.setHost(appenderConfiguration.getHost());
-            builder.setMode( (appenderConfiguration.isBatchMode())
-                                                                   ? "batch"
-                                                                   : "");
-            builder.setName(PassiveDbAppender.class.getSimpleName() + "_" + ThreadsPerCaller.getCaller());
-            builder.setPassword(appenderConfiguration.getPassword());
-            builder.setPort(Integer.parseInt(appenderConfiguration.getPort()));
-            builder.setUser(appenderConfiguration.getUser());
+            final String caller = ThreadsPerCaller.getCaller();
+
             //create the new appender
-            PassiveDbAppender attachedAppender = builder.build();
+            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
+            attachedAppender.setAppenderConfig(appenderConfiguration);
+            //use a default pattern, as we log in the db
+            attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
+            attachedAppender.activateOptions();
 
-            attachedAppender.start();
-
-            Log4j2Utils.addAppenderToLogger(attachedAppender, log.getName());
+            log.addAppender(attachedAppender);
         }
 
         if (needsToConfigureUserLoggers) {
             for (Entry<String, Integer> userLogger : otherLoggerLevels.entrySet()) {
                 /* 
                  * We want to set the level of this logger.
-                 * It is not important if this logger is already attached to log4j2 system or 
+                 * It is not important if this logger is already attached to log4j system or 
                  * not as the next code will obtain it(in case logger exists) or will create it 
                  * and then will set its level
                  */
-                // Note: Not exactly true. If the logger does not exists, I am not sure if the line below will create it and the set the level or just silently fail
-                Log4j2Utils.setLoggerLevel(userLogger.getKey(), SystemLogLevel.toLevel(userLogger.getValue()));
+                Logger.getLogger(userLogger.getKey())
+                      .setLevel(Level.toLevel(userLogger.getValue()));
             }
         }
     }
 
     @Override
+    @SuppressWarnings( "unchecked")
     public boolean needsApplying() {
 
         /*
@@ -226,22 +217,20 @@ public class RemoteLoggingConfigurator implements Configurator {
         }
 
         needsToConfigureUserLoggers = false;
-
-        Map<String, LoggerConfig> allLoggers = Log4j2Utils.getAllLoggers();
-
         for (Entry<String, Integer> userLogger : otherLoggerLevels.entrySet()) {
+            Enumeration<Logger> allLoggers = Logger.getRootLogger().getLoggerRepository().getCurrentLoggers();
 
             boolean loggerAlreadyExists = false;
             boolean loggerLevelIsDifferent = false;
-            for (Map.Entry<String, LoggerConfig> entry : allLoggers.entrySet()) {
-                LoggerConfig loggerConfig = entry.getValue();
+            while (allLoggers.hasMoreElements()) {
+                Logger logger = allLoggers.nextElement();
 
-                if (loggerConfig.getName().equals(userLogger.getKey())) {
+                if (logger.getName().equals(userLogger.getKey())) {
                     // this logger is already available, check its level
                     loggerAlreadyExists = true;
 
-                    if (loggerConfig.getLevel() == null
-                        || loggerConfig.getLevel().intLevel() != userLogger.getValue()) {
+                    if (logger.getLevel() == null
+                        || logger.getLevel().toInt() != userLogger.getValue()) {
                         // logger level is not set or it is not correct
                         loggerLevelIsDifferent = true;
                     }
@@ -261,6 +250,7 @@ public class RemoteLoggingConfigurator implements Configurator {
     }
 
     @Override
+    @SuppressWarnings( "unchecked")
     public void revert() {
 
         /*
@@ -279,29 +269,37 @@ public class RemoteLoggingConfigurator implements Configurator {
             // there is a DB appender and it is out-of-date
 
             //remove the filter which will deny logging of system events
-            Map<String, Appender> allAppenders = Log4j2Utils.getAllAppenders();
-            for (Map.Entry<String, Appender> entry : allAppenders.entrySet()) {
-                Appender appender = entry.getValue();
-                // the org.apache.logging.log4j.core.Appender, which is returned via Log4j2Utils.getAllAppenders(); does not handle filters
-                // so cast is needed, but only if this is possible
-                if (appender instanceof AbstractAppender) {
+            Logger rootLogger = Logger.getRootLogger();
+            Enumeration<Appender> appenders = rootLogger.getAllAppenders();
+            while (appenders.hasMoreElements()) {
+                Appender appender = appenders.nextElement();
+
                     //remove the filter
                     //FIXME: This is very risky, as someone may have added other filters
+                //the current implementation of the filter chain in log4j will not allow
+                //us to easily remove a single filter
+                appender.clearFilters();
+            }
 
-                    // Why do we need to do this?!?
-                    ((AbstractAppender) appender).removeFilter( ((AbstractAppender) appender).getFilter());
-                }
+            Category log;
+            if ("root".equals(appenderLogger)) {
+                log = Logger.getRootLogger();
+            } else {
+                log = Logger.getLogger(appenderLogger);
             }
 
             Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
             if (dbAppender != null) {
-                // stop and remove the appender
-                Log4j2Utils.removeAppender(dbAppender.getName());
+                //close the appender
+                dbAppender.close();
+
+                //remove it
+                log.removeAppender(dbAppender);
             }
         }
 
-        // in case we must reconfigure the custom loggers, here we should remove them from log4j2, 
-        // but log4j2 does not provide a way to do it - so we do nothing here
+        // in case we must reconfigure the custom loggers, here we should remove them from log4j, 
+        // but log4j does not provide a way to do it - so we do nothing here 
     }
 
     @Override

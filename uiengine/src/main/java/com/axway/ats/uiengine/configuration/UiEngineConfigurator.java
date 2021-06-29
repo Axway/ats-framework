@@ -18,8 +18,7 @@ package com.axway.ats.uiengine.configuration;
 import java.io.File;
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxOptions;
@@ -37,7 +36,7 @@ import com.axway.ats.core.utils.IoUtils;
 @PublicAtsApi
 public class UiEngineConfigurator extends AbstractConfigurator {
 
-    private static Logger                  log                                   = LogManager.getLogger(UiEngineConfigurator.class);
+    private static Logger                  log                                   = Logger.getLogger(UiEngineConfigurator.class);
     // the configuration file this class reads
     private static final String            PROPERTIES_FILE_NAME                  = "/ats.uiengine.properties";
 

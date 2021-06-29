@@ -22,8 +22,7 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.w3c.dom.Document;
@@ -44,7 +43,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 class DatabaseSnapshotBackupUtils {
 
-    private static Logger log = LogManager.getLogger(DatabaseSnapshotBackupUtils.class);
+    private static Logger log = Logger.getLogger(DatabaseSnapshotBackupUtils.class);
 
     /**
      * Save a snapshot into a file

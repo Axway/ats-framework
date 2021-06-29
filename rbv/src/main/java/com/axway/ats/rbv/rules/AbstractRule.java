@@ -17,8 +17,7 @@ package com.axway.ats.rbv.rules;
 
 import java.util.Random;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.rbv.MetaData;
 import com.axway.ats.rbv.model.MetaDataIncorrectException;
@@ -75,7 +74,7 @@ public abstract class AbstractRule implements Rule, Comparable<AbstractRule> {
                          Class<? extends MetaData> metaDataClass,
                          int priority ) {
 
-        this.log = LogManager.getLogger(this.getClass());
+        this.log = Logger.getLogger(this.getClass());
         this.ruleName = ruleName;
         this.ruleUniqueId = randomIds.nextInt();
         this.expectedResult = expectedResult;

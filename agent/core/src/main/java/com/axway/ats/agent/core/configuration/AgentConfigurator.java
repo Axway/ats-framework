@@ -19,8 +19,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
 
@@ -31,7 +30,7 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 @SuppressWarnings( "serial")
 public class AgentConfigurator implements Configurator {
 
-    private static final Logger        log                               = LogManager.getLogger(AgentConfigurator.class);
+    private static final Logger        log                               = Logger.getLogger(AgentConfigurator.class);
 
     private static final String        SETTINGS_FILENAME                 = "ats.agent.properties";
 

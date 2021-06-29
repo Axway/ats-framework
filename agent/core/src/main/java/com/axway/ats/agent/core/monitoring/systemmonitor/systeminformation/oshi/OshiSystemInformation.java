@@ -22,8 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IDiskUsage;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.IFileSystem;
@@ -77,7 +76,7 @@ public class OshiSystemInformation implements ISystemInformation {
      * */
     public static final long        DEFAULT_PROCESS_PIDS_CACHE_LIFETIME = TimeUnit.MINUTES.toMillis(1);
 
-    private static final Logger     log                                 = LogManager.getLogger(OshiSystemInformation.class);
+    private static final Logger     log                                 = Logger.getLogger(OshiSystemInformation.class);
 
     private SystemInfo              systemInfo                          = null;
     public HardwareAbstractionLayer hal                                 = null;

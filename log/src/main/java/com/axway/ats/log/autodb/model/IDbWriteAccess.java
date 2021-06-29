@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,7 +222,5 @@ public interface IDbWriteAccess {
     public void flushCacheIfNeeded() throws DatabaseAccessException;
 
     public void runDbSanityCheck() throws DatabaseAccessException;
-    
-    public void disconnect();
 
 }

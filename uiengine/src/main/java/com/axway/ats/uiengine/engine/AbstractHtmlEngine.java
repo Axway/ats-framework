@@ -22,8 +22,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Cookie;
 import org.openqa.selenium.JavascriptExecutor;
@@ -63,7 +62,7 @@ import com.gargoylesoftware.htmlunit.html.HtmlPage;
 @PublicAtsApi
 public abstract class AbstractHtmlEngine extends AbstractEngine implements IHtmlEngine {
 
-    private static Logger log = LogManager.getLogger(AbstractHtmlEngine.class);
+    private static Logger log = Logger.getLogger(AbstractHtmlEngine.class);
 
     private WebDriver     webDriver;
 

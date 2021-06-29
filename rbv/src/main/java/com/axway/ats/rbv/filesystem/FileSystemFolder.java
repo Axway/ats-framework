@@ -20,8 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.action.filesystem.FileSystemOperations;
 import com.axway.ats.action.objects.FilePackage;
@@ -39,7 +38,7 @@ import com.axway.ats.rbv.storage.Matchable;
 
 public class FileSystemFolder implements Matchable {
 
-    private static final Logger       log = LogManager.getLogger(FileSystemFolder.class);
+    private static final Logger       log = Logger.getLogger(FileSystemFolder.class);
 
     private boolean                   isOpen;
     private String                    atsAgent;

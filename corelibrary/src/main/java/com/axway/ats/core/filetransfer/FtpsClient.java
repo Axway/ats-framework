@@ -34,8 +34,7 @@ import javax.net.ssl.SSLContext;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.ssl.TrustStrategy;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
@@ -59,7 +58,7 @@ public class FtpsClient extends AbstractFileTransferClient {
 
     private org.apache.commons.net.ftp.FTPSClient ftpsConnection                 = null;
 
-    private static final Logger                   log                            = LogManager.getLogger(FtpsClient.class);
+    private static final Logger                   log                            = Logger.getLogger(FtpsClient.class);
 
     private static final String                   USE_ONE_OF_THE_FTPS_CONSTANTS  = "Use one of the FTPS_* constants for key and values in GenericFileTransferClient class";
 

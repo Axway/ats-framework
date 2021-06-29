@@ -22,8 +22,7 @@ import static org.junit.Assert.assertNull;
 
 import java.io.IOException;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -43,7 +42,7 @@ public class Test_Smtp extends BaseTest {
     public void setUp() {
 
         smtpMgr = new SmtpManager();
-        LogManager.getRootLogger()
+        Logger.getRootLogger()
               .info("--------------------------START TESTCASE----------------------------------------");
 
     }
@@ -51,7 +50,7 @@ public class Test_Smtp extends BaseTest {
     @After
     public void tearDown() {
 
-        LogManager.getRootLogger()
+        Logger.getRootLogger()
               .info("--------------------------END TESTCASE----------------------------------------");
 
         smtpMgr.closeConnection(-1);
