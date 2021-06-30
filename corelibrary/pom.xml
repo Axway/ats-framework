@@ -236,8 +236,6 @@
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-compress</artifactId>
 		</dependency>
-		<dependency>
-        </dependency>
 	</dependencies>
 
 </project>

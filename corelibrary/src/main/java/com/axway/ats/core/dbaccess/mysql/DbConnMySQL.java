@@ -113,8 +113,7 @@ public class DbConnMySQL extends DbConnection {
         url = new StringBuilder().append(JDBC_MYSQL_PREFIX).append(host).append(":")
                 // because the port can be changed after execution of the parent constructor,
                 // use this.port, instead of port
-                .append(this.port).append("/").append(db).append(((useSSL) ? "?useSSL=true" : ""))
-                .append(serverTimeZoneWarningLogged).toString();
+                .append(this.port).append("/").append(db).append(((useSSL) ? "?useSSL=true" : "")).toString();
     }
 
     @Override
