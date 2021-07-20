@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 Axway Software
+ * Copyright 2020-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.excep
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.oshi.OshiSystemInformation;
 import com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation.sigar.SigarSystemInformation;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
-import com.axway.ats.core.reflect.ReflectionUtils;
 
 /**
  * Use this class to obtain {@link ISystemInformation} instance.</br>
@@ -44,7 +43,7 @@ public class SystemInformationFactory {
     private static final Logger LOG = Logger.getLogger(SystemInformationFactory.class);
 
     /**
-     * Depending on the System property {@link AtsSystemProperties.SYSTEM_INFORMATION_CLASS}, a {@link ISystemInformation} will be returned.</br>
+     * Depending on the System property {@link AtsSystemProperties.SYSTEM_MONITORING_PROVIDER}, a {@link ISystemInformation} will be returned.</br>
      * */
     public synchronized static ISystemInformation get() {
 
