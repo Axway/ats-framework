@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2021 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,28 +43,29 @@ import com.mysql.cj.conf.PropertyDefinitions.DatabaseTerm;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMySQL.class);
+    private static Logger       log                                = Logger.getLogger(DbConnMySQL.class);
 
-    public static final  String MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
-    public static final  String MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
+    public static final String  MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
+    public static final String  MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
     /**
      * Default DB port
      */
-    public static final  int    DEFAULT_PORT                       = 3306;
+    public static final int     DEFAULT_PORT                       = 3306;
     /**
      * The JDBC MySQL prefix string
      */
     private static final String JDBC_MYSQL_PREFIX                  = "jdbc:mysql://";
-    public static final  String DATABASE_TYPE                      = "MYSQL";
+    public static final String  DATABASE_TYPE                      = "MYSQL";
 
     /**
      * The connection URL
      */
-    private String url;
-    private String serverTimeZone;
+    private String              url;
+    private String              serverTimeZone;
+    private boolean             useSSL                             = false;
 
-    private static String  dataSourceClassName         = null;
-    private static boolean serverTimeZoneWarningLogged = false;
+    private static String       dataSourceClassName                = null;
+    private static boolean      serverTimeZoneWarningLogged        = false;
 
     /**
      * Constructor
@@ -118,6 +119,9 @@ public class DbConnMySQL extends DbConnection {
                                  .append(this.port)
                                  .append("/")
                                  .append(db)
+                                 .append( ( (useSSL)
+                                                     ? "?useSSL=true"
+                                                     : ""))
                                  .toString();
     }
 
@@ -138,6 +142,11 @@ public class DbConnMySQL extends DbConnection {
             Object serverTimeZone = customProperties.get(DbKeys.SERVER_TIMEZONE);
             if (serverTimeZone != null) {
                 this.serverTimeZone = (String) serverTimeZone;
+            }
+
+            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
+                && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+                useSSL = true;
             }
         }
 
@@ -198,7 +207,7 @@ public class DbConnMySQL extends DbConnection {
             // actually it is tested with these versions, but 6.xx.xx maybe also be used with the 5.1.xx logic
             StringBuilder sb = new StringBuilder();
             sb.append(
-                    "Could not load any MySQL datasource class. Check if your classpath contains either mysql-connector-java.jar with version 5.1.xx or 8.xx.xx\n")
+                      "Could not load any MySQL datasource class. Check if your classpath contains either mysql-connector-java.jar with version 5.1.xx or 8.xx.xx\n")
               .append("Exception are:")
               .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql8Exception, "MySQL JDBC 8.xx exception"))
               .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql5Exception, "MySQL JDBC 5.1.xx exception"));
@@ -233,6 +242,18 @@ public class DbConnMySQL extends DbConnection {
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setAllowMultiQueries",
                                                                        new Class<?>[]{ boolean.class }, true),
                                              dataSourceInstance, new Object[]{ true });
+
+                if (useSSL) {
+                    // Note that this will still connect to a non-ssl server
+                    // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
+                    ReflectionUtils.invokeMethod(
+                                                 ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
+                                                                           new Class<?>[]{ boolean.class }, true),
+                                                 dataSourceInstance, new Object[]{ useSSL });
+                    if (log.isDebugEnabled()) {
+                        log.debug("SSL enabled!");
+                    }
+                }
 
                 if (mysqlDataSourceClass.getName().equals(MYSQL_JDBS_8_DATASOURCE_CLASS_NAME)) {
                     // tell MySQL, that you want connection.getMetaData().getTables() to return tables only from the connection's (table) schema

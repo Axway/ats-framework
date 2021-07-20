@@ -58,6 +58,7 @@ public class DbConnMariaDB extends DbConnection {
      */
     private String              url;
     private String              serverTimeZone;
+    private boolean             useSSL                             = false;
 
     private static String       dataSourceClassName                = null;
     private static boolean      serverTimeZoneWarningLogged        = false;
@@ -114,6 +115,9 @@ public class DbConnMariaDB extends DbConnection {
                                  .append(this.port)
                                  .append("/")
                                  .append(db)
+                                 .append( ( (useSSL)
+                                                     ? "?useSSL=true"
+                                                     : ""))
                                  .toString();
     }
 
@@ -135,6 +139,12 @@ public class DbConnMariaDB extends DbConnection {
             if (serverTimeZone != null) {
                 this.serverTimeZone = (String) serverTimeZone;
             }
+
+            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
+                && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+                useSSL = true;
+            }
+
         }
 
         if (this.port < 1) {
@@ -174,6 +184,16 @@ public class DbConnMariaDB extends DbConnection {
               .append(this.getPassword())
               .append("&allowMultiQueries=true");
 
+            if (useSSL) {
+                sb.append("&useSSL=true");
+                // Optionally, if you want (but it is not recommended), you can add trustServerCertificate=true
+                // This will prevent failure, when server certificate is not provided to the client
+                // More information here -> https://mariadb.com/kb/en/using-tls-ssl-with-mariadb-java-connector/#one-way-ssl-authentication
+                if (log.isDebugEnabled()) {
+                    log.debug("SSL enabled!");
+                }
+            }
+
             if (StringUtils.isNullOrEmpty(this.serverTimeZone)) {
                 // try to find the time zone
                 this.serverTimeZone = getServerTimeZone(new String(sb));
@@ -203,6 +223,8 @@ public class DbConnMariaDB extends DbConnection {
 
             log.info("MariaDB datasource class will be '" + ds.getClass()
                      + "'. Begin datasource configuration");
+
+            // here set any additional configuration options, that cannot be passed via the URL
 
             log.info("Done configuring the MariaDB datasource.");
             return ds;
