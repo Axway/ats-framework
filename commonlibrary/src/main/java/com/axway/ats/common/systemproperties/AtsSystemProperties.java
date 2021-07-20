@@ -131,7 +131,14 @@ public class AtsSystemProperties {
      * 
      * */
     public static final String SYSTEM_MONITORING_PROVIDER                                        = "ats.system.monitoring.provider";
-    
+
+    /**
+     * Toggle whether an exception will be thrown if the ATS Framework version is not the same as the Log DB or any of the agents/loaders that are used.<br/>
+     * Default value is <strong>false</strong>, which will just log a WARN message.
+     * 
+     * */
+    public static final String FAIL_ON_ATS_VERSION_MISMATCH                                      = "ats.core.fail.on.version.mismatch";
+
     /**
      * Specify the maximum amount of time (in minutes) for ATS wait for a QueueLoggerThread to be killed when a PassiveDbAppender is about to be removed
      * Default value is 1 minute.

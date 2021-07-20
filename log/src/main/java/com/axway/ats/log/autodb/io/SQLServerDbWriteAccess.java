@@ -1680,9 +1680,21 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                      + databaseVersion + "'");
 
             if (!javaFrameworkVersion.equalsIgnoreCase(databaseVersion)) {
-                log.warn("You are using ATS version " + javaFrameworkVersion
-                         + " with Log database version " + databaseVersion
-                         + ". This might cause incompatibility problems!");
+
+                if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH, false)) {
+
+                    throw new IllegalStateException(String.format(
+                                                                  "ATS Version mismatch! Database at '%s' is version '%s' while you are using ATS Framework version '%s'!",
+                                                                  this.dbConnectionFactory.getURL(), databaseVersion,
+                                                                  javaFrameworkVersion));
+
+                } else {
+
+                    log.warn("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
+                             + " with ATS Log database version " + databaseVersion
+                             + ". This might cause incompatibility problems!");
+                }
+
             }
 
             originalAutoCommitState = connection.getAutoCommit();
@@ -1801,7 +1813,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             sanityRun = false;
             try {
                 // rollback the connection
-                if (connection != null) {
+                if (connection != null && !connection.getAutoCommit()) {
                     connection.rollback();
                 }
             } catch (SQLException sqle) {
@@ -1908,18 +1920,19 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
      */
     protected class DbEventsCache {
 
-        private long maxCacheWaitTime = TimeUnit.SECONDS.toMillis(
-                AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT, 10));
+        private long                   maxCacheWaitTime               = TimeUnit.SECONDS.toMillis(
+                                                                                                  AtsSystemProperties.getPropertyAsNumber(AtsSystemProperties.LOG__MAX_CACHE_EVENTS_FLUSH_TIMEOUT,
+                                                                                                                                          10));
 
-        private long cacheBirthTime;
-        private int  maxNumberOfCachedEvents = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
+        private long                   cacheBirthTime;
+        private int                    maxNumberOfCachedEvents        = AbstractDbAccess.DEFAULT_CHUNK_SIZE;
 
-        protected Connection connection;
+        protected Connection           connection;
 
-        private CallableStatement insertRunMessageStatement = null;
-        private int               numberCachedRunMessages;
+        private CallableStatement      insertRunMessageStatement      = null;
+        private int                    numberCachedRunMessages;
 
-        private CallableStatement      insertSuiteMessageStatement = null;
+        private CallableStatement      insertSuiteMessageStatement    = null;
         private int                    numberCachedSuiteMessages;
 
         private CallableStatement      insertTestcaseMessageStatement = null;
