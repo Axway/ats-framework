@@ -231,10 +231,15 @@ public class DbConnMySQL extends DbConnection {
                         new Class<?>[] { boolean.class }, true), dataSourceInstance, new Object[] { true });
 
                 if (useSSL) {
+                    // Note that this will still connect to a non-ssl server
+                    // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
                     ReflectionUtils.invokeMethod(
-                            ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
-                                    new Class<?>[] { boolean.class }, true),
-                            dataSourceInstance, new Object[] { useSSL });
+                                                 ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
+                                                                           new Class<?>[]{ boolean.class }, true),
+                                                 dataSourceInstance, new Object[]{ useSSL });
+                    if (log.isDebugEnabled()) {
+                        log.debug("SSL enabled!");
+                    }
                 }
 
                 if (mysqlDataSourceClass.getName().equals(MYSQL_JDBS_8_DATASOURCE_CLASS_NAME)) {
@@ -376,7 +381,7 @@ public class DbConnMySQL extends DbConnection {
         description.append(host);
         description.append(":").append(port);
         description.append("/").append(db);
-
+        //TODO maybe add that SSL is supported (or not) as well?
         return description.toString();
     }
 
