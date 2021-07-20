@@ -131,6 +131,18 @@ public class AtsSystemProperties {
      * 
      * */
     public static final String SYSTEM_MONITORING_PROVIDER                                        = "ats.system.monitoring.provider";
+    
+    /**
+     * Which class, that implements com.axway.ats.agent.core.monitoring.systemmonitor.systeminformation to be used for gathering system information during monitoring
+     * */
+    public static final String SYSTEM_INFORMATION_CLASS                                          = "ats.system.information.class";
+    
+    /**
+     * Toggle whether an exception will be thrown if the ATS Framework version is not the same as the Log DB or any of the agents/loaders that are used.<br/>
+     * Default value is <strong>false</strong>, which will just log a WARN message.
+     * 
+     * */
+    public static final String FAIL_ON_ATS_VERSION_MISMATCH                                      = "ats.core.fail.on.version.mismatch";
 
     /**
      * @return the default ATS agent port number

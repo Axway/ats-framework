@@ -31,6 +31,7 @@ import com.axway.ats.agent.webapp.client.AgentServicePool;
 import com.axway.ats.agent.webapp.client.TestCaseState;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
 import com.axway.ats.agent.webapp.client.configuration.RemoteConfigurationManager;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.AtsVersion;
 import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.utils.HostUtils;
@@ -127,7 +128,15 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                             String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
                             String atsVersion = AtsVersion.getAtsVersion();
                             if (agentVersion != null) {
-                                if (!AtsVersion.getAtsVersion().equals(agentVersion)) {
+
+                                if (AtsSystemProperties.getPropertyAsBoolean(
+                                                                             AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH,
+                                                                             false)) {
+                                    throw new IllegalStateException(String.format(
+                                                                                  "ATS Version mismatch! ATS Agent/Loader at '%s' is version '%s' while you are using ATS Framework version '%s'!",
+                                                                                  HostUtils.getAtsAgentIpAndPort(atsAgent),
+                                                                                  agentVersion, atsVersion));
+                                } else {
                                     log.warn("*** ATS WARNING *** You are using ATS version '" + atsVersion
                                              + "' with ATS Agent version '" + agentVersion + "' located at '"
                                              + HostUtils.getAtsAgentIpAndPort(atsAgent)
