@@ -62,11 +62,11 @@ public class SwingDriver extends UiDriver {
 
     /**
     *
-    * @param windowTitile the window title
+    * @param windowTitle the window title
     */
-    protected SwingDriver( String windowTitile ) {
+    protected SwingDriver( String windowTitle ) {
 
-        this(null, windowTitile);
+        this(null, windowTitle);
     }
 
     /**
@@ -81,12 +81,12 @@ public class SwingDriver extends UiDriver {
     /**
      *
      * @param mainClassOfTestedApplication the class containing the "main" method
-     * @param windowTitile the window title
+     * @param windowTitle the window title
      */
-    protected SwingDriver( Class<?> mainClassOfTestedApplication, String windowTitile ) {
+    protected SwingDriver( Class<?> mainClassOfTestedApplication, String windowTitle ) {
 
         this.mainClassOfTestedApplication = mainClassOfTestedApplication;
-        this.windowTitle = windowTitile;
+        this.windowTitle = windowTitle;
     }
 
     /**
@@ -99,6 +99,20 @@ public class SwingDriver extends UiDriver {
         this.jnlpLocation = jnlpLocation;
         this.isJnlpCached = cacheEnabled;
     }
+
+    /**
+     *
+     * @param jnlpLocation JNLP location. It can be local JNLP file path or a remote url
+     * @param windowTitle the window title
+     * @param cacheEnabled whether the JNLP is cached or not
+     */
+    public SwingDriver( String jnlpLocation, String windowTitle, boolean cacheEnabled ) {
+
+        this.jnlpLocation = jnlpLocation;
+        this.windowTitle = windowTitle;
+        this.isJnlpCached = cacheEnabled;
+    }
+
 
     @Override
     @PublicAtsApi
