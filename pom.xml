@@ -68,7 +68,7 @@
         <!-- Needed for jTDS -->
         <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
         <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
-        <commons-io.version>2.4</commons-io.version>
+        <commons-io.version>2.7</commons-io.version>
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
         <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
