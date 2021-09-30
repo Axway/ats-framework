@@ -70,7 +70,7 @@
         <!-- Needed for jTDS -->
         <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
         <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
-        <commons-io.version>2.4</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
         <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
@@ -111,7 +111,7 @@
             and OSHI (monitoring) dependency -->
         <net.java.dev.jna.version>5.6.0
         </net.java.dev.jna.version>
-        <commons-compress.version>1.19</commons-compress.version>
+        <commons-compress.version>1.21</commons-compress.version>
         <ats-expectj.version>2.0.8</ats-expectj.version>
         <!-- Oshi (Monitoring library) version -->
         <oshi.version>5.3.0</oshi.version>
