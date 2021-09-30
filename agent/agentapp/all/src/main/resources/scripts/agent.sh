@@ -115,7 +115,7 @@ done
 
 agent_start() {
 
-    echo "Starting $PROG_NAME ..."
+    echo "Starting $PROG_NAME configured to listen on port $PORT ..."
 
     if [ "$(agent_status)" = "$PROG_NAME is running" ]
     then

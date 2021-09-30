@@ -1,59 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<groupId>com.axway.ats.framework</groupId>
-		<artifactId>ats-framework</artifactId>
+    <parent>
+        <groupId>com.axway.ats.framework</groupId>
+        <artifactId>ats-framework</artifactId>
         <version>4.0.10-log4j1-SNAPSHOT</version>
-	</parent>
+    </parent>
 
-	<artifactId>ats-environmentcleanup</artifactId>
-	<name>ATS-EnvironmentCleanup</name>
-	<description>ATS Environment Cleanup Library</description>
-	<url>https://github.com/Axway/ats-framework</url>
+    <artifactId>ats-environmentcleanup</artifactId>
+    <name>ATS-EnvironmentCleanup</name>
+    <description>ATS Environment Cleanup Library</description>
+    <url>https://github.com/Axway/ats-framework</url>
 
-	<dependencies>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-common</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-core</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-configuration</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.axway.ats.framework</groupId>
-			<artifactId>ats-testharness</artifactId>
-			<version>${project.version}</version>
-		</dependency>
-		<!-- TEST dependencies -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-module-junit4</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.powermock</groupId>
-			<artifactId>powermock-api-easymock</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-configuration</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.axway.ats.framework</groupId>
+            <artifactId>ats-testharness</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!-- TEST dependencies -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-module-junit4</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.powermock</groupId>
+            <artifactId>powermock-api-easymock</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 </project>
