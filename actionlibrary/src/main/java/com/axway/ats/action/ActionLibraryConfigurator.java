@@ -147,7 +147,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     /**
      * Set the file transfer verbose mode
      * 
-     * @param verbose mode the file transfer verbose mode
+     * @param verboseMode if true, then log verbosity is increased
      */
     @PublicAtsApi
     public void setFileTransferVerboseMode(

@@ -313,8 +313,7 @@ public class FileTransferClient {
     }
 
     /**
-     * Uploads a the file to the specified directory and with the specified file
-     * name
+     * Uploads a local file to the specified remote directory, with the specified remote file name
      *
      * @param localFile
      *            the local file to upload
@@ -336,8 +335,7 @@ public class FileTransferClient {
     }
 
     /**
-     * Upload a the file to the specified directory and with the specified file
-     * name
+     * Upload a local file to the specified remote directory, with the same name as local name
      *
      * @param localFile
      *            the local file to upload
@@ -352,7 +350,7 @@ public class FileTransferClient {
     }
 
     /**
-     * Download a file from the specified directory and with the specified file
+     * Download a file from the specified directory with the specified local file name
      * name
      *
      * @param localDir

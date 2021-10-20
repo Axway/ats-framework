@@ -126,7 +126,7 @@ public class SftpClient extends AbstractFileTransferClient {
         if( !StringUtils.isNullOrEmpty( this.keyStoreFile ) ) {
             log.info( "Keystore location set to '" + this.keyStoreFile + "'" );
         }
-
+        // TODO: comment/remove as disconnect() is invoked in doConnect()
         if( this.channel != null ) {
             this.channel.disconnect();
         }
@@ -179,7 +179,7 @@ public class SftpClient extends AbstractFileTransferClient {
                 this.jsch.addIdentity( "client_prvkey", privateKeyContent, null, null );
             }
 
-            //The internally used client version 'SSH-2.0-JSCH-0.1.54' needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
+            //The internally used client version 'SSH-2.0-JSCH-0.1.54' (even for v0.1.55) needs to be changed to 'SSH-2.0-OpenSSH_2.5.3'
             this.session.setClientVersion( "SSH-2.0-OpenSSH_2.5.3" );
 
             /** if no trust server certificate or trust store are provided, do not check if hostname is in known hosts **/

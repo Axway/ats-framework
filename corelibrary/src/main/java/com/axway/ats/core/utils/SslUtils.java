@@ -168,8 +168,8 @@ public class SslUtils {
      * Trust-all SSL context.
      * Optionally specify certificate file to create the keystore from.
      *
-     * @param certFileName
-     * @param certPassword
+     * @param certFileName - PEM file to import key
+     * @param certPassword - password for the cert file
      * @param protocol e.g. TLS, TLSv1.2
      * @return
      */
@@ -394,32 +394,51 @@ public class SslUtils {
             log.debug("Load keystore '" + keystoreFile + "' file with '" + keystorePassword + "' password");
         }
 
+        Exception cause = null;
         KeyStore keystore = null;
-        try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
-            keystore = KeyStore.getInstance("JKS");
-            keystore.load(fis, keystorePassword.toCharArray());
-            return keystore;
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Error loading JKS keystore '" + keystoreFile + "' file with '" + keystorePassword
-                          + "' password. Maybe its type is not JKS:\n" + e);
+        /* Add explicit check for keystore type (JKS/PKCS`1) by checking extension.
+            Recent versions (Java 11) support both JKS and PKCS12 but reading .p12 keystore with JKS instance produces
+            not clear NPE exception:
+           Caused by: java.security.UnrecoverableKeyException: Get Key failed: null
+                at java.base/sun.security.pkcs12.PKCS12KeyStore.engineGetKey(PKCS12KeyStore.java:446)
+                at java.base/sun.security.util.KeyStoreDelegator.engineGetKey(KeyStoreDelegator.java:90)
+                at java.base/java.security.KeyStore.getKey(KeyStore.java:1057)
+                at com.axway.ats.core.filetransfer.SftpClient.getPrivateKeyContent(SftpClient.java:326)
+                ... 29 more
+            Caused by: java.lang.NullPointerException
+                at java.base/sun.security.pkcs12.PKCS12KeyStore$RetryWithZero.run(PKCS12KeyStore.java:278)
+                at java.base/sun.security.pkcs12.PKCS12KeyStore.engineGetKey(PKCS12KeyStore.java:381)
+                ... 32 more
+         */
+        if (keystoreFile.endsWith(".jks")) { // old JKS format; Newer JVMs support by default PKCS12
+            try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
+                keystore = KeyStore.getInstance("JKS");
+                keystore.load(fis, keystorePassword.toCharArray());
+                return keystore;
+            } catch (Exception e) {
+                cause = e;
+                if (log.isDebugEnabled()) {
+                    log.debug("Error loading JKS keystore '" + keystoreFile + "' file with '" + keystorePassword
+                            + "' password. Maybe its type is not JKS:\n" + e);
+                }
             }
-        }
-
-        try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
-            keystore = KeyStore.getInstance("PKCS12");
-            keystore.load(fis, keystorePassword.toCharArray());
-            return keystore;
-        } catch (Exception e) {
-            if (log.isDebugEnabled()) {
-                log.debug("Error loading PKCS12 keystore '" + keystoreFile + "' file with '"
-                          + keystorePassword + "' password. Maybe its type is not PKCS12:\n"
-                          + e);
+        } else { // assume P12, PKCS12 format
+            try (FileInputStream fis = new FileInputStream(new File(keystoreFile))) {
+                keystore = KeyStore.getInstance("PKCS12");
+                keystore.load(fis, keystorePassword.toCharArray());
+                return keystore;
+            } catch (Exception e) {
+                cause = e;
+                if (log.isDebugEnabled()) {
+                    log.debug("Error loading PKCS12 keystore '" + keystoreFile + "' file with '"
+                            + keystorePassword + "' password. Maybe its type is not PKCS12:\n"
+                            + e);
+                }
             }
         }
 
         throw new RuntimeException("Error loading keystore '" + keystoreFile + "' file with '"
-                                   + keystorePassword + "' password");
+                                   + keystorePassword + "' password", cause);
     }
 
     /**
