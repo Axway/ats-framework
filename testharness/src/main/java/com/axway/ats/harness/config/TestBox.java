@@ -245,7 +245,7 @@ public class TestBox extends Box {
 
     /**<strong>INTERNAL<strong> method. Could be changed without notice
      * Create TestBox from {@link DbConnection} object<br>
-     * Note that any custom properties from the connection (except the port value) will not be transfered to the TestBox
+     * Note that any custom properties from the connection (except the port value) will not be transferred to the TestBox
      * 
      * @param dbConnection - the db connection or null if the dbConnection parameter is null
      * */
