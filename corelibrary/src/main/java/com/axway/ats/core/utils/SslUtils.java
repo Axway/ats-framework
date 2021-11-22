@@ -396,7 +396,7 @@ public class SslUtils {
 
         Exception cause = null;
         KeyStore keystore = null;
-        /* Add explicit check for keystore type (JKS/PKCS`1) by checking extension.
+        /* Add explicit check for keystore type (JKS/PKCS12) by checking extension.
             Recent versions (Java 11) support both JKS and PKCS12 but reading .p12 keystore with JKS instance produces
             not clear NPE exception:
            Caused by: java.security.UnrecoverableKeyException: Get Key failed: null

@@ -52,7 +52,7 @@ import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.TestCaseState;
 
 /**
- * Entry class for configurating the agent
+ * Entry class for configuration of the agent
  */
 @Path( "configuration")
 public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
@@ -68,7 +68,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
     /**
      * This method must be called, in order a connection to the desired DB to be
-     * initialized. If there are any previous initialized DB connections from
+     * initialized. If there are any previously initialized DB connections from
      * the same caller, they will be discarded.
      */
     @POST
