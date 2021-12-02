@@ -108,7 +108,7 @@ public class AgentWsImpl {
         ThreadsPerCaller.registerThread(caller);
 
         try {
-            // cancel all action tasks, that are started on an agent, locate on the current caller host.
+            // cancel all action tasks, that are started on an agent, located on the current caller host.
             // current caller and the agent must have the same IP, in order for queue to be cancelled
             MultiThreadedActionHandler.cancellAllQueuesFromAgent(caller);
             

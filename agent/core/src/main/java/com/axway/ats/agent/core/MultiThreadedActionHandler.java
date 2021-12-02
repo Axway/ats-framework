@@ -100,9 +100,12 @@ public class MultiThreadedActionHandler {
             String key = it.next();
             if (key.equals(caller)) {
                 multiThreadedActionHandlerMap.get(key).cancelAllQueues();
-            } else {
-                log.warn("Remaining queues from Caller [" + caller + "]: ");
-                log.warn(multiThreadedActionHandlerMap.get(key).queueLoadersMap.keySet().toString());
+            } else { // check for remaining non-empty queues from another caller.
+                Map anotherQueueLoadersMap = multiThreadedActionHandlerMap.get(key).queueLoadersMap;
+                if (anotherQueueLoadersMap.size() > 0) {
+                    log.warn("Remaining queues from Caller [" + caller + "]: ");
+                    log.warn(anotherQueueLoadersMap.keySet().toString());
+                }
             }
         }
     }

@@ -155,8 +155,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
     }
 
     /**
-     * Tell the DbEventRequestProcess which run and test must receive the DB
-     * messages/data
+     * Tell the DbEventRequestProcess which run and test must receive the DB messages/data
      */
     @POST
     @Path( "joinTestcase")
@@ -174,10 +173,8 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
-            // cancel all action tasks, that are started on an agent, located on
-            // the current caller host.
-            // current caller and the agent must have the same IP, in order for
-            // the queue to be cancelled
+            // cancel all action tasks, that are started on an agent, located on the current caller host.
+            // current caller and the agent must have the same IP, in order for the queue to be cancelled
             dbLog.debug("Cancelling all action task on the agent, that were started form the current caller.");
             MultiThreadedActionHandler.cancellAllQueuesFromAgent(ThreadsPerCaller.getCaller());
 
