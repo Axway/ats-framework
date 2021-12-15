@@ -2,9 +2,10 @@
 [![GitHub version](https://badge.fury.io/gh/Axway%2Fats-framework.svg)](https://badge.fury.io/gh/Axway%2Fats-framework)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
-**WORK IN PROGRESS - Branch using latest features with Log4J 1.2.x**
+**WORK IN PROGRESS - Branch for merging parallel test execution and full agent communication via REST. Curerntly uses Log4J 1.2**
 
-**Version pending: 4.0.10 (currently in SNAPSHOT). Note that 4.0.8 and 4.0.9 are released versions using log4j 2.x.**
+**Version pending: 5.0.0 (currently in SNAPSHOT).**
+Note that 4.0.8 and 4.0.9 are released versions using log4j 2.x., 4.0.10 - log4j 1.2
 
 **The Axway Automated Testing System** (ATS) is a Java open source testing framework. It was initially developed for the testing needs of many of the Axway products.
 
