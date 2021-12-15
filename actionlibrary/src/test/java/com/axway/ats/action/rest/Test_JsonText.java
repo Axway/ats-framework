@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2021 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -559,7 +559,7 @@ public class Test_JsonText extends BaseTest {
             new JsonText().add("name", new int[]{ 1, 2, 3 });
             fail();
         } catch (JsonException e) {
-            checkError(e, "Use the appropriate method to add.*");
+            checkError(e, "Use the appropriate addArray\\(\\) method to add array to .*");
         }
     }
 
