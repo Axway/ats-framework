@@ -1804,6 +1804,7 @@ public class RestClient {
                 requestMessage.append(context.getMethod() + " " + context.getUri() + " \n");
 
                 for (Entry<String, List<Object>> reqHeaderEntry : reqHeaders.entrySet()) {
+                    // TODO: cut leading and trailing square brackets ( "[", "]") for better readability
                     requestMessage.append(reqHeaderEntry.getKey() + ": "
                                           + Arrays.toString(reqHeaderEntry.getValue().toArray()) + " \n");
                 }

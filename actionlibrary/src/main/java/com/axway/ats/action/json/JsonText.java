@@ -74,8 +74,8 @@ public class JsonText {
     /**
      * Constructor which accepts the text content
      * 
-     * @param jsonText the content
-     * @throws JsonException exception in case of an parsing error
+     * @param jsonText existing JSON content to be validated/parsed
+     * @throws JsonException exception in case of a parsing error
      */
     @PublicAtsApi
     public JsonText( String jsonText ) throws JsonException {
@@ -144,7 +144,7 @@ public class JsonText {
         }
 
         if (keyValue != null && keyValue.getClass().isArray()) {
-            throw new JsonException("Use the appropriate method to add array to '" + keyPath + "'");
+            throw new JsonException("Use the appropriate addArray() method to add array to '" + keyPath + "'");
         }
 
         if (keyValue instanceof JsonText) {
