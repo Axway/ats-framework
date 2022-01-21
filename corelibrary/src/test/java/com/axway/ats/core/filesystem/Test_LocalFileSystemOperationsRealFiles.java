@@ -46,8 +46,8 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
     private static Logger        log                = Logger.getLogger( Test_LocalFileSystemOperationsRealFiles.class );
 
     // sample
-    // -rwxrwxr-x  1 1000 1000  1068 Oct 27 19:41 build.sh
-    // drwxrwxr-x  4 1000 1000  4096 Jan 19 17:59 commonlibrary
+    // -rwxrwxr-x  1 1000 1001  1068 Oct 27 19:41 build.sh
+    // drwxrwxr-x  4 1000 1001  4096 Jan 19 17:59 commonlibrary
     private static final Pattern longListingPattern = Pattern.compile( "[a-z\\-]{1}([rwxtTsS\\-]{9})[\\.\\+]?\\s+\\d+\\s+([^\\s]+)\\s+([^\\s]+)\\s+\\d+.*" );
     private static File          file               = null;
     private OperatingSystemType  realOsType;
@@ -72,10 +72,7 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         }
     }
 
-    /**
-     * Disabled. Wrongly parsed ls -lan on some config (OpenSUSE)
-     */
-    //    @Ignore
+    /** Check getting file's User ID */
     @Test
     public void getFileUidPositive() throws Exception {
 
@@ -83,8 +80,23 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
             String[] stats = getFileStats(file.getAbsolutePath(), true);
 
             LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-            assertEquals(Long.parseLong(stats[2]),
+            assertEquals(Long.parseLong(stats[1]),
                          localFileSystemOperations.getFileUID(file.getPath()));
+        } else {
+            log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
+        }
+    }
+
+    /** Check getting file's group ID */
+    @Test
+    public void getFileGuidPositive() throws Exception {
+
+        if (realOsType.isUnix()) {
+            String[] stats = getFileStats(file.getAbsolutePath(), true);
+
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            assertEquals(Long.parseLong(stats[2]),
+                         localFileSystemOperations.getFileGID(file.getPath()));
         } else {
             log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
         }
