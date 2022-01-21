@@ -45,6 +45,9 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
 
     private static Logger        log                = Logger.getLogger( Test_LocalFileSystemOperationsRealFiles.class );
 
+    // sample
+    // -rwxrwxr-x  1 1000 1000  1068 Oct 27 19:41 build.sh
+    // drwxrwxr-x  4 1000 1000  4096 Jan 19 17:59 commonlibrary
     private static final Pattern longListingPattern = Pattern.compile( "[a-z\\-]{1}([rwxtTsS\\-]{9})[\\.\\+]?\\s+\\d+\\s+([^\\s]+)\\s+([^\\s]+)\\s+\\d+.*" );
     private static File          file               = null;
     private OperatingSystemType  realOsType;
@@ -69,6 +72,10 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         }
     }
 
+    /**
+     * Disabled. Wrongly parsed ls -lan on some config (OpenSUSE)
+     */
+    //    @Ignore
     @Test
     public void getFileUidPositive() throws Exception {
 
@@ -143,8 +150,10 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         }
     }
 
+    /**
+     * TODO this test can be run only with root privileges
+     */
     @Ignore
-    // TODO this test can be run only with root privileges
     @Test( )
     public void setFileGidPositive() throws Exception {
 
@@ -238,6 +247,7 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         for (String line : lines) {
             line = line.trim();
             if (line.endsWith(filename) || line.contains(" " + filename + " ")) {
+                log.debug("ls listing row match: " + line);
                 Matcher m = longListingPattern.matcher(line);
                 if (m.matches()) {
                     return new String[]{ m.group(1), m.group(2), m.group(3) };
