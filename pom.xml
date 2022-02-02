@@ -14,14 +14,15 @@
 
     <modules>
         <module>commonlibrary</module>
-        <module>corelibrary</module>
         <module>configuration</module>
-        <module>environmentcleanup</module>
+        <module>corelibrary</module>
         <module>log</module>
         <module>testharness</module>
-        <module>monitoringlibrary</module>
+        <module>environmentcleanup</module>
         <module>agent</module>
         <module>actionlibrary</module>
+        <module>monitoringlibrary</module>
+        <!-- Agent webapp containers and standalone built here -->
         <module>uiengine</module>
         <module>rbv</module>
         <module>utilities</module>
@@ -238,7 +239,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!-- Used when deploying new public release versions -->
+            <!--<plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>${org.sonatype.plugins.nexus.staging.maven.plugin.version}</version>
@@ -248,8 +250,7 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
-            </plugin>
-            <!-- Used only when deploying new release version -->
+            </plugin>-->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
