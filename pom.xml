@@ -55,7 +55,7 @@
         <gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
         <gpg.executable>gpg2</gpg.executable>
 
-        <log4j.version>2.15.0</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <slf4j.version>1.7.30</slf4j.version>
         <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
         <javax.mail.version>1.4.4</javax.mail.version>
@@ -68,7 +68,7 @@
         <!-- Needed for jTDS -->
         <apache.commons-dbcp.version>2.1.1</apache.commons-dbcp.version>
         <apache.commons-pool.version>2.4.3</apache.commons-pool.version>
-        <commons-io.version>2.4</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <apache.httpcomponents.version>4.5.2</apache.httpcomponents.version>
         <!-- jTDS: LGPL MsSQL JDBC driver. Version since 1.3.0 require JavaSE 7 -->
         <net.sourceforge.jtds.version>1.3.1</net.sourceforge.jtds.version>
@@ -99,7 +99,7 @@
         <!-- this dependency is required after jersey 2.26 -->
         <!-- <org.glassfish.jersey.inject.version>2.26</org.glassfish.jersey.inject.version> -->
         <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-        <com.jcraft.jsch.version>0.1.54</com.jcraft.jsch.version>
+        <com.jcraft.jsch.version>0.1.55</com.jcraft.jsch.version>
 
         <!-- Used in Action/Core libraries and agentapp all -->
         <org.dom4j.version>2.1.3</org.dom4j.version>
@@ -107,7 +107,7 @@
         <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client and OSHI (monitoring) dependency-->
         <net.java.dev.jna.version>5.6.0
         </net.java.dev.jna.version>
-        <commons-compress.version>1.19</commons-compress.version>
+        <commons-compress.version>1.21</commons-compress.version>
         <ats-expectj.version>2.0.8</ats-expectj.version>
         <!-- Oshi (Monitoring library) version -->
         <oshi.version>5.3.0</oshi.version>
@@ -116,6 +116,7 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
@@ -299,7 +300,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
@@ -359,7 +360,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
