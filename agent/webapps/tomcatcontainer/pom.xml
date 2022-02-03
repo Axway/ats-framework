@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.axway.ats.framework.agent.webapp</groupId>
         <artifactId>ats-agent-webapp</artifactId>
-        <version>4.0.10-SNAPSHOT</version>
+        <version>4.0.10-log4j2-SNAPSHOT</version>
     </parent>
 
     <artifactId>ats-agent-webapp-tomcatcontainer</artifactId>
@@ -243,10 +243,7 @@
             <artifactId>jersey-hk2</artifactId> <version>${org.glassfish.jersey.inject.version}</version> 
             </dependency> -->
 
-
-
-
-        <!-- All hail the logging deps -->
+        <!-- All logging dependencies including bridges to log4j 2 -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
