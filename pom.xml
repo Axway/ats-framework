@@ -80,11 +80,12 @@
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-        <junit.version>4.13.1</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
+         <junit.version>4.13.2</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
             Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
-        <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
-        <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
-        <cglib.cglib.version>3.0</cglib.cglib.version>
+        <org.powermock.powermock-easymock.version>2.0.9</org.powermock.powermock-easymock.version>
+        <org.easymock.version>4.3</org.easymock.version>
+        <cglib.cglib.version>3.2.12</cglib.cglib.version>
+
         <org.javassist.version>3.20.0-GA</org.javassist.version>
         <!-- TestNG version used in TestHarness -->
         <testng.version>6.10</testng.version>
@@ -285,12 +286,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-checkstyle-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.1.2</version>
                 <dependencies>
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.29</version>
+                        <version>8.45.1</version>
                     </dependency>
                 </dependencies>
                 <executions>
