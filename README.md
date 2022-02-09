@@ -27,6 +27,8 @@ ATS **key features** include:
 
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
 
+**Note** that this is tool for testing purposes and is not targeted for production use.
+
 ---
 
 **Video tutorials** are published on YouTube [here](https://www.youtube.com/watch?v=yeOrNUucNH0&list=PLLuHfb7NQS5oaENWHfYR5XuY-wNYvZgYj)
