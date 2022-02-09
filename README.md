@@ -4,7 +4,7 @@
 
 **WORK IN PROGRESS - Branch using latest features with Log4J 1.2.x**
 
-**Version pending: 4.0.10 (currently in SNAPSHOT). Note that 4.0.8 and 4.0.9 are released versions using log4j 2.x.**
+**Version pending: 4.0.11 (currently in SNAPSHOT). Note that 4.0.8 and 4.0.9 are released versions using log4j 2.x.**
 
 **The Axway Automated Testing System** (ATS) is a Java open source testing framework. It was initially developed for the testing needs of many of the Axway products.
 
@@ -25,7 +25,7 @@ ATS **key features** include:
 ---
 
 **Documentation** is available at https://axway.github.io/ats-framework/ATS-Documentation.html
-
+**Note** that this is tool for testing purposes and is not targeted for production use.
 ---
 
 **Video tutorials** are published on YouTube [here](https://www.youtube.com/watch?v=yeOrNUucNH0&list=PLLuHfb7NQS5oaENWHfYR5XuY-wNYvZgYj)
