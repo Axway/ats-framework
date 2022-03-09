@@ -100,7 +100,7 @@ public class AtsSystemProperties {
     public static final String CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
 
     /**
-     * Toggle whether to log all of the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
+     * Toggle whether to log all the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
      * */
     public static final String SYSTEM_MONITOR_VERBOSE_MODE                                       = "ats.system.monitor.verbose.mode";
 
@@ -123,7 +123,7 @@ public class AtsSystemProperties {
 
     /**
      * Specify which monitoring provider to used.<br/>
-     * Currently the available once are:<br/>
+     * Currently, the available ones are:<br/>
      * <ol>
      *  <li><strong>sigar</strong> (default one)</li>
      *  <li><strong>oshi</strong></li>
