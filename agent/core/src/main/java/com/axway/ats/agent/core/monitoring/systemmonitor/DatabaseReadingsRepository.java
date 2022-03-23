@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ public class DatabaseReadingsRepository {
      *
      * @param monitoredHost
      * @param readings
-     * @param readingIdToDbIdMap
      * @throws DatabaseAccessException
      */
     public void updateDatabaseRepository(
@@ -64,7 +63,7 @@ public class DatabaseReadingsRepository {
         String caller = ThreadsPerCaller.getCaller();
 
         if (dbAccess == null) {
-            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender(caller);
+            dbAccess = new DbAccessFactory().getNewDbWriteAccessObjectViaPassiveDbAppender();
         }
 
         String dbConnectionHash = obtainDbConnectionHash(caller);
@@ -135,8 +134,7 @@ public class DatabaseReadingsRepository {
 
     private String obtainDbConnectionHash( String caller ) {
 
-        DbAppenderConfiguration dbAppenderConfiguration = PassiveDbAppender.getCurrentInstance(caller)
-                                                                           .getAppenderConfig();
+        DbAppenderConfiguration dbAppenderConfiguration = PassiveDbAppender.getCurrentInstance().getAppenderConfig();
 
         StringBuilder sb = new StringBuilder();
 
@@ -152,8 +150,8 @@ public class DatabaseReadingsRepository {
 
         String mapKey = reading.getDescription();
         Integer dbId = knownReadingBeans.get(mapKey);
-        /*FIXME: ATS is caching readings for each database, that was created on the Agent, but if one of those databases is recreated, and the agent is not restarted,
-         * the cached reading is NOT invalidated
+        /*FIXME: ATS is caching readings for each database, that was created on the Agent, but if one of those
+           databases is recreated, and the agent is not restarted, the cached reading is NOT invalidated
          */
         return (dbId != null)
                               ? dbId

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import java.util.Map;
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.monitoring.queue.ActionExecutionStatistic;
-import com.axway.ats.agent.core.threading.ImportantThread;
+import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
 import com.axway.ats.agent.webapp.client.ActionWrapper;
@@ -118,7 +118,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 //schedule the actions, but do not execute
                 //get the client
                 AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                .getClient(atsAgents.get(i));
+                                                                .getClientForHost(atsAgents.get(i));
                 agentServicePort.scheduleActionsInMultipleThreads(queueName, queueId, actionWrappers,
                                                                   serializedThreadingPattern,
                                                                   serializedLoaderDataConfig,
@@ -141,6 +141,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                         runSynchedIterations();
                     }
                 });
+                helpThread.setExecutorId(Thread.currentThread().getName());
                 helpThread.setDescription(queueName);
                 helpThread.start();
             } else {
@@ -180,7 +181,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         try {
             for (String host : atsAgents) {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
 
                 log.info("Waiting until action queue '" + queueName + "' finish its execution on agent '"
                          + host + "'");
@@ -208,7 +209,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         for (String host : atsAgents) {
             try {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
 
                 log.info("Cancelling action queue '" + queueName + "' on agent '" + host + "'");
 
@@ -226,7 +227,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         for (String host : atsAgents) {
             try {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
                 if (agentServicePort.isQueueRunning(queueName)) {
                     log.info("Queue with name '" + queueName + "' is still running on " + host);
                     return true;
@@ -256,7 +257,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             for (int i = 0; i < atsAgents.size(); i++) {
                 String host = atsAgents.get(i);
 
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
                 agentServicePort.startQueue(queueName);
             }
         } catch (Exception e) {
@@ -280,6 +281,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                         waitUntilQueueFinishOnAllLoaders();
                     }
                 });
+                helpThread.setExecutorId(Thread.currentThread().getName());
                 helpThread.setDescription(queueName);
                 helpThread.start();
             }
@@ -299,7 +301,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 String host = atsAgents.get(i);
 
                 log.info("Waiting until queue '" + queueName + "' finish on '" + host + "'");
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
                 agentServicePort.waitUntilQueueFinish(queueName);
                 log.info("Finished executing action queue '" + queueName + "' on '" + host + "'");
             }
@@ -331,7 +333,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
         try {
             for (String host : atsAgents) {
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(host);
+                AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(host);
                 agentServicePort.startQueue(queueName);
             }
         } catch (Exception e) {
@@ -357,7 +359,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 Iterator<String> agentsIterator = atsAgentsTmp.iterator();
                 while (agentsIterator.hasNext()) {
                     AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                    .getClient(agentsIterator.next());
+                                                                    .getClientForHost(agentsIterator.next());
                     boolean needToRunAgain = agentServicePort.waitUntilQueueIsPaused(queueName);
                     if (!needToRunAgain) {
                         agentsIterator.remove();
@@ -370,7 +372,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
 
                 // resume the actions on all agents
                 for (String agent : atsAgentsTmp) {
-                    AgentService agentServicePort = AgentServicePool.getInstance().getClient(agent);
+                    AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(agent);
                     agentServicePort.resumeQueue(queueName);
                 }
             }
@@ -455,7 +457,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
             getActionExecutionResults( String atsAgent, String queueName ) throws AgentException {
 
         // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         try {
             ByteArrayInputStream byteInStream = new ByteArrayInputStream(agentServicePort.getActionExecutionResults(queueName));

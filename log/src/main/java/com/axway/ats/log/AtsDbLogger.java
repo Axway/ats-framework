@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 import com.axway.ats.common.PublicAtsApi;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 import com.axway.ats.log.appenders.PassiveDbAppender;
 import com.axway.ats.log.autodb.TestCaseState;
@@ -427,6 +428,18 @@ public class AtsDbLogger {
     }
 
     /**
+     * End the current suite, for the specific thread
+     */
+    public void endSuite( String threadName ) {
+
+        // We need to attach this event to the provided thread
+        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
+        event.setProperty(ExecutorUtils.ATS_RANDOM_TOKEN, threadName);
+
+        sendEvent(event);
+    }
+
+    /**
      * Clear all meta info about a scenario.
      */
     public void clearScenarioMetainfo() {
@@ -803,17 +816,18 @@ public class AtsDbLogger {
      *
      * @param testCaseState the state of the test case to join to
      */
-    public void joinTestCase(
-                              TestCaseState testCaseState ) {
+    public void joinTestCase( TestCaseState testCaseState, String executorId ) {
 
+        // Happens on Agent side.
         sendEvent(new JoinTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testCaseState));
     }
 
     /**
-     * Leave the test case to which we have joined
+     * Leave the test case to which we have joined.
      */
-    public void leaveTestCase() {
+    public void leaveTestCase( String executorId ) {
 
+        // Happens on Agent side.
         sendEvent(new LeaveTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
     }
 
@@ -902,6 +916,11 @@ public class AtsDbLogger {
     public boolean isDebugEnabled() {
 
         return logger.isDebugEnabled();
+    }
+
+    public boolean isInfoEnabled() {
+
+        return logger.isInfoEnabled();
     }
 
     /*

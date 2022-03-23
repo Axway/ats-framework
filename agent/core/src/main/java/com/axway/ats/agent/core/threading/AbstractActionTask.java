@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -137,7 +137,7 @@ public abstract class AbstractActionTask implements Runnable {
          * */
         this.log = AtsDbLogger.getLogger(this.getClass().getName(), true);
 
-        PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+        PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance();
         if (dbAppender != null) {
             this.isLoggingInBatchMode = dbAppender.isBatchMode();
         }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,11 +15,7 @@
  */
 package com.axway.ats.agent.webapp.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import org.apache.log4j.Logger;
 
@@ -42,31 +38,32 @@ public class ActionQueue {
 
     private static final Logger      log            = Logger.getLogger(ActionQueue.class);
 
-    // queue instances
-    private static List<ActionQueue> queueInstances = new ArrayList<ActionQueue>();
-    private static ActionQueue       currentQueueInstance;
+    // queue instances < executor thread, < queues > >
+    private static Map<String, List<ActionQueue>> queueInstancesMap = new HashMap<String, List<ActionQueue>>();
 
     // the agents a queue runs on
     private Set<String>              atsAgents;
 
-    // the queue actions
+    // the queued actions
     private List<ActionRequest>      queuedActions;
+    // state - is in define queue mode, i.e. before actual execution
     private boolean                  inQueueMode;
 
     // a queue is identified by its name and sequence
     private String                   name;
-    /* 
+
+    /*
      * Sometimes QAs create more than one queue with same name. This is done for example
      * to combine the real user activity in morning and afternoon.
      * In such case we distinguish these queues using the sequence number, so the queues are distinct,
-     * but Test Explorer shows them combined in some way. 
-     * 
-     * In other cases, when the same queue is executed more than once, we do not use the sequence number. 
-     * So we do not have distinct queues in the DB. 
+     * but Test Explorer shows them combined in some way.
+     *
+     * In other cases, when the same queue is executed more than once, we do not use the sequence number.
+     * So we do not have distinct queues in the DB.
      * In these cases we suppose the user does not do any significant change but simply reruns the queue. If for example
      * the threading pattern is changed Test Explorer will display the pattern used during the first execution only.
      */
-    int                              sequence;
+    private int                      sequence;
 
     // we use this flag to decide if we have to wait for queue completion
     private boolean                  isQueueFinished;
@@ -81,7 +78,8 @@ public class ActionQueue {
         }
 
         // add default port in case none is not provided by the user
-        String[] atsAgentsArray = HostUtils.getAtsAgentsIpAndPort(new ArrayList<String>(atsAgents).toArray(new String[atsAgents.size()]));
+        String[] atsAgentsArray = HostUtils.getAtsAgentsIpAndPort(
+                new ArrayList<String>(atsAgents).toArray(new String[atsAgents.size()]));
         this.atsAgents = new HashSet<String>(Arrays.asList(atsAgentsArray));
 
         this.name = name;
@@ -98,6 +96,12 @@ public class ActionQueue {
     @PublicAtsApi
     public static synchronized ActionQueue getNewInstance( Set<String> atsAgents, String name ) {
 
+        List<ActionQueue> queueInstances = queueInstancesMap.get( Thread.currentThread().getName() );
+        if( queueInstances == null ) {
+            queueInstances = new ArrayList<ActionQueue>();
+            queueInstancesMap.put( Thread.currentThread().getName(), queueInstances );
+        }
+
         // find the max queue sequence for queues with this name
         int lastQueueSequence = -1;
         for (ActionQueue queue : queueInstances) {
@@ -110,23 +114,22 @@ public class ActionQueue {
         ActionQueue newQueue = new ActionQueue(atsAgents, name, lastQueueSequence + 1);
         queueInstances.add(newQueue);
 
-        currentQueueInstance = newQueue;
         return newQueue;
     }
 
     /**
+     * Get latest queue for current thread
      * @return the latest
      */
     @PublicAtsApi
     public static synchronized ActionQueue getCurrentInstance() {
 
-        if (currentQueueInstance == null) {
-            // the usual case here is that we actually do not use a queue
-            // but send actions in functional test manner
-            currentQueueInstance = new ActionQueue(null, "fake queue name", 0);
+        List<ActionQueue> queueInstances = queueInstancesMap.get( Thread.currentThread().getName() );
+        if( queueInstances != null ) {
+            return queueInstances.get( queueInstances.size() - 1 );
+        } else {
+            return null;
         }
-
-        return currentQueueInstance;
     }
 
     /**
@@ -187,7 +190,7 @@ public class ActionQueue {
     /**
     * Execute all queued actions in multiple threads
     *
-    * @param atsAgents the hosts to execute to
+    * @param atsAgents the agents(hosts) where to execute actions
     * @param threadingPattern the multithreading pattern
     * @param loaderDataConfig the loader variable data configuration
     * @throws AgentException on error
@@ -199,6 +202,10 @@ public class ActionQueue {
             throw new AgentException("Threading pattern is not specified. You must specify one");
         }
 
+        // we are not queuing actions anymore, it is time to execute the already queued actions
+        inQueueMode = false;
+
+        // the queue is starting right now
         isQueueFinished = false;
 
         //create an empty instance of the config
@@ -246,15 +253,18 @@ public class ActionQueue {
     @PublicAtsApi
     public static void waitUntilAllQueuesFinish() throws AgentException {
 
-        for (ActionQueue queue : queueInstances) {
-
-            if (!queue.isQueueFinished) {
-                DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
-                                                                                              queue.sequence,
-                                                                                              new ArrayList<String>(queue.atsAgents),
-                                                                                              null, null);
-                distributedLoadExecutor.waitUntilQueueFinish();
-                queue.isQueueFinished = true;
+        List<ActionQueue> queueInstances = queueInstancesMap.get( Thread.currentThread().getName() );
+        if (queueInstances != null) {
+            for (ActionQueue queue : queueInstances) {
+                if (!queue.isQueueFinished) {
+                    DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
+                                                                                                  queue.sequence,
+                                                                                                  new ArrayList<String>(
+                                                                                                          queue.atsAgents),
+                                                                                                  null, null);
+                    distributedLoadExecutor.waitUntilQueueFinish();
+                    queue.isQueueFinished = true;
+                }
             }
         }
     }
@@ -268,20 +278,16 @@ public class ActionQueue {
     @PublicAtsApi
     public static void waitUntilQueueFinish( String queueName ) throws AgentException {
 
-        for (ActionQueue queue : queueInstances) {
+        ActionQueue queue = getRunningQueue(queueName, true);
 
-            if (queue.name.equals(queueName) && !queue.isQueueFinished) {
-                DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
-                                                                                              queue.sequence,
-                                                                                              new ArrayList<String>(queue.atsAgents),
-                                                                                              null, null);
-                distributedLoadExecutor.waitUntilQueueFinish();
-                queue.isQueueFinished = true;
-                return;
-            }
-        }
+        DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
+                                                                                      queue.sequence,
+                                                                                      new ArrayList<String>(
+                                                                                              queue.atsAgents),
+                                                                                      null, null);
+        distributedLoadExecutor.waitUntilQueueFinish();
+        queue.isQueueFinished = true;
 
-        throw new AgentException("Queue with name '" + queueName + "' not found");
     }
 
     /**
@@ -293,20 +299,14 @@ public class ActionQueue {
     @PublicAtsApi
     public static void cancelQueue( String queueName ) throws AgentException {
 
-        for (ActionQueue queue : queueInstances) {
-
-            if (queue.name.equals(queueName) && !queue.isQueueFinished) {
-                DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
-                                                                                              queue.sequence,
-                                                                                              new ArrayList<String>(queue.atsAgents),
-                                                                                              null, null);
-                distributedLoadExecutor.cancelAllActions();
-                queue.isQueueFinished = true;
-                return;
-            }
-        }
-
-        throw new AgentException("Queue with name '" + queueName + "' not found");
+        ActionQueue queue = getRunningQueue(queueName, true);
+        DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
+                                                                                      queue.sequence,
+                                                                                      new ArrayList<String>(
+                                                                                              queue.atsAgents),
+                                                                                      null, null);
+        distributedLoadExecutor.cancelAllActions();
+        queue.isQueueFinished = true;
     }
 
     /**
@@ -319,24 +319,41 @@ public class ActionQueue {
     @PublicAtsApi
     public static boolean isQueueRunning( String queueName ) throws AgentException {
 
-        for (ActionQueue queue : queueInstances) {
+        ActionQueue queue = getRunningQueue(queueName, false);
 
-            if (queue.name.equals(queueName) && !queue.isQueueFinished) {
-                DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
-                                                                                              queue.sequence,
-                                                                                              new ArrayList<String>(queue.atsAgents),
-                                                                                              null, null);
-                if (distributedLoadExecutor.isQueueRunning(queueName)) {
-                    return true;
-                }
-            }
+        if (queue != null) {
+            DistributedLoadExecutor distributedLoadExecutor = new DistributedLoadExecutor(queue.name,
+                                                                                          queue.sequence,
+                                                                                          new ArrayList<String>(
+                                                                                                  queue.atsAgents),
+                                                                                          null, null);
+            return distributedLoadExecutor.isQueueRunning(queueName);
         }
 
         return false;
     }
 
+    private static ActionQueue getRunningQueue( String queueName, boolean throwErrorWhenNotFound ) throws AgentException {
+
+        List<ActionQueue> queueInstances = queueInstancesMap.get( Thread.currentThread().getName() );
+
+        if( queueInstances != null ) {
+            for( ActionQueue queue : queueInstances ) {
+                if( queue.name.equals( queueName ) && !queue.isQueueFinished ) {
+                    return queue;
+                }
+            }
+        }
+
+        if( throwErrorWhenNotFound ) {
+            throw new AgentException( "Queue with name '" + queueName + "' not found" );
+        } else {
+            return null;
+        }
+    }
+
     /**
-     * @return true if we are in queue-ing mode
+     * @return true if we are in queuing mode
      */
     boolean isInQueueMode() {
 

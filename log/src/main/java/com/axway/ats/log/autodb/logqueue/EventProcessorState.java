@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -144,5 +144,16 @@ public class EventProcessorState {
     public LoadQueuesState getLoadQueuesState() {
 
         return loadQueuesState;
+    }
+
+    public void injectRunInformation( EventProcessorState processorStateWithRunInfo ) {
+
+        if( processorStateWithRunInfo != null ) {
+            this.lifeCycleState=processorStateWithRunInfo.lifeCycleState;
+            this.runId = processorStateWithRunInfo.runId;
+            this.runName = processorStateWithRunInfo.runName;
+            this.runDescription = processorStateWithRunInfo.runDescription;
+            this.runUserNote = processorStateWithRunInfo.runUserNote;
+        }
     }
 }

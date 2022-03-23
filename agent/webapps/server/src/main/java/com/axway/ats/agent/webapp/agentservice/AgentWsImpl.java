@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import com.axway.ats.core.events.TestcaseStateEventsDispacher;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.threads.ThreadsPerCaller;
 import com.axway.ats.core.utils.ClasspathUtils;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
 import com.axway.ats.log.appenders.PassiveDbAppender;
@@ -75,12 +76,13 @@ public class AgentWsImpl {
     /** skip check whether ActiveDbAppender appender is presented in the test executors log4j.xml in order to execute actions,
      * even if such appender is not presented
      */
-    private static final AtsDbLogger log                               = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.agentservice", true);
+    private static final AtsDbLogger log                               = AtsDbLogger.getLogger("com.axway.ats.agent.webapp.agentservice");
 
     private static int               lastRunId                         = -1;
 
-    // flag to not log an error too often
-    private static boolean           alreadyLoggedErrorAboutSessionUid = false;
+    // flags to not log errors too often
+    private static boolean           alreadyLoggedErrorAboutSessionUid      = false;
+    private static boolean           alreadyLoggedErrorAboutSessionThreadId = false;
 
     @Resource
     private WebServiceContext        wsContext;
@@ -139,7 +141,7 @@ public class AgentWsImpl {
 
                     log.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
                               + " Now we cancel any further logging from the agent.");
-                    log.leaveTestCase();
+                    log.leaveTestCase(caller);
                 } else {
                     joinToNewTescase = false;
 
@@ -148,7 +150,7 @@ public class AgentWsImpl {
 
             if (joinToNewTescase) {
                 // connect to the new test case
-                log.joinTestCase(testCaseState);
+                log.joinTestCase(testCaseState, caller);
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestStart();
@@ -174,7 +176,7 @@ public class AgentWsImpl {
              * Ignore this event.
              */
             if (currentState != null && currentState.isInitialized()) {
-                log.leaveTestCase();
+                log.leaveTestCase(caller);
 
                 // take care of chained ATS agents(if there are any)
                 TestcaseStateEventsDispacher.getInstance().onTestEnd();
@@ -205,7 +207,7 @@ public class AgentWsImpl {
     /**
      * Cleanup the resources for a particular client side object instance
      *
-     * @param internalProcessId
+     * @param internalObjectResourceId
      */
     @WebMethod
     public void cleanupInternalObjectResources(
@@ -387,9 +389,10 @@ public class AgentWsImpl {
      * will not be executed until a call to startQueue is made
      *
      * @param queueName the name of the action queue
+     * @param queueId the action queue ID
      * @param actions the actions in that queue
      * @param serializedThreadingPattern the serialized threading pattern to be used
-     * @param testCaseState the test case state
+     * @param serializedLoaderDataConfig DataConfig bytes
      * @throws AgentException on error
      * @throws InternalComponentException if an exception is thrown while the actions are executed
      */
@@ -464,7 +467,6 @@ public class AgentWsImpl {
      * Start an action queue
      *
      * @param queueName the name of the action queue
-     * @param testCaseState the test case state
      * @throws AgentException on error
      * @throws InternalComponentException if an exception is thrown while the actions are executed
      */
@@ -680,7 +682,7 @@ public class AgentWsImpl {
     /**
      * Apply client configuration to the server
      *
-     * @param configurators the serialized configurators to be applied
+     * @param serializedConfigurators the serialized configurators to be applied
      * @return the agent version
      * @throws AgentException on error
      */
@@ -762,7 +764,7 @@ public class AgentWsImpl {
         ThreadsPerCaller.registerThread(caller);
 
         try {
-            PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender appender = PassiveDbAppender.getCurrentInstance();
 
             if (appender != null) {
                 return appender.getNumberPendingLogEvents();
@@ -821,21 +823,33 @@ public class AgentWsImpl {
 
         MessageContext msgx = wsContext.getMessageContext();
 
-        HttpServletRequest request = ((HttpServletRequest) msgx.get(MessageContext.SERVLET_REQUEST));
+        String remoteHost = ( ( HttpServletRequest ) msgx.get( MessageContext.SERVLET_REQUEST ) ).getRemoteAddr();
+
+        Map<String, List<String>> headers = ( Map<String, List<String>> ) msgx.get( MessageContext.HTTP_REQUEST_HEADERS );
 
         String uid = "";
         try {
-            Map<String, List<String>> headers = (Map<String, List<String>>) msgx.get(MessageContext.HTTP_REQUEST_HEADERS);
-            uid = headers.get(ApplicationContext.ATS_UID_SESSION_TOKEN).get(0);
+            uid = headers.get(ExecutorUtils.ATS_RANDOM_TOKEN ).get(0 );
         } catch (Exception e) {
             if (!alreadyLoggedErrorAboutSessionUid) {
-                log.warn("Could not get ATS UID for call from " + request.getRemoteAddr()
+                log.warn("Could not get ATS UID for call from " + remoteHost
                          + ". This error will not be logged again before Agent restart.", e);
                 alreadyLoggedErrorAboutSessionUid = true;
             }
         }
 
-        return "<Caller: " + request.getRemoteAddr() + "; ATS UID: " + uid + ">";
+        String threadId = "";
+        try {
+            threadId = headers.get( ExecutorUtils.ATS_THREAD_ID ).get( 0 );
+        } catch( Exception e ) {
+            if( !alreadyLoggedErrorAboutSessionThreadId ) {
+                log.warn( "Could not get Thread Id for call from " + remoteHost
+                          + ". This error will not be logged again before Agent restart.", e );
+                alreadyLoggedErrorAboutSessionThreadId = true;
+            }
+        }
+
+        return ExecutorUtils.createExecutorId( remoteHost, uid, threadId );
     }
     
     private String getAgentHostAddress() {

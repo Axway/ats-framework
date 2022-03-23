@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.appenders.ActiveDbAppender;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.agent.core.configuration.RemoteLoggingConfigurator;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.core.threading.ImportantThread;
+import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.agent.webapp.client.ActionClient;
 import com.axway.ats.agent.webapp.client.AgentException_Exception;
 import com.axway.ats.agent.webapp.client.AgentService;
@@ -37,19 +39,34 @@ import com.axway.ats.core.events.ITestcaseStateListener;
 import com.axway.ats.core.utils.HostUtils;
 import com.axway.ats.log.AtsDbLogger;
 
+/**
+ * Currently it is used to configure the remote Agents prior to working with them
+ */
 public class TestcaseStateListener implements ITestcaseStateListener {
 
-    private static Logger                log = Logger.getLogger(TestcaseStateListener.class);
+    private static final Logger          log = Logger.getLogger(TestcaseStateListener.class);
 
-    // list of configured agents
-    private static List<String>          configuredAgents;
+    // List of agents with configured logging.
+    // They know the database to work with.
+    // FIXME: as this list only grows, we must clean it up at some appropriate moment
+    private static List<String>          logConfiguredAgents;
+
+    // List of test configured agents.
+    // They know the particular test to work with.
+    private static List<String>          testConfiguredAgents;
 
     private static TestcaseStateListener instance;
 
-    // force using getInstace()
+    private final Object configurationMutex;
+
+    // force using getInstance()
     private TestcaseStateListener() {
 
         // hidden constructor body
+        logConfiguredAgents = new ArrayList<String>();
+        testConfiguredAgents = new ArrayList<>();
+
+        configurationMutex = new Object();
     }
 
     public static synchronized TestcaseStateListener getInstance() {
@@ -63,80 +80,94 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onTestStart() {
 
-        // this is a new testcase, clear the list of configured agents
-        configuredAgents = new ArrayList<String>();
     }
 
     @Override
     public void onTestEnd() {
 
-        if (configuredAgents == null) {
-
-            // onTestStart had never been called,
-            // maybe onTestEnd is produced by test skipped event before starting a testcase
-            return;
-        }
-
+        // FIXME: this must be split per testcase in case of parallel tests
         waitImportantThreadsToFinish();
 
-        for (String atsAgent : configuredAgents) {
+        List<String> endedSessions = new ArrayList<>();
+        String thisThread = Thread.currentThread().getName();
 
-            try {
 
-                //get the client
-                AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
-                agentServicePort.onTestEnd();
+        // need synchronization when running parallel tests
+        synchronized( configurationMutex ) {
+            for( String agentSessionId : testConfiguredAgents ) {
 
-            } catch (Exception e) {
+                String thread = ExecutorUtils.extractThread( agentSessionId );
 
-                log.warn("Could not nofity ATS agent on '" + atsAgent
-                         + "' that testcase has ended. Probably the agent have become unreachable during test execution.",
-                         e);
+                if( thisThread.equals( thread ) ) {
+                    // found
+                    String agentHost = ExecutorUtils.extractHost(agentSessionId );
+                    try {
+                        //get the client
+                        AgentService agentServicePort = AgentServicePool.getInstance()
+                                                                        .getClientForHostAndTestcase( agentHost,
+                                                                                                      agentSessionId );
+                        agentServicePort.onTestEnd();
+                    } catch( Exception e ) {
+                        log.error( "Can't send onTestEnd event to ATS agent '" + agentHost + "'", e );
+                    }
+
+                    // remember the ended sessions
+                    endedSessions.add( agentSessionId );
+                }
+            }
+
+            // cleanup
+            for( String agentSessionId : endedSessions ) {
+                testConfiguredAgents.remove( agentSessionId );
             }
         }
-        configuredAgents = null;
     }
 
     /**
-     * This event is send right before running a regular action or starting
+     * This event is sent right before running a regular action or starting
      * an action queue.
      *
-     * It is also expected to be send between onTestStart and onTestEnd events.
+     * It is also expected to be sent between onTestStart and onTestEnd events.
      */
     @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
-        if (configuredAgents == null) {
-
-            // No TestCase is started so we won't configure the remote agents
+        if (ActiveDbAppender.getCurrentInstance() == null) {
+            // database logger not attached/specified in log4j.xml
             return;
         }
 
-        synchronized (configuredAgents) {
+        for( String atsAgent : atsAgents ) {
 
-            for (String atsAgent : atsAgents) {
+            // the remote endpoint is defined by Agent host and Test Executor's current thread(in case of parallel tests)
+            String agentSessionId = ExecutorUtils.createExecutorId( atsAgent,
+                                                                    Thread.currentThread().getName() );
 
-                // configure only not configured agents
-                if (!configuredAgents.contains(atsAgent)) {
+            if( !testConfiguredAgents.contains( agentSessionId ) ) {
 
-                    if (!configuredAgents.contains(atsAgent)) {
+                // need synchronization when running parallel tests
+                synchronized( configurationMutex ) {
+                    // Pass the logging configuration to the remote agent.
+                    // We do this just once for the whole run.
+                    if( !logConfiguredAgents.contains( atsAgent ) ) {
 
                         log.info("Pushing configuration to ATS Agent at '" + atsAgent + "'");
-
                         try {
 
-                            String agentVersion = AgentServicePool.getInstance().getClient(atsAgent).getAgentVersion();
+                            // compare versions of executor and agent
+                            String agentVersion = AgentServicePool.getInstance()
+                                                                  .getClientForHost(atsAgent)
+                                                                  .getAgentVersion();
                             String atsVersion = AtsVersion.getAtsVersion();
                             if (agentVersion != null) {
-
-                                if(!agentVersion.equals(atsVersion)) {
+                                if (!agentVersion.equals(atsVersion)) {
                                     if (AtsSystemProperties.getPropertyAsBoolean(
-                                                                                 AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH,
-                                                                                 false)) {
+                                            AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH,
+                                            false)) {
                                         throw new IllegalStateException(String.format(
-                                                                                      "ATS Version mismatch! ATS Agent/Loader at '%s' is version '%s' while you are using ATS Framework version '%s'!",
-                                                                                      HostUtils.getAtsAgentIpAndPort(atsAgent),
-                                                                                      agentVersion, atsVersion));
+                                                "ATS Version mismatch! ATS Agent/Loader at '%s' is version '%s' while you are using ATS Framework version '%s'!",
+                                                HostUtils.getAtsAgentIpAndPort(atsAgent),
+                                                agentVersion, atsVersion));
                                     } else {
                                         log.warn("*** ATS WARNING *** You are using ATS version '" + atsVersion
                                                  + "' with ATS Agent version '" + agentVersion + "' located at '"
@@ -147,28 +178,53 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                             }
 
                             // Pass the logging configuration to the remote agent
-                            RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(AgentConfigurationLandscape.getInstance(atsAgent)
-                                                                                                                                           .getDbLogLevel(),
-                                                                                                                AgentConfigurationLandscape.getInstance(atsAgent)
-                                                                                                                                           .getChunkSize());
-                            new RemoteConfigurationManager().pushConfiguration(atsAgent,
-                                                                               remoteLoggingConfigurator);
+                            RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(
+                                    AgentConfigurationLandscape.getInstance(atsAgent)
+                                                               .getDbLogLevel(),
+                                    AgentConfigurationLandscape.getInstance(atsAgent)
+                                                               .getChunkSize());
+                            new RemoteConfigurationManager().pushConfiguration(atsAgent, remoteLoggingConfigurator);
+                            logConfiguredAgents.add(atsAgent);
 
+                            // Pass the testcase configuration to the remote agent.
+                            // We do this each time a new test is started
+                            if (!testConfiguredAgents.contains(agentSessionId)) {
+                                try {
+                                    AgentService agentServicePort = AgentServicePool.getInstance()
+                                                                                    .getClientForHostAndTestcase(
+                                                                                            atsAgent,
+                                                                                            agentSessionId);
+                                    agentServicePort.onTestStart(getCurrentTestCaseState());
+                                } catch (AgentException_Exception ae) {
+                                    throw new AgentException(ae.getMessage());
+                                }
+
+                                testConfiguredAgents.add(agentSessionId);
+                            }
+                        } catch (Exception e) {
+                            throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": "
+                                                     + e.getMessage(), e);
+                        }
+                    }
+
+                    // Pass the testcase configuration to the remote agent.
+                    // We do this each time a new test is started
+                    if (!testConfiguredAgents.contains(agentSessionId)) {
+                        try {
                             AgentService agentServicePort = AgentServicePool.getInstance()
-                                                                            .getClient(atsAgent);
+                                                                            .getClientForHostAndTestcase(atsAgent,
+                                                                                                         agentSessionId);
                             agentServicePort.onTestStart(getCurrentTestCaseState());
                         } catch (AgentException_Exception ae) {
-
                             throw new AgentException(ae.getMessage());
                         } catch (Exception e) {
                             throw new AgentException("Exception while trying to configure agent at " + atsAgent + ": "
                                                      + e.getMessage(), e);
                         }
-
-                        configuredAgents.add(atsAgent);
+                        testConfiguredAgents.add(agentSessionId);
                     }
-                }
 
+                }
             }
         }
     }
@@ -178,21 +234,21 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
         String message = "Invalidating ATS Log DB configuration for ATS agent '%s'";
 
-        if (configuredAgents == null || configuredAgents.isEmpty()) {
+        if (logConfiguredAgents == null || logConfiguredAgents.isEmpty()) {
             return;
         } else {
 
-            synchronized (configuredAgents) {
+            synchronized (logConfiguredAgents) {
                 for (String agent : atsAgents) {
                     boolean agentCleared = false;
 
-                    if (configuredAgents.contains(agent)) {
-                        configuredAgents.remove(agent);
+                    if (logConfiguredAgents.contains(agent)) {
+                        logConfiguredAgents.remove(agent);
                         agentCleared = true;
                     } else {
                         agent = HostUtils.getAtsAgentIpAndPort(agent); // set the default port if needed
-                        if (configuredAgents.contains(agent)) {
-                            configuredAgents.remove(agent);
+                        if (logConfiguredAgents.contains(agent)) {
+                            logConfiguredAgents.remove(agent);
                             agentCleared = true;
                         }
                     }
@@ -260,7 +316,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     public void cleanupInternalObjectResources( String atsAgent, String internalObjectResourceId ) {
 
         try {
-            AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+            AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
             agentServicePort.cleanupInternalObjectResources(internalObjectResourceId);
         } catch (Exception e) {
             // As this code is triggered when the garbage collector disposes the client side object

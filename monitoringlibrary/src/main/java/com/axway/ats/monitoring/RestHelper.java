@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,10 @@ import com.axway.ats.action.rest.RestClient;
 import com.axway.ats.action.rest.RestClient.RESTDebugLevel;
 import com.axway.ats.action.rest.RestMediaType;
 import com.axway.ats.action.rest.RestResponse;
-import com.axway.ats.agent.core.context.ApplicationContext;
-import com.axway.ats.agent.webapp.client.ExecutorUtils;
+//import com.axway.ats.agent.webapp.client.ExecutorUtils;
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.monitoring.MonitoringException;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
@@ -68,11 +69,12 @@ public class RestHelper {
 
     public RestHelper() {}
 
-    public RestResponse post( String atsAgentIp, String baseRestUri, String relativeRestUri, Object[] values ) {
+    public RestResponse post( String atsAgentIp, String baseRestUri, String relativeRestUri, Object[] values,
+                              String description ) {
 
         // check if ActiveDbAppender is attached
         if (!ActiveDbAppender.isAttached) {
-            throw new IllegalStateException("Unable to execute monitoring operation.ATS DB Appender is not presented in log4j.xml");
+            throw new IllegalStateException("Unable to execute monitoring operation. ATS DB Appender is not presented in log4j.xml");
         }
 
         RestResponse response = null;
@@ -115,9 +117,20 @@ public class RestHelper {
         }
 
         response = this.restClient.postObject(jsonBody);
+        if (response.getStatusCode() != javax.ws.rs.core.Response.Status.OK.getStatusCode()) {
+            throw new MonitoringException(description + " failed with code " + response.getStatusCode()
+                                          + "\nResponse body is:\n" + (response != null
+                                                                       ? response.getBodyAsString()
+                                                                       : ""));
+        }
+
+        if (relativeRestUri.endsWith(INITIALIZE_DB_CONNECTION_RELATIVE_URI)) {
+            this.uid = response.getBodyAsJson().getString(ExecutorUtils.ATS_RANDOM_TOKEN);
+            this.agentVersion = response.getBodyAsJson().getString("agent_version");
+            //            synchronizeUidWithLocalOne();
+        }
 
         return response;
-
     }
 
     /**
@@ -131,7 +144,7 @@ public class RestHelper {
      */
     public void initializeRestClient( String atsAgentIp, String baseRestUri, String relativeRestUri ) {
 
-        // create RestClient instance
+        // create RestClient instance, note - just plain HTTP. Currently, w/o HTTPS version
         this.restClient = new RestClient("http://" + atsAgentIp + baseRestUri + relativeRestUri);
         if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.SYSTEM_MONITOR_VERBOSE_MODE, false)) {
             // enable all logging (both REST headers and body)
@@ -143,8 +156,9 @@ public class RestHelper {
         this.restClient.setRequestMediaType(RestMediaType.APPLICATION_JSON);
         this.restClient.setResponseMediaType(RestMediaType.APPLICATION_JSON);
         // set ATS_UID header
-        this.uid = ExecutorUtils.getUUID();
-        this.restClient.addRequestHeader(ApplicationContext.ATS_UID_SESSION_TOKEN, this.uid);
+        //this.uid = ExecutorUtils.getUUID();
+        //        synchronizeUidWithLocalOne();
+        this.restClient.addRequestHeader(com.axway.ats.core.utils.ExecutorUtils.ATS_RANDOM_TOKEN, this.uid);
     }
 
     public void disconnect() {

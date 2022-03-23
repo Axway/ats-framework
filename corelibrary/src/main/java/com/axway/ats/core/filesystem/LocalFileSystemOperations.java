@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,6 +78,7 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
@@ -143,7 +144,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs.
     // Instance should be Hashtable to synchronize access operations;
     private final        Map<Integer, FileTransferStatus> fileTransferStates         = new Hashtable<Integer, FileTransferStatus>();
-    // One time warning sent to the user if non recommended relative
+    // One time warning sent to the user if not recommended relative
     // path is used for construction of the destination file path
     private              boolean                          firstTimeWarn              = false;
     private              Integer                          copyFileStartPort;

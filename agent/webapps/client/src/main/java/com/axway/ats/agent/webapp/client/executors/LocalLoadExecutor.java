@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.List;
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
 import com.axway.ats.agent.core.action.ActionRequest;
 import com.axway.ats.agent.core.exceptions.AgentException;
-import com.axway.ats.agent.core.threading.ImportantThread;
+import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.agent.core.threading.data.config.LoaderDataConfig;
 import com.axway.ats.agent.core.threading.exceptions.NoSuchLoadQueueException;
 import com.axway.ats.agent.core.threading.patterns.ThreadingPattern;
@@ -103,6 +103,7 @@ public class LocalLoadExecutor extends LocalExecutor {
                         }
                     }
                 });
+                helpThread.setExecutorId(Thread.currentThread().getName());
                 helpThread.setDescription(queueName);
                 helpThread.start();
                 log.info("Action queue '" + queueName + "' scheduled for asynchronous execution");

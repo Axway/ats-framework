@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ public class RemoteLoggingConfigurator implements Configurator {
             final String caller = ThreadsPerCaller.getCaller();
 
             //create the new appender
-            PassiveDbAppender attachedAppender = new PassiveDbAppender(caller);
+            PassiveDbAppender attachedAppender = new PassiveDbAppender();
             attachedAppender.setAppenderConfig(appenderConfiguration);
             //use a default pattern, as we log in the db
             attachedAppender.setLayout(new PatternLayout("%c{2}: %m%n"));
@@ -208,7 +208,7 @@ public class RemoteLoggingConfigurator implements Configurator {
 
         needsToConfigureDbAppender = false;
         if (appenderConfiguration != null) {
-            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender == null || !dbAppender.getAppenderConfig().equals(appenderConfiguration)) {
                 // we did not have a DB appender
                 // or the DB appender configuration is changed
@@ -288,7 +288,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                 log = Logger.getLogger(appenderLogger);
             }
 
-            Appender dbAppender = PassiveDbAppender.getCurrentInstance(ThreadsPerCaller.getCaller());
+            Appender dbAppender = PassiveDbAppender.getCurrentInstance();
             if (dbAppender != null) {
                 //close the appender
                 dbAppender.close();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,11 +133,9 @@ public class DbAccessFactory {
      * @return DbWriteAccess Object
      * @throws DatabaseAccessException
      */
+    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender( ) throws DatabaseAccessException {
 
-    public SQLServerDbWriteAccess getNewDbWriteAccessObjectViaPassiveDbAppender(
-                                                                                 String callerId ) throws DatabaseAccessException {
-
-        PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance(callerId);
+        PassiveDbAppender loggingAppender = PassiveDbAppender.getCurrentInstance();
         if (loggingAppender == null) {
             throw new DatabaseAccessException("Unable to initialize connection to the logging database as the ATS PassiveDbAppender for caller '"
                                               + ThreadsPerCaller.getCaller()

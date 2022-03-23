@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,23 +16,18 @@
 
 package com.axway.ats.log.appenders;
 
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 
-import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.log.autodb.DbAppenderConfiguration;
-import com.axway.ats.log.autodb.TestCaseState;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
-import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
-import com.axway.ats.log.autodb.logqueue.DbEventRequestProcessor;
-import com.axway.ats.log.autodb.logqueue.LogEventRequest;
-import com.axway.ats.log.autodb.logqueue.QueueLoggerThread;
-import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
+import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * This appender is capable of arranging the database storage and storing
@@ -40,59 +35,15 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
-    protected AtsConsoleLogger                    atsConsoleLogger          = new AtsConsoleLogger(getClass());
+    // the channels for each test case
+    private Map<String, DbChannel> channels = new HashMap<String, DbChannel>();
 
-    /**
-     * The appender's data for the current thread
-     */
-    protected ArrayBlockingQueue<LogEventRequest> queue;
-
-    /**
-     * the logger thread
-     */
-    protected QueueLoggerThread                   queueLogger;
+    protected AtsConsoleLogger                    atsConsoleLogger = new AtsConsoleLogger(getClass());
 
     /**
      * The configuration for this appender
      */
     protected DbAppenderConfiguration             appenderConfig;
-
-    /**
-     * The class which will process the logging requests
-     */
-    protected DbEventRequestProcessor             eventProcessor;
-
-    /**
-     * Here we are caching the state of the currently executed test case. This
-     * way we do not need to go through the queue(which is in another thread)
-     */
-    protected TestCaseState                       testCaseState;
-
-    /**
-     * When true - we dump info about the usage of the events queue. It is
-     * targeted as a debug tool when cannot sent the events to the DB fast
-     * enough.
-     */
-    private boolean                               isMonitoringEventsQueue;
-    private long                                  lastQueueCapacityTick;
-
-    /**
-     * Keeps track what was the minimum value of the remaining queue capacity;
-     * */
-    private int                                   minRemainingQueueCapacity = -1;
-
-    /**
-    
-     * The Test Executor time is the leading time.
-    
-     * The time offset value here keeps the time difference between Test Executor and a particular Agent.
-    
-     * So the offset will be zero on Test Executor side (where ActiveDbAppender is used) and
-    
-     * probably different then zero on the Agent side (where PassiveDbAppender is used)
-    
-     */
-    private long                                  timeOffset                = 0;
 
     /**
      * Constructor
@@ -104,11 +55,6 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // init the appender configuration
         // it will be populated when the setters are called
         appenderConfig = new DbAppenderConfiguration();
-
-        testCaseState = new TestCaseState();
-
-        isMonitoringEventsQueue = AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.LOG__MONITOR_EVENTS_QUEUE,
-                                                                           false);
     }
 
     /*
@@ -121,91 +67,38 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         // check whether the configuration is valid first
         try {
-            appenderConfig.validate();
+            this.appenderConfig.validate();
         } catch (InvalidAppenderConfigurationException iace) {
             throw new DbAppenederException(iace);
         }
 
         // set the threshold if there is such
-        appenderConfig.setLoggingThreshold(getThreshold());
-
-        // the logging queue
-        queue = new ArrayBlockingQueue<LogEventRequest>(getMaxNumberLogEvents());
-
+        this.appenderConfig.setLoggingThreshold(getThreshold());
     }
 
-    protected void initializeDbLogging() {
+    protected abstract String getDbChannelKey( LoggingEvent event );
 
-        // enable batch mode at ATS Agent side only
-        boolean isWorkingAtAgentSide = this instanceof PassiveDbAppender;
-        boolean isBatchMode = false;
-        if (isWorkingAtAgentSide) {
-            isBatchMode = isBatchMode();
+    protected DbChannel getDbChannel( LoggingEvent event ) {
+
+        String channelKey = getDbChannelKey( event );
+
+        DbChannel channel = this.channels.get( channelKey );
+        if( channel == null ) { // TODO inss
+            channel = new DbChannel( this.appenderConfig );
+            channel.initialize( atsConsoleLogger, this.layout, true );
+            this.channels.put( channelKey, channel );
         }
 
-        // create new event processor
-        try {
-            eventProcessor = new DbEventRequestProcessor(appenderConfig,
-                                                         layout,
-                                                         getEventRequestProcessorListener(),
-                                                         isBatchMode);
-        } catch (DatabaseAccessException e) {
-            throw new RuntimeException("Unable to create DB event processor", e);
-        }
-
-        // start the logging thread
-        queueLogger = new QueueLoggerThread(queue, eventProcessor, isBatchMode);
-        queueLogger.setDaemon(true);
-        queueLogger.start();
+        return channel;
     }
 
-    protected void passEventToLoggerQueue(
-                                           LogEventRequest packedEvent ) {
+    protected void distroyDbChannel( String channelKey ) {
 
-        // Events on both Test Executor and Agent sides are processed here.
-
-        // Events on Agent get their timestamps aligned with Test Executor time.
-        if (timeOffset != 0) {
-            packedEvent.applyTimeOffset(timeOffset);
-        }
-
-        if (isMonitoringEventsQueue) {
-            // Tell the user how many new events can be placed in the queue.
-            // Do this every second.
-            long newTick = System.currentTimeMillis();
-            if (newTick - lastQueueCapacityTick > 1000) {
-                if (minRemainingQueueCapacity == -1) {
-                    minRemainingQueueCapacity = queue.remainingCapacity();
-                } else {
-                    minRemainingQueueCapacity = Math.min(minRemainingQueueCapacity, queue.remainingCapacity());
-                }
-                atsConsoleLogger.info("Remaining queue capacity is " + queue.remainingCapacity()
-                                      + " out of " + (queue.remainingCapacity() + queue.size())
-                                      + ". Bottom remaining capacity is " + minRemainingQueueCapacity);
-                lastQueueCapacityTick = newTick;
-            }
-        }
-
-        // this thread passes the events to the queue,
-        // while another thread is reading them on the other side
-        try {
-            queue.add(packedEvent);
-        } catch (IllegalStateException ex) {
-            if (queue.remainingCapacity() < 1) {
-                throw new IllegalStateException("There are too many messages queued"
-                                                + " for TestExplorer DB logging. Decrease messages count"
-                                                + " by lowering effective log4j severity or check whether"
-                                                + " connection to DB is too slow", ex);
-            } else {
-                throw ex;
-            }
-        }
+        //DbChannel channel = this.channels.get( channelKey );
+        this.channels.remove( channelKey );
     }
 
-    public abstract GetCurrentTestCaseEvent getCurrentTestCaseState(
-                                                                     GetCurrentTestCaseEvent event );
-
-    protected abstract EventRequestProcessorListener getEventRequestProcessorListener();
+    public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
 
     /*
      * (non-Javadoc)
@@ -214,10 +107,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public void close() {
 
-        // When the appender is unloaded, terminate the logging thread
-        if (queueLogger != null) {
-            queueLogger.interrupt();
-        }
+        getDbChannel(null).close();
     }
 
     /*
@@ -241,10 +131,12 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         super.setLayout(layout);
 
+        // remember it
+        this.layout = layout;
+
         // set the layout to the event processor as well
-        if (eventProcessor != null) {
-            eventProcessor.setLayout(layout);
-        }
+        DbChannel channel = getDbChannel( null );
+        channel.eventProcessor.setLayout( layout );
     }
 
     /**
@@ -264,7 +156,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getMaxNumberLogEvents() {
 
-        return appenderConfig.getMaxNumberLogEvents();
+        return this.appenderConfig.getMaxNumberLogEvents();
     }
 
     /**
@@ -272,7 +164,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getNumberPendingLogEvents() {
 
-        return queue.size();
+        return getDbChannel( null ).getNumberPendingLogEvents();
     }
 
     /**
@@ -280,7 +172,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public boolean isBatchMode() {
 
-        return appenderConfig.isBatchMode();
+        return this.appenderConfig.isBatchMode();
     }
 
     /**
@@ -304,7 +196,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getRunId() {
 
-        return eventProcessor.getRunId();
+        return getDbChannel( null ).eventProcessor.getRunId();
     }
 
     /**
@@ -314,7 +206,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getSuiteId() {
 
-        return eventProcessor.getSuiteId();
+        return getDbChannel( null ).eventProcessor.getSuiteId();
     }
 
     /**
@@ -324,7 +216,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public String getRunName() {
 
-        return eventProcessor.getRunName();
+        return getDbChannel( null ).eventProcessor.getRunName();
     }
 
     /**
@@ -334,7 +226,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public String getRunUserNote() {
 
-        return eventProcessor.getRunUserNote();
+        return getDbChannel( null ).eventProcessor.getRunUserNote();
     }
 
     /**
@@ -343,7 +235,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public int getTestCaseId() {
 
-        return eventProcessor.getTestCaseId();
+        return getDbChannel( null ).eventProcessor.getTestCaseId();
     }
 
     /**
@@ -351,18 +243,18 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      * */
     public int getLastExecutedTestCaseId() {
 
-        return eventProcessor.getLastExecutedTestCaseId();
+        return getDbChannel( null ).eventProcessor.getLastExecutedTestCaseId();
     }
 
     public boolean getEnableCheckpoints() {
 
-        return appenderConfig.getEnableCheckpoints();
+        return this.appenderConfig.getEnableCheckpoints();
     }
 
     public void setEnableCheckpoints(
                                       boolean enableCheckpoints ) {
 
-        appenderConfig.setEnableCheckpoints(enableCheckpoints);
+        this.appenderConfig.setEnableCheckpoints(enableCheckpoints);
     }
 
     public DbAppenderConfiguration getAppenderConfig() {
@@ -374,12 +266,13 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
                                    DbAppenderConfiguration appenderConfig ) {
 
         this.appenderConfig = appenderConfig;
-        this.threshold = appenderConfig.getLoggingThreshold();
+        threshold = appenderConfig.getLoggingThreshold();
     }
 
     public void calculateTimeOffset(
                                      long executorTimestamp ) {
 
-        this.timeOffset = (System.currentTimeMillis() - executorTimestamp);
+        // FIXME make the next working
+        getDbChannel( null ).calculateTimeOffset(executorTimestamp);
     }
 }

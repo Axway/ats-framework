@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public abstract class ActionClient extends AbstractAgentClient {
         // Check if we are queuing - in this case all actions will be routed to the queue
         // The exception is when we are sending command to the Monitoring Service
         ActionQueue actionQueue = ActionQueue.getCurrentInstance();
-        if (!actionQueue.isInQueueMode()
+        if (actionQueue == null || !actionQueue.isInQueueMode()
             || component.equals(SystemMonitorDefinitions.ATS_SYSTEM_MONITORING_COMPONENT_NAME)) {
             if (atsAgent.equals(LOCAL_JVM)) {
                 LocalExecutor localExecutor = new LocalExecutor();

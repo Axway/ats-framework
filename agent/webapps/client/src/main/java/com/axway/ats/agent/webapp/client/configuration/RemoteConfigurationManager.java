@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ public class RemoteConfigurationManager {
      *
      * @param atsAgent host to push the configuration to
      * @param configurator the configurator
-     * @throws AgentException
+     * @throws AgentException in case of an error
      */
     public void pushConfiguration(
                                    String atsAgent,
@@ -50,7 +50,7 @@ public class RemoteConfigurationManager {
         AgentConfigurationLandscape.getInstance(atsAgent).cacheConfigurator(configurator);
 
         // get the client instance
-        AgentService agentServicePort = AgentServicePool.getInstance().getClient(atsAgent);
+        AgentService agentServicePort = AgentServicePool.getInstance().getClientForHost(atsAgent);
 
         List<Configurator> configurators = new ArrayList<Configurator>();
         configurators.add(configurator);

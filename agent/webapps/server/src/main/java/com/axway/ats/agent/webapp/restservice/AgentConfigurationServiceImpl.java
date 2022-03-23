@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.axway.ats.core.utils.ExecutorUtils;
 import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -79,15 +80,25 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                             @Context HttpServletRequest request,
                                             DbConnectionPojo dbConnectionPojo ) {
 
-        // we do some cleanup here, it is not be very resource consuming
-        cleanupExpiredSessions(dbConnectionPojo);
+        /*
+         * NOTE: There is a potential session leak problem with the current design.
+         * As we make the caller identity on the Agent side using some random token,
+         * it is clear we will create a different caller ID for each execution for one and same actual caller.
+         * This mean we cannot cleanup old sessions from same caller. This is the case when a test is killed
+         * and we do not get a de-initialize request.
+         * All we can do is to cleanup sessions that have not been used for a long period of time.
+         */
+        // We do some cleanup here, it is not very resource consuming.
+        cleanupExpiredSessions( dbConnectionPojo );
 
-        final String caller = getCaller(request, dbConnectionPojo, true);
+        // this is the first request, we will create a new session associated with this caller
+        final String caller = getCallerForNewSession( request, dbConnectionPojo );
+
         ThreadsPerCaller.registerThread(caller);
         try {
-            // we have to create a new session,
+            /* // we have to create a new session,
             // so we call getSessionData() only for that
-            getSessionData(request, dbConnectionPojo);
+            getSessionData(request, dbConnectionPojo);*/
 
             // create DbAppenderConfiguration
             DbAppenderConfiguration newAppenderConfiguration = new DbAppenderConfiguration();
@@ -100,7 +111,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             newAppenderConfiguration.setLoggingThreshold(Priority.toPriority(dbConnectionPojo.getLoggingThreshold()));
             newAppenderConfiguration.setMaxNumberLogEvents(dbConnectionPojo.getMaxNumberLogEvents());
 
-            PassiveDbAppender alreadyExistingAppender = PassiveDbAppender.getCurrentInstance(caller);
+            PassiveDbAppender alreadyExistingAppender = PassiveDbAppender.getCurrentInstance();
             // check whether PassiveDbAppender for this caller is already registered
             if (alreadyExistingAppender != null) {
                 // check if the already registered PassiveDbAppender's apenderConfiguration is NOT the same and the new one
@@ -108,9 +119,8 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                     /* we have a request for different DB configuration, 
                      * so remove the previous appender and append new one with the desired appender configuration
                      */
-                    dbLog.debug("Remove previously attached PassiveDbAppender for caller '" + caller
-                                + "'.");
-                    Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
+                    dbLog.debug("Remove previously attached PassiveDbAppender for caller '" + caller + "'.");
+                    Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance());
                     attachPassiveDbAppender(newAppenderConfiguration, dbConnectionPojo.getTimestamp());
                     dbLog.debug("Successfully attached new PassiveDbAppender for caller '" + caller + "'.");
                 }
@@ -125,7 +135,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
         String uid = dbConnectionPojo.getUid();
         String agentVersion = AtsVersion.getAtsVersion();
-        return Response.ok("{\"" + ApplicationContext.ATS_UID_SESSION_TOKEN + "\": " + "\"" + uid + "\",\""
+        return Response.ok("{\"" + ExecutorUtils.ATS_RANDOM_TOKEN + "\": " + "\"" + uid + "\",\""
                            + "agent_version" + "\": " + "\"" + agentVersion + "\"}")
                        .build();
     }
@@ -141,10 +151,10 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                               @Context HttpServletRequest request,
                                               BasePojo basePojo ) {
 
-        final String caller = getCaller(request, basePojo, false);
+        final String caller = getCaller(request, basePojo);
         ThreadsPerCaller.registerThread(caller);
         try {
-            Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance(caller));
+            Logger.getRootLogger().removeAppender(PassiveDbAppender.getCurrentInstance());
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -165,18 +175,18 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                   @Context HttpServletRequest request,
                                   JoinTestcasePojo testCaseStatePojo ) {
 
-        final String caller = getCaller(request, testCaseStatePojo, false);
+        final String caller = getCaller(request, testCaseStatePojo);
         ThreadsPerCaller.registerThread(caller);
 
         try {
-            SessionData sd = getSessionData(request, testCaseStatePojo);
+            SessionData sd = getSessionData(caller);
 
             RestSystemMonitor restSystemMonitor = sd.getSystemMonitor();
 
             // cancel all action tasks, that are started on an agent, located on the current caller host.
             // current caller and the agent must have the same IP, in order for the queue to be cancelled
             dbLog.debug("Cancelling all action task on the agent, that were started form the current caller.");
-            MultiThreadedActionHandler.cancellAllQueuesFromAgent(ThreadsPerCaller.getCaller());
+            MultiThreadedActionHandler.cancellAllQueuesFromAgent(caller);
 
             // cancel all running system monitoring tasks on the agent
             dbLog.debug("Cancelling all running system monitoring tasks on the agent, that were started form the current caller.");
@@ -205,7 +215,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
 
                     dbLog.error("This test appears to be aborted by the user on the test executor side, but it kept running on the agent side."
                                 + " Now we cancel any further logging from the agent.");
-                    dbLog.leaveTestCase();
+                    dbLog.leaveTestCase(caller);
                 } else {
                     joinToNewTescase = false;
 
@@ -219,7 +229,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                  * */
                 restSystemMonitor = new RestSystemMonitor();
                 sd.setSystemMonitor(restSystemMonitor);
-                dbLog.joinTestCase(newTestCaseState);
+                dbLog.joinTestCase( newTestCaseState, caller);
 
                 logClassPath(newTestCaseState);
 
@@ -249,10 +259,10 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                    @Context HttpServletRequest request,
                                    BasePojo basePojo ) {
 
-        final String caller = getCaller(request, basePojo, false);
+        final String caller = getCaller(request, basePojo);
         ThreadsPerCaller.registerThread(caller);
         try {
-            dbLog.leaveTestCase();
+            dbLog.leaveTestCase(caller);
         } finally {
             ThreadsPerCaller.unregisterThread();
         }
@@ -298,7 +308,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
                                           long timestamp ) {
 
         // create the new appender
-        PassiveDbAppender attachedAppender = new PassiveDbAppender(ThreadsPerCaller.getCaller());
+        PassiveDbAppender attachedAppender = new PassiveDbAppender();
 
         // calculate the time stamp offset, between the test executor and the agent
         attachedAppender.calculateTimeOffset(timestamp);

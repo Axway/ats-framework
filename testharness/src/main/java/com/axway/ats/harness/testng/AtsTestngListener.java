@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,12 +25,8 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -72,22 +68,28 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private static final String           MSG__TEST_SKIPPED_DEPENDENCY          = "[TestNG]: TEST SKIPPED due to dependency failure";
     private static final String           MSG__TEST_SKIPPED_CONFIGURATION       = "[TestNG]: TEST SKIPPED due to configuration failure";
     private static final String           MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
+    private static final String           JAVA_FILE_EXTENSION                   = ".java";
 
-    private final String                  JAVA_FILE_EXTENSION                   = ".java";
-
-    private String                        javaFileContent;
     private String                        projectSourcesFolder;
-
-    /* keeps track if the current testcase name */
-    private String                        currentTestcaseName                   = null;
-    /* keeps track if the current suite name. Not parallel mode safe */
-    private static String                 currentSuiteName                      = null;
-
-    /* keeps track of the test result for the last ended testcase */
-    private int                           lastTestcaseResult                    = -1;
-
+    // TODO inspp
     private static boolean                testDescAvailable                     = false;
     private static boolean                afterInvocation                       = false;
+    private String                        javaFileContent;
+
+    /* per thread Channels - test context info */
+    private Map<String, Channel> channels;
+
+    private class Channel {
+
+        /* keeps track of the current testcase name */
+        String currentTestcaseName = null;
+
+        /* keeps track of the current suite name */
+        String currentSuiteName    = null;
+
+        /* track the test result for the last ended testcase */
+        int    lastTestcaseResult  = -1;
+    }
 
     /**
      * Whether traces for listener's run events are enabled. Enabled via {@link AtsSystemProperties#LOG__CACHE_EVENTS_SOURCE_LOCATION}
@@ -109,6 +111,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             ATS_LOGGER.log(this.hashCode() + ": New ATS TestNG listener instance is created. Exception will follow",
                            new Exception("ATS TestNG listener initialization trace"));
         }
+        channels = new ConcurrentHashMap<>(); // ConcurrentHashMap instead of Collections.synchronizedMap(), check with testng.strict.parallel=true
     }
 
     @Override
@@ -129,27 +132,28 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         if (!ActiveDbAppender.isAttached) {
             return;
         }
+        Channel channel = getChannel();
 
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
 
-            if (method.getTestMethod().isBeforeSuiteConfiguration()) {// check if method is @BeforeSuite
-                handleBeforeSuite(method, testResult, afterInvocation);
+            if (method.getTestMethod().isBeforeSuiteConfiguration()) { // check if method is @BeforeSuite
 
+                handleBeforeSuite(method, testResult, afterInvocation);
             } else if (method.getTestMethod().isBeforeClassConfiguration()) { // check if method is @BeforeClass
 
-                handleBeforeClass(method, testResult, afterInvocation);
-            } else if (method.getTestMethod().isBeforeTestConfiguration()) {// check if method is @BeforeTest
+                handleBeforeClass(method, testResult, afterInvocation, channel);
+            } else if (method.getTestMethod().isBeforeTestConfiguration()) { // check if method is @BeforeTest
 
                 handleBeforeTest(method, testResult, afterInvocation);
-            } else if (method.getTestMethod().isBeforeMethodConfiguration()) {// check if method is @BeforeMethod
+            } else if (method.getTestMethod().isBeforeMethodConfiguration()) { // check if method is @BeforeMethod
 
-                handleBeforeMethod(method, testResult, afterInvocation);
+                handleBeforeMethod(method, testResult, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterMethodConfiguration()) { // check if method is @AfterMethod
 
-                handleAfterMethod(method, testResult, context, afterInvocation);
+                handleAfterMethod(method, testResult, context, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterClassConfiguration()) { // check if method is @AfterClass
 
-                handleAfterClass(method, testResult, afterInvocation);
+                handleAfterClass(method, testResult, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterTestConfiguration()) { // check if method is @AfterTest
 
                 handleAfterTest(method, testResult, afterInvocation);
@@ -157,24 +161,28 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
                 handleAfterSuite(method, testResult, afterInvocation);
             }
-
         } else if (method.isTestMethod()) { // check if method is not @BeforeXXX or @AfterXXX
 
             if (method.getTestMethod().isTest()) { // check if method is @Test
 
-                handleTestMethod(method, testResult, context, afterInvocation);
+                handleTestMethod(method, testResult, context, afterInvocation, channel);
             }
+        } else {
+            // unsupported method
+            System.err.println("Unsupported method for TestNG " + method.toString());
+            //if (ATS_LOGGER. getLog4jLogger().isDebugEnabled())
         }
     }
 
     @Override
     public void afterInvocation( IInvokedMethod method, ITestResult testResult, ITestContext context ) {
 
-        afterInvocation = true;
-
         if (!ActiveDbAppender.isAttached) {
             return;
         }
+
+        afterInvocation = true;
+        Channel channel = getChannel();
 
         if (method.isConfigurationMethod()) { // check if method is @BeforeXXX or @AfterXXX
 
@@ -183,19 +191,19 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 handleBeforeSuite(method, testResult, afterInvocation);
             } else if (method.getTestMethod().isBeforeClassConfiguration()) { // check if method is @BeforeClass
 
-                handleBeforeClass(method, testResult, afterInvocation);
+                handleBeforeClass(method, testResult, afterInvocation, channel);
             } else if (method.getTestMethod().isBeforeTestConfiguration()) {// check if method is @BeforeTest
 
                 handleBeforeTest(method, testResult, afterInvocation);
             } else if (method.getTestMethod().isBeforeMethodConfiguration()) {// check if method is @BeforeMethod
 
-                handleBeforeMethod(method, testResult, afterInvocation);
+                handleBeforeMethod(method, testResult, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterMethodConfiguration()) { // check if method is @AfterMethod
 
-                handleAfterMethod(method, testResult, context, afterInvocation);
+                handleAfterMethod(method, testResult, context, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterClassConfiguration()) { // check if method is @AfterClass
 
-                handleAfterClass(method, testResult, afterInvocation);
+                handleAfterClass(method, testResult, afterInvocation, channel);
             } else if (method.getTestMethod().isAfterTestConfiguration()) { // check if method is @AfterTest
                 handleAfterTest(method, testResult, afterInvocation);
 
@@ -206,17 +214,19 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         } else if (method.isTestMethod()) {
 
             if (method.getTestMethod().isTest()) { // check if method is @Test
-
-                handleTestMethod(method, testResult, context, afterInvocation);
+                handleTestMethod(method, testResult, context, afterInvocation, channel);
             }
         }
     }
 
+    /**
+     * Start new RUN
+     */
     @Override
     public void onStart( ISuite suite ) {
 
         if (IS_TRACE_ENABLED) {
-            ATS_LOGGER.log(this.hashCode() + ": TestNG start run (suite) event received. Run name: " + suite.getName());
+            ATS_LOGGER.log(this.hashCode() + ": TestNG start suite (ATS run) event received. Run name: " + suite.getName());
             if (suite instanceof XmlSuite) {
                 XmlSuite xmlSuite = (XmlSuite) suite;
                 ATS_LOGGER.log(this.hashCode() + ": Suite file: " + xmlSuite.getFileName()
@@ -255,6 +265,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     }
 
+    /**
+     * End the RUN
+     */
     @Override
     public void onFinish( ISuite suite ) {
 
@@ -266,9 +279,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             return;
         }
 
-        if (currentSuiteName != null) {
-
-            endSuite();
+        // call end suite on all channels
+        for( Map.Entry<String, Channel> entry : channels.entrySet() ) {
+            endSuite(entry.getKey(), entry.getValue() );
         }
 
         // end the run
@@ -322,10 +335,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void startSuite( ITestResult testResult ) {
+    private void startSuite(Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
-
         String suiteSimpleName = testClass.getSimpleName();
 
         /* if the TestNG tests are presented in the default package
@@ -338,13 +350,13 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         // clear the previously saved java file content, since a new suite is about to start
         javaFileContent = null;
 
-        currentSuiteName = suiteSimpleName;//testResult.getTestClass().getRealClass().getName();
+        channel.currentSuiteName = suiteSimpleName;//testResult.getTestClass().getRealClass().getName();
 
         logger.startSuite(packageName, suiteSimpleName);
 
     }
 
-    private void startTestcase( ITestResult testResult ) {
+    private void startTestcase(Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
@@ -356,9 +368,9 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         String testDescription = getTestDescription(testClass, suiteFullName, testName, testResult);
 
         // save the current testcase name
-        currentTestcaseName = testResult.getMethod().toString();
+        channel.currentTestcaseName = testResult.getMethod().toString();
         //clear the last saved testcase result, since a new testcase is about to start
-        lastTestcaseResult = -1;
+        channel.lastTestcaseResult = -1;
 
         // start test case
         logger.startTestcase(suiteFullName, suiteSimpleName, testName, testInputArguments, testDescription);
@@ -481,9 +493,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                                                                       "."); // this could be null when failsafe maven plugin is used
                             if (testClassPath == null) {
                                 testDescAvailable = true;
-                                logger.info(
-                                            "Test descriptions could not be assigned to the tests, because the test sources folder could not be found. ");
-
+                                logger.info( "Test descriptions could not be assigned to the tests, because the test "
+                                             + "sources folder could not be found. ");
                                 return;
                             }
                             URI uri = new URI(testClassPath.getPath());
@@ -523,7 +534,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             if (sourceFolderLocation != null) {
 
                 javaFileContent = IoUtils.streamToString(new FileInputStream(sourceFolderLocation + "/"
-                                                                             + javaFileName));
+                                 + javaFileName));
             } else {
                 logger.debug(AtsSystemProperties.TEST_HARNESS__TESTS_SOURCE_LOCATION
                              + " variable is wrong or not set");
@@ -607,7 +618,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         return null;
     }
 
-    private void updateTestcase( ITestResult testResult ) {
+    private void updateTestcase(Channel channel, ITestResult testResult ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
@@ -617,14 +628,14 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         String testInputArguments = getTestInputArguments(testResult);
         String testDescription = getTestDescription(testClass, suiteFullName, testName, testResult);
 
-        currentTestcaseName = testResult.getMethod().toString();
+        channel.currentTestcaseName = testResult.getMethod().toString();
 
         logger.info("[TESTNG]: Start @Test '" + testResult.getTestClass().getRealClass() + "@"
                     + testResult.getName() + "'");
 
-        // by passing -1, the DbEventRequestProcessor will decide the testcasseId
+        // by passing -1, the DbEventRequestProcessor will decide the testcaseId
         logger.updateTestcase(-1, suiteFullName, suiteSimpleName, testName, testInputArguments,
-                              testDescription, lastTestcaseResult);
+                              testDescription, channel.lastTestcaseResult);
 
     }
 
@@ -655,12 +666,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void endTestcaseWithSkipStatus( ITestResult testResult, ITestContext context ) {
+    private void endTestcaseWithSkipStatus(Channel channel, ITestResult testResult, ITestContext context ) {
 
         //Check if the test was successfully started, if not - make it started and then end it with failure
         String testName = testResult.getMethod().toString();
-        if (!testName.equals(currentTestcaseName)) {
-            startTestcase(testResult);
+        if (!testName.equals(channel.currentTestcaseName)) {
+            startTestcase(channel, testResult);
         }
 
         sendTestEndEventToAgents();
@@ -676,20 +687,20 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             logger.fatal(MSG__TEST_SKIPPED_UNRECOGNIZED_REASON, testResult.getThrowable());
         }
 
-        currentTestcaseName = null;
-        lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
+        channel.currentTestcaseName = null;
+        channel.lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
         // end test case
         logger.endTestcase(TestCaseResult.SKIPPED);
 
     }
 
-    private void endTestcaseWithFailureStatus( ITestResult testResult ) {
+    private void endTestcaseWithFailureStatus(Channel channel, ITestResult testResult ) {
 
         try {
             //Check if the test was successfully started, if not - make it started and then end it with failure
             String testName = testResult.getMethod().toString();
-            if (!testName.equals(currentTestcaseName)) {
-                startTestcase(testResult);
+            if (!testName.equals(channel.currentTestcaseName)) {
+                startTestcase(channel, testResult);
             }
 
             sendTestEndEventToAgents();
@@ -706,8 +717,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 logger.error(MSG__TEST_FAILED, testResult.getThrowable());
             }
 
-            currentTestcaseName = null;
-            lastTestcaseResult = TestCaseResult.FAILED.toInt();
+            channel.currentTestcaseName = null;
+            channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
             // end test case
             logger.endTestcase(TestCaseResult.FAILED);
         } catch (Exception e) {
@@ -716,22 +727,22 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     }
 
-    private void endTestcaseWithSuccessStatus( ITestResult testResult ) {
+    private void endTestcaseWithSuccessStatus(Channel channel, ITestResult testResult ) {
 
         sendTestEndEventToAgents();
         boolean shouldTestFail = TestcaseStateEventsDispacher.getInstance().hasAnyQueueFailed();
         if (shouldTestFail) {
             logger.warn("At least one queue in test failed");
             testResult.setStatus(ITestResult.FAILURE);
-            endTestcaseWithFailureStatus(testResult);
+            endTestcaseWithFailureStatus(channel, testResult);
             return;
         }
         logger.info(MSG__TEST_PASSED);
 
         try {
 
-            currentTestcaseName = null;
-            lastTestcaseResult = TestCaseResult.PASSED.toInt();
+            channel.currentTestcaseName = null;
+            channel.lastTestcaseResult = TestCaseResult.PASSED.toInt();
             // end test case
             logger.endTestcase(TestCaseResult.PASSED);
         } catch (Exception e) {
@@ -793,21 +804,47 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void endSuite() {
-
+    /**
+     * End the current suite.
+     *
+     * Seems to come here when tests are executed by single thread only.
+     * All suites are ended without the last one.
+     * The last suite is ended on ending the run.
+     *
+     * @param channel
+     */
+    private void endSuite( Channel channel ) {
         // end the current suite
-        currentSuiteName = null;
+        channel.currentSuiteName = null;
         logger.endSuite();
-
     }
 
-    private void logCondition( IInvokedMethod method, ITestResult testResult, String condition ) {
+    /**
+     * End a suite for a particular channel.
+     * Called just before ending a run.
+     *
+     * @param threadName name of the invoked thread
+     * @param channel
+     */
+    private void endSuite( String threadName, Channel channel ) {
 
-        logger.info(condition + " '" + testResult.getTestClass().getName() + "@"
-                    + method.getTestMethod().getMethodName() + "'");
+        channel.currentSuiteName = null;
+        logger.endSuite( threadName );
     }
 
-    private void handleBeforeSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
+    private void logCondition( IInvokedMethod method, ITestResult testResult, String condition) {
+
+        Channel channel = getChannel();
+        if (logger.isInfoEnabled()) {
+            logger.info(condition + " '" + testResult.getTestClass().getName() + "@"
+                        + method.getTestMethod().getMethodName() + "'");
+        } else if (logger.isDebugEnabled()) {
+            logger.debug(condition + " '" + testResult.getTestClass().getName() + "@"
+                         + method.getTestMethod().getMethodName() + "', channel: " + channel);
+        }
+    }
+
+    private void handleBeforeSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation) {
 
         if (!afterInvocation) {
             logCondition(method, testResult, MSG__TEST_START);
@@ -816,23 +853,23 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void handleBeforeClass( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
+    private void handleBeforeClass( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation, Channel channel ) {
 
         if (!afterInvocation) {
-            if (currentSuiteName == null) {
-                // start suite
-                startSuite(testResult);
-
-            } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                          .getRealClass()
-                                                          .getSimpleName())) {
-                                                              endSuite(); // end previously started suite
-                                                              startSuite(testResult); // start new suite
-                                                          }
+            if (channel.currentSuiteName == null) {
+                // start new suite
+                startSuite(channel, testResult);
+            } else {
+                if (!channel.currentSuiteName.equals(testResult.getTestClass()
+                                                               .getRealClass()
+                                                               .getSimpleName())) {
+                    endSuite(channel); // end previously started suite
+                    startSuite(channel, testResult); // start new suite
+                }
+            }
             logCondition(method, testResult, MSG__TEST_START);
         } else {
             logCondition(method, testResult, MSG__TEST_END);
-
         }
     }
 
@@ -845,61 +882,52 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void handleBeforeMethod( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
-
+    private void handleBeforeMethod( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation,
+                                     Channel channel) {
         if (!afterInvocation) {
-            if (currentSuiteName == null) {
+            if (channel.currentSuiteName == null) {
 
                 // start suite
-                startSuite(testResult);
+                startSuite(channel, testResult);
+            } else {
+                if (!channel.currentSuiteName.equals(testResult.getTestClass()
+                                                               .getRealClass()
+                                                               .getSimpleName())) {
 
-            } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                          .getRealClass()
-                                                          .getSimpleName())) {
-
-                                                              endSuite(); // end previously started suite
-                                                              startSuite(testResult); // start new suite
-                                                          }
-
-            if (currentTestcaseName == null) {
+                    endSuite(channel); // end previously started suite
+                    startSuite(channel, testResult); // start new suite
+                }
+            }
+            if (channel.currentTestcaseName == null) {
 
                 // start testcase
-                startTestcase(testResult);
+                startTestcase(channel, testResult);
             }
 
             logCondition(method, testResult, MSG__TEST_START);
-
         } else {
             logCondition(method, testResult, MSG__TEST_END);
         }
     }
 
     private void handleAfterMethod( IInvokedMethod method, ITestResult testResult, ITestContext context,
-                                    Boolean afterInvocation ) {
+                                    Boolean afterInvocation, Channel channel ) {
 
         if (!afterInvocation) {
             logger.startAfterMethod();
-
             logCondition(method, testResult, MSG__TEST_START);
-
         } else {
-            if (currentTestcaseName != null) {
-
+            if (channel.currentTestcaseName != null) {
                 if (testResult.getStatus() == ITestResult.SUCCESS) {
-
-                    endTestcaseWithSuccessStatus(testResult);
-
+                    endTestcaseWithSuccessStatus(channel, testResult);
                 } else if (testResult.getStatus() == ITestResult.FAILURE) {
-
-                    endTestcaseWithFailureStatus(testResult);
-
+                    endTestcaseWithFailureStatus(channel, testResult);
                 } else if (testResult.getStatus() == ITestResult.SKIP) {
-
-                    endTestcaseWithSkipStatus(testResult, context);
+                    endTestcaseWithSkipStatus(channel, testResult, context);
                 }
             }
 
-            if (lastTestcaseResult == TestCaseResult.PASSED.toInt()) {
+            if (channel.lastTestcaseResult == TestCaseResult.PASSED.toInt()) {
                 // the last testcase passed, but if the after method failed or was skipped,
                 // the testcase should use the after methods result
 
@@ -909,24 +937,27 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                         // so do not change anything
                         break;
                     case ITestResult.FAILURE:
-                        lastTestcaseResult = TestCaseResult.FAILED.toInt();
+                        channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
                         break;
                     case ITestResult.SKIP:
-                        lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
+                        channel.lastTestcaseResult = TestCaseResult.SKIPPED.toInt();
                         break;
                     default:
-                        throw new RuntimeException("The result of the @AfterMethod is unsupported by ATS");
+                        throw new RuntimeException("The result " + testResult.getStatus()
+                                                   + " of the @AfterMethod "
+                                                   + testResult.getMethod().getQualifiedName()
+                                                   + " is not yet supported by ATS");
                 }
 
-            } else if (lastTestcaseResult == TestCaseResult.SKIPPED.toInt()) {
+            } else if (channel.lastTestcaseResult == TestCaseResult.SKIPPED.toInt()) {
                 // the testcase was skipped
 
                 if (testResult.getStatus() == ITestResult.FAILURE) {
                     // change the testcase result, only if the after method had failed
-                    lastTestcaseResult = TestCaseResult.FAILED.toInt();
+                    channel.lastTestcaseResult = TestCaseResult.FAILED.toInt();
                 }
 
-            } else if (lastTestcaseResult == TestCaseResult.FAILED.toInt()) {
+            } else if (channel.lastTestcaseResult == TestCaseResult.FAILED.toInt()) {
                 // do nothing, the testcase failed and a failed testcase should it be
             } else {
                 // should not happen, as before reaching this part of the code, a testcase has to be ended
@@ -940,7 +971,6 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
                 // log the Throwable object from the @AfterMethod
                 logger.fatal(testResult.getThrowable().getMessage(), testResult.getThrowable());
-
             }
 
             logCondition(method, testResult, MSG__TEST_END);
@@ -948,17 +978,18 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             logger.endAfterMethod();
 
             // set new end timestamp and result for the current testcase
-            // by passing -1, the DbEventRequestProcessor will decide the testcasseId
-            logger.updateTestcase(-1, null, null, null, null, null, lastTestcaseResult);
+            // by passing -1, the DbEventRequestProcessor will decide the testcaseId
+            logger.updateTestcase(-1, null, null, null, null, null,
+                                  channel.lastTestcaseResult);
 
         }
     }
 
-    private void handleAfterClass( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
+    private void handleAfterClass( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation,
+                                   Channel channel) {
 
         if (!afterInvocation) {
-            if (currentSuiteName == null) {
-
+            if (channel.currentSuiteName == null) {
                 logger.startAfterClass();
             }
             logCondition(method, testResult, MSG__TEST_START);
@@ -966,20 +997,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
             logCondition(method, testResult, MSG__TEST_END);
             if (testResult.getStatus() == ITestResult.FAILURE) {
-
                 // log the Throwable object from the @AfterClass
                 logger.fatal(testResult.getThrowable().getMessage(), testResult.getThrowable());
             }
-            if (currentSuiteName != null) {
-
-                endSuite();
-
+            if (channel.currentSuiteName != null) {
+                endSuite(channel);
             } else {
                 // the event was received after a suite is already ended
                 // which means that we only have to clear the after class mode
                 logger.endAfterClass();
             }
-
         }
     }
 
@@ -1002,63 +1029,67 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         }
     }
 
-    private void handleAfterSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation ) {
+    private void handleAfterSuite( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation) {
 
         if (!afterInvocation) {
             logger.startAfterSuite();
             logCondition(method, testResult, MSG__TEST_START);
         } else {
+            logCondition(method, testResult, MSG__TEST_END);
             if (testResult.getStatus() == ITestResult.FAILURE) {
-
                 // log the Throwable object from the @AfterMethod
-                logCondition(method, testResult, MSG__TEST_END);
-
                 logger.fatal(testResult.getThrowable().getMessage(), testResult.getThrowable());
             }
-
             logger.endAfterSuite();
         }
     }
 
     private void handleTestMethod( IInvokedMethod method, ITestResult testResult, ITestContext context,
-                                   Boolean afterInvocation ) {
+                                   Boolean afterInvocation, Channel channel) {
 
-        if (!afterInvocation) {
-            if (currentSuiteName == null) {
-
+        if (!afterInvocation) { // before
+            // if this is a Test from a new suite
+            if (channel.currentSuiteName == null) {
                 // start suite
-                startSuite(testResult);
-
-            } else if (!currentSuiteName.equals(testResult.getTestClass()
-                                                          .getRealClass()
-                                                          .getSimpleName())) {
-
-                                                              endSuite(); // end previously started suite
-                                                              startSuite(testResult); // start new suite
-                                                          }
-
-            if (currentTestcaseName == null) {
-
-                // start testcase
-                startTestcase(testResult);
+                startSuite(channel, testResult);
             } else {
+                if (!channel.currentSuiteName.equals(testResult.getTestClass()
+                                                       .getRealClass()
+                                                       .getSimpleName())) {
 
-                // update testcase
-                updateTestcase(testResult);
+                    endSuite(channel); // end previously started suite
+                    startSuite(channel, testResult); // start new suite
+                }
             }
-        } else {
+
+            if (channel.currentTestcaseName == null) {
+                // start testcase
+                startTestcase(channel, testResult);
+            } else {
+                // re-run, update testcase
+                updateTestcase(channel, testResult);
+            }
+        } else { // after
             if (testResult.getStatus() == ITestResult.SUCCESS) {
-
-                endTestcaseWithSuccessStatus(testResult);
-
+                endTestcaseWithSuccessStatus(channel, testResult);
             } else if (testResult.getStatus() == ITestResult.FAILURE) {
-
-                endTestcaseWithFailureStatus(testResult);
-
+                endTestcaseWithFailureStatus(channel, testResult);
             } else if (testResult.getStatus() == ITestResult.SKIP) {
-
-                endTestcaseWithSkipStatus(testResult, context);
+                endTestcaseWithSkipStatus(channel, testResult, context);
             }
         }
     }
+
+    /** Get the channel (test info) of the */
+    private Channel getChannel() {
+
+        String threadId = Thread.currentThread().getName();
+        Channel channel = channels.get( threadId );
+        if( channel == null ) {
+            channel = new Channel();
+            channels.put( threadId, channel );
+        }
+        return channel;
+    }
+
 }

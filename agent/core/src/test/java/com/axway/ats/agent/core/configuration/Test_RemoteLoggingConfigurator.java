@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package com.axway.ats.agent.core.configuration;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -82,6 +83,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase("test");
         appender.setUser("test");
         appender.setPassword("test");
@@ -106,8 +108,8 @@ public class Test_RemoteLoggingConfigurator {
             //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
             remoteLoggingConfig.apply();
         } catch (Exception e) {
-            if (!e.getCause()
-                  .getMessage()
+            Throwable cause = e.getCause();
+            if (cause == null || !cause.getMessage()
                   .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.")) {
                 // an exception was caught, but its cause is not the expected one
                 // re-throw the exception
@@ -151,6 +153,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase("test");
         appender.setUser("test");
         appender.setPassword("test");
@@ -175,8 +178,8 @@ public class Test_RemoteLoggingConfigurator {
             //this statement will fail, due to missing PostgreSQL or MSSQL server at localhost
             remoteLoggingConfig.apply();
         } catch (Exception e) {
-            if (!e.getCause()
-                  .getMessage()
+            Throwable cause = e.getCause();
+            if ( cause == null || !cause.getMessage()
                   .contains("Neither MSSQL, nor PostgreSQL server at 'test:1433' has database with name 'test'.")) {
                 // an exception was caught, but its cause is not the expected one
                 // re-throw the exception

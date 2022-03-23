@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,11 @@ package com.axway.ats.agent.core.context;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+/**
+ * A basic context.
+ *
+ * It supports manipulating a shared map of attributes.
+ */
 abstract class Context {
 
     private Map<String, Object> attribs = new ConcurrentHashMap<String, Object>();

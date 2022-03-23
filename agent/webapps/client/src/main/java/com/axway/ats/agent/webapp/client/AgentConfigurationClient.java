@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import com.axway.ats.agent.webapp.client.executors.RemoteExecutor;
 import com.axway.ats.agent.webapp.client.listeners.TestcaseStateListener;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.core.system.LocalSystemOperations;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.LogLevel;
 import com.axway.ats.log.model.CheckpointLogLevel;
 
@@ -70,9 +71,8 @@ public final class AgentConfigurationClient extends ActionClient {
     public static final String AGENT_SETTINGS_MONITOR_POLL_INTERVAL = AgentConfigurator.MONITOR_POLL_INTERVAL;
 
     /**
-     * @param atsAgent
-     *            the ATS agent to work with - if you pass
-     *            pass LOCAL_JVM, the action execution will be performed in the
+     * @param atsAgent the ATS agent to work with;<br>
+     *                 If you pass LOCAL_JVM, the action execution will be performed in the
      *            current JVM without routing through the web service
      */
     @PublicAtsApi
@@ -290,7 +290,7 @@ public final class AgentConfigurationClient extends ActionClient {
     @PublicAtsApi
     public void setUseNewCallerIdOnEachRun() throws AgentException {
 
-        AgentServicePool.useNewUniqueId();
+        ExecutorUtils.setReuseUserRandomToken(true);
     }
 
     /**

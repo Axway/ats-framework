@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,8 +173,9 @@ public class ClasspathUtils {
                 }
             }
             if ("log4j".equalsIgnoreCase(loadedJarEntry.getKey()) && loadedJarEntry.getValue().size() > 1) {
-                String errorMsg = "Log4j library is supposed to be present only in lib_common subfolder. "
-                                  + "Otherwise it should cause no logging into the agent log file. Currently Log4j is found at: "
+                String errorMsg = "For standalone agent, log4j library is supposed to be present only in Agent's "
+                                  + "'container' sub-folder. Otherwise it should cause no logging into the agent "
+                                  + "log file. Currently Log4j is found at: "
                                   + loadedJarEntry.getValue();
                 log.warn(errorMsg);
             }

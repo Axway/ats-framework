@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,10 @@ import javax.xml.ws.BindingProvider;
 import javax.xml.ws.Service;
 import javax.xml.ws.handler.MessageContext;
 
-import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.webapp.agentservice.AgentWsDefinitions;
 import com.axway.ats.agent.webapp.client.configuration.AgentConfigurationLandscape;
-import com.axway.ats.core.utils.BackwardCompatibility;
+import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.core.utils.SslUtils;
 import com.sun.xml.ws.client.BindingProviderProperties;
 
@@ -39,17 +38,8 @@ public class AgentServicePool {
     //singleton instance
     private static AgentServicePool       instance;
 
-    //hashmap of all service ports
+    // map of all service ports
     private HashMap<String, AgentService> servicePorts;
-
-    // A universe wide ;) unique ID used for maintaining session between Agent and its caller.
-    // We use one instance per Test Executor JVM.
-    // It is used by the Agent to recognize the caller. 
-    @BackwardCompatibility
-    private String                        uniqueId;
-
-    @BackwardCompatibility
-    private static boolean                useNewUuId = false;
 
     private AgentServicePool() {
 
@@ -71,17 +61,47 @@ public class AgentServicePool {
         return instance;
     }
 
-    public static void useNewUniqueId() {
+    /**
+     * Returns client which is concerned only about Agent address
+     * without worry about the caller thread.
+     *
+     * Used when simply running some sort of action on the Agent side.
+     *
+     * @param agentHost
+     * @param testcaseSessionId
+     * @return
+     * @throws AgentException
+     */
+    public AgentService getClientForHostAndTestcase( String agentHost,
+                                                     String testcaseSessionId ) throws AgentException {
 
-        useNewUuId = true;
+        // It is assumed that the ATS Agent address here comes with IP and PORT
+        AgentService servicePort = servicePorts.get( testcaseSessionId );
+        if( servicePort == null ) {
+            servicePort = createServicePort( agentHost );
+            servicePorts.put( testcaseSessionId, servicePort );
+        }
+
+        return servicePort;
     }
 
+   /*
     public static void useCachedUniqueId() {
 
         useNewUuId = false;
     }
+    */
 
-    public AgentService getClient( String atsAgent ) throws AgentException {
+    /**
+     * Returns client which is concerned about Agent address and the caller thread.
+     *
+     * Used when controlling the logging on the Agent side.
+     *
+     * @param atsAgent
+     * @return
+     * @throws AgentException
+     */
+    public AgentService getClientForHost( String atsAgent ) throws AgentException {
 
         // we assume the ATS Agent address here comes with IP and PORT
 
@@ -126,13 +146,16 @@ public class AgentServicePool {
             // setting timeouts
             ctxt.put(BindingProviderProperties.CONNECT_TIMEOUT, 10000); // timeout in milliseconds
 
-            uniqueId = ExecutorUtils.getUUID(useNewUuId);
-
-            // add header with unique session ID
-            Map<String, List<String>> requestHeaders = new HashMap<>();
-            requestHeaders.put(ApplicationContext.ATS_UID_SESSION_TOKEN,
-                               Arrays.asList(uniqueId));
-            ctxt.put(MessageContext.HTTP_REQUEST_HEADERS, requestHeaders);
+            // add headers to allow the Agent distinguish this call among calls from:
+            //  - different Executors
+            //  - different threads from same Executor(when have parallel tests)
+            Map<String, List<String>> headers = new HashMap<>();
+            // this header tells the exact Executor
+            headers.put(com.axway.ats.core.utils.ExecutorUtils.ATS_RANDOM_TOKEN,
+                        Arrays.asList(com.axway.ats.core.utils.ExecutorUtils.getUserRandomToken() ) );
+            // this header tells the exact thread
+            headers.put( com.axway.ats.core.utils.ExecutorUtils.ATS_THREAD_ID, Arrays.asList(Thread.currentThread().getName() ) );
+            ctxt.put( MessageContext.HTTP_REQUEST_HEADERS, headers );
 
             return agentServicePort;
         } catch (Exception e) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -147,7 +147,7 @@ public class AgentConfigurationLandscape {
     }
 
     /**
-     * @return the log level used for our DB appender
+     * @return the chunk size (max set of messages or checkpoints) used for DB logging in batch mode
      */
     public int getChunkSize() {
 
