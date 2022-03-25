@@ -70,6 +70,12 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private static final String           MSG__TEST_SKIPPED_UNRECOGNIZED_REASON = "[TestNG]: TEST SKIPPED due to unrecognized failure";
     private static final String           JAVA_FILE_EXTENSION                   = ".java";
 
+    /** In parallel tests we do not know the test name in the before method
+     * and all the tests are inserted in the database with the same name( the before method name )
+     * So it should be added unique index after the before method name in order to distinguish the different test cases
+     */
+    private static Integer BEFORE_METHOD_INDEX = 0;
+
     private String                        projectSourcesFolder;
     // TODO inspp
     private static boolean                testDescAvailable                     = false;
@@ -356,7 +362,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     }
 
-    private void startTestcase(Channel channel, ITestResult testResult ) {
+    private void startTestcase(Channel channel, ITestResult testResult, boolean isBeforeMethod ) {
 
         Class<?> testClass = testResult.getTestClass().getRealClass();
 
@@ -371,6 +377,16 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         channel.currentTestcaseName = testResult.getMethod().toString();
         //clear the last saved testcase result, since a new testcase is about to start
         channel.lastTestcaseResult = -1;
+
+        // start test case
+        if (isBeforeMethod) {
+            // in parallel tests we do not know the test name in the before method
+            // and all the tests are inserted in the database with the same name( the before method name )
+            // we have to add unique index after the before method name, so we can distinguish the different test cases
+            synchronized (BEFORE_METHOD_INDEX) {
+                testName = testName + "_" + BEFORE_METHOD_INDEX++;
+            }
+        }
 
         // start test case
         logger.startTestcase(suiteFullName, suiteSimpleName, testName, testInputArguments, testDescription);
@@ -613,7 +629,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception occured during parsing for javadoc", e);
+            logger.error("Exception occurred during parsing for javadoc", e);
         }
         return null;
     }
@@ -671,7 +687,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         //Check if the test was successfully started, if not - make it started and then end it with failure
         String testName = testResult.getMethod().toString();
         if (!testName.equals(channel.currentTestcaseName)) {
-            startTestcase(channel, testResult);
+            startTestcase(channel, testResult, false);
         }
 
         sendTestEndEventToAgents();
@@ -700,7 +716,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             //Check if the test was successfully started, if not - make it started and then end it with failure
             String testName = testResult.getMethod().toString();
             if (!testName.equals(channel.currentTestcaseName)) {
-                startTestcase(channel, testResult);
+                startTestcase(channel, testResult, false);
             }
 
             sendTestEndEventToAgents();
@@ -884,7 +900,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
     private void handleBeforeMethod( IInvokedMethod method, ITestResult testResult, Boolean afterInvocation,
                                      Channel channel) {
-        if (!afterInvocation) {
+        if (!afterInvocation) { // start BeforeMethod
             if (channel.currentSuiteName == null) {
 
                 // start suite
@@ -901,8 +917,8 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
             if (channel.currentTestcaseName == null) {
 
                 // start testcase
-                startTestcase(channel, testResult);
-            }
+                startTestcase(channel, testResult, true);
+            } // else - test case already started. Probably from another BeforeMethod. Optionally assert for different test case name
 
             logCondition(method, testResult, MSG__TEST_START);
         } else {
@@ -1047,7 +1063,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
     private void handleTestMethod( IInvokedMethod method, ITestResult testResult, ITestContext context,
                                    Boolean afterInvocation, Channel channel) {
 
-        if (!afterInvocation) { // before
+        if (!afterInvocation) { // before start of test method
             // if this is a Test from a new suite
             if (channel.currentSuiteName == null) {
                 // start suite
@@ -1064,7 +1080,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
 
             if (channel.currentTestcaseName == null) {
                 // start testcase
-                startTestcase(channel, testResult);
+                startTestcase(channel, testResult, false);
             } else {
                 // re-run, update testcase
                 updateTestcase(channel, testResult);
