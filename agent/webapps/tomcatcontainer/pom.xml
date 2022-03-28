@@ -176,10 +176,11 @@
             <groupId>org.glassfish.metro</groupId>
             <artifactId>webservices-rt</artifactId>
         </dependency>
-        <dependency> <!-- Exclude it. Relying that this is configured on server and not on app.
-				level -->
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+        <dependency> <!-- Exclude it. Relying that this is configured on server and not on app. level -->
+            <!--<groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>-->
+            <groupId>ch.qos.reload4j</groupId>
+            <artifactId>reload4j</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -198,6 +199,10 @@
                 <exclusion> <!-- older JSch version -->
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
+                </exclusion>
+                <exclusion> <!-- use alternative: reload4j  -->
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

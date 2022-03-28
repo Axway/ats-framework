@@ -88,10 +88,10 @@
         </dependency>
 
         <!-- external dependencies -->
-        <dependency>
+        <!-- <dependency> use from ats-common
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>

@@ -46,10 +46,10 @@
             <artifactId>ats-agent-webapp-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency> use from ats-common
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-        </dependency>
+        </dependency> -->
 
         <!-- <dependency> <groupId>org.apache</groupId> <artifactId>xercesImpl</artifactId>
             </dependency> -->
