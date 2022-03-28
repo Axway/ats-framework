@@ -405,7 +405,7 @@ public class DbConnSQLServer extends DbConnection {
     }
 
     /**
-     * Get latest JDBC connection settings.
+     * Get the latest JDBC connection settings.
      * Alternative for the logdbdriver property is to specify all three system properties:
      *
      * <p>The alternative is to specify manually all three needed properties:</p>

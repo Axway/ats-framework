@@ -23,6 +23,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import com.axway.ats.common.dbaccess.DbKeys;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.dbaccess.model.DatabaseCell;
@@ -30,7 +31,6 @@ import com.axway.ats.action.dbaccess.model.DatabaseRow;
 import com.axway.ats.action.exceptions.DatabaseOperationsException;
 import com.axway.ats.common.PublicAtsApi;
 import com.axway.ats.common.dbaccess.DbQuery;
-import com.axway.ats.common.dbaccess.OracleKeys;
 import com.axway.ats.core.dbaccess.DatabaseProviderFactory;
 import com.axway.ats.core.dbaccess.DbProvider;
 import com.axway.ats.core.dbaccess.DbRecordValue;
@@ -89,8 +89,8 @@ public class DatabaseOperations {
 
         String dbPass = testBox.getDbPass();
 
-        if (customProperties != null && customProperties.containsKey(OracleKeys.USE_ADMIN_CREDENTIALS)
-            && "true".equals(customProperties.get(OracleKeys.USE_ADMIN_CREDENTIALS))) {
+        if (customProperties != null && customProperties.containsKey(DbKeys.USE_ADMIN_CREDENTIALS)
+            && "true".equals(customProperties.get(DbKeys.USE_ADMIN_CREDENTIALS))) {
             dbUser = testBox.getAdminUser();
             dbPass = testBox.getAdminPass();
         }
@@ -177,7 +177,7 @@ public class DatabaseOperations {
      * <em>Note</em> that client may need to inspect returned type of each value and
      * optionally convert it to get value in specific format.
      *
-     * @param sqlQuery the SQL SELECT query to run. Client is resposible for any
+     * @param sqlQuery the SQL SELECT query to run. Client is responsible for any
      *      possible escaping needed so this is not security-safe method
      * @return the found database data
      */
@@ -488,8 +488,8 @@ public class DatabaseOperations {
     }
 
     /**
-     * Returns the JDBC meta data about this database,
-     * for example if want to get the list of tables into some database.</p>
+     * Returns the JDBC meta data about this database.
+     * It is needed for example if you want to get the list of all the tables in RDBMS vendor neutral manner.</p>
      * <b>Note:</b> The connection is not closed internally as it must remain open while reading the metadata.
      * The user must call the {@link #disconnect() disconnect} method when done.
      *

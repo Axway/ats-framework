@@ -67,11 +67,8 @@ public interface DbProvider {
     /**
      * Inserts a row in the given table.
      *
-     * @param tableName
-     * @param colums
-     * @param values This param must look like this: "'string_value', int_value, .."
-     * @param config
-     * @param log the log object
+     * @param tableName DB table name
+     * @param columns map of column:value pairs
      *
      * @return The inserted rows, 0 or 1
      */
@@ -88,7 +85,7 @@ public interface DbProvider {
                                         String query ) throws DbException;
 
     /**
-     * @param query
+     * @param dbQuery DbQuery object needed for building statement
      * @return The result set in a list of hash maps
      * @throws SQLException
      */
