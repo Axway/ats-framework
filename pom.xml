@@ -30,8 +30,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces 
-            Java 8 class level artifacts -->
+        <java.version>1.8</java.version>  <!-- min JDK to use -->
         <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -40,8 +39,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
-        <!-- Travis CI plugin versions -->
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
         <org.apache.maven.plugins.maven.source.plugin.version>3.2.1
         </org.apache.maven.plugins.maven.source.plugin.version>
         <org.apache.maven.plugins.maven.javadoc.plugin.version>3.2.0
@@ -81,7 +79,8 @@
             >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
         <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
-        <cglib.cglib.version>3.0</cglib.cglib.version>
+        <cglib.cglib.version>3.0</cglib.cglib.version> <!-- EasyMock dependency. Does not work with Java 17+.
+            https://github.com/easymock/easymock/issues/274 -->
         <org.javassist.version>3.20.0-GA</org.javassist.version>
         <!-- TestNG version used in TestHarness -->
         <testng.version>6.10</testng.version>
