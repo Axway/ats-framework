@@ -32,8 +32,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 
-        <java.version>1.8</java.version>  <!-- min JDK to use. Currently forced to Java 8 because Selenium produces
-			Java 8 class level artifacts -->
+        <java.version>1.8</java.version>  <!-- min JRE to use -->
         <java.classlevel.version>1.8</java.classlevel.version> <!-- Output classpath compliance level -->
         <maven.min.version>3.2.5</maven.min.version>
         <maven.build.timestamp.format>yyyy-MM-dd HH:mm:ss</maven.build.timestamp.format>
@@ -42,7 +41,7 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
         <!-- Travis CI plugin versions -->
         <org.apache.maven.plugins.maven.source.plugin.version>3.2.1
         </org.apache.maven.plugins.maven.source.plugin.version>
@@ -57,8 +56,8 @@
         <gpg.skip>true</gpg.skip> <!-- skip maven gpg execution. Enable via -Dgpg.skip=false -->
         <gpg.executable>gpg2</gpg.executable>
 
-        <log4j.version>1.2.17</log4j.version>
-        <slf4j.version>1.7.30</slf4j.version>
+        <log4j.version>1.2.19</log4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
         <!-- javamail: Used in CoreLibrary, Log and ActionLibrary -->
         <javax.mail.version>1.4.4</javax.mail.version>
         <!-- activation: Current: 1.1.1. Used in CoreLibrary and ActionLibrary -->
@@ -80,12 +79,11 @@
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-         <junit.version>4.13.2</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
-            Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
+        <junit.version>4.13.2</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
+             Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>2.0.9</org.powermock.powermock-easymock.version>
-        <org.easymock.version>4.3</org.easymock.version>
+        <org.easymock.version>4.3</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
         <cglib.cglib.version>3.2.12</cglib.cglib.version>
-
         <org.javassist.version>3.20.0-GA</org.javassist.version>
         <!-- TestNG version used in TestHarness -->
         <testng.version>6.10</testng.version>
@@ -188,9 +186,7 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <message>At least Java 8 is required for ATS framework
-                                        compilation. The limitations
-                                        come from third-party dependencies.
+                                    <message>At least Java 8 is required for ATS framework  compilation.
                                     </message>
                                     <version>${java.version}</version>
                                 </requireJavaVersion>
@@ -200,9 +196,34 @@
                             </rules>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <exclude>log4j:log4j</exclude> <!-- log4j 1.2 -->
+                                        <exclude>org.apache.logging.log4j:*</exclude> <!-- log4j 2.x -->
+                                        <exclude>org.slf4j:slf4j-log4j12</exclude>
+                                        <!--<exclude>org.slf4j:jcl-over-slf4j</exclude>
+                                        <exclude>org.slf4j:jul-to-slf4j</exclude>
+                                        <exclude>org.apache.logging.log4j:log4j-to-slf4j</exclude>
+                                        <exclude>org.slf4j:log4j-over-slf4j</exclude>
+                                        <exclude>ch.qos.logback:logback-core</exclude>-->
+                                        <!--<exclude>groupId:artifactId</exclude> -->
+                                        <!--<exclude>*:badArtifact</exclude> -->
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail> <!-- Fail build if such is found -->
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
-            <!-- Travis CI plugin serverId must be the same as in settings.xml -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-source-plugin</artifactId>
@@ -240,8 +261,8 @@
                     </execution>
                 </executions>
             </plugin>
-            <!-- Used when deploying new public release versions -->
-            <!--<plugin>
+            <!-- Used when deploying new public release versions
+            <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
                 <version>${org.sonatype.plugins.nexus.staging.maven.plugin.version}</version>
@@ -251,7 +272,9 @@
                     <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
-            </plugin>-->
+            </plugin>
+            -->
+            <!-- Used when deploying new release version -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -380,15 +403,18 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
-                <groupId>log4j</groupId>
+                <!--<groupId>log4j</groupId>
                 <artifactId>log4j</artifactId>
-                <!-- TODO: replace with <groupId>ch.qos.reload4j</groupId>
-                <artifactId>reload4j</artifactId> 1.2.19 -->
+                Reload4j - same API as Log4j 1.2.x with fixes -->
+                <groupId>ch.qos.reload4j</groupId>
+                <artifactId>reload4j</artifactId>
                 <version>${log4j.version}</version>
             </dependency>
             <dependency>
+                <!--<groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>-->
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-log4j12</artifactId> <!-- slf4j-reload4j:1.7.36  -->
+                <artifactId>slf4j-reload4j</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
@@ -417,7 +443,7 @@
                 <artifactId>ojdbc7</artifactId>
                 <version>${oracle.ojdbc.version}</version>
                 <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed. Resolved
-                    from maven.oracle.com password protected repository -->
+					from maven.oracle.com password protected repository -->
                 <exclusions>
                     <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
                         <groupId>com.oracle.jdbc</groupId>

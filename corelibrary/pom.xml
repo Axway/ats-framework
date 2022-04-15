@@ -65,10 +65,10 @@
             <artifactId>ats-configuration</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <dependency>
+        <!-- <dependency> Use single place logging dependency from ats-common
             <groupId>log4j</groupId>
             <artifactId>log4j</artifactId>
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
@@ -203,10 +203,13 @@
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
                 </exclusion>
+                <exclusion> <!-- Use reload4j for same API -->
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
-        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP
-				transfers -->
+        <dependency> <!-- Newer version of dependency needed for ExpectJ, Also needed for SFTP transfers -->
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>${com.jcraft.jsch.version}</version>

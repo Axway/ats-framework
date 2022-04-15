@@ -158,7 +158,8 @@
             <outputDirectory>/ats-agent/container</outputDirectory>
             <includes>
                 <include>org.eclipse.jetty*:jetty-*</include>
-                <include>log4j:log4j</include>
+                <!-- <include>log4j:log4j</include> old. Use alternative -->
+                <include>ch.qos.reload4j:reload4j</include>
                 <include>*:servlet-api</include>
             </includes>
             <scope>provided</scope>

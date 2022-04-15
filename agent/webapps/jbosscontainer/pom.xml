@@ -178,8 +178,10 @@
             <scope>provided</scope> <!-- Do not include it in WAR as JBoss should have running WS environment -->
         </dependency>
         <dependency> <!-- Exclude. Relying that this is configured on server and not on app. level -->
-            <groupId>log4j</groupId>
-            <artifactId>log4j</artifactId>
+            <!--<groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>-->
+            <groupId>ch.qos.reload4j</groupId>
+            <artifactId>reload4j</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency> <!-- Needed for jaxws-rt -->
@@ -197,6 +199,10 @@
                 <exclusion> <!-- older JSch version -->
                     <groupId>com.jcraft</groupId>
                     <artifactId>jsch</artifactId>
+                </exclusion>
+                <exclusion> <!-- Alternative is used: reload4j  -->
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

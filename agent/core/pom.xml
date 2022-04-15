@@ -63,6 +63,12 @@
         <dependency>
             <groupId>org.fusesource</groupId>
             <artifactId>sigar</artifactId>
+            <exclusions>
+                <exclusion> <!-- use reload4j -->
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.github.oshi</groupId>
