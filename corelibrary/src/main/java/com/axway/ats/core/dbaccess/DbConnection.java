@@ -21,7 +21,8 @@ import java.util.Map;
 import javax.sql.DataSource;
 
 /**
- * Base class for all database connections
+ * Base class for all database connections.
+ * Contains only properties needed for making actual DB connection.
  */
 public abstract class DbConnection {
 
@@ -62,7 +63,7 @@ public abstract class DbConnection {
     /**
      * Constructor
      * 
-     * @param dbType the database type
+     * @param dbType the database type.
      * @param host database host
      * @param port the database port
      * @param db database name

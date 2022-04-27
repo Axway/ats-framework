@@ -91,7 +91,7 @@
 
         <!-- Used in ActionLibrary -->
         <!-- BouncyCastle security provider. Used in ActionLibrary -->
-        <org.bouncycastle.version>1.57</org.bouncycastle.version>
+        <org.bouncycastle.version>1.69</org.bouncycastle.version>
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module
             only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
