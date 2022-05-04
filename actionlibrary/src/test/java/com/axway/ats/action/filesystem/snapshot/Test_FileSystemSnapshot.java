@@ -29,6 +29,7 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
 import com.axway.ats.action.ActionLibraryConfigurator;
@@ -39,9 +40,13 @@ import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.filesystem.LocalFileSystemOperations;
 import com.axway.ats.core.system.LocalSystemOperations;
 import com.axway.ats.core.utils.IoUtils;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 
 public class Test_FileSystemSnapshot extends BaseTest {
 
+    private static final Logger LOG = Logger.getLogger(Test_FileSystemSnapshot.class);
     private static final String       FILES_ROOT;
     private static String             TMP_FILES_ROOT;
 
@@ -73,9 +78,9 @@ public class Test_FileSystemSnapshot extends BaseTest {
         sleep(50);
 
         /*
-         * As some of the tests are dealing with the last modify time, we must maintain these times accurate.
+         * As some tests are dealing with the last modify time, we must maintain these times accurate.
          *
-         * Otherwise when the project is placed on a new place, these times get changed and this breaks
+         * Otherwise, when the project is placed on a new place, these times get changed and this breaks
          * some tests
          */
         fixFileModificationTimes();
@@ -132,6 +137,15 @@ public class Test_FileSystemSnapshot extends BaseTest {
             }
         }
     }
+
+    @Rule
+    public TestRule watcher = new TestWatcher() {
+        protected void starting(Description description) {
+            // Without this or with debug severity a JVM crash is caused in some cases.
+            // Observed on Windows VM with Java 11.0.x. Heap size seems to not have effect on the crash
+            LOG.info("   \n\n   ---> Starting test: " + description.getMethodName());
+        }
+    };
 
     @Before
     public void setUp() {

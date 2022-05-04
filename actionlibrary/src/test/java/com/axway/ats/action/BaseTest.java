@@ -17,6 +17,8 @@ package com.axway.ats.action;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 public class BaseTest {
@@ -26,6 +28,7 @@ public class BaseTest {
 
         //init log4j
         BasicConfigurator.configure(appender);
+        //Logger.getRootLogger().setLevel(Level.INFO); Optionally limit too verbose output as default severity is DEBUG
     }
 
 }
