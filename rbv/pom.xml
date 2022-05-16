@@ -106,14 +106,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>ojdbc7</artifactId>
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
             <optional>true</optional>
             <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
                 <exclusion>
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>xmlparserv2</artifactId>
+                    <groupId>>com.oracle.database.xml</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

@@ -77,7 +77,7 @@
         <com.microsoft.sqlserver.version>7.0.0.jre8</com.microsoft.sqlserver.version>
         <!-- PostgreSQL driver dependency version. Min requirement: Java 8 -->
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
-        <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
+        <oracle.ojdbc.version>12.2.0.1</oracle.ojdbc.version>
 
         <junit.version>4.13.2</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
              Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
@@ -96,7 +96,7 @@
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module
             only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
-        <org.apache.commons.commons-lang3.version>3.1</org.apache.commons.commons-lang3.version>
+        <org.apache.commons.commons-lang3.version>3.12.0</org.apache.commons.commons-lang3.version>
         <org.glassfish.jersey.jersey-client.version>2.25.1</org.glassfish.jersey.jersey-client.version>
         <org.glassfish.jersey.jersey-server.version>2.25.1</org.glassfish.jersey.jersey-server.version>
         <!-- this dependency is required after jersey 2.26 -->
@@ -112,7 +112,7 @@
         <net.java.dev.jna.version>5.6.0
         </net.java.dev.jna.version>
         <commons-compress.version>1.21</commons-compress.version>
-        <ats-expectj.version>2.0.8</ats-expectj.version>
+        <ats-expectj.version>2.0.10</ats-expectj.version>
         <!-- Oshi (Monitoring library) version -->
         <oshi.version>5.3.0</oshi.version>
     </properties>
@@ -439,11 +439,10 @@
             </dependency>
 
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
-                <artifactId>ojdbc7</artifactId>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
                 <version>${oracle.ojdbc.version}</version>
-                <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed. Resolved
-					from maven.oracle.com password protected repository -->
+                <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed -->
                 <exclusions>
                     <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
                         <groupId>com.oracle.jdbc</groupId>

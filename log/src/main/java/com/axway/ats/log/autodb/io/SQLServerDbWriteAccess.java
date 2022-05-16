@@ -90,10 +90,14 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
         }
     }
 
+    /**
+     * Update max number of cached events (chunk size) only if positive number
+     * @param maxNumberOfCachedEvents
+     */
     @Override
     public void setMaxNumberOfCachedEvents( int maxNumberOfCachedEvents ) {
 
-        if (dbEventsCache != null) {
+        if (dbEventsCache != null && maxNumberOfCachedEvents >= 0) {
             dbEventsCache.setMaxNumberOfCachedEvents(maxNumberOfCachedEvents);
         }
 
@@ -102,19 +106,13 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     /**
      * Insert a new run in the database
      *
-     * @param runName
-     *            name of the run
-     * @param osName
-     *            name of the OS
-     * @param productName
-     *            name of the product
-     * @param versionName
-     *            version of the product
-     * @param buildName
-     *            build version
+     * @param runName name of the run
+     * @param osName  name of the OS
+     * @param productName name of the product
+     * @param versionName version of the product
+     * @param buildName   build version
      * @param timestamp
-     * @param hostName
-     *            name/IP of the machine , from which the run was started
+     * @param hostName name/IP of the machine, from which the run was started
      * @return
      */
     public int startRun(

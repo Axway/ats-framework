@@ -32,6 +32,7 @@ import java.util.Map;
 import com.axway.ats.core.utils.ExecutorUtils;
 import com.axway.ats.log.autodb.exceptions.*;
 import com.axway.ats.log.autodb.model.*;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -197,7 +198,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                         props);
 
                 this.dbAccess = new SQLServerDbWriteAccessMSSQL((DbConnSQLServer) dbConnection, isBatchMode);
-                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
+                this.dbAccess.setMaxNumberOfCachedEvents(NumberUtils.toInt(appenderConfig.getChunkSize(), -1));
             } else if (DbKeys.SQL_SERVER_DRIVER_JTDS.equalsIgnoreCase(appenderConfig.getDriver())) {
 
                 Map<String, Object> props = new HashMap<>();
@@ -210,7 +211,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                         props);
 
                 this.dbAccess = new SQLServerDbWriteAccess((DbConnSQLServer) dbConnection, isBatchMode);
-                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
+                this.dbAccess.setMaxNumberOfCachedEvents(NumberUtils.toInt(appenderConfig.getChunkSize(), -1));
             } else {
                 throw new IllegalArgumentException("Appender configuration specified SQL Server driver to be '"
                                                    + appenderConfig.getDriver()
@@ -232,7 +233,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
                 //create the db access layer
                 this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
-                this.dbAccess.setMaxNumberOfCachedEvents(Integer.parseInt(appenderConfig.getChunkSize()));
+                this.dbAccess.setMaxNumberOfCachedEvents(NumberUtils.toInt(appenderConfig.getChunkSize(), -1));
             } else {
                 String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
                                 + appenderConfig.getPort() +

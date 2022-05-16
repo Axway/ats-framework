@@ -237,15 +237,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>ojdbc7</artifactId>
-            <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed.
-                    Resolved from maven.oracle.com password protected repository -->
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed. -->
             <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
                 <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>xmlparserv2</artifactId>
+                    <groupId>>com.oracle.database.xml</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
