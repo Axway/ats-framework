@@ -339,7 +339,7 @@ public class Test_QueueCanceling extends BaseTest {
 
     /**
      * Cancel a ramp-up pattern while:
-     *  - 1th thread is running its first iteration
+     *  - 1st thread is running its first iteration
      *  - 2nd thread is waiting to start its first iteration
      */
     @Test

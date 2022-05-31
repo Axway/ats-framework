@@ -132,10 +132,14 @@ public class DbChannel {
 
         // create new event processor
         try {
-            eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener,
-                                                          appenderConfig.isBatchMode() );
-        } catch( DatabaseAccessException e ) {
-            throw new RuntimeException( "Unable to create DB event processor", e );
+            /*if (!ActiveDbAppender.isAttached) {
+                eventProcessor = new DbEventRequestProcessor( );
+            } else {
+                eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener, appenderConfig.isBatchMode() );
+            }*/
+            eventProcessor = new DbEventRequestProcessor( appenderConfig, layout, listener, appenderConfig.isBatchMode() );
+        } catch (DatabaseAccessException e) {
+            throw new RuntimeException("Unable to create DB event processor", e);
         }
 
         // start the logging thread

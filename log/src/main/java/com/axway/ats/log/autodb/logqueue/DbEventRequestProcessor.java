@@ -165,11 +165,22 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
     private int                           lastEndedSuiteId               = -1;
 
 
-    public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
-                                    boolean isBatchMode ) throws DatabaseAccessException {
+    /**
+     * Do not use this constructor.
+     * It is implemented only to be used, when a dummy db event request processor is needed to be created.
+     * Currently, the only case that this is needed is when ActiveDbAppender config info is not found in log4j.xml
+     */
+    public DbEventRequestProcessor() {
 
-        this(appenderConfig, layout, null, isBatchMode);
+        if( _state == null ) {
+            _state = new EventProcessorState();
+        }
     }
+
+    /*public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
+                                    boolean isBatchMode ) throws DatabaseAccessException {
+        this(appenderConfig, layout, null, isBatchMode);
+    }*/
 
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     EventRequestProcessorListener listener,
@@ -239,8 +250,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                 + appenderConfig.getPort() +
                                 "' has database with name '" + appenderConfig.getDatabase()
                                 + "'. Exception for MSSQL is : \n\t" + mssqlException
-                                + "\n\nException for PostgreSQL is: \n\t"
-                                + pgsqlException;
+                                + "\n\nException for PostgreSQL is: \n\t" + pgsqlException;
                 throw new DatabaseAccessException(errMsg);
             }
 
