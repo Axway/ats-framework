@@ -349,7 +349,7 @@
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
-                    <version>3.0.0</version>
+                    <version>3.3.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -469,8 +469,7 @@
                 <artifactId>easymock</artifactId>
                 <version>${org.easymock.version}</version>
                 <scope>test</scope>
-                <exclusions> <!-- TODO: seems to not be included in 4.1+, so check if this exclusion is
-						still needed -->
+                <exclusions> <!-- TODO: seems to not be included in 4.1+, so check if this exclusion is still needed -->
                     <exclusion>
                         <artifactId>cglib</artifactId>
                         <groupId>cglib</groupId>
@@ -567,6 +566,37 @@
                     <skipTests>true</skipTests> -->
                 <maven.test.skip>true</maven.test.skip>
             </properties>
+        </profile>
+        <profile>
+            <id>selNoTest</id>
+            <properties>
+                <maven.javadoc.skip>true</maven.javadoc.skip>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>build-helper-maven-plugin</artifactId>
+                        <version>3.3.0</version>
+                        <executions>
+                            <execution>
+                                <id>regex-property</id>
+                                <goals>
+                                    <goal>regex-property</goal>
+                                </goals>
+                                <configuration>
+                                    <!--<name>maven.test.skip</name>-->
+                                    <name>skipTests</name>
+                                    <value>${project.artifactId}</value>
+                                    <regex>(ats-rbv)|(ats-environmentcleanup)</regex>
+                                    <replacement>true</replacement>
+                                    <failIfNoMatch>false</failIfNoMatch>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
