@@ -55,7 +55,7 @@ public class MockDbProvider implements DbProvider {
 
     public DbConnection getDbConnection() {
 
-        return new DbConnMySQL("localhost", "db", "user", "pass");
+        return new DbConnMySQL("localhost", "non_existing_db", "user", "pass");
     }
 
     public DbRecordValuesList[] select(

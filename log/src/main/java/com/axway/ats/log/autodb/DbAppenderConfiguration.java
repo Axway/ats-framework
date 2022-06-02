@@ -37,7 +37,7 @@ public class DbAppenderConfiguration implements Serializable {
     private static final long serialVersionUID                      = 4786587768915142179L;
     //connection parameters
     private String            host;
-    private String             port;
+    private String            port;
     private String            database;
     private String            user;
     private String            password;
@@ -75,7 +75,7 @@ public class DbAppenderConfiguration implements Serializable {
 
     public void setPort( String port ) {
 
-        this.port = port;
+         this.port = port;
 
     }
 
@@ -122,7 +122,7 @@ public class DbAppenderConfiguration implements Serializable {
      * Read the "events" parameter value from log4j.xml.
      * This value will be used for capacity of our logging queue.
      * 
-     * Note: the new value cannot be bellow the default capacity.
+     * Note: the new value cannot be below the default capacity.
      * @return logging queue capacity
      */
     public int getMaxNumberLogEvents() {
@@ -219,7 +219,8 @@ public class DbAppenderConfiguration implements Serializable {
         }
 
         if (port == null) {
-            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, section for ATS ActiveDbAppender. "
+            new AtsConsoleLogger(getClass()).warn("Database port (\"port\" property) is not specified in log4j.xml file, "
+                                                  + "section for ATS ActiveDbAppender. "
                                                   + "Assuming default value for Microsoft SQL Server databases ("
                                                   + DbConnSQLServer.DEFAULT_PORT + ")");
             this.port = DbConnSQLServer.DEFAULT_PORT + "";

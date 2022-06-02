@@ -112,7 +112,7 @@
             <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
                 <exclusion>
-                    <groupId>>com.oracle.database.xml</groupId>
+                    <groupId>com.oracle.database.xml</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

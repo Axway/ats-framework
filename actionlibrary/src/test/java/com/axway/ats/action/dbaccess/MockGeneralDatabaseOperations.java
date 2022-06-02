@@ -53,7 +53,7 @@ class MockDbProvider implements DbProvider {
     @Override
     public DbConnection getDbConnection() {
 
-        return new DbConnMySQL("localhost", "db", "user", "pass");
+        return new DbConnMySQL("localhost", "non_existing_db", "user", "pass");
     }
 
     @Override

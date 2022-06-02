@@ -132,7 +132,7 @@
             <optional>true</optional> <!-- only needed for connections to Oracle DB -->
             <exclusions>
                 <exclusion>
-                    <groupId>>com.oracle.database.xml</groupId>
+                    <groupId>com.oracle.database.xml</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>

@@ -243,7 +243,7 @@
             <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
                 <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-                    <groupId>>com.oracle.database.xml</groupId>
+                    <groupId>com.oracle.database.xml</groupId>
                     <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
