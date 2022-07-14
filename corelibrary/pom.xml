@@ -15,13 +15,14 @@
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <!-- Apache FTP and FTPS Library. TODO: update to latest v3.7 -->
         <org.apache.commons.net.version>3.7.1</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590,
             Error example: javax.net.ssl.SSLException: closing inbound before receiving
             peer's close_notify -->
         <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
-        <mariadb-connector-java.version>2.7.4</mariadb-connector-java.version>
+        <!-- MariaDB: Use older version, because using 2.7.4 gives connection timeout.
+             Case:  1. DB connection is made; 2. DB server is restarted; 3. Attempt for new connection - no connection within specified timeout -->
+        <mariadb-connector-java.version>2.7.2</mariadb-connector-java.version>
         <!-- jTDS dependency is defined in parent pom.xml -->
         <com.datastax.cassandra.driver.version>3.2.0</com.datastax.cassandra.driver.version>
         <!-- Note that there is a possible issue to be monitored: Sometimes winp
