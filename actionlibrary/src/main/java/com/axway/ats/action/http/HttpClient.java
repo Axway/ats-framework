@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -428,6 +428,24 @@ public class HttpClient {
 
             invalidateInternalClient();
         }
+    }
+
+    /**
+     * Set size of sending/removing socket buffers.
+     *
+     * @param bufferSize set desired buffer size in bytes. 0 means to be used underlying defaults.
+     */
+    @PublicAtsApi
+    public void setBufferSize( int bufferSize) {
+        if (bufferSize < 0 ) {
+            throw IllegalArgumentException("Negative value for socket buffer size is not accepted");
+        }
+
+        if (socketBufferSize != bufferSize) {
+            this.socketBufferSize = bufferSize;
+            invalidateInternalClient();
+        }
+
     }
 
     /**
