@@ -438,7 +438,7 @@ public class HttpClient {
     @PublicAtsApi
     public void setBufferSize( int bufferSize) {
         if (bufferSize < 0 ) {
-            throw IllegalArgumentException("Negative value for socket buffer size is not accepted");
+            throw new IllegalArgumentException("Negative value for socket buffer size is not accepted");
         }
 
         if (socketBufferSize != bufferSize) {
@@ -540,7 +540,7 @@ public class HttpClient {
     /**
      * Get the HTTP request headers specified by the user via
      * {@link #addRequestHeader(String, String) addRequestHeader} or
-     * {@link #setRequestHeaders(Map) setRequestHeaders}.
+     * {@link #setRequestHeaders(HttpHeader[]) setRequestHeaders}.
      *
      * @return The headers added by the user
      */
@@ -553,7 +553,7 @@ public class HttpClient {
     /**
      * Get the list of HTTP headers sent by the HTTPClient to the endpoint. This will differ to
      * what the user sets via the {@link #addRequestHeader(String, String) addRequestHeader}
-     * or {@link #setRequestHeaders(Map) setRequestHeaders}
+     * or {@link #setRequestHeaders(HttpHeader[]) setRequestHeaders}
      * methods as the HTTPClient
      * will automatically add headers, e.g. Content-Length. Note that the Authorization header
      * will not show up in the list of headers returned from this method even though it will
@@ -1314,7 +1314,7 @@ public class HttpClient {
     /**
      * Main execute method that sends request and receives response.
      *
-     * @param method The POST/PUT etc. method
+     * @param httpMethod The POST/PUT etc. method
      * @return The response
      * @throws HttpException
      */

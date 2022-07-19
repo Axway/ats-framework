@@ -28,6 +28,9 @@ public class BaseTest {
 
         //init log4j
         BasicConfigurator.configure(appender);
+        Logger.getLogger(com.axway.ats.action.filesystem.snapshot.Test_FileSystemSnapshot.class).setLevel(Level.INFO);
+        Logger.getLogger(com.axway.ats.action.objects.Test_MimePackage.class).setLevel(Level.INFO);
+        Logger.getLogger(com.axway.ats.action.objects.MimePackage.class).setLevel(Level.INFO);
         //Logger.getRootLogger().setLevel(Level.INFO); Optionally limit too verbose output as default severity is DEBUG
     }
 
