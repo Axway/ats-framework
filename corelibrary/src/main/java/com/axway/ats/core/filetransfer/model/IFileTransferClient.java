@@ -24,7 +24,7 @@ import com.axway.ats.common.filetransfer.FileTransferException;
 public interface IFileTransferClient {
 
     /**
-     * Set the {@link com.axway.automation.ats.common.constants.TransferMode} that this protocol should use
+     * Set the {@link com.axway.ats.common.filetransfer.TransferMode} that this protocol should use
      *
      * @param mode
      * @throws FileTransferException
@@ -192,7 +192,7 @@ public interface IFileTransferClient {
      * Method used to apply custom parameters for the specific client before connect.
      * If you develop custom client and do not support any custom parameter it
      * is advised just to extend {@link AbstractFileTransferClient}. It has empty implementation
-     * <p>Note: For implementations you should use the {@link #customProperties} Map</p>
+     * <p>Note: For implementations you should use a Map via {@link #addCustomProperty(String, Object)} Map</p>
      */
     public void applyCustomProperties() throws IllegalArgumentException;
 

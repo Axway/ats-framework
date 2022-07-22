@@ -70,20 +70,35 @@ public class Test_LocalFileSystemOperationsRealFiles extends BaseTest {
         }
     }
 
+    /** Check getting file's User ID */
     @Test
     public void getFileUidPositive() throws Exception {
 
-        if( realOsType.isUnix() ) {
-            String[] stats = getFileStats( file.getAbsolutePath(), true );
+        if (realOsType.isUnix()) {
+            String[] stats = getFileStats(file.getAbsolutePath(), true);
 
             LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
-            assertEquals( Long.parseLong( stats[2] ),
-                          localFileSystemOperations.getFileUID( file.getPath() ) );
+            assertEquals(Long.parseLong(stats[1]),
+                         localFileSystemOperations.getFileUID(file.getPath()));
         } else {
-            log.warn( "Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!" );
+            log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
         }
     }
 
+    /** Check getting file's group ID */
+    @Test
+    public void getFileGuidPositive() throws Exception {
+
+        if (realOsType.isUnix()) {
+            String[] stats = getFileStats(file.getAbsolutePath(), true);
+
+            LocalFileSystemOperations localFileSystemOperations = new LocalFileSystemOperations();
+            assertEquals(Long.parseLong(stats[2]),
+                         localFileSystemOperations.getFileGID(file.getPath()));
+        } else {
+            log.warn("Test 'getFileUidPositive' is unable to pass on Windows, so it will be skipped!");
+        }
+    }
     @Test
     public void setFileUidNegativeNoSuchFile() throws Exception {
 
