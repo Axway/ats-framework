@@ -45,16 +45,18 @@
                             <goal>run</goal>
                         </goals>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <echo>
-                         -
-                         ***
-                         WARNING: Functional tests for the examples are skipped by default.
-                         Most of these tests need proper environment (servers) so
-                         the fastest way is to run them in ATS Examples VM.
-                         ***
+             *
+             ***
+             WARNING: Functional tests for the examples are skipped by default.
+             Most of these tests need proper environment (servers) so
+             the fastest way is to run them in ATS Examples VM.
+             VM info could be checked from "Ready-for-use test project" page
+             (https://axway.github.io/ats-framework/Ready-for-use-test-project.html)
+             ***
                                 </echo>
-                            </tasks>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

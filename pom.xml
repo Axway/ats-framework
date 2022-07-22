@@ -41,11 +41,11 @@
         <maven-resources-plugin.version>3.1.0</maven-resources-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
         <maven-clean-plugin.version>3.1.0</maven-clean-plugin.version>
-        <maven-enforcer-plugin.version>3.0.0-M3</maven-enforcer-plugin.version>
+        <maven-enforcer-plugin.version>3.0.0</maven-enforcer-plugin.version>
         <!-- Travis CI plugin versions -->
         <org.apache.maven.plugins.maven.source.plugin.version>3.2.1
         </org.apache.maven.plugins.maven.source.plugin.version>
-        <org.apache.maven.plugins.maven.javadoc.plugin.version>3.1.1
+        <org.apache.maven.plugins.maven.javadoc.plugin.version>3.2.0
         </org.apache.maven.plugins.maven.javadoc.plugin.version>
         <org.sonatype.plugins.nexus.staging.maven.plugin.version>1.6.8
         </org.sonatype.plugins.nexus.staging.maven.plugin.version>
@@ -78,8 +78,8 @@
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
         <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
 
-        <junit.version>4.12</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock
-            >=3.3 Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
+        <junit.version>4.13.1</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
+			Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
         <org.powermock.powermock-easymock.version>2.0.4</org.powermock.powermock-easymock.version>
         <org.easymock.version>4.1</org.easymock.version> <!-- this is marked as "provided" in PowerMock 1.6.0 -->
         <cglib.cglib.version>3.0</cglib.cglib.version>
@@ -91,7 +91,7 @@
 
         <!-- Used in ActionLibrary -->
         <!-- BouncyCastle security provider. Used in ActionLibrary -->
-        <org.bouncycastle.version>1.57</org.bouncycastle.version>
+        <org.bouncycastle.version>1.69</org.bouncycastle.version>
         <!-- GNU Classpath inetlib. Current version: 1.1.2. Used the SMTP module only in ActionLibrary -->
         <gnu.classpath.ext.inetlib.version>1.1.1</gnu.classpath.ext.inetlib.version>
         <org.apache.commons.commons-lang3.version>3.1</org.apache.commons.commons-lang3.version>
@@ -100,22 +100,23 @@
         <!-- this dependency is required after jersey 2.26 -->
         <!-- <org.glassfish.jersey.inject.version>2.26</org.glassfish.jersey.inject.version> -->
         <javax.ws.rs-api.version>2.0.1</javax.ws.rs-api.version>
-        <com.jcraft.jsch.version>0.1.54</com.jcraft.jsch.version>
+        <com.jcraft.jsch.version>0.1.55</com.jcraft.jsch.version>
 
         <!-- Used in Action/Core libraries and agentapp all -->
         <org.dom4j.version>2.1.3</org.dom4j.version>
 
-        <net.java.dev.jna.version>5.5.0
+        <net.java.dev.jna.version>5.6.0
         </net.java.dev.jna.version> <!-- JNA is used directly in ats-core, comes from UI engine as Selenium-client dependency -->
-        <commons-compress.version>1.19</commons-compress.version>
+        <commons-compress.version>1.21</commons-compress.version>
         <ats-expectj.version>2.0.8</ats-expectj.version>
         <!-- Oshi (Monitoring library) version -->
-        <oshi.version>5.2.5</oshi.version>
+        <oshi.version>5.3.0</oshi.version>
     </properties>
 
     <build>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>${maven-compiler-plugin.version}</version>
                 <configuration>
@@ -138,14 +139,14 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                    <!--<argLine>-XX:-UseSplitVerifier</argLine>For jdk 7 (<=1.7.0-72 ) https://code.google.com/p/powermock/issues/detail?id=504 -->
                     <includes>
                         <include>**/Test*.java</include>
                     </includes>
                     <excludes>
                         <exclude>**/*$*</exclude>
                     </excludes>
-                    <!--<useModulePath>false</useModulePath>  For Java 11 do not use modular path even if module-info.java is found -->
+                    <!--<useModulePath>false</useModulePath> For Java 11 do not use modular
+                        path even if module-info.java is found -->
                 </configuration>
             </plugin>
             <plugin>
@@ -181,7 +182,8 @@
                         <configuration>
                             <rules>
                                 <requireJavaVersion>
-                                    <message>At least Java 8 is required for ATS framework compilation. The limitations
+                                    <message>At least Java 8 is required for ATS framework
+                                        compilation. The limitations
                                         come from third-party dependencies.
                                     </message>
                                     <version>${java.version}</version>
@@ -190,6 +192,32 @@
                                     <version>${maven.min.version}</version>
                                 </requireMavenVersion>
                             </rules>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>enforce-banned-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <excludes>
+                                        <!-- <exclude>log4j:log4j</exclude> log4j 1.2 -->
+                                        <exclude>org.apache.logging.log4j:*</exclude> <!-- log4j 2.x -->
+                                        <!--<exclude>org.slf4j:slf4j-log4j12</exclude>
+                                        <exclude>org.slf4j:jcl-over-slf4j</exclude>
+                                        <exclude>org.slf4j:jul-to-slf4j</exclude>
+                                        <exclude>org.apache.logging.log4j:log4j-to-slf4j</exclude>
+                                        <exclude>org.slf4j:log4j-over-slf4j</exclude>
+                                        <exclude>ch.qos.logback:logback-core</exclude>-->
+                                        <!--<exclude>groupId:artifactId</exclude> -->
+                                        <!--<exclude>*:badArtifact</exclude> -->
+                                    </excludes>
+                                </bannedDependencies>
+                            </rules>
+                            <fail>true</fail> <!-- Fail build if such is found -->
                         </configuration>
                     </execution>
                 </executions>
@@ -257,6 +285,7 @@
                 </executions>
             </plugin>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
                 <version>${maven.release.plugin.version}</version>
                 <dependencies>
@@ -275,7 +304,7 @@
                     <dependency>
                         <groupId>com.puppycrawl.tools</groupId>
                         <artifactId>checkstyle</artifactId>
-                        <version>8.29</version>
+                        <version>8.30</version>
                     </dependency>
                 </dependencies>
                 <executions>
@@ -330,7 +359,7 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
-                    <version>1.8</version>
+                    <version>3.0.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -519,7 +548,8 @@
                 without running tests and generating JavaDoc -->
             <properties>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
-                <!-- Uncomment this if you want to compile tests but not to run them <skipTests>true</skipTests> -->
+                <!-- Uncomment this if you want to compile tests but not to run them
+                <skipTests>true</skipTests> -->
                 <maven.test.skip>true</maven.test.skip>
             </properties>
         </profile>
