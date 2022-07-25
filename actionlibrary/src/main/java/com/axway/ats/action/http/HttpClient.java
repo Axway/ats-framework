@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -431,6 +431,23 @@ public class HttpClient {
     }
 
     /**
+     * Set size of sending/removing socket buffers.
+     *
+     * @param bufferSize set desired buffer size in bytes. 0 means to be used underlying defaults.
+     */
+    @PublicAtsApi
+    public void setBufferSize( int bufferSize) {
+        if (bufferSize < 0 ) {
+            throw new IllegalArgumentException("Negative value for socket buffer size is not accepted");
+        }
+
+        if (socketBufferSize != bufferSize) {
+            this.socketBufferSize = bufferSize;
+            invalidateInternalClient();
+        }
+    }
+
+    /**
      * If the URI is not fully specified in the constructor,
      * you can navigate to an internal resource.<br>
      * For example you can pass:
@@ -522,7 +539,7 @@ public class HttpClient {
     /**
      * Get the HTTP request headers specified by the user via
      * {@link #addRequestHeader(String, String) addRequestHeader} or
-     * {@link #setRequestHeaders(Map) setRequestHeaders}.
+     * {@link #setRequestHeaders(HttpHeader[])} .
      *
      * @return The headers added by the user
      */
@@ -535,7 +552,7 @@ public class HttpClient {
     /**
      * Get the list of HTTP headers sent by the HTTPClient to the endpoint. This will differ to
      * what the user sets via the {@link #addRequestHeader(String, String) addRequestHeader}
-     * or {@link #setRequestHeaders(Map) setRequestHeaders}
+     * or {@link #setRequestHeaders(HttpHeader[])}
      * methods as the HTTPClient
      * will automatically add headers, e.g. Content-Length. Note that the Authorization header
      * will not show up in the list of headers returned from this method even though it will
@@ -1295,7 +1312,7 @@ public class HttpClient {
     /**
      * Main execute method that sends request and receives response.
      *
-     * @param method The POST/PUT etc. method
+     * @param httpMethod The POST/PUT etc. method
      * @return The response
      * @throws HttpException
      */

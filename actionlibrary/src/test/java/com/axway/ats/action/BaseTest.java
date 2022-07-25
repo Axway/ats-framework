@@ -17,6 +17,8 @@ package com.axway.ats.action;
 
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 
 public class BaseTest {
@@ -26,5 +28,8 @@ public class BaseTest {
 
         //init log4j
         BasicConfigurator.configure(appender);
+        Logger.getLogger(com.axway.ats.action.filesystem.snapshot.Test_FileSystemSnapshot.class).setLevel(Level.INFO);
+        Logger.getLogger(com.axway.ats.action.objects.Test_MimePackage.class).setLevel(Level.INFO);
+        Logger.getLogger(com.axway.ats.action.objects.MimePackage.class).setLevel(Level.INFO);
     }
 }
