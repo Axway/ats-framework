@@ -34,21 +34,21 @@ public class SwingDriverInternal extends SwingDriver {
     /**
      *
      * @param mainClassOfTestedApplication the class containing the "main" method
-     * @param windowTitile the window title
+     * @param windowTitle the window title
      */
     public SwingDriverInternal( Class<?> mainClassOfTestedApplication,
-                                String windowTitile ) {
+                                String windowTitle ) {
 
-        super( mainClassOfTestedApplication, windowTitile );
+        super( mainClassOfTestedApplication, windowTitle );
     }
 
     /**
     *
-    * @param windowTitile the window title
+    * @param windowTitle the window title
     */
-    public SwingDriverInternal( String windowTitile ) {
+    public SwingDriverInternal( String windowTitle ) {
 
-        super( windowTitile );
+        super( windowTitle );
     }
 
     /**
@@ -60,6 +60,18 @@ public class SwingDriverInternal extends SwingDriver {
                                 boolean cacheEnabled ) {
 
         super( jnlpLocation, cacheEnabled );
+    }
+
+    /**
+     *
+     * @param jnlpLocation JNLP location. It can be local JNLP file path or a remote url
+     * @param cacheEnabled whether the JNLP is cached or not
+     */
+    public SwingDriverInternal( String jnlpLocation,
+                                String windowTitle,
+                                boolean cacheEnabled ) {
+
+        super( jnlpLocation, windowTitle, cacheEnabled );
     }
 
     /**
