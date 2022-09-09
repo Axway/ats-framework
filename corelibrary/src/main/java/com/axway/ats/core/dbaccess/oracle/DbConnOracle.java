@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -287,7 +287,7 @@ public class DbConnOracle extends DbConnection {
     @Override
     public Class<? extends Driver> getDriverClass() {
 
-        return oracle.jdbc.driver.OracleDriver.class;
+        return oracle.jdbc.OracleDriver.class;
     }
 
     @Override

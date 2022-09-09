@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import org.junit.Test;
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.core.BaseTest;
 
-import oracle.jdbc.driver.OracleDriver;
+import oracle.jdbc.OracleDriver;
 import oracle.jdbc.pool.OracleDataSource;
 
 public class Test_DbConnOracle extends BaseTest {
