@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import com.axway.ats.core.utils.TimeUtils;
 /**
  * This class logs messages to STDOUT streams only.
  * Use this class when logging via Apache's Log4J will cause re-entrance to AbstractDbAppender@append() when the main thread is blocked
- * */
+ */
 public class AtsConsoleLogger {
 
     public static final String ATS_CONSOLE_MESSAGE_PREFIX = "*** ATS *** ";
@@ -39,8 +39,6 @@ public class AtsConsoleLogger {
 
     private String[]           classNameTokens;
     private String             classNamePrefix;                                 // one-time calculated class location prefix
-
-    private StringBuilder      sb                         = new StringBuilder();
 
     private Logger             logger;
 
@@ -60,88 +58,69 @@ public class AtsConsoleLogger {
 
     public void fatal( String message ) {
 
-        String logLevel = "FATAL";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.FATAL)) {
+            log(Level.FATAL.toString(), message);
         }
     }
 
     public void error( Throwable e ) {
 
-        String logLevel = "ERROR";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, ExceptionUtils.getExceptionMsg(e));
+        if (isLogLevelEnabled(Level.ERROR)) {
+            log(Level.ERROR.toString(), ExceptionUtils.getExceptionMsg(e));
         }
     }
 
     public void error( String message ) {
 
-        String logLevel = "ERROR";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.ERROR)) {
+            log(Level.ERROR.toString(), message);
         }
 
     }
 
     public void error( String message, Throwable e ) {
 
-        String logLevel = "ERROR";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, ExceptionUtils.getExceptionMsg(e, message));
+        if (isLogLevelEnabled(Level.ERROR)) {
+            log(Level.ERROR.toString(), ExceptionUtils.getExceptionMsg(e, message));
         }
 
     }
 
     public void warn( String message ) {
 
-        String logLevel = "WARN";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.WARN)) {
+            log(Level.WARN.toString(), message);
         }
 
     }
 
     public void info( String message ) {
 
-        String logLevel = "INFO";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.INFO)) {
+            log(Level.INFO.toString(), message);
         }
-
     }
 
     public void debug( String message ) {
 
-        String logLevel = "DEBUG";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.DEBUG)) {
+            log(Level.DEBUG.toString(), message);
         }
 
     }
 
     public void trace( String message ) {
 
-        String logLevel = "TRACE";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, message);
+        if (isLogLevelEnabled(Level.TRACE)) {
+            log(Level.TRACE.toString(), message);
         }
 
     }
 
     public void trace( String message, Throwable th ) {
 
-        String logLevel = "TRACE";
-
-        if (isLogLevelEnabled(logLevel)) {
-            log(logLevel, ExceptionUtils.getExceptionMsg(th, message));
+        if (isLogLevelEnabled(Level.TRACE)) {
+            log(Level.TRACE.toString(), ExceptionUtils.getExceptionMsg(th, message));
         }
     }
 
@@ -169,19 +148,30 @@ public class AtsConsoleLogger {
         level = newLevel;
     }
 
-    private boolean isLogLevelEnabled( String level ) {
+    private boolean isLogLevelEnabled( Level logLevel ) {
+        if (logLevel == null) {
+            throw new IllegalArgumentException("Level provided is null");
+        }
+
+        if (AtsConsoleLogger.level != null) {
+            return logLevel.isGreaterOrEqual(AtsConsoleLogger.level);
+        } else {
+            return Logger.getRootLogger().isEnabledFor(logLevel);
+        }
+    }
+
+   /* private boolean isLogLevelEnabled( String level ) {
 
         if (AtsConsoleLogger.level != null) {
             return Level.toLevel(level).isGreaterOrEqual(AtsConsoleLogger.level);
         } else {
             return Logger.getRootLogger().isEnabledFor(Level.toLevel(level));
         }
-
-    }
+    }*/
 
     private void log( String level, String message ) {
-
-        sb.setLength(0); // clear the builder
+        int mesageLen = message == null ? 0 : message.length();
+        StringBuilder sb = new StringBuilder(128 + mesageLen); // estimated capacity
         sb.append(ATS_CONSOLE_MESSAGE_PREFIX).append(" ");
 
         String now = TimeUtils.getFormattedDateTillMilliseconds();
@@ -201,7 +191,7 @@ public class AtsConsoleLogger {
         sb.append(classNamePrefix);
         sb.append(": ").append(message);
 
-        System.out.println(sb.toString());
+        System.out.println(sb);
     }
 
     //
@@ -222,5 +212,4 @@ public class AtsConsoleLogger {
                    + "." + classNameTokens[classNameTokens.length - 1];
         }
     }
-
 }
