@@ -16,7 +16,6 @@
 package com.axway.ats.core.dbaccess.cassandra;
 
 import java.io.InputStream;
-
 import java.nio.ByteBuffer;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
@@ -49,6 +48,7 @@ import com.datastax.driver.core.QueryOptions;
 import com.datastax.driver.core.ResultSet;
 import com.datastax.driver.core.Row;
 import com.datastax.driver.core.Session;
+import com.datastax.driver.core.SocketOptions;
 import com.datastax.driver.core.policies.ExponentialReconnectionPolicy;
 import com.datastax.driver.core.policies.RoundRobinPolicy;
 import com.datastax.driver.core.policies.TokenAwarePolicy;
@@ -84,6 +84,10 @@ public class CassandraDbProvider implements DbProvider {
 
         this.allowFiltering = dbConnection.isAllowFiltering();
         this.dbConnection = dbConnection;
+        /* Currently this method returns null
+         * It MUST to be invoked because applyTimeout() method is invoked from it.
+        */ 
+        this.dbConnection.getDataSource();
     }
 
     /**
@@ -103,12 +107,16 @@ public class CassandraDbProvider implements DbProvider {
             queryOptions.setFetchSize(Integer.MAX_VALUE);
             queryOptions.setConsistencyLevel(ConsistencyLevel.ONE);
 
+            SocketOptions socketOptions = new SocketOptions();
+            socketOptions.setConnectTimeoutMillis(this.dbConnection.getTimeout() * 1000);
+
             cluster = Cluster.builder()
                              .addContactPoint(this.dbHost)
                              .withPort(this.dbPort)
                              .withLoadBalancingPolicy(new TokenAwarePolicy(new RoundRobinPolicy()))
                              .withReconnectionPolicy(new ExponentialReconnectionPolicy(500, 30000))
                              .withQueryOptions(queryOptions)
+                             .withSocketOptions(socketOptions)
                              .withCredentials(this.dbUser, this.dbPassword)
                              .build();
 

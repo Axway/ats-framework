@@ -23,6 +23,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.dbaccess.mssql.DbConnSQLServer;
 import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
@@ -141,7 +142,7 @@ public class DbUtils {
      * @return null if MSSQL database is available, and an Exception if MSSQL database is NOT available
      * */
     public static Exception isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
-                                                      String dbPassword ) {
+                                                      String dbPassword ) throws DbException {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
@@ -156,12 +157,12 @@ public class DbUtils {
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
-                throw new Exception("Could not fetch the database version from MSSQL database using URL '"
+                throw new DbException("Could not fetch the database version from MSSQL database using URL '"
                                     + sqlServerConnection.getURL() + "'");
             }
             return null;
         } catch (Exception e) {
-            return e;
+            throw new DbException("Mssql DB is not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);
@@ -177,8 +178,8 @@ public class DbUtils {
     * @param dbPassword the database password used for login
     * @return null if PostgreSQL database is available, and an Exception if PostgreSQL database is NOT available
     * */
-    public static Exception isPostgreSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
-                                                           String dbPassword ) {
+    public static void checkPgsqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
+                                                       String dbPassword ) throws DbException {
 
         Connection sqlConnection = null;
         DbConnPostgreSQL postgreConnection = null;
@@ -186,19 +187,18 @@ public class DbUtils {
 
         try {
             postgreConnection = new DbConnPostgreSQL(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = postgreConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(postgreConnection);
             ps = sqlConnection.prepareStatement("SELECT value FROM \"tInternal\" WHERE key = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
-                throw new Exception("Could not fetch the database version from PostgreSQL database using URL '"
-                                    + postgreConnection.getURL() + "'");
+                throw new DbException("Could not fetch the database version");
             }
-            return null;
+            //return null;
         } catch (Exception e) {
-            return e;
+            throw new DbException("Pgsql DB is not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);

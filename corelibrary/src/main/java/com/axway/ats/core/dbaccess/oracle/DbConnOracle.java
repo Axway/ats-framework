@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
 import com.axway.ats.common.dbaccess.OracleKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.SslUtils;
@@ -277,10 +278,22 @@ public class DbConnOracle extends DbConnection {
                 }
             }
 
+            applyTimeout();
             return dataSource;
         } catch (SQLException e) {
 
             throw new DbException("Unable to create database source", e);
+        }
+    }
+
+    @Override
+    protected void applyTimeout() {
+
+        if (this.timeout == null) {
+            this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+        }
+        if (this.timeout > 0) {
+            dataSource.setLoginTimeout(this.timeout);
         }
     }
 

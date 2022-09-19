@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,13 @@ public class AtsSystemProperties {
     public static final String CORE__JSCH_VERBOSE_MODE                                           = "ats.core.ssh.verbose.mode";
 
     /**
-     * Toggle whether to log all the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
+     * Toggle whether ATS Agent will be configured and flag as configured by both SystemMonitor and TestcaseStateListener.
+     * This fix is when user wants to stop monitoring and continue using the same agent (executing actions).
+     * */
+    public static final String MONITORING_CONFIG_AGENT_EXPLICITELY                               = "ats.monitor.config.agent.explicitly";
+
+    /**
+     * Toggle whether to log all of the client's (SystemMonitor) requests from the test executor to the monitoring service (ATS Agent)
      * */
     public static final String SYSTEM_MONITOR_VERBOSE_MODE                                       = "ats.system.monitor.verbose.mode";
 

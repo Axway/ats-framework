@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,5 +86,22 @@ public class DbKeys {
      * */
     @PublicAtsApi
     public static final String SERVER_TIMEZONE = "SERVER_TIMEZONE";
+    /**
+     * System property. Use this property to specify the number of retries when obtaining a connection
+     * */
+    @PublicAtsApi
+    public static final String CONNECTION_RETRY_COUNT      = "connection.retry.count";
+
+    /**
+     * System property. Use this property to specify the timeout (in seconds) between each of the retries for obtaining a connection
+     * */
+    @PublicAtsApi
+    public static final String CONNECTION_RETRY_TIMEOUT    = "connection.retry.timeout";
+
+    /**
+     * System property. Use this property to specify the connection, socket and login timeouts (in seconds) for the connection's socket
+     * */
+    @PublicAtsApi
+    public static final String CONNECTION_TIMEOUT          = "dbcp.connectionTimeout";
 
 }

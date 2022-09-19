@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,28 @@ public class DbConnPostgreSQL extends DbConnection {
         ds.setUsername(user);
         ds.setPassword(password);
         ds.setUrl(getURL());
+        applyTimeout();
         return ds;
+    }
+
+    @Override
+    public void applyTimeout() {
+
+        StringBuilder sb = new StringBuilder();
+
+        if (this.timeout == null) {
+            // no timeout was specified, use the one from the system property or the default one
+            this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+        }
+
+        if (this.timeout > 0) {
+            sb.append("connectTimeout=" + this.timeout + ";");
+            sb.append("socketTimeout=" + this.timeout);
+
+            if (sb.length() > 0) {
+                ds.setConnectionProperties(sb.toString());
+            }
+        }
     }
 
     @Override

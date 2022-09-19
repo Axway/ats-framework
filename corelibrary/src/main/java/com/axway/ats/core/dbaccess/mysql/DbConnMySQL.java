@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2021 Axway Software
+ * Copyright 2017-2022 Axway Software
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -29,6 +30,7 @@ import javax.sql.DataSource;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.dbaccess.DbKeys;
+import com.axway.ats.common.systemproperties.AtsSystemProperties;
 import com.axway.ats.core.dbaccess.DbConnection;
 import com.axway.ats.core.dbaccess.DbUtils;
 import com.axway.ats.core.dbaccess.exceptions.DbException;
@@ -57,15 +59,16 @@ public class DbConnMySQL extends DbConnection {
     private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
     public static final String DATABASE_TYPE = "MYSQL";
 
+    private static String dataSourceClassName = null;
+    private static boolean serverTimeZoneWarningLogged = false;
+
     /**
      * The connection URL
      */
     private String url;
     private String serverTimeZone;
     private boolean useSSL = false;
-
-    private static String dataSourceClassName = null;
-    private static boolean serverTimeZoneWarningLogged = false;
+    private DataSource dataSource;
 
     /**
      * Constructor
@@ -184,7 +187,7 @@ public class DbConnMySQL extends DbConnection {
 
             }
         } else {
-            // usiNG already cached data source class name
+            // using already cached data source class name
             try {
                 mysqlDataSourceClass = Class.forName(dataSourceClassName);
 
@@ -206,26 +209,31 @@ public class DbConnMySQL extends DbConnection {
                     .append("\n\t" + ExceptionUtils.getExceptionMsg(mysql5Exception, "MySQL JDBC 5.1.xx exception"));
             throw new RuntimeException(sb.toString());
         } else {
-            log.info("MySQL datasource class will be '" + dataSourceClassName + "'. Begin datasource configuration");
+            log.info("MySQL datasource class will be '" + dataSourceClassName
+                     + "'. Begin datasource configuration");
             try {
                 dataSourceInstance = mysqlDataSourceClass.getDeclaredConstructor().newInstance();
                 // set server name
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setServerName",
-                        new Class<?>[] { String.class }, true), dataSourceInstance, new Object[] { this.host });
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.host });
                 // set port
-                ReflectionUtils.invokeMethod(
-                        ReflectionUtils.getMethod(mysqlDataSourceClass, "setPort", new Class<?>[] { int.class }, true),
+                ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setPort",
+                                                                       new Class<?>[]{ int.class }, true),
                         dataSourceInstance, new Object[] { this.port });
                 // set db name
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setDatabaseName",
-                        new Class<?>[] { String.class }, true), dataSourceInstance, new Object[] { this.db });
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.db });
                 // set user name
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setUser",
-                        new Class<?>[] { String.class }, true), dataSourceInstance, new Object[] { this.user });
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.user });
 
                 // set user password
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setPassword",
-                        new Class<?>[] { String.class }, true), dataSourceInstance, new Object[] { this.password });
+                                                                       new Class<?>[]{ String.class }, true),
+                                             dataSourceInstance, new Object[]{ this.password });
                 // set other stuff
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setAllowMultiQueries",
                         new Class<?>[] { boolean.class }, true), dataSourceInstance, new Object[] { true });
@@ -249,13 +257,11 @@ public class DbConnMySQL extends DbConnection {
                             ReflectionUtils.getMethod(mysqlDataSourceClass, "setPassword",
                                     new Class<?>[] { String.class }, true),
                             dataSourceInstance, new Object[] { this.password });
-                    ReflectionUtils
-                            .invokeMethod(
-                                    ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseInformationSchema",
+                    ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                           "setUseInformationSchema",
                                             new Class<?>[] { boolean.class }, true),
                                     dataSourceInstance, new Object[] { true });
-                    ReflectionUtils.invokeMethod(
-                            ReflectionUtils.getMethod(mysqlDataSourceClass, "setDatabaseTerm",
+                    ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setDatabaseTerm",
                                     new Class<?>[] { String.class }, true),
                             dataSourceInstance, new Object[] { DatabaseTerm.SCHEMA.name() });
 
@@ -283,10 +289,40 @@ public class DbConnMySQL extends DbConnection {
                             log.debug("Server time zone set to: " + this.serverTimeZone);
                         }
                         // set the server's time zone or actually what the client will "think" the server time zone is
-                        ReflectionUtils.invokeMethod(
-                                ReflectionUtils.getMethod(mysqlDataSourceClass, "setServerTimezone",
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                               "setServerTimezone",
                                         new Class<?>[] { String.class }, true),
                                 dataSourceInstance, new Object[] { this.serverTimeZone });
+                    }
+
+                }
+
+                this.dataSource = (DataSource) dataSourceInstance; // not sure, what will happen
+                //applyTimeout();
+
+                if (this.timeout == null) {
+                    this.timeout = AtsSystemProperties.getPropertyAsNumber(DbKeys.CONNECTION_TIMEOUT, DEFAULT_TIMEOUT);
+                }
+                try {
+                    if (this.timeout > 0) {
+                        // TODO check if both are available in all of the supported versions
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass,
+                                                                               "setConnectTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setSocketTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                        ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setLoginTimeout",
+                                                                               new Class<?>[]{ int.class }, true),
+                                                     dataSourceInstance, new Object[]{ this.timeout });
+                    }
+                } catch (Exception e) {
+                    String errMsg = "Unable to apply custom timeout settings to MySQL connection";
+                    if (e instanceof SQLException) {
+                        throw new RuntimeException(DbUtils.getFullSqlException(errMsg, (SQLException) e));
+                    } else {
+                        throw new RuntimeException(errMsg, e);
                     }
 
                 }
@@ -338,8 +374,10 @@ public class DbConnMySQL extends DbConnection {
         String serverTimeZone = null;
         try {
             // set the time zone to UTC, so we can actually connect to the MySql server
-            ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(dataSourceInstance.getClass(), "setServerTimezone",
-                    new Class<?>[] { String.class }, true), dataSourceInstance, new Object[] { "UTC" });
+            ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(dataSourceInstance.getClass(),
+                                                                   "setServerTimezone",
+                                                                   new Class<?>[]{ String.class }, true),
+                                         dataSourceInstance, new Object[]{ "UTC" });
             conn = dataSourceInstance.getConnection();
             stmt = conn.prepareStatement(sql);
             rs = stmt.executeQuery();
@@ -360,6 +398,12 @@ public class DbConnMySQL extends DbConnection {
     public static String getDataSourceClassName() {
 
         return dataSourceClassName;
+    }
+
+    @Override
+    protected void applyTimeout() {
+
+        // nothing. see createDataSource method
     }
 
     @Override

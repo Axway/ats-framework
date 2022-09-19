@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2020 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,10 +26,18 @@ import javax.sql.DataSource;
 public abstract class DbConnection {
 
     /**
+     * <p>The default timeout (in seconds) when working with database.</p>
+     * <p>Note that <strong>timeout</strong> has different meaning for different databases and/or database drivers.</br>
+     * See {@link DbConnection#applyTimeout()} for more information.</p>
+     * */
+    public static final int       DEFAULT_TIMEOUT = -1;  // No timeout
+
+    /**
      * The type of the database
      */
     protected String              dbType;
 
+    protected Integer             timeout         = null;
     //required attributes
     protected String              host;
     protected String              db;
@@ -110,23 +118,24 @@ public abstract class DbConnection {
     }
     
     /**
-     * Get the connection port<br>
-     * 
-     * @return the connection port
-     */
-    public int getPort() {
-        
-        return port;
-    }
-
-    /**
      * Get the connection database
      * 
      * @return the connection DB
      */
     public String getDb() {
-
+        
         return db;
+    }
+
+    /**
+     * Get the connection port</br>
+     * <strong>Note</strong> that if port was not provided, the default one will be used and also return from that method
+     * 
+     * @return the connection port
+     * */
+    public int getPort() {
+
+        return port;
     }
 
     /**
@@ -221,5 +230,30 @@ public abstract class DbConnection {
      *  in the connection pool associated with this data source.
      */
     public abstract void disconnect();
+    /**
+     *  <p>Set connection and/or socket timeout and/or login timeout.</p>
+     *  <p> See {@link DbConnection#applyTimeout()} for more details </p>
+     *  @param timeout the timeout in seconds
+     */
+    public void setTimeout( int timeout ) {
+
+        this.timeout = timeout;
+    }
+
+    /**
+     * Get connection timeout (in seconds)
+     * */
+    public Integer getTimeout() {
+
+        return this.timeout;
+    }
+
+    /**
+     * <p>Since each database connection (PSQL, MSSQL, etc) 
+     * uses different connection properties for timeout (connectTimeout, socketTimeout, loginTimeout, etc)</br>
+     * This method uses the timeout value, provided by {@link DbConnection#setTimeout(int)}, 
+     * to set the necessary connection timeout values for the specific DB connection type and/or DB driver</p>
+     */
+    protected abstract void applyTimeout();
 
 }
