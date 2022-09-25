@@ -94,7 +94,7 @@ public class DbUtils {
             }
         } catch (SQLException sqle) {
             String msg = "Error closing database connection";
-            log.error(getFullSqlException(msg, sqle));
+            log.error(getFullSqlException(msg, sqle)); // log to console as DB might not be available. Do not use log4j
         }
     }
 
@@ -139,10 +139,10 @@ public class DbUtils {
      * @param dbName the database name
      * @param dbUser the database user name used for login
      * @param dbPassword the database password used for login
-     * @return null if MSSQL database is available, and an Exception if MSSQL database is NOT available
+     * @throws DbException if MSSQL database is NOT available
      * */
-    public static Exception isMSSQLDatabaseAvailable( String dbHost, int dbPort, String dbName, String dbUser,
-                                                      String dbPassword ) throws DbException {
+    public static void checkMssqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
+                                                       String dbPassword ) throws DbException {
 
         Connection sqlConnection = null;
         DbConnSQLServer sqlServerConnection = null;
@@ -150,19 +150,18 @@ public class DbUtils {
 
         try {
             sqlServerConnection = new DbConnSQLServer(dbHost, dbPort, dbName, dbUser, dbPassword, null);
-            sqlConnection = sqlServerConnection.getDataSource().getConnection();
+            sqlConnection = ConnectionPool.getConnection(sqlServerConnection); // sqlServerConnection.getDataSource().getConnection();
             ps = sqlConnection.prepareStatement("SELECT value FROM tInternal WHERE [key] = 'version'");
             ResultSet rs = ps.executeQuery();
             // we expect only one record
             if (rs.next()) {
                 rs.getString(1); // execute it just to be sure that the database we found is ATS Log database as much as possible
             } else {
-                throw new DbException("Could not fetch the database version from MSSQL database using URL '"
+                throw new DbException("Could not fetch the database version from Ms SQL Server database using URL '"
                                     + sqlServerConnection.getURL() + "'");
             }
-            return null;
         } catch (Exception e) {
-            throw new DbException("Mssql DB is not available", e);
+            throw new DbException("Ms SQL Server DB is not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);
@@ -170,13 +169,13 @@ public class DbUtils {
     }
 
     /**
-    * Check if ATS log PostgreSQL database is available for connection
+    * Check if ATS log PostgreSQL database is available for connection. Throws an exception if PostgreSQL database is NOT available
     * @param dbHost the database host
     * @param dbPort the database port
     * @param dbName the database name
     * @param dbUser the database user name used for login
     * @param dbPassword the database password used for login
-    * @return null if PostgreSQL database is available, and an Exception if PostgreSQL database is NOT available
+    * @throws DbException throws an exception if PostgreSQL database is NOT available
     * */
     public static void checkPgsqlDatabaseAvailability( String dbHost, int dbPort, String dbName, String dbUser,
                                                        String dbPassword ) throws DbException {
@@ -196,9 +195,8 @@ public class DbUtils {
             } else {
                 throw new DbException("Could not fetch the database version");
             }
-            //return null;
         } catch (Exception e) {
-            throw new DbException("Pgsql DB is not available", e);
+            throw new DbException("PostgreSQL DB is not available", e);
         } finally {
             closeStatement(ps);
             closeConnection(sqlConnection);

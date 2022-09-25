@@ -86,6 +86,14 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     }
 
     @Override
+    public void onTestEnd( List<String> callerIDs ) {
+
+        if (testcaseStateListener != null) {
+            testcaseStateListener.onTestEnd(callerIDs);
+        }
+    }
+
+    @Override
     public void onConfigureAtsAgents( List<String> atsAgents ) throws Exception {
 
         if (testcaseStateListener != null) {
@@ -123,7 +131,7 @@ public class TestcaseStateEventsDispacher implements ITestcaseStateListener {
     @Override
     public void invalidateConfiguredAtsAgents( List<String> atsAgents ) {
 
-        if (testcaseStateListener != null) {
+        if (testcaseStateListener != null && atsAgents != null && !atsAgents.isEmpty()) {
             testcaseStateListener.invalidateConfiguredAtsAgents(atsAgents);
         }
 

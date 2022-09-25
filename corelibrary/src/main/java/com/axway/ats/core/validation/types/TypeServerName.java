@@ -28,7 +28,7 @@ import com.axway.ats.core.validation.exceptions.TypeException;
  */
 public class TypeServerName extends TypeString {
 
-    private static final String ERROR_MESSAGE_MALFORMED         = "Argument is not a valid server address, because it contains more than one \":\" character sign. ";
+    private static final String ERROR_MESSAGE_MALFORMED         = "Argument is not a valid server address, because it contains more than one \":\" character sign. If you want to use IPv6 address, note that enclosing the address(ip) in brackets is mandatory.A valid address MUST be in the format: [IP]:PORT .";
     private static final String ERROR_VALIDATING_SERVER         = "Argument is not a valid server address. ";
     private static final String ERROR_VALIDATING_SERVER_NEITHER = "Argument is not a valid server address. It is neither a valid hostname, nor a valid IP address. ";
     private static final String ERROR_VALIDATING_SERVER_PORT    = "Argument is not a valid server address/hostname with port number.";

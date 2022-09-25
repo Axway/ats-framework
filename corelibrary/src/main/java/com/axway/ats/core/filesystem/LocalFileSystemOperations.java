@@ -78,7 +78,6 @@ import org.apache.commons.compress.archivers.zip.ZipFile;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.input.ReversedLinesFileReader;
 import org.apache.commons.lang3.StringEscapeUtils;
-import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.filesystem.EndOfLineStyle;
@@ -1629,7 +1628,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
 
         BufferedReader fileReader = null;
         try {
-            if (fileEncoding == null) { // use default system file encoding
+            if (StringUtils.isNullOrEmpty(fileEncoding) || "null".equals(fileEncoding)) { // use default system file encoding
                 fileReader = new BufferedReader(new FileReader(file));
             } else {
                 fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(file),
@@ -1740,7 +1739,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
      *
      * @param searchPattern - pattern to match. <em>Note</em> that patter should match whole line so usually wildcards should be set in front and at the end
      * @param isSimpleMode  - when true we should support * and ? as wildcard characters
-     *                      <p>
+     * <p>
      *                      (non-Javadoc)
      * @see com.axway.ats.core.filesystem.model.IFileSystemOperations#fileGrep(java.lang.String, java.lang.String, boolean)
      */

@@ -19,7 +19,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 
 /**
- * Formatting exceptions to plain String
+ * Utility for working with exceptions (formatting to plain String or better processing of exception details)
  */
 public class ExceptionUtils {
 
@@ -55,16 +55,16 @@ public class ExceptionUtils {
                 msg.append("\n");
             }
 
-            if (null != e.getMessage()) {
-                msg.append("Message:\n\t");
-                msg.append(getMsgLines(e.getMessage()));
-                msg.append("\n");
-            } else if (null != e.getLocalizedMessage()) {
-                msg.append("Message:\n\t");
+            if (null != e.getLocalizedMessage()) {
+                msg.append("EXCEPTION Message:\n\t");
                 msg.append(getMsgLines(e.getLocalizedMessage()));
                 msg.append("\n");
+            } else if (null != e.getMessage()) {
+                msg.append("EXCEPTION Message:\n\t");
+                msg.append(getMsgLines(e.getMessage()));
+                msg.append("\n");
             } else {
-                msg.append("Message: ");
+                msg.append("EXCEPTION Message: ");
                 msg.append("null");
                 msg.append("\n");
             }
@@ -81,16 +81,6 @@ public class ExceptionUtils {
         return msg.toString();
     }
 
-    private static StringBuilder getMsgLines( String msg ) {
-
-        StringBuilder resMsg = new StringBuilder();
-        String[] msgLines = msg.split("\n");
-        for (int i = 0; i < msgLines.length; i++) {
-            resMsg.append(msgLines[i]);
-            resMsg.append("\n\t");
-        }
-        return resMsg;
-    }
 
     /**
      * Check if exception contains certain message
@@ -124,5 +114,16 @@ public class ExceptionUtils {
             th = th.getCause();
         }
         return false;
+    }
+
+    private static StringBuilder getMsgLines( String msg ) {
+
+        StringBuilder resMsg = new StringBuilder();
+        String[] msgLines = msg.split("\n");
+        for (int i = 0; i < msgLines.length; i++) {
+            resMsg.append(msgLines[i]);
+            resMsg.append("\n\t");
+        }
+        return resMsg;
     }
 }
