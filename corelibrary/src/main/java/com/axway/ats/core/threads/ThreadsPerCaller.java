@@ -25,16 +25,18 @@ import java.util.Map;
 public class ThreadsPerCaller {
 
     /**
-     * Map <thread name:caller>
+     * Map <thread name : caller>
      */
     private static Map<String, String> threads = new HashMap<String, String>();
 
     /**
      * Keeps track of all the callers related to each still running thread on the agent
      * <br>Note that this map is never cleared. 
-     * <br>This can cause some long running tests to log messages in another test that was created by the same Jetty request processing thread as the one that started the long running test. So it is important to use registerThread which adds caller (changes thread name)
+     * <br>This can cause some long running tests to log messages in another test that was created by the same
+     * Jetty request processing thread as the one that started the long running test. So it is important to use
+     * registerThread which adds caller (changes thread name)
      * 
-     * */
+     */
     private static InheritableThreadLocal<String> callers = new InheritableThreadLocal<>();
 
     /**
@@ -80,7 +82,7 @@ public class ThreadsPerCaller {
      */
     synchronized public static String getCaller() {
 
-        String caller = threads.get(Thread.currentThread().getName());;
+        String caller = threads.get(Thread.currentThread().getName());
         if (caller != null) {
             return caller;
         } else {

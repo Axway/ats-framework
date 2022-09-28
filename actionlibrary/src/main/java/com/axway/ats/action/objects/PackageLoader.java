@@ -112,7 +112,7 @@ public class PackageLoader {
         return new MimePackage(loadPackageFromFile(fileName));
     }
 
-    // Why MySQL?!?
+    // For historic reasons current implementation reads mails only from MySQL DB
     private static InputStream loadPackageFromDb(
                                                   int packageId,
                                                   String messagesHost,

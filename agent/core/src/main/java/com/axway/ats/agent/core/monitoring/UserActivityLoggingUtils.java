@@ -147,7 +147,7 @@ public class UserActivityLoggingUtils {
                 statisticDbIds.setLength(statisticDbIds.length() - 1);
                 statisticValues.setLength(statisticValues.length() - 1);
                 // we are logging [users] Total statistics
-                dbLog.insertUserActivityStatistcs(ATS_AGENT_HOSTS,
+                dbLog.insertUserActivityStatistics(ATS_AGENT_HOSTS,
                                                   statisticDbIds.toString(),
                                                   statisticValues.toString(),
                                                   timestamp);

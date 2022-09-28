@@ -398,7 +398,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                     // we have to send a chunk
                     statisticDbIds.setLength(statisticDbIds.length() - 1);
                     statisticValues.setLength(statisticValues.length() - 1);
-                    dblog.insertSystemStatistcs(HostUtils.getLocalHostIP(),
+                    dblog.insertSystemStatistics(HostUtils.getLocalHostIP(),
                                                 statisticDbIds.toString(),
                                                 statisticValues.toString(),
                                                 resultsLine.getTimestamp());
@@ -413,7 +413,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
                 statisticDbIds.setLength(statisticDbIds.length() - 1);
                 statisticValues.setLength(statisticValues.length() - 1);
 
-                dblog.insertSystemStatistcs(HostUtils.getLocalHostIP(),
+                dblog.insertSystemStatistics(HostUtils.getLocalHostIP(),
                                             statisticDbIds.toString(),
                                             statisticValues.toString(),
                                             resultsLine.getTimestamp());
