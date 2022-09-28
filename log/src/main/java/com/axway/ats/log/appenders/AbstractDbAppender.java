@@ -18,7 +18,10 @@ package com.axway.ats.log.appenders;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import com.axway.ats.log.autodb.events.InsertMessageEvent;
+import com.axway.ats.log.autodb.model.AbstractLoggingEvent;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Layout;
 
@@ -27,6 +30,8 @@ import com.axway.ats.log.autodb.DbAppenderConfiguration;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DbAppenederException;
 import com.axway.ats.log.autodb.exceptions.InvalidAppenderConfigurationException;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 
 /**
@@ -35,15 +40,33 @@ import org.apache.log4j.spi.LoggingEvent;
  */
 public abstract class AbstractDbAppender extends AppenderSkeleton {
 
-    // the channels for each test case
-    private Map<String, DbChannel> channels = new HashMap<String, DbChannel>();
+    /**
+     * indicates whether run/suites/testcases are running in parallel
+     */
+    public static boolean             parallel              = false;
+    /** whether warning for possible deadlock (related to dbcp2 log severity) should be logged in console */
+    private static boolean            logDeadlockWarning    = true;
 
-    protected AtsConsoleLogger                    atsConsoleLogger = new AtsConsoleLogger(getClass());
+    /** 
+     * the channels for each test case. Concurrent because of LogAspect is writing on new Thread creation
+     */
+    private Map<String, DbChannel> channels = new ConcurrentHashMap<String, DbChannel>();
+
+    protected AtsConsoleLogger     atsConsoleLogger = new AtsConsoleLogger(getClass());
+    
+
+    /**
+     * Holds information about the parent of each thread:
+     * <p>  child thread id : parent thread id </p>
+     *
+     * It is populated by the @After method in {@link com.axway.ats.log.aspect.LogAspect} AspectJ Java class
+     */
+    public static Map<String, String> childParentThreadsMap = new HashMap<>();
 
     /**
      * The configuration for this appender
      */
-    protected DbAppenderConfiguration             appenderConfig;
+    protected DbAppenderConfiguration appenderConfig;
 
     /**
      * Constructor
@@ -54,7 +77,23 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
 
         // init the appender configuration
         // it will be populated when the setters are called
-        appenderConfig = new DbAppenderConfiguration();
+        this.appenderConfig = new DbAppenderConfiguration();
+
+        logWarningForPossibleDealock();
+    }
+
+    private void logWarningForPossibleDealock() {
+
+        if (logDeadlockWarning) {
+            Logger dbcp2Logger = Logger.getLogger("org.apache.commons.dbcp2");
+            if (dbcp2Logger != null) {
+                if (dbcp2Logger.isEnabledFor(Level.DEBUG)) {
+                    atsConsoleLogger.warn("Logger '" + dbcp2Logger.getName() + "' has logging level '"
+                                          + Level.DEBUG.toString() + "'. This may cause deadlock. Please raise severity to INFO or higher.");
+                }
+            }
+            logDeadlockWarning = false;
+        }
     }
 
     /*
@@ -73,7 +112,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         }
 
         // set the threshold if there is such
-        this.appenderConfig.setLoggingThreshold(getThreshold());
+        if (getThreshold() != null) {
+            this.appenderConfig.setLoggingThreshold(getThreshold().toInt());
+        }
     }
 
     protected abstract String getDbChannelKey( LoggingEvent event );
@@ -83,19 +124,70 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         String channelKey = getDbChannelKey( event );
 
         DbChannel channel = this.channels.get( channelKey );
-        if( channel == null ) { // TODO inss
-            channel = new DbChannel( this.appenderConfig );
+        if (channel == null) {
+            // check if TestNG does NOT run in parallel
+            if (!parallel && ! (this instanceof PassiveDbAppender)) { // if this is not a PassiveDbAppender and we are not in parallel mode
+                // see if there is at least one db channel created
+                if (!this.channels.isEmpty()) {
+                    // get the first channel from the map
+                    return this.channels.get(this.channels.keySet().iterator().next());
+                }
+            } else { // new thread, spawned in thread (non-TestNG thread)
+                if ((event instanceof InsertMessageEvent) || ((event instanceof AbstractLoggingEvent) == false)) {
+                    // the event is only of class InsertMessageEvent
+                    if (childParentThreadsMap.containsKey(channelKey)) {
+                        String threadId = childParentThreadsMap.get(channelKey);
+                        do {
+                            channel = channels.get(threadId/*childParentThreadsMap.get(threadId)*/);
+                            if (channel != null) {
+                                return channel;
+                            }
+                            threadId = childParentThreadsMap.get(threadId);
+                        } while (threadId != null);
+                    }
+                }
+            }
+            /* 
+             * We've ended up here because:
+             * - TestNG runs in parallel or
+             * - the channels map is empty or
+             * - the parent of the current thread is not associated with any of the already created DbChannel(s)
+            */
+            // TODO inss
+            atsConsoleLogger.info("Creating new DbChannel for channel: " + channelKey); // TODOs lower severity
+            channel = new DbChannel(this.appenderConfig );
             channel.initialize( atsConsoleLogger, this.layout, true );
+            // check whether the configuration is valid first
+            try {
+                this.appenderConfig.validate();
+            } catch (InvalidAppenderConfigurationException iace) {
+                throw new DbAppenederException(iace);
+            }
             this.channels.put( channelKey, channel );
         }
 
         return channel;
     }
 
-    protected void distroyDbChannel( String channelKey ) {
+    protected void destroyDbChannel( String channelKey ) {
 
         //DbChannel channel = this.channels.get( channelKey );
         this.channels.remove( channelKey );
+    }
+
+    /**
+     * Destroy all DB channels
+     * 
+     * @param waitForQueueToProcessAllEvents whether to wait for each channel's queue logger thread to finish execution of all events
+     * */
+    protected void destroyAllChannels( boolean waitForQueueToProcessAllEvents ) {
+
+        for (DbChannel channel : channels.values()) {
+            if (waitForQueueToProcessAllEvents) {
+                channel.waitForQueueToProcessAllEvents();
+            }
+        }
+        channels.clear();
     }
 
     public abstract GetCurrentTestCaseEvent getCurrentTestCaseState( GetCurrentTestCaseEvent event );
@@ -107,7 +199,9 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
      */
     public void close() {
 
-        getDbChannel(null).close();
+        if (!channels.isEmpty()) {
+            getDbChannel(null).close();
+        }
     }
 
     /*
@@ -134,9 +228,6 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         // remember it
         this.layout = layout;
 
-        // set the layout to the event processor as well
-        DbChannel channel = getDbChannel( null );
-        channel.eventProcessor.setLayout( layout );
     }
 
     /**
@@ -251,8 +342,7 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return this.appenderConfig.getEnableCheckpoints();
     }
 
-    public void setEnableCheckpoints(
-                                      boolean enableCheckpoints ) {
+    public void setEnableCheckpoints( boolean enableCheckpoints ) {
 
         this.appenderConfig.setEnableCheckpoints(enableCheckpoints);
     }
@@ -262,15 +352,13 @@ public abstract class AbstractDbAppender extends AppenderSkeleton {
         return appenderConfig;
     }
 
-    public void setAppenderConfig(
-                                   DbAppenderConfiguration appenderConfig ) {
+    public void setAppenderConfig( DbAppenderConfiguration appenderConfig ) {
 
         this.appenderConfig = appenderConfig;
-        threshold = appenderConfig.getLoggingThreshold();
+        threshold = Level.toLevel(appenderConfig.getLoggingThreshold());
     }
 
-    public void calculateTimeOffset(
-                                     long executorTimestamp ) {
+    public void calculateTimeOffset( long executorTimestamp ) {
 
         // FIXME make the next working
         getDbChannel( null ).calculateTimeOffset(executorTimestamp);

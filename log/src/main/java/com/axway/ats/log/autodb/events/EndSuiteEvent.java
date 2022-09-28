@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,19 @@ import com.axway.ats.log.autodb.model.LoggingEventType;
 @SuppressWarnings( "serial")
 public class EndSuiteEvent extends AbstractLoggingEvent {
 
+    public static final String DEFAULT_MESSAGE = "End suite";
+
     public EndSuiteEvent( String loggerFQCN,
                           Logger logger ) {
 
-        super(loggerFQCN, logger, "End suite", LoggingEventType.END_SUITE);
+        this(loggerFQCN, logger, DEFAULT_MESSAGE);
+    }
+
+    public EndSuiteEvent( String loggerFQCN,
+                          Logger logger,
+                          String message ) {
+
+        super(loggerFQCN, logger, message, LoggingEventType.END_SUITE);
     }
 
     @Override

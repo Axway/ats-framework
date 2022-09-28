@@ -18,6 +18,7 @@ package com.axway.ats.log.appenders;
 
 import java.util.concurrent.ArrayBlockingQueue;
 
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -155,6 +156,28 @@ public class DbChannel {
     }
 
     /**
+     * Wait for queue logger thread to process all events
+     * */
+    public void waitForQueueToProcessAllEvents() {
+
+    	this.atsConsoleLogger.info("Waiting for queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' to process all log events ...");
+
+        while (getNumberPendingLogEvents() > 0 ) {
+            try {
+                Thread.sleep(42); // do not change, result obtained after many research hours
+                if(!queue.isEmpty()) {
+                    if (queue.element().getEvent() instanceof LeaveTestCaseEvent) {
+                        break; // the LeaveTestcaseEvent need not to be processed in order to consider queue to be empty
+                    }
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.atsConsoleLogger.info("All log events from queue '" + queueLogger.getName() + "__" + queueLogger.getId() + "' were processed");
+    }
+
+    /**
      * All logging events are processed by this method
      * @param event
      */
@@ -234,7 +257,7 @@ public class DbChannel {
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel( level );
-                    AtsConsoleLogger.setLevel(null);
+                    AtsConsoleLogger.setLevel(level);
 
                     return;
                 case END_RUN: {
@@ -256,7 +279,7 @@ public class DbChannel {
 
                     /*Revert Logger's level*/
                     Logger.getRootLogger().setLevel( level );
-                    AtsConsoleLogger.setLevel(null);
+                    AtsConsoleLogger.setLevel(level);
 
                     //this event has already been through the queue
                     return;
@@ -274,6 +297,9 @@ public class DbChannel {
                     // remember test case id
                     testCaseState.setTestcaseId( ( ( JoinTestCaseEvent ) event ).getTestCaseState()
                                                                                 .getTestcaseId() );
+                    // remember run id
+                    testCaseState.setRunId( ((JoinTestCaseEvent) event).getTestCaseState()
+                                                                       .getRunId());
                     break;
                 }
                 case LEAVE_TEST_CASE: {

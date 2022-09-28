@@ -18,6 +18,8 @@ package com.axway.ats.log;
 import java.util.Enumeration;
 import java.util.List;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
+import com.axway.ats.core.threads.ThreadsPerCaller;
 import org.apache.log4j.Appender;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -116,24 +118,24 @@ public class AtsDbLogger {
 
     /**
      * This method is intended for internal (by ATS devs) usage only.
+     * 
      * @param name the name of the logger
      * @param skipAppenderCheck enable/disable check for availability of db appender
      * 
      *
      * */
-    public static synchronized AtsDbLogger getLogger(
-                                                      String name, boolean skipAppenderCheck ) {
+    public static synchronized AtsDbLogger getLogger( String name, boolean skipAppenderCheck ) {
 
         return new AtsDbLogger(Logger.getLogger(name), skipAppenderCheck);
     }
 
     /**
      * This method is intended for internal (by ATS devs) usage only.
+     * 
      * @param logger the Apache log4j logger
      * @param skipAppenderCheck enable/disable check for availability of db appender
      */
-    public static synchronized AtsDbLogger getLogger(
-                                                      Logger logger, boolean skipAppenderCheck ) {
+    public static synchronized AtsDbLogger getLogger( Logger logger, boolean skipAppenderCheck ) {
 
         return new AtsDbLogger(logger, skipAppenderCheck);
     }
@@ -361,7 +363,7 @@ public class AtsDbLogger {
      * Update the static information about the current run.
      * <br><b>NOTE</b>: This method can be called at anytime after a run is started.
      *
-     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     * <br><br><b>NOTE</b>: Pass <code>null</code> value to any parameter which must not be modified.
      *
      * @param runName name of the run
      * @param osName name of the OS
@@ -408,7 +410,7 @@ public class AtsDbLogger {
      * Update the static information about the current suite.
      * <br><b>NOTE</b>: This method can be called at any time after a suite is started.
      *
-     * <br><br><b>NOTE</b>: Pass 'null' value to any parameter which must not be modified.
+     * <br><br><b>NOTE</b>: Pass <code>null</code> value to any parameter which must not be modified.
      *
      * @param newSuiteName the new value to set for the name of the current suite
      * @param newUserNote  the new value to set for the user note of the current suite
@@ -422,19 +424,31 @@ public class AtsDbLogger {
     /**
      * End the current suite
      */
-    public void endSuite() {
+    public synchronized void endSuite() {
 
-        sendEvent(new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
+        endSuite(EndSuiteEvent.DEFAULT_MESSAGE);
+    }
+
+    public synchronized void endSuite( String message ) {
+
+        sendEvent(new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, message));
     }
 
     /**
-     * End the current suite, for the specific thread
+     * End the current suite
+     * 
+     * @param threadId the thread that started this suite if the event will be fired from a different thread
      */
-    public void endSuite( String threadName ) {
+    public synchronized void endSuite( int threadId ) {
+
+        endSuite(EndSuiteEvent.DEFAULT_MESSAGE, threadId);
+    }
+
+    public synchronized void endSuite( String message, int threadId ) {
 
         // We need to attach this event to the provided thread
-        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger);
-        event.setProperty(ExecutorUtils.ATS_RANDOM_TOKEN, threadName);
+        EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, message);
+        event.setProperty(ExecutorUtils.ATS_THREAD_ID, threadId + "");
 
         sendEvent(event);
     }
@@ -449,7 +463,7 @@ public class AtsDbLogger {
 
     /**
      * Add some meta info about a scenario.
-     * Must be called while there is an existing scenario
+     * Must be called while there is an existing open/running scenario
      * 
      * @param metaKey key
      * @param metaValue value
@@ -488,7 +502,7 @@ public class AtsDbLogger {
      * Update a testcase. If value is null for any of the parameters, no update will be performed for that parameter.
      * 
      * @param suiteFullName full name ( package.java_class_name ) of the suite.
-     * <div> Note that the fullName must contains at least two tokens, divided by dot character ( e.g. com.foobar ) </div>
+     * <div> Note that the fullName must contain at least two tokens, divided by dot character ( e.g. com.foobar ) </div>
      * @param testcaseId the testcase ID
      * @param suiteSimpleName the name of the Java class, containing the tests
      * @param scenarioName the scenario name
@@ -496,7 +510,7 @@ public class AtsDbLogger {
      * @param scenarioDescription the scenario description
      * @param testcaseResult the result of the testcase (PASSED,FAILED,SKIPPED)
      * 
-     * */
+     */
     public void updateTestcase( int testcaseId,
                                 String suiteFullName,
                                 String suiteSimpleName,
@@ -520,13 +534,43 @@ public class AtsDbLogger {
 
     /**
      * End the current test case
+     */
+    public void endTestcase( TestCaseResult testCaseResult ) {
+
+        endTestcase(testCaseResult, EndTestCaseEvent.DEFAULT_MESSAGE);
+    }
+
+    /**
+     * End the current test case
      *
      * @param testCaseResult the result of the test case execution
      */
     public void endTestcase(
-                             TestCaseResult testCaseResult ) {
+                             TestCaseResult testCaseResult,
+                             String message ) {
 
-        sendEvent(new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger, testCaseResult));
+        sendEvent(new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger,
+                                       message,
+                                       testCaseResult));
+    }
+
+    /**
+     * End the current test case
+     *
+     * @param testCaseResult the result of the test case execution
+     * @param message the SYSTEM level message to log when this event is logged
+     * @param callerId the callerID for the thread that created this testcase
+     */
+    public void endTestcase(
+                             TestCaseResult testCaseResult,
+                             String message,
+                             String callerId ) {
+
+        EndTestCaseEvent event = new EndTestCaseEvent(ATS_DB_LOGGER_CLASS_NAME, logger,
+                                                      message,
+                                                      testCaseResult);
+        event.setProperty(ExecutorUtils.ATS_THREAD_ID, ExecutorUtils.extractThreadId(callerId));
+        sendEvent(event);
     }
 
     /**
@@ -558,7 +602,7 @@ public class AtsDbLogger {
 
     /**
      * Add some meta info about a testcase.
-     * Must be called while there is an existing testcase
+     * Must be called while there is an existing testcase (e.g. inside @Test/@BeforeMethod/@AfterMethod)
      * 
      * @param metaKey key
      * @param metaValue value
@@ -775,7 +819,7 @@ public class AtsDbLogger {
      * @param statisticValues the statistics' values
      * @param timestamp the timestamp
      */
-    public void insertSystemStatistcs(
+    public void insertSystemStatistics(
                                        String monitoredMachine,
                                        String statisticIds,
                                        String statisticValues,
@@ -797,7 +841,7 @@ public class AtsDbLogger {
      * @param statisticValues the statistics' values
      * @param timestamp the timestamp
      */
-    public void insertUserActivityStatistcs(
+    public void insertUserActivityStatistics(
                                              String monitoredMachine,
                                              String statisticIds,
                                              String statisticValues,
@@ -823,7 +867,8 @@ public class AtsDbLogger {
     }
 
     /**
-     * Leave the test case to which we have joined.
+     * Leave the test case to which we have joined <br> 
+     * Also delete the {@link com.axway.ats.log.appenders.DbChannel} associated with the testcase
      */
     public void leaveTestCase( String executorId ) {
 
@@ -833,7 +878,7 @@ public class AtsDbLogger {
 
     /**
      * After this call, all messages are treated as TESTCASE messages
-     * */
+     */
     public void startAfterMethod() {
 
         sendEvent(new StartAfterMethodEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -841,7 +886,7 @@ public class AtsDbLogger {
 
     /**
      * Clears effect of the StartAfterMethod invocation
-     * */
+     */
     public void endAfterMethod() {
 
         sendEvent(new EndAfterMethodEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -849,7 +894,7 @@ public class AtsDbLogger {
 
     /**
      * After this call, all messages are treated as SUITE messages
-     * */
+     */
     public void startAfterClass() {
 
         sendEvent(new StartAfterClassEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -857,7 +902,7 @@ public class AtsDbLogger {
 
     /**
      * Clears effect of the StartAfterClass invocation
-     * */
+     */
     public void endAfterClass() {
 
         sendEvent(new EndAfterClassEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -865,7 +910,7 @@ public class AtsDbLogger {
 
     /**
      * After this call, all messages are treated as RUN messages
-     * */
+     */
     public void startAfterSuite() {
 
         sendEvent(new StartAfterSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -873,7 +918,7 @@ public class AtsDbLogger {
 
     /**
      * Clears effect of the StartAfterSuite invocation
-     * */
+     */
     public void endAfterSuite() {
 
         sendEvent(new EndAfterSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger));
@@ -899,12 +944,16 @@ public class AtsDbLogger {
             } else if (appender instanceof PassiveDbAppender) {
                 // Comes here on Agent side. There will be 1 Passive appender per caller
 
-                // Pass the event to any existing appender.
-                // The correct one will return result, wrong appenders will return null.
-                GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
-                if (resultEvent != null) {
-                    // we found the right Passive appender
-                    return resultEvent.getTestCaseState();
+                if (ThreadsPerCaller.getCaller().equals(((PassiveDbAppender) appender).getCallerId())) {
+                    // Pass the event to right existing appender.
+                    GetCurrentTestCaseEvent resultEvent = ((PassiveDbAppender) appender).getCurrentTestCaseState(event);
+                    if (resultEvent != null) {
+                        return resultEvent.getTestCaseState();
+                    } else {
+                        new AtsConsoleLogger(AtsDbLogger.class).warn("PassiveAppender found for current caller "
+                                                                     + ThreadsPerCaller.getCaller() +
+                                                                     " but there is no test case state associated");
+                    } 
                 }
             }
         }
@@ -984,6 +1033,5 @@ public class AtsDbLogger {
         } else {
             return obj.toString(); // possibly this could also return null but seems not an issue
         }
-
     }
 }

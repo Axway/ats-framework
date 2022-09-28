@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1678,20 +1678,17 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
 
             if (!javaFrameworkVersion.equalsIgnoreCase(databaseVersion)) {
 
-				if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH, false)) {
+            if (AtsSystemProperties.getPropertyAsBoolean(AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH, false)) {
+                    throw new IllegalStateException(String.format(
+                            "ATS Version mismatch! Database at '%s' is version '%s' while you are using ATS Framework version '%s'!",
+                            this.dbConnectionFactory.getURL(), databaseVersion, javaFrameworkVersion));
+                } else {
+                    log.warn("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
+                            + " with ATS Log database version " + databaseVersion
+                            + ". This might cause incompatibility problems!");
+                }
 
-					throw new IllegalStateException(String.format(
-							"ATS Version mismatch! Database at '%s' is version '%s' while you are using ATS Framework version '%s'!",
-							this.dbConnectionFactory.getURL(), databaseVersion, javaFrameworkVersion));
-
-				} else {
-
-					log.warn("*** ATS WARNING *** You are using ATS version " + javaFrameworkVersion
-							+ " with ATS Log database version " + databaseVersion
-							+ ". This might cause incompatibility problems!");
-				}
-
-			}
+            }
 
             originalAutoCommitState = connection.getAutoCommit();
             // disable auto commit

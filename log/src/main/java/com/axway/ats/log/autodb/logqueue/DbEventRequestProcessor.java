@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.appenders.AbstractDbAppender;
 import com.axway.ats.log.autodb.exceptions.*;
 import com.axway.ats.log.autodb.model.*;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -167,7 +168,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     /**
      * Do not use this constructor.
-     * It is implemented only to be used, when a dummy db event request processor is needed to be created.
+     * It is implemented only to be used, when a dummy DB event request processor is needed to be created.
      * Currently, the only case that this is needed is when ActiveDbAppender config info is not found in log4j.xml
      */
     public DbEventRequestProcessor() {
@@ -177,11 +178,6 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
     }
 
-    /*public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
-                                    boolean isBatchMode ) throws DatabaseAccessException {
-        this(appenderConfig, layout, null, isBatchMode);
-    }*/
-
     public DbEventRequestProcessor( DbAppenderConfiguration appenderConfig, Layout layout,
                                     EventRequestProcessorListener listener,
                                     boolean isBatchMode ) throws DatabaseAccessException {
@@ -189,13 +185,65 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         this.appenderConfig = appenderConfig;
         this.isBatchMode = isBatchMode;
 
-        Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
-                                                                    Integer.parseInt(appenderConfig.getPort()),
-                                                                    appenderConfig.getDatabase(),
-                                                                    appenderConfig.getUser(),
-                                                                    appenderConfig.getPassword());
-        if (mssqlException == null) {
+        // check DB type for use. Check with similar DbAccessFactory code
+        String availableDbType = null;
+        if (String.valueOf(DbConnSQLServer.DEFAULT_PORT).equals(appenderConfig.getPort())) {
 
+            checkIfMssqlAvailable();
+            availableDbType = DbConnSQLServer.DATABASE_TYPE;
+        } else if (String.valueOf(DbConnPostgreSQL.DEFAULT_PORT).equals(appenderConfig.getPort())) {
+
+            checkIfPgsqlAvailable();
+            availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+        } else {
+
+            Throwable mssqlException = null;
+            Throwable pgsqlException = null;
+
+            try {
+                checkIfMssqlAvailable();
+                availableDbType = DbConnSQLServer.DATABASE_TYPE;
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            try {
+                checkIfPgsqlAvailable();
+                availableDbType = DbConnPostgreSQL.DATABASE_TYPE;
+            } catch (Exception e) {
+                pgsqlException = e;
+            }
+
+            if (mssqlException != null && pgsqlException != null) {
+                /*log.error(mssqlException);
+                log.error(pgsqlException);
+                String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                                + (!StringUtils.isNullOrEmpty(appenderConfig.getPort())
+                                                                                        ? appenderConfig.getPort()
+                                                                                        : "")
+                                + "' contains ATS log database with name '" + appenderConfig.getDatabase() + "'.";
+                errMsg += " See logs for details";
+                throw new DatabaseAccessException(errMsg);*/
+
+                String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
+                                + appenderConfig.getPort() +
+                                "' has database with name '" + appenderConfig.getDatabase()
+                                + "'. Exception for MSSQL is : \n\t" + mssqlException
+                                + "\n\nException for PostgreSQL is: \n\t"
+                                + pgsqlException;
+                throw new DatabaseAccessException(errMsg);
+            }
+        }
+
+        /*
+        Exception mssqlException = DbUtils.checkMssqlDatabaseAvailability(appenderConfig.getHost(),
+                                                                          Integer.parseInt(appenderConfig.getPort()),
+                                                                          appenderConfig.getDatabase(),
+                                                                          appenderConfig.getUser(),
+                                                                          appenderConfig.getPassword());
+        if (mssqlException == null) { */
+
+        if (availableDbType.equals(DbConnSQLServer.DATABASE_TYPE)) {
             //create the db access layer
             if (DbKeys.SQL_SERVER_DRIVER_MICROSOFT.equalsIgnoreCase(appenderConfig.getDriver())) {
 
@@ -229,31 +277,25 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                    + "' which is not supported");
             }
 
-        } else {
-            Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+        } else if (availableDbType.equals(DbConnPostgreSQL.DATABASE_TYPE)) {
+            /* Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
                                                                              Integer.parseInt(appenderConfig.getPort()),
                                                                              appenderConfig.getDatabase(),
                                                                              appenderConfig.getUser(),
                                                                              appenderConfig.getPassword());
 
-            if (pgsqlException == null) {
-                this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
-                                                         Integer.parseInt(appenderConfig.getPort()),
-                                                         appenderConfig.getDatabase(),
-                                                         appenderConfig.getUser(), appenderConfig.getPassword(), null);
+            if (pgsqlException == null) { */
+            this.dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
+                                                     Integer.parseInt(appenderConfig.getPort()),
+                                                     appenderConfig.getDatabase(),
+                                                     appenderConfig.getUser(), appenderConfig.getPassword(), null);
 
                 //create the db access layer
                 this.dbAccess = new PGDbWriteAccess((DbConnPostgreSQL) dbConnection, isBatchMode);
                 this.dbAccess.setMaxNumberOfCachedEvents(NumberUtils.toInt(appenderConfig.getChunkSize(), -1));
-            } else {
-                String errMsg = "Neither MSSQL, nor PostgreSQL server at '" + appenderConfig.getHost() + ":"
-                                + appenderConfig.getPort() +
-                                "' has database with name '" + appenderConfig.getDatabase()
-                                + "'. Exception for MSSQL is : \n\t" + mssqlException
-                                + "\n\nException for PostgreSQL is: \n\t" + pgsqlException;
-                throw new DatabaseAccessException(errMsg);
-            }
-
+        } else {
+            throw new UnsupportedOperationException("Could not use database '" + availableDbType
+                                                + "' as an ATS LOG database");
         }
 
         this.layout = layout;
@@ -265,6 +307,46 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             this.machineName = addr.getHostName();
         } catch (UnknownHostException uhe) {
             this.machineName = "unknown host";
+        }
+
+        if (_state == null) {
+            _state = new EventProcessorState();
+        }
+    }
+
+    private void checkIfPgsqlAvailable() throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkPgsqlDatabaseAvailability(appenderConfig.getHost(),
+                                                   Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(),
+                                                   appenderConfig.getUser(),
+                                                   appenderConfig.getPassword());
+
+            log.info("[" + DbConnPostgreSQL.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnPostgreSQL.DATABASE_TYPE
+                                              + " ATS Log database.", e);
+        }
+    }
+
+    private void checkIfMssqlAvailable() throws DatabaseAccessException {
+
+        log.info("Checking connectivity to [" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG database ...");
+
+        try {
+            DbUtils.checkMssqlDatabaseAvailability(appenderConfig.getHost(),
+                                                   Integer.parseInt(appenderConfig.getPort()),
+                                                   appenderConfig.getDatabase(),
+                                                   appenderConfig.getUser(),
+                                                   appenderConfig.getPassword());
+
+            log.info("[" + DbConnSQLServer.DATABASE_TYPE + "] ATS LOG DB available: YES");
+        } catch (Exception e) {
+            throw new DatabaseAccessException("Unable to connect to " + DbConnSQLServer.DATABASE_TYPE
+                                              + " ATS Log database.", e);
         }
     }
 
@@ -308,6 +390,11 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         return _state.getLastExecutedTestCaseId();
     }
 
+    /**
+     * Process each event request - either system (ATS test lifecycle events) or logging one (message, checkpoint 
+     * or statistic)
+     * @param eventRequest the logging event to be processed. If <code>null</code> then flush cache request is assumed.
+     */
     public void processEventRequest( LogEventRequest eventRequest ) throws LoggingException {
 
         if (testcaseToDelete > 0) {
@@ -321,7 +408,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
 
         if (isBatchMode && eventRequest == null) {
-            // timeout waiting for next event - flush the current cache
+            // eventRequest is null when there is timeout waiting for next event from queue. So flush the current cache
             dbAccess.flushCache();
             return;
         }
@@ -346,8 +433,9 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
 
         String executorId;
-        executorId = event.getProperty(ExecutorUtils.ATS_RANDOM_TOKEN);
+        executorId = event.getProperty(ExecutorUtils.ATS_CALLER_ID);
         if (executorId == null) {
+            log.warn("Missing executor ID for LoggingEvent. Setting current thread name");
             executorId = event.getThreadName();
         }
 
@@ -373,7 +461,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                          * and fired it right after StartSuiteEvent is received
                          */
                         pendingUpdateSuiteEvent = (UpdateSuiteEvent) dbAppenderEvent;
-                        return;
+                        log.error("Could not process event '" + dbAppenderEvent.getClass().getSimpleName()
+                            + "'.\nSender location:\n\t" + dbAppenderEvent.getLocationInformation().fullInfo
+                            + "\nCurrent processor state: \n\tRUN ID: " + this.getRunId() + ",\n\tSUITE ID: "
+                              + this.getSuiteId() + ",\n\tTESTCASE ID: "
+                              + this.getTestCaseId());
+
+                    return; //throw e;
                     }
                 } else if (dbAppenderEvent instanceof UpdateRunEvent) {
                     try {
@@ -501,7 +595,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                         joinTestCase((JoinTestCaseEvent) event);
                         break;
                     case LEAVE_TEST_CASE:
-                        leaveTestCase(executorId);
+                        String threadId = null;
+                        threadId = event.getProperty(ExecutorUtils.ATS_THREAD_ID);
+                        if (threadId == null) {
+                            threadId = getThreadId(event.getThreadName());
+                        }
+                        leaveTestCase(threadId);
                         break;
                     case ADD_TESTCASE_METAINFO:
                         addTestcaseMetainfo((AddTestcaseMetainfoEvent) event);
@@ -549,6 +648,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
                                                    + dbAppenderEvent.getEventType());
                 }
             } else {
+                // regular Log4J message event
                 insertMessage(executorId, eventRequest, false, false);
             }
         }
@@ -640,11 +740,13 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     private void endRun( long timeStamp ) throws DatabaseAccessException {
 
-        int currentRunId = _state.getRunId();
+        int currentRunId = ActiveDbAppender.runState.getRunId();
 
         dbAccess.endRun(timeStamp, currentRunId, true);
-
-        //set the current appender state
+        /*
+         * preserve the some run information
+         * This is done in order to be able to execute tests in parallel
+         */
         _state.setPreviousRunId(currentRunId);
         _state.setRunId(0);
         _state.setLifeCycleState(LifeCycleState.INITIALIZED);
@@ -725,8 +827,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             // Due to change in the suite name, update suiteIdCache, 
             // only if suite name is not null and is not an empty string
             if (!StringUtils.isNullOrEmpty(event.getSuiteName())) {
-                suiteIdsCache.put(_state.getRunId() + event.getSuiteName(),
-                                  _state.getSuiteId());
+                suiteIdsCache.put(_state.getRunId() + event.getSuiteName(), _state.getSuiteId());
             }
         }
 
@@ -899,18 +1000,33 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
          * This event happens on the Agent side.
          */
 
+        // check if testcaseId is not negative number
+        if (joinTestCaseEvent.getTestCaseState().getTestcaseId() < 0) {
+            // check if lastExecutedTestcaseId is not negative number
+            if (joinTestCaseEvent.getTestCaseState().getLastExecutedTestcaseId() < 0) {
+                throw new IllegalArgumentException("Could not join testcase. Both testcaseId and lastExecutedTestcaseId are negative numbers.");
+            } else {
+                // after this call lastTestcaseId and testcaseId will have the same value
+                joinTestCaseEvent.getTestCaseState()
+                                 .setTestcaseId(joinTestCaseEvent.getTestCaseState().getLastExecutedTestcaseId());
+            }
+        }
         //set test case id
         _state.setTestCaseState(joinTestCaseEvent.getTestCaseState());
 
         //set the current appender state
         _state.setLifeCycleState(LifeCycleState.TEST_CASE_STARTED);
 
+        //set the run id
+        //_state.setRunId(joinTestCaseEvent.getTestCaseState().getRunId());
+        // set the run id to the run state as well
+        _state.setRunId(joinTestCaseEvent.getTestCaseState().getRunId());
         /*
          * Now the Agent can log into this test case
          */
     }
 
-    private void leaveTestCase(String executorId) {
+    private void leaveTestCase( String threadId ) {
 
         /*
          * This event happens on the Agent side.
@@ -925,7 +1041,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
          * The Agent can no longer log into this test case
          */
 
-        String threadId = ExecutorUtils.extractThread( executorId );
+        //String threadId = ExecutorUtils.extractThread( executorId );
         if( "main".equals( threadId ) ) {
             // Tests are running one after another.
             // We leave this logging thread alive for the future test(if there is such).
@@ -936,7 +1052,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         } else {
             // Test are running in parallel.
             // In order to reduce the number of logger threads, we will exit this thread
-            throw new LoggingIsOverException("Logging is over for <" + executorId + ">. Logging thread "
+            throw new LoggingIsOverException("Logging is over for <" + threadId + ">. Logging thread "
                                              + Thread.currentThread().getName()
                                              + " will stop working now." );
         }
@@ -1322,7 +1438,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
             if (userProvidedUpdateRunEvent != null) {
 
                 // get current run info from database
-                Run run = getLatestRun(_state);
+                Run run = getLatestRun(/*_state*/);
 
                 // replace the missing fields, received by the latest UpdateRunEvent with the one from the DB
                 String runName = (userProvidedUpdateRunEvent.getRunName() != null)
@@ -1367,7 +1483,7 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
     }
 
-    private Run getLatestRun(EventProcessorState eventProcessorState) throws SQLException {
+    private Run getLatestRun(/*EventProcessorState eventProcessorState*/) throws SQLException {
 
         PreparedStatement stmt = null;
         Run run = new Run();
@@ -1377,10 +1493,12 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
 
             tmpConn = ConnectionPool.getConnection(dbConnection);
 
-            stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
-            if (dbConnection instanceof DbConnPostgreSQL) {
-                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId="
-                                                + _state.getRunId());
+            if (dbConnection instanceof DbConnSQLServer) {
+                stmt = tmpConn.prepareStatement("SELECT * FROM tRuns WHERE runId=" + _state.getRunId());
+            } else if (dbConnection instanceof DbConnPostgreSQL) {
+                stmt = tmpConn.prepareStatement("SELECT * FROM \"tRuns\" WHERE runId=" + _state.getRunId());
+            } else {
+                // TODO throw some exception about unsupported connection class
             }
             ResultSet rs = stmt.executeQuery();
             rs.next();
@@ -1405,5 +1523,19 @@ public class DbEventRequestProcessor implements EventRequestProcessor {
         }
 
         return run;
+    }
+
+    public String getThreadId( String threadName ) {
+
+        Thread[] threads = new Thread[Thread.activeCount() * 2];
+        Thread.enumerate(threads); // TODOs check from Map of cached IDs and enumerate and add only if not found
+        for (Thread t : threads) {
+            if (t != null) {
+                if (t.getName().equals(threadName)) {
+                    return t.getId() + "";
+                }
+            }
+        }
+        return null;
     }
 }

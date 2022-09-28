@@ -177,20 +177,28 @@ public class AtsDbReader {
 
             //what if the SQL server or PGSQL server are accessible only via secure connections?
 
-            Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(host, port, db, user, password);
-            if (mssqlException == null) {
+            Exception mssqlException = null;
+            try {
+                DbUtils.checkMssqlDatabaseAvailability(host, port, db, user, password);
                 dbConnection = new DbConnSQLServer(host, port, db, user, password, customProperties);
-            } else {
-                Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(host, port, db, user, password);
-                if (pgsqlException == null) {
-                    dbConnection = new DbConnPostgreSQL(host, port, db, user, password, customProperties);
-                } else {
-                    throw new DatabaseAccessException(constructSQLServerNotFoundExceptionMessage(mssqlException,
-                            pgsqlException, host,
-                            port, db, user,
-                            password,
-                            customProperties));
-                }
+            } catch (Exception e) {
+                mssqlException = e;
+            }
+
+            Exception pgsqlException = null;
+            try {
+                DbUtils.checkPgsqlDatabaseAvailability(host, port, db, user, password);
+                dbConnection = new DbConnPostgreSQL(host, port, db, user, password, customProperties);
+            } catch (Exception e) {
+                pgsqlException = e;
+            }
+
+            if (mssqlException != null && pgsqlException != null) {
+                throw new DatabaseAccessException(constructSQLServerNotFoundExceptionMessage(mssqlException,
+                                                                                             pgsqlException, host,
+                                                                                             port, db, user,
+                                                                                             password,
+                                                                                             customProperties));
             }
         }
         return new AtsDbReader(dbConnection);

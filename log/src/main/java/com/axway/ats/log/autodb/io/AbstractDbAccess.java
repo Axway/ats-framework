@@ -43,6 +43,10 @@ import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 
 public abstract class AbstractDbAccess {
 
+    /**
+     * Max interval (in ms) after which DB events cache will be flushed
+     */
+    public static final long             CACHE_MAX_DURATION_BEFORE_FLUSH = 10 * 1000; // in millis, 10 sec
     protected final AtsConsoleLogger     log;
     
     public static final int              DEFAULT_CHUNK_SIZE       = 2000;
@@ -86,12 +90,14 @@ public abstract class AbstractDbAccess {
     /**
      * SQL connection which could be shared between different method invocations
      * like in the sanity check case where test run data is inserted.
+     * <p>Currently, populated via refreshInternalConnection().</p>
+     *
      * The code invoking methods of this class is required to:
      * <ol>
      * <li>get connection</li>
-     * <li>assign it to this variable - {@link #setInternalConnection(Connection)}</li>
+     * <li>assign it to this variable - via setInternalConnection(Connection)</li>
      * <li>invoke methods here</li>
-     * <li>set local connection variable to null - {@link #clearInternalConnection()}</li>
+     * <li>set local connection variable to null - #clearInternalConnection()</li>
      * <li>close connection from outside after dbAccess work is processed</li>
      */
     protected Connection   connection;

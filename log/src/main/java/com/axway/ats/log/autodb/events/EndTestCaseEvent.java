@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,21 @@ public class EndTestCaseEvent extends AbstractLoggingEvent {
 
     private final TestCaseResult testCaseResult;
 
+    public static final String DEFAULT_MESSAGE = "End test case";
+
     public EndTestCaseEvent( String loggerFQCN,
                              Logger logger,
                              TestCaseResult testCaseResult ) {
 
-        super(loggerFQCN, logger, "End test case", LoggingEventType.END_TEST_CASE);
+        this(loggerFQCN, logger, DEFAULT_MESSAGE, testCaseResult);
+    }
+
+    public EndTestCaseEvent( String loggerFQCN,
+                             Logger logger,
+                             String message,
+                             TestCaseResult testCaseResult ) {
+
+        super(loggerFQCN, logger, message, LoggingEventType.END_TEST_CASE);
 
         this.testCaseResult = testCaseResult;
     }

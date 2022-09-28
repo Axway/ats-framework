@@ -61,8 +61,7 @@ public class QueueLoggerThread extends Thread {
         this.eventProcessor = eventProcessor;
         this.isBatchMode = isBatchMode;
 
-        // It is the user's responsibility to close appenders before
-        // exiting.
+        // It is the user's responsibility to close appenders before exiting
         this.setDaemon(false);
         this.setName(this.getClass().getSimpleName() + "-" + getName());
     }
@@ -84,7 +83,8 @@ public class QueueLoggerThread extends Thread {
             try {
                 if (isBatchMode) {
                     // get the next event, wait no more than 10 seconds
-                    logEventRequest = queue.poll(10, TimeUnit.SECONDS);
+                    logEventRequest = queue.poll(AbstractDbAccess.CACHE_MAX_DURATION_BEFORE_FLUSH,
+                                                 TimeUnit.MILLISECONDS);
                 } else {
                     // we are not in a hurry,
                     // block until receive an event in the queue
@@ -108,7 +108,7 @@ public class QueueLoggerThread extends Thread {
                                          + " events left, so we just go on");
                     } else {
                         // Queue is empty.
-                        // log.info( e.getMessage() );
+                        // CONSOLE_LOG.info( e.getMessage() );
 
                         // It is time for this thread to stop.
                         // Future calls to its isAlive() method will return false.

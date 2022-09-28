@@ -165,4 +165,23 @@ public class Test_AtsDbLogger {
         AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123", true);
         autoLogger.endTestcase(TestCaseResult.PASSED);
     }
+
+    /**
+     * Test aspect
+     * @throws InterruptedException
+     */
+    @Test
+    public void withNewThread() throws InterruptedException {
+
+        AtsDbLogger autoLogger = AtsDbLogger.getLogger("test.123", true);
+        Thread myThread = new Thread() {
+            @Override public void run() {
+
+                super.run();
+                autoLogger.info("From the new thread: " + this.getName() + ", class: " +this.getClass());
+            }
+        };
+        myThread.start();
+        Thread.sleep(1* 1000);
+    }
 }

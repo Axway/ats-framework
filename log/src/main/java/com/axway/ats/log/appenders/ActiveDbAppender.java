@@ -24,6 +24,7 @@ import com.axway.ats.core.dbaccess.postgresql.DbConnPostgreSQL;
 import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.threads.ImportantThread;
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.autodb.events.EndRunEvent;
 import com.axway.ats.log.autodb.events.GetCurrentTestCaseEvent;
 import com.axway.ats.log.autodb.exceptions.DatabaseAccessException;
 import com.axway.ats.log.autodb.io.PGDbReadAccess;
@@ -45,7 +46,7 @@ import java.util.Map;
  * DB connection info, current run and testcase ID(s).
  * <p><em>Note</em> that this class is internal for the framework and DB-related public operations are available via 
  * AtsDbLogger</p>
- * It is used only on the Test Executor side and not on ATS Agents.
+ * It is used only on the <em>Test Executor side</em> and not on ATS Agents.
  */
 public class ActiveDbAppender extends AbstractDbAppender {
 
@@ -88,6 +89,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
         appenderConfig.setDatabase(DUMMY_DB_DATABASE);
         appenderConfig.setUser(DUMMY_DB_USER);
         appenderConfig.setPassword(DUMMY_DB_PASSWORD);
+        
+        isAttached = true;
     }
 
     /* (non-Javadoc)
@@ -101,6 +104,10 @@ public class ActiveDbAppender extends AbstractDbAppender {
         event.getThreadName();
 
         getDbChannel(event).append(event);
+        
+        if (event instanceof EndRunEvent) {
+            destroyAllChannels(true);
+        }
     }
 
     @Override
@@ -117,16 +124,21 @@ public class ActiveDbAppender extends AbstractDbAppender {
     /**
      * Get {@link IDbReadAccess} using the appender's db configuration
      * @throws DatabaseAccessException In case of DB error
-     * */
+     */
     public IDbReadAccess obtainDbReadAccessObject() throws DatabaseAccessException {
 
         DbConnection dbConnection = null;
         if (dbReadAccess == null) {
-            Exception mssqlException = DbUtils.isMSSQLDatabaseAvailable(appenderConfig.getHost(),
-                                                                        Integer.parseInt(appenderConfig.getPort()),
-                                                                        appenderConfig.getDatabase(),
-                                                                        appenderConfig.getUser(),
-                                                                        appenderConfig.getPassword());
+            Exception mssqlException = null;
+            try {
+                DbUtils.checkMssqlDatabaseAvailability(appenderConfig.getHost(),
+                                                                              Integer.parseInt(appenderConfig.getPort()),
+                                                                              appenderConfig.getDatabase(),
+                                                                              appenderConfig.getUser(),
+                                                                              appenderConfig.getPassword());
+            } catch (Exception e) {
+                mssqlException = e;
+            }
             if (mssqlException == null) {
                 
                 Map<String, Object> props = new HashMap<>();
@@ -140,11 +152,16 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 dbReadAccess = new SQLServerDbReadAccess((DbConnSQLServer) dbConnection);
 
             } else {
-                Exception pgsqlException = DbUtils.isPostgreSQLDatabaseAvailable(appenderConfig.getHost(),
+                Exception pgsqlException = null;
+                try {
+                    DbUtils.checkPgsqlDatabaseAvailability(appenderConfig.getHost(),
                                                                                  Integer.parseInt(appenderConfig.getPort()),
                                                                                  appenderConfig.getDatabase(),
                                                                                  appenderConfig.getUser(),
                                                                                  appenderConfig.getPassword());
+                } catch (Exception e) {
+                    pgsqlException = e;
+                }
 
                 if (pgsqlException == null) {
                     dbConnection = new DbConnPostgreSQL(appenderConfig.getHost(),
@@ -287,8 +304,8 @@ public class ActiveDbAppender extends AbstractDbAppender {
         String executorId = null;
 
         if (event != null) {
-            // the executor might be comming from the logging event
-            executorId = event.getProperty(ExecutorUtils.ATS_RANDOM_TOKEN);
+            // the executor might be coming from the logging event's properties
+            executorId = event.getProperty(ExecutorUtils.ATS_THREAD_ID);
         }
 
         if (executorId == null) {
@@ -298,7 +315,7 @@ public class ActiveDbAppender extends AbstractDbAppender {
                 executorId = ((ImportantThread) thisThread).getExecutorId();
             } else {
                 // use the thread name
-                executorId = thisThread.getName();
+                executorId = thisThread.getId() + "";
             }
         }
 

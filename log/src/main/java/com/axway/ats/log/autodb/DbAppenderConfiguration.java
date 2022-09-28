@@ -52,8 +52,8 @@ public class DbAppenderConfiguration implements Serializable {
     //are checkpoints enabled
     private boolean           enableCheckpoints                     = true;
 
-    //the effective logging level. Serialized only by int value to prevent classloading issues of Priority/Level classes
-    transient private Priority loggingThreshold;
+    //the effective logging level. Serialized only by int value to prevent classloading issues of Log4j Priority/Level classes
+    private int               loggingThreshold                      = -1;
 
     public String getHost() {
 
@@ -68,17 +68,6 @@ public class DbAppenderConfiguration implements Serializable {
         }
     }
 
-    public String getPort() {
-
-        return port;
-    }
-
-    public void setPort( String port ) {
-
-         this.port = port;
-
-    }
-
     public String getDatabase() {
 
         return database;
@@ -90,6 +79,18 @@ public class DbAppenderConfiguration implements Serializable {
         if (database != null) {
             this.database = database;
         }
+    }
+
+
+    public String getPort() {
+
+        return port;
+    }
+
+    public void setPort( String port ) {
+
+         this.port = port;
+
     }
 
     public String getUser() {
@@ -176,13 +177,13 @@ public class DbAppenderConfiguration implements Serializable {
         this.enableCheckpoints = enableCheckpoints;
     }
 
-    public Priority getLoggingThreshold() {
+    public int getLoggingThreshold() {
 
         return loggingThreshold;
     }
 
     public void setLoggingThreshold(
-                                     Priority loggingThreshold ) {
+                                     int loggingThreshold ) {
 
         this.loggingThreshold = loggingThreshold;
     }
@@ -248,6 +249,18 @@ public class DbAppenderConfiguration implements Serializable {
     }
 
     /* (non-Javadoc)
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+
+        return this.host + "__" + this.port + "__" + this.database + "__" + this.user + "__" + this.password + "__"
+               + this.maxNumberLogEvents + "__" + this.mode + "__" + this.enableCheckpoints + "__"
+               + this.loggingThreshold;
+
+    }
+
+    /* (non-Javadoc)
      * @see java.lang.Object#equals(java.lang.Object)
      */
     @Override
@@ -263,11 +276,11 @@ public class DbAppenderConfiguration implements Serializable {
             return false;
         }
 
-        if (port != null && !port.equals(otherConfig.port)) {
+        if (database != null && !database.equals(otherConfig.database)) {
             return false;
         }
 
-        if (database != null && !database.equals(otherConfig.database)) {
+        if (port != null && !port.equals(otherConfig.port)) {
             return false;
         }
 
@@ -291,7 +304,7 @@ public class DbAppenderConfiguration implements Serializable {
             return false;
         }
 
-        if (!loggingThreshold.equals(otherConfig.loggingThreshold)) {
+        if (loggingThreshold != otherConfig.loggingThreshold) {
             return false;
         }
 
@@ -306,12 +319,13 @@ public class DbAppenderConfiguration implements Serializable {
         return true;
     }
 
-    /**
+    /*
+     **
      * Custom deserialization of DbAppenderConfiguration
      * @param s serialization stream.
      * @throws IOException if IO exception.
      * @throws ClassNotFoundException if class not found.
-     */
+     * /
     private void readObject(
                              final ObjectInputStream s ) throws IOException, ClassNotFoundException {
 
@@ -324,7 +338,7 @@ public class DbAppenderConfiguration implements Serializable {
      * Serialize DbAppenderConfiguration.
      * @param s serialization stream.
      * @throws IOException if exception during serialization.
-     */
+     * /
     private void writeObject(
                               final ObjectOutputStream s ) throws IOException {
 
@@ -334,6 +348,6 @@ public class DbAppenderConfiguration implements Serializable {
             throw new IllegalStateException("Logging level should not be null");
         }
         s.writeInt(loggingThreshold.toInt());
-    }
+    } */
 
 }

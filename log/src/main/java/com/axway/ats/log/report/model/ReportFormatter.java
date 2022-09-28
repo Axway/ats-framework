@@ -77,8 +77,8 @@ public class ReportFormatter {
      * @param description   description about these runs
      * @param dbHost    the database hostname
      * @param dbName    the database name
-     * @param port  the Test Explorer web port
-     * @param testExplorerPath  Context path to the TestExplorer web application like "/TestExplorer-3.4.0"
+     * @param testExplorerWebPort  the Test Explorer HTTP listener port
+     * @param testExplorerPath  Context path to the TestExplorer web application like "/TestExplorer-4.4.0"
      */
     public ReportFormatter( List<RunWrapper> runs,
                             String description,
@@ -106,7 +106,7 @@ public class ReportFormatter {
     }
 
     /**
-     * Format the report into an html form
+     * Format the report into an HTML form
      * 
      * @return
      */

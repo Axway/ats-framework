@@ -18,7 +18,9 @@ package com.axway.ats.log.appenders;
 
 import java.util.Enumeration;
 
+import com.axway.ats.core.log.AtsConsoleLogger;
 import com.axway.ats.core.utils.ExecutorUtils;
+import com.axway.ats.log.autodb.events.LeaveTestCaseEvent;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
@@ -43,11 +45,19 @@ import com.axway.ats.log.autodb.model.EventRequestProcessorListener;
  */
 public class PassiveDbAppender extends AbstractDbAppender {
 
+    private final static AtsConsoleLogger CONSOLE_LOGGER = new AtsConsoleLogger(PassiveDbAppender.class);
+
+    /**
+     * The caller that created that appender
+     */
+    private String callerId;
+
     /**
      * Constructor
      */
     public PassiveDbAppender() {
         super();
+        callerId = ThreadsPerCaller.getCaller();
     }
 
     @Override
@@ -64,13 +74,29 @@ public class PassiveDbAppender extends AbstractDbAppender {
                            LoggingEvent event ) {
 
         if( ThreadsPerCaller.getCaller() == null ) {
+            CONSOLE_LOGGER.error("No caller for event '" + event
+                                + "'. Event source location is '"
+                                + event.getLocationInformation().fullInfo + "'");
             return;
+        }
+
+        // since we can have more than one PassiveDbAppender, we must check whether that event must be processed by the current PassiveDbAppender
+        if (! ThreadsPerCaller.getCaller().equals(this.callerId)) {
+            /*new AtsConsoleLogger(PassiveDbAppender.class).warn("Mismatch between PassiveDbAppender and current callerID '"
+                                                               + this.callerId + "' and '"
+                                                               + ThreadsPerCaller.getCaller() + "'");*/
+            return; // do not process the event any further
         }
 
         // Remember the caller prior passing this event to the logging queue.
         // We use the log4j's map inside, this is some kind of misuse.
-        event.setProperty(ExecutorUtils.ATS_RANDOM_TOKEN, ThreadsPerCaller.getCaller() );
+        event.setProperty(ExecutorUtils.ATS_CALLER_ID, ThreadsPerCaller.getCaller());
         getDbChannel( null ).append( event );
+
+        if (event instanceof LeaveTestCaseEvent) {// || event instanceof EndTestCaseEvent
+            getDbChannel(event).waitForQueueToProcessAllEvents();
+            destroyDbChannel(getDbChannelKey(event));
+        }
     }
 
 
@@ -100,7 +126,9 @@ public class PassiveDbAppender extends AbstractDbAppender {
 
             if( appender instanceof PassiveDbAppender ) {
                 PassiveDbAppender passiveAppender = ( PassiveDbAppender ) appender;
-                return passiveAppender;
+                if (ThreadsPerCaller.getCaller().equals(passiveAppender.callerId)) {
+                    return passiveAppender;
+                }
             }
         }
 
@@ -118,6 +146,15 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public DbEventRequestProcessor getDbEventRequestProcessor() {
 
         return getDbChannel( null ).eventProcessor;
+    }
+
+    /**
+     * Returns the callerId that created this appender
+     */
+    public String getCallerId() {
+
+        return this.callerId;
+
     }
 
     @Override

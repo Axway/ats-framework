@@ -37,7 +37,7 @@ public class InsertUserActivityStatisticEvent extends TestCaseLoggingEvent {
      * @param loggerFQCN
      * @param logger
      * @param monitoredMachine
-     * @param statisticIdentifiers
+     * @param statisticIds
      * @param statisticValues
      * @param timestamp
      */

@@ -183,7 +183,6 @@ public class LoadQueuesState {
      *
      * @param startedCheckpointInfo info about this checkpoint. It is expected to already be persisted in the DB
      * @param threadName name of the thread which start the checkpoint
-     * @param startTime the time at which this checkpoint started
      * @throws ThreadNotRegisteredWithLoadQueue if the thread which tries to start the checkpoint
      * is not registered with the checkpoint
      * @throws CheckpointAlreadyStartedException if the checkpoint has been started in this thread already
