@@ -245,11 +245,8 @@
                     <source>8</source>
                     <!-- disables JDK 8 doclint javadoc feature, so all javadoc errors are
                         treated as warnings -->
-                    <!-- due to being not available in JDK 7, building it via it, will cause
-                        build error -->
-                    <!--<additionalparam>-Xdoclint:none</additionalparam> -->
                     <additionalJOption>-Xdoclint:none</additionalJOption>
-                    <quiet>true</quiet> <!-- Travis-related: reduce size of console log -->
+                    <quiet>true</quiet> <!-- reduce size of console log -->
                     <failOnWarnings>false</failOnWarnings>
                 </configuration>
                 <executions>
@@ -568,7 +565,7 @@
             </properties>
         </profile>
         <profile>
-            <id>selNoTest</id>
+            <id>selNoTest</id> <!-- Fast build with tests, exclude some long-running ones-->
             <properties>
                 <maven.javadoc.skip>true</maven.javadoc.skip>
             </properties>
