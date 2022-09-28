@@ -19,7 +19,7 @@
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590,
             Error example: javax.net.ssl.SSLException: closing inbound before receiving
             peer's close_notify -->
-        <mysql.mysql-connector-java.version>8.0.21</mysql.mysql-connector-java.version>
+        <mysql.mysql-connector-java.version>8.0.28</mysql.mysql-connector-java.version> <!-- Sec. fixes. Previous used was 8.0.21 -->
         <!-- MariaDB: Use older version, because using 2.7.4 gives connection timeout.
              Case:  1. DB connection is made; 2. DB server is restarted; 3. Attempt for new connection - no connection within specified timeout -->
         <mariadb-connector-java.version>2.7.2</mariadb-connector-java.version>
@@ -128,14 +128,15 @@
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.oracle.jdbc</groupId>
-            <artifactId>ojdbc7</artifactId>
-            <optional>true</optional> <!-- only needed for connections to Oracle DB. Resolved from maven.oracle.com
-				repo -->
+            <groupId>com.oracle.database.jdbc</groupId>
+            <artifactId>ojdbc8</artifactId>
+            <version>${oracle.ojdbc.version}</version>
+            <optional>true</optional> <!-- only needed for connections to Oracle DB. Before it was resolved 
+                from maven.oracle.com repo -->
             <exclusions>
                 <exclusion>
-                    <groupId>com.oracle.jdbc</groupId>
-                    <artifactId>xmlparserv2</artifactId>
+                    <groupId>com.oracle.database.xml</groupId>
+                    <artifactId>*</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

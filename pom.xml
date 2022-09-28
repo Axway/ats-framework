@@ -76,7 +76,7 @@
         <com.microsoft.sqlserver.version>7.0.0.jre8</com.microsoft.sqlserver.version>
         <!-- PostgreSQL driver dependency version. Min requirement: Java 8 -->
         <org.postgresql.postgresql.version>42.2.9</org.postgresql.postgresql.version>
-        <oracle.ojdbc.version>12.1.0.2</oracle.ojdbc.version>
+        <oracle.ojdbc.version>12.2.0.1</oracle.ojdbc.version>
 
         <junit.version>4.13.1</junit.version> <!-- v4.12 requires at least PowerMock v1.6.1 which requires EasyMock >=3.3
 			Details here: https://github.com/jayway/powermock/blob/master/changelog.txt -->
@@ -438,15 +438,14 @@
             </dependency>
 
             <dependency>
-                <groupId>com.oracle.jdbc</groupId>
-                <artifactId>ojdbc7</artifactId>
+                <groupId>com.oracle.database.jdbc</groupId>
+                <artifactId>ojdbc8</artifactId>
                 <version>${oracle.ojdbc.version}</version>
-                <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed. Resolved
-					from maven.oracle.com password protected repository -->
+                <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed -->
                 <exclusions>
                     <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-                        <groupId>com.oracle.jdbc</groupId>
-                        <artifactId>xmlparserv2</artifactId>
+                        <groupId>com.oracle.database.xml</groupId>
+                        <artifactId>*</artifactId> <!-- xmlparserv2 and xdb6 -->
                     </exclusion>
                 </exclusions>
             </dependency>
