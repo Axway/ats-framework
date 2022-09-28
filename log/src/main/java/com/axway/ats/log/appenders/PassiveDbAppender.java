@@ -58,6 +58,7 @@ public class PassiveDbAppender extends AbstractDbAppender {
     public PassiveDbAppender() {
         super();
         callerId = ThreadsPerCaller.getCaller();
+        CONSOLE_LOGGER.info("Created new PassiveDbAppender for caller: " + callerId); // TODO lower severity
     }
 
     @Override

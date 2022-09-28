@@ -82,6 +82,13 @@ public class RemoteLoggingConfigurator implements Configurator {
                 if (appender.getClass() == ActiveDbAppender.class // running on Test Executor side
                     || appender.getClass() == PassiveDbAppender.class // running on Agent side 
                 ) {
+                     if (appender.getClass() == PassiveDbAppender.class) {
+                        // since there can be multiple PassiveDbAppenders (each with multiple channels) on the Agent
+                        // we must find the one created from the current caller
+                        if (!ThreadsPerCaller.getCaller().equals( ((PassiveDbAppender) appender).getCallerId())) {
+                            continue;
+                        }
+                    }
                     //we found the appender, read all properties
                     appenderConfiguration = ((AbstractDbAppender) appender).getAppenderConfig();
                     if (chunkSize > 0) {
@@ -101,8 +108,8 @@ public class RemoteLoggingConfigurator implements Configurator {
                     }
 
                     //set the effective logging level for threshold if new one is set
-                    if (appenderConfiguration.getLoggingThreshold() == null
-                        || appenderConfiguration.getLoggingThreshold().toInt() != atsDbLogLevel) {
+                    if (appenderConfiguration.getLoggingThreshold() == -1
+                        || appenderConfiguration.getLoggingThreshold() != atsDbLogLevel) {
 
                         /*
                          * Log4j is deprecating the Priority class used by setLoggingThreshold,
@@ -113,7 +120,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                          */
                         final Level currentLevelBackup = log.getLevel();
                         log.setLevel(Level.toLevel(atsDbLogLevel));
-                        appenderConfiguration.setLoggingThreshold(log.getEffectiveLevel());
+                        appenderConfiguration.setLoggingThreshold(log.getEffectiveLevel().toInt());
                         log.setLevel(currentLevelBackup);
                     }
 
@@ -121,7 +128,7 @@ public class RemoteLoggingConfigurator implements Configurator {
                     dbAppenderIsProcessed = true;
                     break;
                 }
-                }
+            }
 
             log = log.getParent();
             }
@@ -168,9 +175,9 @@ public class RemoteLoggingConfigurator implements Configurator {
                 log = Logger.getLogger(appenderLogger);
             }
 
-            log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
+            log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold()));
 
-            final String caller = ThreadsPerCaller.getCaller();
+            //final String caller = ThreadsPerCaller.getCaller();
 
             //create the new appender
             PassiveDbAppender attachedAppender = new PassiveDbAppender();
