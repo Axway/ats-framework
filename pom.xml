@@ -442,8 +442,8 @@
                 <optional>true</optional> <!-- Add explicitly only when connections to Oracle DB are needed -->
                 <exclusions>
                     <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
-                        <groupId>com.oracle.jdbc</groupId>
-                        <artifactId>xmlparserv2</artifactId>
+                        <groupId>com.oracle.database.xml</groupId>
+                        <artifactId>*</artifactId> <!-- xmlparserv2 and xdb6 -->
                     </exclusion>
                 </exclusions>
             </dependency>

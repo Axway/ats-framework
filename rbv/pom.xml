@@ -111,9 +111,9 @@
             <optional>true</optional>
             <scope>test</scope> <!-- Indirectly referred. Declare here since it is also optional in Core library -->
             <exclusions>
-                <exclusion>
+                <exclusion> <!-- incompatibility with Apache Xerces and Xalan -->
                     <groupId>com.oracle.database.xml</groupId>
-                    <artifactId>*</artifactId>
+                    <artifactId>*</artifactId> <!-- xmlparserv2 and xdb6 -->
                 </exclusion>
             </exclusions>
         </dependency>
