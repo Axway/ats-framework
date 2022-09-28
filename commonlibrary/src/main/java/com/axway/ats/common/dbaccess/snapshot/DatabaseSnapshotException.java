@@ -1,12 +1,12 @@
 /*
  * Copyright 2017 Axway Software
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  * http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,6 +15,8 @@
  */
 package com.axway.ats.common.dbaccess.snapshot;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -28,7 +30,10 @@ import com.axway.ats.common.dbaccess.snapshot.equality.DatabaseEqualityState;
 @PublicAtsApi
 public class DatabaseSnapshotException extends RuntimeException {
 
-    private static final long     serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
+
+    private static final String DEFAULT_DIFF_STRING_OUTPUT_FORMAT = "\n\t\t[E]\n\t\t[A]";
+    public static final  String DEFAULT_DB_DELIMITER              = ", ";
 
     private DatabaseEqualityState equality;
 
@@ -55,7 +60,7 @@ public class DatabaseSnapshotException extends RuntimeException {
     /**
      * This can be used to retrieve the compare result and then make
      * some custom compare report.
-     * 
+     *
      * @return the result of compare
      */
     @PublicAtsApi
@@ -126,10 +131,13 @@ public class DatabaseSnapshotException extends RuntimeException {
             msg.append("\nDifferent primary keys:");
 
             for (String table : tables) {
+                String firstPrimaryKey = equality.getDifferentPrimaryKeys(firstSnapshot, table);
+                String secondPrimaryKey = equality.getDifferentPrimaryKeys(secondSnapshot, table);
                 msg.append("\n\ttable '" + table + "', primary key column in [" + firstSnapshot + "] is '"
-                           + equality.getDifferentPrimaryKeys(firstSnapshot, table) + "', while in ["
-                           + secondSnapshot + "] is '"
-                           + equality.getDifferentPrimaryKeys(secondSnapshot, table) + "'");
+                           + firstPrimaryKey + "', while in [" + secondSnapshot + "] is '" + secondPrimaryKey + "'");
+                msg.append("\n\tDifferences: " + StringDiff.getDifferences(firstPrimaryKey, secondPrimaryKey,
+                                                                           DEFAULT_DB_DELIMITER,
+                                                                           DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
             }
         }
     }
@@ -183,6 +191,38 @@ public class DatabaseSnapshotException extends RuntimeException {
                         msg.append("\n\t\t" + column);
                     }
                 }
+                // check if columns from both snapshots for the current table are the same
+                // number
+                if (firstColumns.size() > secondColumns.size()) {
+
+                    int sizeDiff = firstColumns.size() - secondColumns.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        secondColumns.add("");
+                    }
+
+                } else if (firstColumns.size() < secondColumns.size()) {
+
+                    int sizeDiff = secondColumns.size() - firstColumns.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        firstColumns.add("");
+                    }
+
+                }
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < firstColumns.size(); i++) {
+                    String firstColumn = firstColumns.get(i);
+                    String secondColumn = secondColumns.get(i);
+                    if (!sb.toString().startsWith("\n\tDifferences:")) {
+                        sb.append("\n\tDifferences: " + StringDiff.getDifferences(firstColumn, secondColumn,
+                                                                                  DEFAULT_DB_DELIMITER,
+                                                                                  DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    } else {
+                        sb.append(StringDiff.getDifferences(firstColumn, secondColumn, DEFAULT_DB_DELIMITER,
+                                                            DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    }
+                }
+                msg.append(sb.toString());
             }
         }
     }
@@ -212,6 +252,38 @@ public class DatabaseSnapshotException extends RuntimeException {
                 for (String index : secondIndexes) {
                     msg.append("\n\t\t" + index);
                 }
+                // check if indexes from both snapshots for the current table are the same
+                // number
+                if (firstIndexes.size() > secondIndexes.size()) {
+
+                    int sizeDiff = firstIndexes.size() - secondIndexes.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        secondIndexes.add("");
+                    }
+
+                } else if (firstIndexes.size() < secondIndexes.size()) {
+
+                    int sizeDiff = secondIndexes.size() - firstIndexes.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        firstIndexes.add("");
+                    }
+
+                }
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < firstIndexes.size(); i++) {
+                    String firstIndex = firstIndexes.get(i);
+                    String secondIndex = secondIndexes.get(i);
+                    if (!sb.toString().startsWith("\n\tDifferences:")) {
+                        sb.append("\n\tDifferences: " + StringDiff.getDifferences(firstIndex, secondIndex,
+                                                                                  DEFAULT_DB_DELIMITER,
+                                                                                  DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    } else {
+                        sb.append(StringDiff.getDifferences(firstIndex, secondIndex, DEFAULT_DB_DELIMITER,
+                                                            DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    }
+                }
+                msg.append(sb.toString());
             }
         }
     }
@@ -228,8 +300,7 @@ public class DatabaseSnapshotException extends RuntimeException {
                 // add different rows for one table at a time
                 msg.append("\nTable rows for '" + table + "' table:");
 
-                List<String> firstRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings(firstSnapshot,
-                                                                                           table);
+                List<String> firstRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings(firstSnapshot, table);
                 if (firstRows != null && firstRows.size() > 0) {
                     msg.append("\n\t[" + firstSnapshot + "]:");
                     for (String row : firstRows) {
@@ -237,14 +308,214 @@ public class DatabaseSnapshotException extends RuntimeException {
                     }
                 }
 
-                List<String> secondRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings(secondSnapshot,
-                                                                                            table);
+                List<String> secondRows = equality.getRowsPresentInOneSnapshotOnlyAsStrings(secondSnapshot, table);
                 if (secondRows != null && secondRows.size() > 0) {
                     msg.append("\n\t[" + secondSnapshot + "]:");
                     for (String row : secondRows) {
                         msg.append("\n\t\t" + row);
                     }
                 }
+                // check if indexes from both snapshots for the current table are the same
+                // number
+                if (firstRows.size() > secondRows.size()) {
+
+                    int sizeDiff = firstRows.size() - secondRows.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        secondRows.add("");
+                    }
+                } else if (firstRows.size() < secondRows.size()) {
+
+                    int sizeDiff = secondRows.size() - firstRows.size();
+                    for (int i = 0; i < sizeDiff; i++) {
+                        firstRows.add("");
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < firstRows.size(); i++) {
+                    String firstRow = firstRows.get(i);
+                    String secondRow = secondRows.get(i);
+                    if (!sb.toString().startsWith("\n\tDifferences:")) {
+                        sb.append("\n\tDifferences: " + StringDiff.getDifferences(firstRow, secondRow,
+                                                                                  DEFAULT_DB_DELIMITER,
+                                                                                  DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    } else {
+                        sb.append(StringDiff.getDifferences(firstRow, secondRow, DEFAULT_DB_DELIMITER,
+                                                            DEFAULT_DIFF_STRING_OUTPUT_FORMAT));
+                    }
+                }
+                msg.append(sb.toString());
+            }
+        }
+    }
+
+    static class StringDiff {
+
+        /**
+         * Compare and return String differences in the format EXPECTED < STRING_A > BUT
+         * WAS < STRING_B >
+         *
+         * @param expected
+         *            the expected String
+         * @param actual
+         *            the actual String
+         * @param delimiter
+         *            use this parameter to specify a delimiter for tokenizing the
+         *            Strings. This produces better visibility of the differences. Pass
+         *            empty string ("") to disable this option
+         * @param outputFormat
+         *            specify additional spaces,tabs, etc to be included in the final
+         *            diff String. Example:</br>
+         *            outputFormat = <strong>'\t[E]\t\n[A]'</strong> will return the
+         *            following String: tab then EXPECTED VALUE then tab then new line
+         *            then ACTUAL VALUE
+         *
+         */
+        public static String getDifferences( String expected, String actual, String delimiter, String outputFormat ) {
+
+            final String EXPECTED_PLACEHOLDER = "__ATS_EXPECTED_PLACEHOLDER__";
+            final String ACTUAL_PLACEHOLDER = "__ATS_ACTUAL_PLACEHOLDER__";
+
+            StringBuilder finalSb = null;
+            if (outputFormat != null && !outputFormat.equals("")) {
+
+                finalSb = new StringBuilder(outputFormat.replace("[E]", "EXPECTED < " + EXPECTED_PLACEHOLDER + " >")
+                                                        .replace("[A]", "BUT WAS < " + ACTUAL_PLACEHOLDER + " >"));
+
+            } else {
+                finalSb = new StringBuilder(
+                        "EXPECTED < " + EXPECTED_PLACEHOLDER + " > \nBUT WAS  < " + ACTUAL_PLACEHOLDER + " >");
+            }
+
+            StringBuilder expectedSb = new StringBuilder();
+            StringBuilder actualSb = new StringBuilder();
+
+            List<String> tokensExpected = new ArrayList<>();
+            tokensExpected.addAll(Arrays.asList(expected.split(delimiter)));
+            List<String> tokensActual = new ArrayList<>();
+            tokensActual.addAll(Arrays.asList(actual.split(delimiter)));
+
+            if (tokensExpected.size() < tokensActual.size()) {
+                for (int k = 0; k < (tokensActual.size() - tokensExpected.size()); k++) {
+                    tokensExpected.add("");
+                }
+            } else if (tokensExpected.size() > tokensActual.size()) {
+                for (int k = 0; k < (tokensExpected.size() - tokensActual.size()); k++) {
+                    tokensActual.add("");
+                }
+            }
+
+            for (int j = 0; j < tokensExpected.size(); j++) {
+                String[] diffs = compareStrings(tokensExpected.get(j), tokensActual.get(j));
+                if (diffs == null) {
+                    expectedSb.append(tokensExpected.get(j));
+                    actualSb.append(tokensActual.get(j));
+                } else {
+                    expectedSb.append(diffs[0]);
+                    actualSb.append(diffs[1]);
+                }
+                if (tokensExpected.size() > j + 1) {
+                    expectedSb.append(delimiter);
+                    actualSb.append(delimiter);
+
+                    if (expectedSb.length() > actualSb.length()) {
+                        int sizeDiff = expectedSb.length() - actualSb.length();
+                        for (int k = 0; k < sizeDiff; k++) {
+                            actualSb.append(" ");
+                        }
+                    } else if (expectedSb.length() < actualSb.length()) {
+                        int sizeDiff = actualSb.length() - expectedSb.length();
+                        for (int k = 0; k < sizeDiff; k++) {
+                            expectedSb.append(" ");
+                        }
+                    }
+                }
+            }
+
+            String finalDiff = finalSb.toString().replace(EXPECTED_PLACEHOLDER, expectedSb.toString())
+                                      .replace(ACTUAL_PLACEHOLDER, actualSb.toString());
+
+            return finalDiff;
+
+        }
+
+        private static String[] compareStrings( String a, String b ) {
+
+            final String paddingSym = "д";
+
+            if (a == null) {
+                return new String[]{ "[" + a + "]", "[" + b + "]" };
+            } else if (b == null) {
+                return new String[]{ "[" + a + "]", "[" + b + "]" };
+            } else {
+
+                if (a.length() > b.length()) {
+
+                    StringBuffer tmpB = new StringBuffer(b);
+
+                    for (int i = 0; i < (a.length() - b.length()); i++) {
+                        tmpB.append(paddingSym);
+                    }
+
+                    b = tmpB.toString();
+
+                } else if (a.length() < b.length()) {
+
+                    StringBuffer tmpA = new StringBuffer(a);
+
+                    for (int i = 0; i < (b.length() - a.length()); i++) {
+                        tmpA.append(paddingSym);
+                    }
+
+                    a = tmpA.toString();
+
+                }
+
+                if (a.length() == 1 && b.length() == 1) {
+                    a = a + paddingSym;
+                    b = b + paddingSym;
+                }
+
+                int diffStartIdx = -1;
+                boolean atleastOneDiff = false;
+                for (int i = 0; i < a.length(); i++) {
+                    char chA = a.charAt(i);
+                    char chB = b.charAt(i);
+
+                    if (chA != chB) {
+                        atleastOneDiff = true;
+                        if (diffStartIdx == -1) {
+                            diffStartIdx = i;
+                        }
+                    } else {
+                        if (diffStartIdx != -1) {
+
+                            a = a.substring(0, diffStartIdx) + "[" + a.substring(diffStartIdx, i) + "]"
+                                + a.substring(i);
+
+                            b = b.substring(0, diffStartIdx) + "[" + b.substring(diffStartIdx, i) + "]"
+                                + b.substring(i);
+
+                            diffStartIdx = -1;
+                        }
+                    }
+                }
+
+                if (diffStartIdx != -1) {
+
+                    a = a.substring(0, diffStartIdx) + "[" + a.substring(diffStartIdx, a.length()) + "]"
+                        + a.substring(a.length());
+
+                    b = b.substring(0, diffStartIdx) + "[" + b.substring(diffStartIdx, b.length()) + "]"
+                        + b.substring(b.length());
+                }
+
+                if (atleastOneDiff) {
+                    return new String[]{ a = a.replace(paddingSym, ""), b.replace(paddingSym, "") };
+                } else {
+                    return null;
+                }
+
             }
         }
     }
