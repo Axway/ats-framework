@@ -180,7 +180,7 @@ public class Test_CommonConfigurator extends BaseTest {
         testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
 
         List<TestBox> testBoxes = testDataConfigurator.getTestBoxes();
-        if (testBoxes == null || testBoxes.size() != 2) {
+        if (testBoxes == null || testBoxes.size() != 3) {
             throw new AssertionFailedError();
         }
     }
@@ -275,6 +275,25 @@ public class Test_CommonConfigurator extends BaseTest {
         isLocal = HostUtils.isLocalHost(host);
         HostUtils.setHostLocality(host, false); // revert
         Assert.assertTrue(isLocal);
+    }
+    
+    /**
+     * This test checks if we support loading a box property with more than one token for a key, e.g. common.testboxes.theboxname.the.key.with.alot.of.tokens
+     * */
+    @Test
+    public void testMoreThanThreeTokenPropertyKey() {
+        
+        CommonConfigurator testDataConfigurator = CommonConfigurator.getInstance();
+        testDataConfigurator.registerConfigFile(configFile1.getAbsolutePath());
+        
+        TestBox testBox3 = testDataConfigurator.getTestBox("testbox3");
+        Assert.assertTrue(testBox3.getProperty("env.bin.bash.location").equals("/opt/ats/bin/bash"));
+        
+        MailServer exchange2 = testDataConfigurator.getMailServer("exchange2");
+        Assert.assertTrue(exchange2.getProperty("config.users.max.count").equals("100"));
+        
+        MessagesBox messagesBox = testDataConfigurator.getMessagesBox("messagebox1");
+        Assert.assertTrue(messagesBox.getProperty("config.output.recipients.recipient1").equals("localhost@localhost.com"));
 
     }
 }
