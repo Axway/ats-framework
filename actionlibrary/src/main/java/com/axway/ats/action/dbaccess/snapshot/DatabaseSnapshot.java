@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.axway.ats.harness.config.CommonConfigurator;
 import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -127,7 +128,8 @@ public class DatabaseSnapshot {
         this.name = name.trim();
 
         this.testBox = testBox;
-        this.customProperties = customProperties;
+        this.customProperties = CommonConfigurator.getInstance().mergeProperties(
+                                    (testBox != null) ? testBox.getProperties() : null, customProperties);
     }
 
     /**

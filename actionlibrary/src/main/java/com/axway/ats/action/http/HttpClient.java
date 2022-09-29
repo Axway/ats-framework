@@ -356,7 +356,7 @@ public class HttpClient {
     }
 
     /**
-     * Add one or more request(query) parameters<br><br>
+     * Add one or more request(query) parameters
      *
      * @param requestParameters a {@link Map} of parameters. Each parameter has a {@link List} of one or more values.
      */
@@ -369,7 +369,7 @@ public class HttpClient {
     }
 
     /**
-     * Remove a request(also called query) parameter<br></br/>
+     * Remove a request(also called query) parameter
      *
      * @param name the name of the parameter
      */
@@ -392,7 +392,7 @@ public class HttpClient {
     }
 
     /**
-     * Remove one or more request(also called query) parameters<br></br/>
+     * Remove one or more request(also called query) parameters
      *
      * @param names the names of the parameters
      */
@@ -433,7 +433,7 @@ public class HttpClient {
     /**
      * If the URI is not fully specified in the constructor,
      * you can navigate to an internal resource.<br>
-     * For example you can pass:
+     * For example, you can pass:
      * <ul>
      *   <li>"company"</li>
      *   <li>"company/department"</li>
@@ -522,7 +522,7 @@ public class HttpClient {
     /**
      * Get the HTTP request headers specified by the user via
      * {@link #addRequestHeader(String, String) addRequestHeader} or
-     * {@link #setRequestHeaders(Map) setRequestHeaders}.
+     * {@link #setRequestHeaders(HttpHeader[]) setRequestHeaders}.
      *
      * @return The headers added by the user
      */

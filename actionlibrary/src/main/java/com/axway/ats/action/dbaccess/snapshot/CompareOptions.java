@@ -86,7 +86,7 @@ public class CompareOptions {
      * @param tableName - the table name
      * @param minRows - the minimum number of the total unique rows in both snapshots. It must be positive number, LOWER or EQUAL to the maxRows
      * @param maxRows - the maximum number of the total unique rows in both snapshots. It must be positive number, GREATER or EQUAL to the minRows
-     * @throws IllegalArgumentException if minRows is < 0, minRows > maxRows, maxRows < 0 or maxRows < minRows 
+     * @throws IllegalArgumentException if minRows is &lt; 0, minRows &gt; maxRows, maxRows &lt; 0 or maxRows &lt; minRows
      * */
     @PublicAtsApi
     public void setExpectedTableMissingRowsCount( String tableName, int minRows, int maxRows ) {
@@ -131,8 +131,8 @@ public class CompareOptions {
 
     /**
      * Returns all of the user specified min/max for all tables, which should have UNIQUE rows per snapshot.<br>
-     * See {@link CompareOptions#setExpectedTableMissingRowsCount(String, int, int)} for more informnation
-     * @return map in the format { tableName => Pair(minRows, maxRows) }
+     * See {@link CompareOptions#setExpectedTableMissingRowsCount(String, int, int)} for more information
+     * @return map in the format { tableName =&gt; Pair(minRows, maxRows) }
      * */
     @PublicAtsApi
     public Map<String, Pair<Integer>> getExpectedTableMissingRows() {

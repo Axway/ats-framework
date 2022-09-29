@@ -668,9 +668,9 @@ public class RestClient {
     }
 
     /**
-     * Add one or more request(also called query) parameters<br></br/>
+     * Add one or more request(also called query) parameters<br /><br />
      *
-     * The following example adds a language request parameter:<br>
+     * The following example adds a language request parameter: <br />
      * http://example.com/?language=eng
      *
      * @param requestParameters map with parameter names and values
@@ -690,7 +690,7 @@ public class RestClient {
     }
 
     /**
-     * Remove a request(also called query) parameter<br></br/>
+     * Remove a request(also called query) parameter
      *
      * @param name the name of the parameter
      *
@@ -718,7 +718,7 @@ public class RestClient {
     }
 
     /**
-     * Remove one or more request(also called query) parameters<br></br/>
+     * Remove one or more request(also called query) parameters
      *
      * @param names the names of the parameters
      *

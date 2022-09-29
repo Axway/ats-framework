@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     /**
      * Set the file transfer connection timeout
      * 
-     * @param defaultMessageBox the file transfer connection timeout
+     * @param timeout the file transfer connection timeout ins
      */
     @PublicAtsApi
     public void setFileTransferConnectionTimeout(
@@ -182,7 +182,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     /**
      * Set the file transfer connection interval
      * 
-     * @param defaultMessageBox the file transfer connection timeout
+     * @param interval the file transfer connection timeout
      */
     @PublicAtsApi
     public void setFileTransferConnectionInterval(
@@ -205,11 +205,10 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
     /**
      * Set the file transfer connection initial delay
      * 
-     * @param defaultMessageBox the file transfer connection timeout
+     * @param delay the file transfer connection timeout
      */
     @PublicAtsApi
-    public void setFileTransferConnectionInitialDelay(
-                                                       long delay ) {
+    public void setFileTransferConnectionInitialDelay( long delay ) {
 
         setTempProperty(FILE_TRANSFER_CONNECTION_INITIAL_DELAY, Long.toString(delay));
     }
@@ -229,7 +228,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
      * Set the default HTTPS encryption protocols, for example "TLSv1.2".
      * You can specify more than one by using ',' as a delimiter
      * 
-     * @param protocol the encryption protocols
+     * @param protocols the encryption protocols
      */
     @PublicAtsApi
     public void setFileTransferDefaultHttpsEncryptionProtocols(
@@ -253,7 +252,7 @@ public class ActionLibraryConfigurator extends AbstractConfigurator {
      * Set the default HTTPS encryption cipher suites.
      * You can specify more than one by using ',' as a delimiter
      * 
-     * @param protocol the cipher suites
+     * @param cipherSuites the cipher suites
      */
     @PublicAtsApi
     public void setFileTransferDefaultHttpsCipherSuites(

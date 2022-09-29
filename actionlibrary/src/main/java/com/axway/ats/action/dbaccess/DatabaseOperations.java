@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.axway.ats.common.dbaccess.DbKeys;
+import com.axway.ats.harness.config.CommonConfigurator;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.dbaccess.model.DatabaseCell;
@@ -95,8 +96,11 @@ public class DatabaseOperations {
             dbPass = testBox.getAdminPass();
         }
 
+        Map<String, Object> mergedProperties = CommonConfigurator.getInstance().mergeProperties(
+                ((testBox != null) ? testBox.getProperties() : null), customProperties);
         createDbProvider(testBox.getDbType(), testBox.getHost(), testBox.getDbName(), dbUser, dbPass,
-                         testBox.getDbPort(), customProperties);
+                         testBox.getDbPort(),
+                         mergedProperties);
     }
 
     /**

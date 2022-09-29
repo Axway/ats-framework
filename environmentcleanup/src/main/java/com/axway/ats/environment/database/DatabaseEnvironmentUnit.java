@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import com.axway.ats.harness.config.CommonConfigurator;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.common.PublicAtsApi;
@@ -67,7 +68,7 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
      * @param backupFileName the name of the backup file
      * @param testBox {@link TestBox} with all necessary credentials for connection
      * @param customProperties map with custom properties
-     * @param dbTables list of database tables to backup
+     * @param dbTables list of database tables to back up
      */
     @PublicAtsApi
     public DatabaseEnvironmentUnit( String backupDirPath,
@@ -78,15 +79,12 @@ public class DatabaseEnvironmentUnit extends EnvironmentUnit {
 
         this(backupDirPath,
              backupFileName,
-             DatabaseProviderFactory.getDatabaseProvider(testBox.getDbType(),
-                                                         testBox.getHost(),
-                                                         testBox.getDbName(),
-                                                         testBox.getDbUser(),
-                                                         testBox.getDbPass(),
-                                                         testBox.getDbPort(),
-                                                         customProperties)
-                                    .getDbConnection(),
-             dbTables);
+             DatabaseProviderFactory.getDatabaseProvider(testBox.getDbType(), testBox.getHost(), testBox.getDbName(),
+                                                         testBox.getDbUser(), testBox.getDbPass(), testBox.getDbPort(),
+                                                         CommonConfigurator.getInstance()
+                                                                           .mergeProperties(testBox.getProperties(),
+                                                                                            customProperties))
+                                    .getDbConnection(), dbTables);
     }
 
     /**

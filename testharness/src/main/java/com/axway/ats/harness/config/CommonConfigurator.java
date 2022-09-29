@@ -16,6 +16,7 @@
 package com.axway.ats.harness.config;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -294,5 +295,39 @@ public final class CommonConfigurator extends AbstractConfigurator {
         }
 
         HostUtils.setHostLocality(host, isLocal);
+    }
+
+
+    /**
+     * Combine two Map<String, Object> objects (properties map)
+     * @param propsA the first map.
+     * @param propsB the second map. Note that any value from this map will override the value with the same key from the first map parameter
+     * @return A combined map object
+     * */
+    public Map<String, Object> mergeProperties( Map<String, Object> propsA,
+                                                Map<String, Object> propsB ) {
+
+        /*
+         * First apply to the custom properties the TestBox's properties
+         * Then apply to the custom properties the one that are coming from the constructors argument
+         * */
+        if (propsA == null || propsA.isEmpty()) {
+            return propsB;
+        }
+        if (propsB == null || propsB.isEmpty()) {
+            return propsA;
+        }
+
+        Map<String, Object> finalProperties = new HashMap<>();
+
+        for (Map.Entry<String, Object> custProp : propsA.entrySet()) {
+            finalProperties.put(custProp.getKey(), custProp.getValue());
+        }
+
+        for (Map.Entry<String, Object> custProp : propsB.entrySet()) {
+            finalProperties.put(custProp.getKey(), custProp.getValue());
+        }
+
+        return finalProperties;
     }
 }
