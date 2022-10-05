@@ -92,14 +92,12 @@ public class AtsDbLogger {
         this.logger = logger;
         // check if the ActiveDbAppender is specified in log4j.xml
         if (!skipAppenderCheck) {
-            if (!ActiveDbAppender.isAttached) {
-                if (!isWarningMessageLogged) {
-                    this.logger.warn(
-                                     "ATS Database appender is not attached in root logger element in log4j.xml file. "
-                                     + "No test data will be sent to ATS Log database and some methods from '"
-                                     + AtsDbLogger.class.getName() + "' class will not work as expected");
-                    isWarningMessageLogged = true;
-                }
+            if (!ActiveDbAppender.isAttached && !isWarningMessageLogged) {
+                this.logger.warn(
+                        "ATS Database appender is not attached in root logger element in log4j.xml file. "
+                        + "No test data will be sent to ATS Log database and some methods from '"
+                        + AtsDbLogger.class.getName() + "' class will not work as expected");
+                isWarningMessageLogged = true;
             }
         }
     }
@@ -508,7 +506,7 @@ public class AtsDbLogger {
      * @param scenarioName the scenario name
      * @param inputArguments the test method parameters
      * @param scenarioDescription the scenario description
-     * @param testcaseResult the result of the testcase (PASSED,FAILED,SKIPPED)
+     * @param testcaseResult the result of the testcase (PASSED,FAILED,SKIPPED, RUNNING)
      * 
      */
     public void updateTestcase( int testcaseId,

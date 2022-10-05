@@ -20,7 +20,8 @@ package com.axway.ats.log.model;
  * The valid test results
  */
 public enum TestCaseResult {
-    FAILED(0), PASSED(1), SKIPPED(2), MANUAL(3);
+    FAILED(0), PASSED(1), SKIPPED(2), MANUAL(3),
+    RUNNING(4) /* Still running (for updates). Linked with state in DB so value is important to be kept in sync */;
 
     int value;
 

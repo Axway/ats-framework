@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,22 +25,23 @@ import com.axway.ats.log.appenders.ActiveDbAppender;
 
 /**
  * Evaluates if a failed test will be re-run.
+ * <p><em>Note</em>: Currently not ported for use in parallel execution mode</p>
  */
 public class RetryAnalyzer implements IRetryAnalyzer {
 
     /**
-     * Do not throw exception if db appender is not attached. (by passing true as a 2nd argument)
+     * Do not throw exception if DB appender is not attached. (by passing true as a 2nd argument)
      * */
     private static final AtsDbLogger logger = AtsDbLogger.getLogger("com.axway.ats", true);
 
-    private String                   lastTestName;
+    private String lastTestName;
 
     /*
      * Number of passed runs of the current test.
      * The value is static, so can easily be retrieved from our TestNG listeners. That is ok as no more
      * than one instance of this class exists at a time.
      */
-    private static int               passedRuns; //FIXME: possible problem when tests are run in parallel
+    private static int passedRuns; //FIXME: problem when tests are run in parallel
 
     public RetryAnalyzer() {
 
