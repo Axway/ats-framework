@@ -49,9 +49,10 @@ public class AgentSystemMonitor {
     public void initializeMonitoring(
                                       List<ReadingBean> readings,
                                       int pollInterval,
-                                      long executorTimeOffset ) {
+                                      long executorTimeOffset,
+                                      long maximumRunningTime ) {
 
-        monitoringAgent = new AtsSystemMonitoringAgent(pollInterval, executorTimeOffset);
+        monitoringAgent = new AtsSystemMonitoringAgent(pollInterval, executorTimeOffset, maximumRunningTime);
 
         if (pollInterval < 1) {
             throw new MonitoringException("The interval for collecting statistical data must be at least 1 second. You have specified "

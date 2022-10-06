@@ -145,6 +145,67 @@ public class Test_ListDataConfig extends BaseTest {
     }
 
     @Test
+    public void test_2_loaders_5_values() {
+
+        final List<String> args = generateValues(5);
+
+        final String paramName = "param1";
+
+        final int loadersCount = 2;
+
+        ListDataConfig listDataConfig = new ListDataConfig(paramName, args);
+
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(loadersCount);
+        assertEquals(loadersCount, dustributedDataConfigs.size());
+
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
+        List<?> currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(0), currentValues.get(0));
+        assertEquals(args.get(1), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(1);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(3, currentValues.size());
+        assertEquals(args.get(2), currentValues.get(0));
+        assertEquals(args.get(3), currentValues.get(1));
+        assertEquals(args.get(4), currentValues.get(2));
+    }
+    
+    @Test
+    public void test_3_loaders_6_values() {
+
+        final List<String> args = generateValues(6);
+
+        final String paramName = "param1";
+
+        final int loadersCount = 3;
+
+        ListDataConfig listDataConfig = new ListDataConfig(paramName, args);
+
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(loadersCount);
+        assertEquals(loadersCount, dustributedDataConfigs.size());
+
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
+        List<?> currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(0), currentValues.get(0));
+        assertEquals(args.get(1), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(1);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(2), currentValues.get(0));
+        assertEquals(args.get(3), currentValues.get(1));
+        
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(2);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(4), currentValues.get(0));
+        assertEquals(args.get(5), currentValues.get(1));
+    }
+
+    @Test
     public void distributeN() {
 
         int minHosts = 1;

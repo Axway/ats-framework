@@ -30,7 +30,7 @@ import com.axway.ats.core.utils.IoUtils;
  * */
 public class ExecutorUtils {
 
-    private static String uniqueId;
+    /*private static String uniqueId;
 
     private static Logger log = Logger.getLogger(ExecutorUtils.class);
 
@@ -91,6 +91,6 @@ public class ExecutorUtils {
     private static void generateNewUUID() {
 
         uniqueId = UUID.randomUUID().toString().trim();
-    }
+    }*/
 
 }

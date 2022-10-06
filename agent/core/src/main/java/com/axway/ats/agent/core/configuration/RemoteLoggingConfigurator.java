@@ -211,7 +211,7 @@ public class RemoteLoggingConfigurator implements Configurator {
          * This code is run on remote agent's side
          */
 
-        final String caller = ThreadsPerCaller.getCaller();
+        //final String caller = ThreadsPerCaller.getCaller();
 
         needsToConfigureDbAppender = false;
         if (appenderConfiguration != null) {

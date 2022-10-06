@@ -77,10 +77,12 @@ public class UserActionsMonitoringAgent {
      *
      * @param startTimestamp the initial time stamp
      * @param pollInterval the polling interval
+     * @param maximumRunningTime the maximum amount of time that the monitoring will be running before being stopped.
      */
     public void startMonitoring(
                                  long startTimestamp,
-                                 int pollInterval ) {
+                                 int pollInterval,
+                                 long maximumRunningTime ) {
 
         if (monitoringThread != null && monitoringThread.isAlive()) {
             log.warn("The user activity monitor is running from a previous run. We will stop it now");
@@ -92,7 +94,7 @@ public class UserActionsMonitoringAgent {
 
         resetTheMonitoringAgent();
 
-        monitoringThread = new MonitoringThread(startTimestamp, pollInterval);
+        monitoringThread = new MonitoringThread(startTimestamp, pollInterval, maximumRunningTime);
         monitoringThread.start();
     }
 
@@ -191,14 +193,17 @@ public class UserActionsMonitoringAgent {
 
         private long      currentTimestamp;
         private final int pollInterval;
+        private long      maximumRunningTime;
 
         private String    callerId;
 
         MonitoringThread( long currentTimestamp,
-                          int pollInterval ) {
+                          int pollInterval,
+                          long maximumRunningTime ) {
 
             this.currentTimestamp = currentTimestamp;
             this.pollInterval = 1000 * pollInterval;
+            this.maximumRunningTime = maximumRunningTime;
 
             this.callerId = ThreadsPerCaller.getCaller();
 
@@ -213,8 +218,13 @@ public class UserActionsMonitoringAgent {
             log.info("Started monitoring user activity in intervals of " + pollInterval + " milliseconds");
             try {
                 int lastPollTime = 0;
+                long startTimestamp = System.currentTimeMillis();
                 while (true) {
 
+                    if ( (System.currentTimeMillis() - startTimestamp) > maximumRunningTime) {
+                        log.warn("The specified maximum running time '" + maximumRunningTime + " msec' was exeeded. Monitoring will be stopped.");
+                        UserActionsMonitoringAgent.this.stopMonitoring();
+                    }
                     // we don't measure, but we calculate the timestamp, so it is synchronized
                     // between all monitored machines
                     this.currentTimestamp += pollInterval;

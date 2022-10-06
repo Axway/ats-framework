@@ -31,7 +31,7 @@ public class ExecutorUtils {
     public final static String ATS_CALLER_ID                 = "CALLER_ID";
 
     public static String createCallerId() {
-
+        // Create unique caller ID even for cases like multiple simultaneous JVMs/executors from same host (like Jenkins)
         return ATS_HOST_ID + ATS_TOKEN_DELIMITER + HostUtils.getLocalHostIP() + ATS_CALLER_ID_TOKEN_DELIMITER
                + ATS_WORKDIR + ATS_TOKEN_DELIMITER + IoUtils.normalizeUnixDir(AtsSystemProperties.USER_CURRENT_DIR)
                + ATS_CALLER_ID_TOKEN_DELIMITER + ATS_THREAD_ID + ATS_TOKEN_DELIMITER + Thread.currentThread().getId()

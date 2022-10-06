@@ -35,8 +35,17 @@ public class Test_RemoteLoggingConfigurator {
     @After
     public void tearDown() {
 
-        Logger.getLogger(loggerName).removeAllAppenders();
-        Logger.getRootLogger().removeAllAppenders();
+        try {
+            Logger.getLogger(loggerName).removeAllAppenders();
+            Logger.getRootLogger().removeAllAppenders();
+        } catch (Exception e) {
+            // when a PassiveDbAppender is attached and we try to remove it
+            // a channel is created, since no one still exists
+            // this leads to the creating of DbEventRequestProcessor that tries to connect to a non-existing database server
+            // that connection try fails, so we check the stack trace for it
+            assertTrue(containsMessage(e,
+                                       "Neither MSSQL, nor PostgreSQL server at 'test:1433' contains ATS log database with name 'test'."));
+        }
     }
 
     @AfterClass
@@ -128,6 +137,7 @@ public class Test_RemoteLoggingConfigurator {
 
         ActiveDbAppender appender = new ActiveDbAppender();
         appender.setHost("test");
+        appender.setPort(DbConnSQLServer.DEFAULT_PORT + "");
         appender.setDatabase("test");
         appender.setUser("test");
         appender.setPassword("test");
@@ -266,5 +276,24 @@ public class Test_RemoteLoggingConfigurator {
 
         GenericAgentConfigurator genericConfigurator = new GenericAgentConfigurator();
         assertTrue(genericConfigurator.needsApplying());
+    }
+
+    /**
+     * Check whether the exception message is contained in some of the stack trace elements
+     * @param ex the initial exception (head of the stack trace)
+     * @param msg the exception message
+     * */
+    private boolean containsMessage( Exception ex, String msg ) {
+
+        Throwable t = ex;
+        while (t != null) {
+            String message = t.getMessage();
+            if (message.contains(msg)) {
+                return true;
+            }
+            t = t.getCause();
+        }
+
+        return false;
     }
 }

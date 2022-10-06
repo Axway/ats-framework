@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import com.axway.ats.agent.core.monitoring.exceptions.OperationUnsuccessfulExcep
 /**
  * The {@link AbstractMonitoringAgent} is responsible for :
  * <ul>
- * <li>keeping track of the monitor state and making sure each operation takes place only in the correct
- * {@link MonitoringAgentState}.</li>
+ * <li>keeping track of the monitor state and making sure each operation takes place only in the correct state</li>
  * <li>managing the value of the poll interval between each reading</li>
  * <ul/>
  */
@@ -29,9 +28,13 @@ public abstract class AbstractMonitoringAgent {
 
     protected int  pollInterval;
     protected long executorTimeOffset;
+    /** 
+     * Max time for monitoring as top hard limit to cut monitoring in cases when executor&amp;s JVM is killed and Agents do not know that monitoring should be stopped. Should be long enough for all possible executed scenarios with monitoring.
+     */
+    protected long maximumRunningTime;
 
     /**
-     * Initializes this instance of the {@link MonitoringAgent}
+     * Initializes this instance of the {@link AbstractMonitoringAgent}
      */
     public AbstractMonitoringAgent() {
 
@@ -47,6 +50,11 @@ public abstract class AbstractMonitoringAgent {
                                           long executorTimeOffset ) {
 
         this.executorTimeOffset = executorTimeOffset;
+    }
+
+    protected void setMaximumRunningTime( long maximumRunningTime ) {
+
+        this.maximumRunningTime = maximumRunningTime;
     }
 
     /**

@@ -43,7 +43,7 @@ public class SystemInformationFactory {
     private static final Logger LOG = Logger.getLogger(SystemInformationFactory.class);
 
     /**
-     * Depending on the System property {@link AtsSystemProperties.SYSTEM_MONITORING_PROVIDER}, a {@link ISystemInformation} will be returned.</br>
+     * Depending on the System property {@link AtsSystemProperties#SYSTEM_MONITORING_PROVIDER}, a {@link ISystemInformation} will be returned.</br>
      * */
     public synchronized static ISystemInformation get() {
 

@@ -59,7 +59,8 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     private Map<String, Integer>     pollErrors;
 
     public AtsSystemMonitoringAgent( int pollInterval,
-                                     long executorTimeOffset ) {
+                                     long executorTimeOffset,
+                                     long maximumRunningTime ) {
 
         // we must have a completely clean instance when this method return
         this.monitors = new ArrayList<PerformanceMonitor>();
@@ -68,6 +69,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
         // set the new start polling interval
         setPollInterval(pollInterval * 1000); // make it in seconds
         setExecutorTimeOffset(executorTimeOffset);
+        setMaximumRunningTime(maximumRunningTime);
 
         // if the test has ended without stopping the monitoring process
         // we now need to stop the monitoring process
@@ -80,7 +82,7 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
     @Override
     public void startMonitoring() {
 
-        monitoringThread = new MonitoringThread(pollInterval, executorTimeOffset);
+        monitoringThread = new MonitoringThread(pollInterval, executorTimeOffset, maximumRunningTime);
         monitoringThread.start();
     }
 
@@ -169,18 +171,21 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
 
         private final int               pollInterval;
         private long                    executorTimeOffset;
+        private long                    maximumRunningTime;
 
         private MONITORING_THREAD_STATE monitoringThreadState;
 
         private String                  callerId;
 
         MonitoringThread( int pollInterval,
-                          long executorTimeOffset ) {
+                          long executorTimeOffset,
+                          long maximumRunningTime ) {
 
             this.monitoringThreadState = MONITORING_THREAD_STATE.RUNNING;
 
             this.pollInterval = pollInterval;
             this.executorTimeOffset = executorTimeOffset;
+            this.maximumRunningTime = maximumRunningTime;
             this.callerId = ThreadsPerCaller.getCaller();
 
             setName("Monitoring_system-" + this.callerId);
@@ -197,8 +202,13 @@ public class AtsSystemMonitoringAgent extends AbstractMonitoringAgent {
             try {
                 boolean hasFailureInPreviousPoll = false;
                 int lastPollDuration = 0;
+                long startTimestamp = System.currentTimeMillis();
                 while (monitoringThreadState == MONITORING_THREAD_STATE.RUNNING) {
 
+                    if ( (System.currentTimeMillis() - startTimestamp) > maximumRunningTime) {
+                        log.warn("The specified maximum running time '" + maximumRunningTime + " msec' was exeeded. Monitoring will be stopped.");
+                        AtsSystemMonitoringAgent.this.stopMonitoring();
+                    }
                     int sleepTimeBeforeNextPoll = pollInterval - lastPollDuration;
                     if (sleepTimeBeforeNextPoll < 0) {
                         // we get here when the last poll took longer than the
