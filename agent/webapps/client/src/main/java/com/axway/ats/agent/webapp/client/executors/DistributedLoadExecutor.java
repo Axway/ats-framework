@@ -116,7 +116,7 @@ public class DistributedLoadExecutor extends RemoteExecutor {
                 }
 
                 //schedule the actions, but do not execute
-                //get the client
+                //get the client - will include caller ID transparently
                 AgentService agentServicePort = AgentServicePool.getInstance()
                                                                 .getClientForHost(atsAgents.get(i));
                 agentServicePort.scheduleActionsInMultipleThreads(queueName, queueId, actionWrappers,

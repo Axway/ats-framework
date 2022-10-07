@@ -437,12 +437,12 @@ public class AtsDbLogger {
      * 
      * @param threadId the thread that started this suite if the event will be fired from a different thread
      */
-    public synchronized void endSuite( int threadId ) {
+    public synchronized void endSuite( long threadId ) {
 
         endSuite(EndSuiteEvent.DEFAULT_MESSAGE, threadId);
     }
 
-    public synchronized void endSuite( String message, int threadId ) {
+    public synchronized void endSuite( String message, long threadId ) {
 
         // We need to attach this event to the provided thread
         EndSuiteEvent event = new EndSuiteEvent(ATS_DB_LOGGER_CLASS_NAME, logger, message);

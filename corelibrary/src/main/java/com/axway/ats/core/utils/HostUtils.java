@@ -61,8 +61,8 @@ public class HostUtils {
         localHosts.add(LOCAL_HOST_IPv6);
     }
 
-    // List of hosts found to be non local ones
-    private static final Set<String>        nonlocalHosts            = Collections.synchronizedSet(new HashSet<String>());
+    // List of hosts found to be non-local ones
+    private static final Set<String> nonlocalHosts = Collections.synchronizedSet(new HashSet<String>());
 
     /**
      * List of public addresses of the local host. The remote Agent uses that address to connect to the local host.
@@ -122,13 +122,15 @@ public class HostUtils {
 
         String localHostIP = "";
         InetAddress inetAddress = null;
-        List<InetAddress> ipList = getIpAddressesList(true, false);
+        List<InetAddress> ipList = getIpAddressesList(true, true);
         if (ipList.size() > 0) {
             inetAddress = ipList.get(0);
         }
         if (inetAddress != null) {
             localHostIP = inetAddress.getHostAddress();
         }
+        // TODO: Could be cached if needed but only for scenarios with agents in same network. If cached there
+        //  should be method to invalidate the cached IP
         return localHostIP;
     }
 
@@ -441,7 +443,7 @@ public class HostUtils {
 
         InetAddress localHostPublicAddress;
 
-        // make sure the port is available. Adds default port no custom is specified
+        // make sure the port is available. Adds default port if custom is not specified
         remoteAtsAgent = getAtsAgentIpAndPort(remoteAtsAgent);
 
         // check if we already know the good public address

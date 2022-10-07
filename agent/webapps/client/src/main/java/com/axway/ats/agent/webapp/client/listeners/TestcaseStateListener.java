@@ -85,20 +85,36 @@ public class TestcaseStateListener implements ITestcaseStateListener {
     @Override
     public void onTestEnd() {
 
+        // get current caller ID
+        String callerId = ExecutorUtils.createCallerId();
+
+        sentOnTestEndEvent(callerId);
+
+    }
+
+    @Override
+    public void onTestEnd( List<String> callerIDs ) {
+
+        for (String callerId : callerIDs) {
+            sentOnTestEndEvent(callerId);
+        }
+
+    }
+
+    private void sentOnTestEndEvent( String callerId) {
         // FIXME: this must be split per testcase in case of parallel tests
         waitImportantThreadsToFinish();
 
         List<String> endedSessions = new ArrayList<>();
-        String thisThread = Thread.currentThread().getName();
-
+        long currentThreadId = Thread.currentThread().getId(); // callerId
 
         // need synchronization when running parallel tests
         synchronized( configurationMutex ) {
             for( String agentSessionId : testConfiguredAgents ) {
 
-                String thread = ExecutorUtils.extractThread( agentSessionId );
+                String agentSessionThreadId = ExecutorUtils.extractThreadId( agentSessionId );
 
-                if( thisThread.equals( thread ) ) {
+                if( agentSessionThreadId.equals(currentThreadId+"" ) ) {
                     // found
                     String agentHost = ExecutorUtils.extractHost(agentSessionId );
                     try {
@@ -141,7 +157,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
 
             // the remote endpoint is defined by Agent host and Test Executor's current thread(in case of parallel tests)
             String agentSessionId = ExecutorUtils.createExecutorId( atsAgent,
-                                                                    Thread.currentThread().getName() );
+                                                                    Thread.currentThread() );
 
             if( !testConfiguredAgents.contains( agentSessionId ) ) {
 
@@ -151,10 +167,11 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                     // We do this just once for the whole run.
                     if( !logConfiguredAgents.contains( atsAgent ) ) {
 
-                        log.info("Pushing configuration to ATS Agent at '" + atsAgent + "'");
+
                         try {
 
                             // compare versions of executor and agent
+                            log.info("Checking ATS Agent version at '" + atsAgent + "'");
                             String agentVersion = AgentServicePool.getInstance()
                                                                   .getClientForHost(atsAgent)
                                                                   .getAgentVersion();
@@ -178,6 +195,7 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                             }
 
                             // Pass the logging configuration to the remote agent
+                            log.info("Pushing configuration to ATS Agent at '" + atsAgent + "'");
                             RemoteLoggingConfigurator remoteLoggingConfigurator = new RemoteLoggingConfigurator(
                                     AgentConfigurationLandscape.getInstance(atsAgent)
                                                                .getDbLogLevel(),

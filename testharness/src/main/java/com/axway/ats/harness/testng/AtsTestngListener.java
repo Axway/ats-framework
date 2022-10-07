@@ -944,7 +944,7 @@ public class AtsTestngListener implements ISuiteListener, IInvokedMethodListener
         String suiteName = channel.currentSuiteName;
         channel.currentSuiteName = null;
         logger.endSuite("End suite '" + suiteName + "'",
-                        Integer.parseInt(ExecutorUtils.extractThreadId(channel.callerId)));
+                        Long.parseLong(ExecutorUtils.extractThreadId(channel.callerId)));
     }
 
     /**

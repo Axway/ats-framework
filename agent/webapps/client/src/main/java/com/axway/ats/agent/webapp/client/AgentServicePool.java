@@ -121,6 +121,7 @@ public class AgentServicePool {
             if (protocol == null) {
                 protocol = "http";
             } else {
+                // TODO - Do not reset this every time
                 SslUtils.trustAllHttpsCertificates();
                 SslUtils.trustAllHostnames();
             }
@@ -151,10 +152,10 @@ public class AgentServicePool {
             //  - different threads from same Executor(when have parallel tests)
             Map<String, List<String>> headers = new HashMap<>();
             // this header tells the exact Executor
-            headers.put(com.axway.ats.core.utils.ExecutorUtils.ATS_RANDOM_TOKEN,
-                        Arrays.asList(com.axway.ats.core.utils.ExecutorUtils.getUserRandomToken() ) );
+            headers.put(ExecutorUtils.ATS_CALLER_ID,
+                        Arrays.asList(com.axway.ats.core.utils.ExecutorUtils.createCallerId()));
             // this header tells the exact thread
-            headers.put( com.axway.ats.core.utils.ExecutorUtils.ATS_THREAD_ID, Arrays.asList(Thread.currentThread().getName() ) );
+            headers.put( com.axway.ats.core.utils.ExecutorUtils.ATS_THREAD_ID, Arrays.asList(Long.toString(Thread.currentThread().getId()) ) );
             ctxt.put( MessageContext.HTTP_REQUEST_HEADERS, headers );
 
             return agentServicePort;

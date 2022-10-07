@@ -41,7 +41,6 @@ import com.axway.ats.agent.core.action.CallerRelatedInfoRepository;
 import com.axway.ats.agent.core.configuration.AgentConfigurator;
 import com.axway.ats.agent.core.configuration.ConfigurationManager;
 import com.axway.ats.agent.core.configuration.Configurator;
-import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.core.exceptions.ActionExecutionException;
 import com.axway.ats.agent.core.exceptions.AgentException;
 import com.axway.ats.agent.core.exceptions.InternalComponentException;
@@ -238,10 +237,9 @@ public class AgentWsImpl {
         final String caller = getCaller();
         ThreadsPerCaller.registerThread(caller);
 
-        try {
+        try (ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream()) {
             Object result = executeAction(caller, componentName, actionName, args);
 
-            ByteArrayOutputStream byteOutStream = new ByteArrayOutputStream();
             ObjectOutputStream objectOutStream = new ObjectOutputStream(byteOutStream);
             objectOutStream.writeObject(result);
 
@@ -694,11 +692,11 @@ public class AgentWsImpl {
         final String caller = getCaller();
         ThreadsPerCaller.registerThread(caller);
 
-        ByteArrayInputStream byteInStream = new ByteArrayInputStream(serializedConfigurators);
-        ObjectInputStream objectInStream;
 
-        try {
-            objectInStream = new ObjectInputStream(byteInStream);
+        try (
+                ByteArrayInputStream byteInStream = new ByteArrayInputStream(serializedConfigurators);
+                ObjectInputStream objectInStream = new ObjectInputStream(byteInStream);
+            ) {
 
             List<Configurator> configurators = (List<Configurator>) objectInStream.readObject();
 
@@ -829,10 +827,10 @@ public class AgentWsImpl {
 
         String uid = "";
         try {
-            uid = headers.get(ExecutorUtils.ATS_RANDOM_TOKEN ).get(0 );
+            uid = headers.get(ExecutorUtils.ATS_RANDOM_TOKEN).get(0 );
         } catch (Exception e) {
             if (!alreadyLoggedErrorAboutSessionUid) {
-                log.warn("Could not get ATS UID for call from " + remoteHost
+                log.warn("Could not get ATS caller ID for request from " + remoteHost
                          + ". This error will not be logged again before Agent restart.", e);
                 alreadyLoggedErrorAboutSessionUid = true;
             }
@@ -843,7 +841,7 @@ public class AgentWsImpl {
             threadId = headers.get( ExecutorUtils.ATS_THREAD_ID ).get( 0 );
         } catch( Exception e ) {
             if( !alreadyLoggedErrorAboutSessionThreadId ) {
-                log.warn( "Could not get Thread Id for call from " + remoteHost
+                log.warn( "Could not get thread Id for call from " + remoteHost
                           + ". This error will not be logged again before Agent restart.", e );
                 alreadyLoggedErrorAboutSessionThreadId = true;
             }

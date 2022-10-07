@@ -34,10 +34,8 @@ import org.apache.log4j.Category;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
-import org.apache.log4j.Priority;
 
 import com.axway.ats.agent.core.MultiThreadedActionHandler;
-import com.axway.ats.agent.core.context.ApplicationContext;
 import com.axway.ats.agent.webapp.restservice.model.SessionData;
 import com.axway.ats.agent.webapp.restservice.model.pojo.BasePojo;
 import com.axway.ats.agent.webapp.restservice.model.pojo.DbConnectionPojo;
@@ -108,7 +106,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
             newAppenderConfiguration.setUser(dbConnectionPojo.getDbUser());
             newAppenderConfiguration.setPassword(dbConnectionPojo.getDbPass());
             newAppenderConfiguration.setMode(dbConnectionPojo.getMode());
-            newAppenderConfiguration.setLoggingThreshold(Priority.toPriority(dbConnectionPojo.getLoggingThreshold()));
+            newAppenderConfiguration.setLoggingThreshold(dbConnectionPojo.getLoggingThreshold());
             newAppenderConfiguration.setMaxNumberLogEvents(dbConnectionPojo.getMaxNumberLogEvents());
 
             PassiveDbAppender alreadyExistingAppender = PassiveDbAppender.getCurrentInstance();
@@ -321,7 +319,7 @@ public class AgentConfigurationServiceImpl extends BaseRestServiceImpl {
         // attach the appender to the logging system
         Category log = Logger.getRootLogger();
 
-        log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold().toInt()));
+        log.setLevel(Level.toLevel(appenderConfiguration.getLoggingThreshold()));
         log.addAppender(attachedAppender);
 
     }

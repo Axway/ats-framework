@@ -16,6 +16,7 @@
 package com.axway.ats.core.utils;
 
 import com.axway.ats.common.systemproperties.AtsSystemProperties;
+import com.axway.ats.core.log.AtsConsoleLogger;
 
 /**
  * Helps to identify who has initiated/started some job.
@@ -30,7 +31,13 @@ public class ExecutorUtils {
     public final static String ATS_TOKEN_DELIMITER           = ":";
     public final static String ATS_CALLER_ID                 = "CALLER_ID";
 
+    /**
+     * Create unique caller ID for the originator of calls on Agents
+     * @return
+     */
     public static String createCallerId() {
+        // TODO - Add agent IP as destination if there are multiple network interfaces on the test executor
+        //    Replace HostUtils.getLocalHostIP() with HostUtils.getPublicLocalHostIp(atsAgentAddr)
         // Create unique caller ID even for cases like multiple simultaneous JVMs/executors from same host (like Jenkins)
         return ATS_HOST_ID + ATS_TOKEN_DELIMITER + HostUtils.getLocalHostIP() + ATS_CALLER_ID_TOKEN_DELIMITER
                + ATS_WORKDIR + ATS_TOKEN_DELIMITER + IoUtils.normalizeUnixDir(AtsSystemProperties.USER_CURRENT_DIR)
@@ -69,5 +76,25 @@ public class ExecutorUtils {
         }
 
         return null;
+    }
+
+
+    public final static String ATS_RANDOM_TOKEN = "RANDOM_TOKEN"; // replace usage with caller and parsing
+    /**
+     * Get ID for agent communication
+     */
+    public static String createExecutorId( String host, Thread thread ) {
+
+        AtsConsoleLogger log = new AtsConsoleLogger(ExecutorUtils.class);
+        // TODO - replace as thread ID could be the same for two different JVMs from same host
+        log.warn("Replace executorId with caller ID");
+        return ATS_HOST_ID + ":" + host + ";" + ATS_THREAD_ID + ":" + thread.getId();
+    }
+    public static String createExecutorId( String host, String randomToken, String threadId ) {
+        AtsConsoleLogger log = new AtsConsoleLogger(ExecutorUtils.class);
+        // TODO - replace with caller
+        log.warn("Replace executorId with caller ID");
+        return ATS_HOST_ID + ":" + host + ";" + ATS_RANDOM_TOKEN + ":" + randomToken + ";" + ATS_THREAD_ID
+               + ": " + threadId;
     }
 }

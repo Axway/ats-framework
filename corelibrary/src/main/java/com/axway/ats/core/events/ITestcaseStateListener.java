@@ -57,7 +57,7 @@ public interface ITestcaseStateListener {
      * This is called when the client side counterparts are garbage collected.
      *
      * @param atsAgent the remote agent
-     * @param internalProcessId ID of the object instance on the agent side
+     * @param internalObjectResourceId ID of the object instance on the agent side
      */
     public abstract void cleanupInternalObjectResources(
                                                          String atsAgent,
