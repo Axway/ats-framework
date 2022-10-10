@@ -306,7 +306,11 @@ public class RegistryOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalRegistryOperations();
         } else {
-            return new RemoteRegistryOperations(atsAgent);
+            try {
+                return new RemoteRegistryOperations(atsAgent);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote registry operations implemenation object", e);
+            }
         }
     }
 }

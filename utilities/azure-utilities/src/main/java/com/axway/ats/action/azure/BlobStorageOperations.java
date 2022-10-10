@@ -893,7 +893,7 @@ public class BlobStorageOperations {
                 log.info(String.format("Bytes transferred: %d (%.2f %%)", bytesTransferred,
                                        uploadedPercentage));
             }
-            bos.flush();;
+            bos.flush();
         }
 
     }
@@ -1037,7 +1037,7 @@ public class BlobStorageOperations {
                         newSize = fso.getFileSize(localFilepath);
                         double downloadedPercentage = ((double) (newSize) / (double) (actualSize)) * 100.0;
                         log.info(String.format("Bytes downloaded: %d (%.2f %%)", newSize - oldSize,
-                                               downloadedPercentage));;
+                                               downloadedPercentage));
 
                         if (aboutToExit) {
                             if (System.currentTimeMillis()

@@ -72,7 +72,7 @@ public class DatabaseOperations {
     @PublicAtsApi
     public DatabaseOperations( TestBox testBox ) {
 
-        this(testBox, null);
+        this(testBox, (testBox != null) ? testBox.getProperties() : null);
     }
 
     /**

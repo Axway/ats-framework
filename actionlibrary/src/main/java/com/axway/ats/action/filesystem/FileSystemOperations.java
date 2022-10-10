@@ -1636,9 +1636,13 @@ public class FileSystemOperations {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemOperations();
         } else {
-            RemoteFileSystemOperations rfso = new RemoteFileSystemOperations(atsAgent);
-            // move to the place when directly will be needed: rfso.setCopyInPassiveMode(copyInPassiveMode);
-            return rfso;
+            try {
+                RemoteFileSystemOperations rfso = new RemoteFileSystemOperations(atsAgent);
+                // move to the place when directly will be needed: rfso.setCopyInPassiveMode(copyInPassiveMode);
+                return rfso;
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system operations impl object", e);
+            }
         }
     }
 }

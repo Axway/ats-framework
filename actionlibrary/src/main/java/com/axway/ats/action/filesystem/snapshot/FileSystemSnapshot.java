@@ -423,7 +423,11 @@ public class FileSystemSnapshot {
         if (HostUtils.isLocalAtsAgent(atsAgent)) {
             return new LocalFileSystemSnapshot(name, configuration);
         } else {
-            return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            try {
+                return new RemoteFileSystemSnapshot(atsAgent, name, configuration);
+            } catch (Exception e) {
+                throw new RuntimeException("Unable to create remote file system snapshot implementation object", e);
+            }
         }
     }
 

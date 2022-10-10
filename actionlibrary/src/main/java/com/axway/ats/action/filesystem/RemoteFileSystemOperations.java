@@ -43,6 +43,16 @@ public class RemoteFileSystemOperations implements IFileSystemOperations {
     private InternalFileSystemOperations remoteFileSystemOperations;
     private LocalFileSystemOperations    localFileSystemOperations;
 
+    /*
+     * This constructor is used only for by the unit/mock tests
+     */
+    @SuppressWarnings("unused")
+    private RemoteFileSystemOperations() {
+        this.atsAgent = "local.host";
+        this.remoteFileSystemOperations = new InternalFileSystemOperations(atsAgent);
+        this.localFileSystemOperations = new LocalFileSystemOperations();
+    }
+
     /**
      * Constructor
      *
