@@ -95,7 +95,7 @@ public class FileTransferConfigurator extends AbstractConfigurator {
         for (Entry<String, String> entry : fileTransferClientsMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(CUSTOM_FILE_TRANSFER_CLIENT + customProtocol)) {
                 if (StringUtils.isNullOrEmpty(entry.getValue())) {
-                    throw new FileTransferConfiguratorException("Uknown custom client for " + customProtocol
+                    throw new FileTransferConfiguratorException("Unknown custom client for " + customProtocol
                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
                                                                 + " file is not in the classpath or "
                                                                 + entry.getKey()
