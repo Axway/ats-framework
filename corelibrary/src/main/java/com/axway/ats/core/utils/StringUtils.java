@@ -48,6 +48,9 @@ public class StringUtils {
      * @returns the String with escaped non-printable characters
      */
     public static String escapeNonPrintableAsciiCharacters( String message ) {
+        if (isNullOrEmpty(message)) {
+            return message;
+        }
 
         char[] escapedMessage = message.toCharArray();
         for (int i = 0; i < escapedMessage.length; i++) {
