@@ -58,7 +58,7 @@ public class DbConnPostgreSQL extends DbConnection {
      *
      * @param host host
      * @param db database name
-     * @param user login user name
+     * @param user login username
      * @param password login password
      */
     public DbConnPostgreSQL( String host, String db, String user, String password ) {
@@ -71,7 +71,7 @@ public class DbConnPostgreSQL extends DbConnection {
      *
      * @param host host
      * @param db database name
-     * @param user login user name
+     * @param user login username
      * @param password login password
      * @param customProperties map of custom properties
      */
@@ -88,7 +88,7 @@ public class DbConnPostgreSQL extends DbConnection {
      * @param host host
      * @param port the database port
      * @param db database name
-     * @param user login user name
+     * @param user login username
      * @param password login password
      * @param customProperties map of custom properties
      */

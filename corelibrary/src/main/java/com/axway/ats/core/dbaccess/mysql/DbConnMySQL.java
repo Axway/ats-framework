@@ -62,7 +62,7 @@ public class DbConnMySQL extends DbConnection {
      */
     private String url;
     private String serverTimeZone;
-    private boolean useSSL = false;
+    private boolean useSSL;
 
     private static String dataSourceClassName = null;
     private static boolean serverTimeZoneWarningLogged = false;
@@ -72,7 +72,7 @@ public class DbConnMySQL extends DbConnection {
      *
      * @param host host
      * @param db database name
-     * @param user login user name
+     * @param user login username
      * @param password login password
      */
     public DbConnMySQL(String host, String db, String user, String password) {

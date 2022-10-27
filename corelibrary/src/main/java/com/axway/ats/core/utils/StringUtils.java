@@ -41,7 +41,7 @@ public class StringUtils {
     private static final Pattern COMMAND_ARGUMENTS_PATTERN        = Pattern.compile("(?:\\\"[^\\\"]*\\\")|(?:\\'[^\\']*\\')|(?:[^\\s]+)");
 
     /**
-     * Escapes non-printable characters (ASCII code is < 32) by adding
+     * Escapes non-printable characters (ASCII code is less than 32) by adding
      * Java unicode style char: \0xcode
      * 
      * @param message the String which will be checked

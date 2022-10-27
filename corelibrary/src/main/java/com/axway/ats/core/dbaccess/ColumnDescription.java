@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 package com.axway.ats.core.dbaccess;
 
 /**
- * Holds the meta data for a column in the database
+ * Holds the metadata for a column in the database
  */
 public class ColumnDescription {
 
@@ -60,7 +60,7 @@ public class ColumnDescription {
     }
 
     /**
-     * Get the column sub-types. For example Set<Int> or Map<Text,Int>
+     * Get the column sub-types. For example Set&lt;Int&gt; or Map&lt;Text,Int&gt;
      *
      * @return the sub-types
      */

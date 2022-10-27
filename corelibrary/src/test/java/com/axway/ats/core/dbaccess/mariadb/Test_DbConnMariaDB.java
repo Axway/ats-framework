@@ -51,8 +51,9 @@ public class Test_DbConnMariaDB extends BaseTest {
 
     @Test
     public void getDataSource() {
-
-        DbConnMariaDB dbConnection = new DbConnMariaDB("host", "db", "user", "pass");
+        Map<String, Object> customProperties = new HashMap<>();
+        customProperties.put(DbConnMariaDB.CONNECT_TIMEOUT, "2000");
+        DbConnMariaDB dbConnection = new DbConnMariaDB("__invalid_host__", "db", "user", "pass", customProperties);
 
         assertEquals(MariaDbPoolDataSource.class, dbConnection.getDataSource().getClass());
     }

@@ -87,6 +87,7 @@ public abstract class DbConnection {
         this.password = password;
 
         this.customProperties = customProperties;
+        // move/copy in children after parent constructor because some properties could be re-initialized
         initializeCustomProperties(customProperties);
     }
 

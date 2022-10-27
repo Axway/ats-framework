@@ -94,7 +94,7 @@ public class DbConnOracle extends DbConnection {
      *
      * @param host host
      * @param schemaName the name of the Oracle schema
-     * @param user login user name
+     * @param user login username
      * @param password login password
      */
     public DbConnOracle( String host, String schemaName, String user, String password ) {
@@ -107,7 +107,7 @@ public class DbConnOracle extends DbConnection {
      *
      * @param host host
      * @param schemaName the name of the Oracle schema
-     * @param user login user name
+     * @param user login username
      * @param password login password
      * @param customProperties map of custom properties
      */
@@ -124,7 +124,7 @@ public class DbConnOracle extends DbConnection {
      * @param host host
      * @param port port
      * @param schemaName the name of the Oracle schema
-     * @param user login user name
+     * @param user login username
      * @param password login password
      * @param customProperties map of custom properties
      */

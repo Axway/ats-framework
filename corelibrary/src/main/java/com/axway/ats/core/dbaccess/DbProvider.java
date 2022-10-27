@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2022 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -67,11 +67,8 @@ public interface DbProvider {
     /**
      * Inserts a row in the given table.
      *
-     * @param tableName
-     * @param colums
-     * @param values This param must look like this: "'string_value', int_value, .."
-     * @param config
-     * @param log the log object
+     * @param tableName DB table name
+     * @param columns map of column:value pairs
      *
      * @return The inserted rows, 0 or 1
      */
@@ -80,16 +77,20 @@ public interface DbProvider {
                           Map<String, String> columns ) throws DbException;
 
     /**
-     * @param query
-     * @return The result set in a list of hash maps
+     * Execute the select query. No check
+     *
+     * @param query string query as-is
+     * @return The result set in a list of DB record values (rows)
      * @throws SQLException
      */
     public DbRecordValuesList[] select(
                                         String query ) throws DbException;
 
     /**
-     * @param query
-     * @return The result set in a list of hash maps
+     * Execute the select query and get the values in the appropriate type
+     *
+     * @param dbQuery query with arguments for the parameters in the query (prepared statement)
+     * @return The result set in a list of arrays fer each DB row returned
      * @throws SQLException
      */
     public DbRecordValuesList[] select(
@@ -151,7 +152,6 @@ public interface DbProvider {
      * @param keyColumns
      * @param keyValues
      * @param queryColumn
-     * @param recordNumber
      * @return
      * @throws DbException
      * @throws ValidationException
