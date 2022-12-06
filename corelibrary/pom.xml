@@ -15,7 +15,7 @@
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <org.apache.commons.net.version>3.7.1</org.apache.commons.net.version>
+        <org.apache.commons.net.version>3.9.0</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590,
             Error example: javax.net.ssl.SSLException: closing inbound before receiving
             peer's close_notify -->
