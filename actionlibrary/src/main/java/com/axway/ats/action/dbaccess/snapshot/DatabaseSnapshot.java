@@ -551,14 +551,14 @@ public class DatabaseSnapshot {
                     // handle expected differences
                     handleExpectedDifferentNumberOfRows(compareOptions, equality);
                 } catch (Exception e) {
-                    log.error("Error occured while handling different number of rows", e);
+                    log.error("Error occurred while handling different number of rows", e);
                 }*/
 
                 try {
                     // handle expected differences
                     handleExpectedMissingRows(compareOptions, equality);
                 } catch (Exception e) {
-                    log.error("Error occured while handling missing rows", e);
+                    log.error("Error occurred while handling missing rows", e);
                 }
             }
 
@@ -1117,6 +1117,7 @@ public class DatabaseSnapshot {
                 }
                 log.debug("[" + snapshotName + "] Loaded " + valuesList.size() + " rows for table "
                           + table.getName());
+                valuesList.sort(null); // sort result rows for consistent compare results
             } else {
                 log.warn("[" + snapshotName + "] No data will be loaded for table " + table.getName()
                          + " because all its columns are pointed to be skipped");

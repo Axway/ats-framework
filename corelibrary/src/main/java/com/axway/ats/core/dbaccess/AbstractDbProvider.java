@@ -446,7 +446,7 @@ public abstract class AbstractDbProvider implements DbProvider {
         }
     }
 
-    // currently only works with few types
+    // Only works with few types. Prepared statement should be closed in outer method
     private PreparedStatement prepareStatement( Connection connection, String query,
                                                 List<Object> arguments ) throws SQLException, DbException {
 
@@ -457,7 +457,7 @@ public abstract class AbstractDbProvider implements DbProvider {
             int possition = 1;
 
             // cycle through arguments and add each of them
-            // as an parameter to the SQL query
+            // as a parameter to the SQL query
             for (Object argument : arguments) {
 
                 if (argument instanceof String) {
@@ -465,7 +465,7 @@ public abstract class AbstractDbProvider implements DbProvider {
                 } else if (argument instanceof byte[]) {
                     result.setBytes(possition++, (byte[]) argument);
                 } else {
-                    throw new DbException("Unable to build query because of inavalid parameter types");
+                    throw new DbException("Unable to build query because of invalid parameter types");
                 }
             }
         }
@@ -829,10 +829,8 @@ public abstract class AbstractDbProvider implements DbProvider {
                                       List<String> columnDescription ) throws SQLException {
 
         // Get info about all columns in the specified table.
-        // Specifying the user name is needed for Oracle, otherwise returns info
-        // about the specified table in all DBs.
-        // We can use an method overriding instead of checking this instance
-        // type.
+        // Specifying the user name is needed for Oracle, otherwise returns info about the specified table in all DBs.
+        // We can use method overriding instead of checking this instance type.
         
         // Map to hold the table's columns in sorted (natural-order) manner. Special case for PostgreSQL.
         Map<String, String> columns = null;
