@@ -1893,21 +1893,19 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
     protected String constructStoredProcedureArgumentsMap( String procedureName, List<Object> arguments ) {
 
         StringBuilder sb = new StringBuilder();
-
         sb.append(procedureName + "(");
 
         if (arguments != null && arguments.size() > 0) {
             for (Object arg : arguments) {
                 if (arg instanceof String || arg instanceof CharSequence || arg instanceof Character) {
-                    sb.append("'" + arg + "'").append(", ");
+                    sb.append("'" + arg + "'");
                 } else {
                     sb.append(arg);
                 }
+                sb.append(", ");
             }
-
-            sb.setLength(sb.length() - 1); // remove trailing comma
+            sb.setLength(sb.length() - 2); // remove trailing comma
         }
-
         sb.append(")");
 
         return sb.toString();

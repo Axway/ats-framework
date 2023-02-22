@@ -179,8 +179,6 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
             return dbEventsCache.addInsertTestcaseMessageEventToBatch(insertMessageStatement);
         } else {
             // execute this event now
-            String errMsg = "Unable to insert testcase message '" + message + "'";
-
             try {
                 insertMessageStatement.execute();
             } catch (SQLException e) {
@@ -194,6 +192,7 @@ public class PGDbWriteAccess extends SQLServerDbWriteAccess {
                 argValues.add(threadName);
                 argValues.add(timestamp);
 
+                String errMsg = "Unable to insert testcase message '" + message + "'";
                 errMsg += " using the following statement: "
                           + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
