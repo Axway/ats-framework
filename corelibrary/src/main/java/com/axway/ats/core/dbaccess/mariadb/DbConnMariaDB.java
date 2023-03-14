@@ -165,7 +165,7 @@ public class DbConnMariaDB extends DbConnection {
             }
 
             Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
-            if ( secProp != null && Boolean.valueOf(secProp.toString())) {
+            if ( secProp != null && Boolean.parseBoolean(secProp.toString())) {
                 useSSL = true;
             }
 

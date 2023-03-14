@@ -43,10 +43,10 @@ import com.mysql.cj.conf.PropertyDefinitions.DatabaseTerm;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMySQL.class);
-
     public static final String MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
     public static final String MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
+    private static final Logger log = Logger.getLogger(DbConnMySQL.class);
+
     /**
      * Default DB port
      */
@@ -144,7 +144,7 @@ public class DbConnMySQL extends DbConnection {
             }
 
             Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
-            if ( secProp != null && Boolean.valueOf(secProp.toString())) {
+            if ( secProp != null && Boolean.parseBoolean(secProp.toString())) {
                 useSSL = true;
             }
         }
