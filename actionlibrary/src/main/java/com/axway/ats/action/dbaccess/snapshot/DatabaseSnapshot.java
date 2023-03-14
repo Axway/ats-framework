@@ -1115,9 +1115,10 @@ public class DatabaseSnapshot {
                         valuesList.add(stringRowValue);
                     }
                 }
-                log.debug("[" + snapshotName + "] Loaded " + valuesList.size() + " rows for table "
-                          + table.getName());
-                valuesList.sort(null); // sort result rows for consistent compare results
+                if (log.isDebugEnabled()) {
+                    log.debug("[" + snapshotName + "] Loaded " + valuesList.size() + " rows for table "
+                            + table.getName());
+                }
             } else {
                 log.warn("[" + snapshotName + "] No data will be loaded for table " + table.getName()
                          + " because all its columns are pointed to be skipped");
@@ -1127,11 +1128,19 @@ public class DatabaseSnapshot {
             Element tableNode = loadTableNode(table, backupXmlFile);
 
             List<Element> tableRows = DatabaseSnapshotUtils.getChildrenByTagName(tableNode, "row");
-            log.debug("[" + snapshotName + " from file] Loaded " + tableRows.size() + " rows for table "
-                      + table.getName());
+            if (log.isDebugEnabled()) {
+                log.debug("[" + snapshotName + " from file] Loaded " + tableRows.size() + " rows for table "
+                        + table.getName());
+            }
             for (Element tableRow : DatabaseSnapshotUtils.getChildrenByTagName(tableNode, "row")) {
                 valuesList.add(tableRow.getTextContent());
             }
+        }
+        if ( !valuesList.isEmpty()) {
+            if (log.isTraceEnabled()) {
+                log.trace("[" + snapshotName + "] Sorting rows of table " + table.getName());
+            }
+            //valuesList.sort(null); // for consistent compare results
         }
 
         return valuesList;
