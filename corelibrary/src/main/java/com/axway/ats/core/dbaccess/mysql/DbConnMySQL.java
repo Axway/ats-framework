@@ -56,6 +56,7 @@ public class DbConnMySQL extends DbConnection {
      */
     private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
     public static final String DATABASE_TYPE = "MYSQL";
+    public static final String USE_SSL_PROPERTY_NAME = "useSSL";
 
     /**
      * The connection URL
@@ -110,10 +111,17 @@ public class DbConnMySQL extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
 
         // should we add other settings like the server time zone for example?
-        url = new StringBuilder().append(JDBC_MYSQL_PREFIX).append(host).append(":")
+        StringBuilder urlSB = new StringBuilder().append(JDBC_MYSQL_PREFIX).append(host).append(":")
                 // because the port can be changed after execution of the parent constructor,
                 // use this.port, instead of port
-                .append(this.port).append("/").append(db).append(((useSSL) ? "?useSSL=true" : "")).toString();
+                .append(this.port).append("/").append(db);
+        if (customProperties != null) {
+            Object useSSLObj = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if (useSSLObj != null) { // explicit value provided in properties
+                urlSB.append("?useSSL=").append(useSSL);
+            }
+        }
+        url = urlSB.toString();
     }
 
     @Override
@@ -135,8 +143,8 @@ public class DbConnMySQL extends DbConnection {
                 this.serverTimeZone = (String) serverTimeZone;
             }
 
-            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
-                    && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+            Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if ( secProp != null && Boolean.valueOf(secProp.toString())) {
                 useSSL = true;
             }
         }
@@ -230,15 +238,18 @@ public class DbConnMySQL extends DbConnection {
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setAllowMultiQueries",
                         new Class<?>[] { boolean.class }, true), dataSourceInstance, new Object[] { true });
 
-                if (useSSL) {
-                    // Note that this will still connect to a non-ssl server
-                    // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
-                    ReflectionUtils.invokeMethod(
-                                                 ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
-                                                                           new Class<?>[]{ boolean.class }, true),
-                                                 dataSourceInstance, new Object[]{ useSSL });
-                    if (log.isDebugEnabled()) {
+
+                // Note that this will still connect to a non-ssl server
+                // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
+                ReflectionUtils.invokeMethod(
+                                             ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
+                                                                       new Class<?>[]{ boolean.class }, true),
+                                             dataSourceInstance, new Object[]{ useSSL });
+                if (log.isDebugEnabled()) {
+                    if (useSSL) {
                         log.debug("SSL enabled!");
+                    } else {
+                        log.debug("SSL is disabled!");
                     }
                 }
 
@@ -381,7 +392,10 @@ public class DbConnMySQL extends DbConnection {
         description.append(host);
         description.append(":").append(port);
         description.append("/").append(db);
-        //TODO maybe add that SSL is supported (or not) as well?
+        if (!useSSL) {
+            description.append(" not");
+        }
+        description.append(" using SSL");
         return description.toString();
     }
 

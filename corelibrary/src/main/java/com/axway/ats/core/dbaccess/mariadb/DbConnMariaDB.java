@@ -40,9 +40,9 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class DbConnMariaDB extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMariaDB.class);
-
     public static final String MARIADB_JDBS_DATASOURCE_CLASS_NAME = "org.mariadb.jdbc.MariaDbPoolDataSource";
+    private static final Logger log = Logger.getLogger(DbConnMariaDB.class);
+
 
     /**
      * Default DB port
@@ -132,9 +132,7 @@ public class DbConnMariaDB extends DbConnection {
                 .append(this.port)
                 .append("/")
                 .append(db)
-                .append(((useSSL)
-                        ? "?useSSL=true"
-                        : ""))
+                .append(((useSSL)? "?useSSL=true": ""))
                 .toString();
     }
 
@@ -166,8 +164,8 @@ public class DbConnMariaDB extends DbConnection {
                 this.serverTimeZone = (String) serverTimeZone;
             }
 
-            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
-                    && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+            Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if ( secProp != null && Boolean.valueOf(secProp.toString())) {
                 useSSL = true;
             }
 
@@ -328,6 +326,10 @@ public class DbConnMariaDB extends DbConnection {
         description.append(host);
         description.append(":").append(port);
         description.append("/").append(db);
+        if (!useSSL) {
+            description.append(" not");
+        }
+        description.append(" using SSL");
 
         return description.toString();
     }
