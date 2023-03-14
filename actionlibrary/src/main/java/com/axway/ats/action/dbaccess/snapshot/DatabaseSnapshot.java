@@ -1140,7 +1140,7 @@ public class DatabaseSnapshot {
             if (log.isTraceEnabled()) {
                 log.trace("[" + snapshotName + "] Sorting rows of table " + table.getName());
             }
-            //valuesList.sort(null); // for consistent compare results
+            valuesList.sort(null); // for consistent compare results
         }
 
         return valuesList;
