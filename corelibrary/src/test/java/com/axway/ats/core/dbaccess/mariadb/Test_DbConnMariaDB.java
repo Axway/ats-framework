@@ -45,8 +45,28 @@ public class Test_DbConnMariaDB extends BaseTest {
         assertEquals("pass", dbConnection.getPassword());
         assertEquals("jdbc:mariadb://host:123/db", dbConnection.getURL());
         assertTrue(dbConnection.getConnHash().startsWith("host_123_db"));
-        assertEquals("MariaDB connection to host:123/db", dbConnection.getDescription());
+        assertEquals("MariaDB connection to host:123/db, not using SSL", dbConnection.getDescription());
         assertEquals(Driver.class, dbConnection.getDriverClass());
+    }
+    @Test
+    public void accessorsWithSSLAndDefaultPort() {
+
+        Map<String, Object> customProperties = new HashMap<String, Object>();
+        //customProperties.put(DbKeys.PORT_KEY, 123);
+        //customProperties.put(DbConnMySQL.USE_SSL_PROPERTY_NAME, "true");
+        customProperties.put(DbKeys.USE_SECURE_SOCKET, "true");
+
+        DbConnMariaDB dbConnection = new DbConnMariaDB("host", "db", "user", "pass", customProperties);
+
+        assertEquals(DbConnMariaDB.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mariadb://host:3306/db?useSSL=true", dbConnection.getURL());
+        assertTrue(dbConnection.getConnHash().startsWith("host_3306_db"));
+        assertEquals("MariaDB connection to host:3306/db, using SSL", dbConnection.getDescription());
+        assertEquals(org.mariadb.jdbc.Driver.class, dbConnection.getDriverClass());
     }
 
     @Test

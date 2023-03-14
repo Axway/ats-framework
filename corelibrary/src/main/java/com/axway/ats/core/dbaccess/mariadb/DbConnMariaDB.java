@@ -323,9 +323,8 @@ public class DbConnMariaDB extends DbConnection {
     public String getDescription() {
 
         StringBuilder description = new StringBuilder("MariaDB connection to ");
-        description.append(host);
-        description.append(":").append(port);
-        description.append("/").append(db);
+        description.append(host).append(':').append(port);
+        description.append('/').append(db).append(',');
         if (!useSSL) {
             description.append(" not");
         }

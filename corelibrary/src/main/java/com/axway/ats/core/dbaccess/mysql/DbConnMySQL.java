@@ -389,9 +389,8 @@ public class DbConnMySQL extends DbConnection {
     public String getDescription() {
 
         StringBuilder description = new StringBuilder("MySQL connection to ");
-        description.append(host);
-        description.append(":").append(port);
-        description.append("/").append(db);
+        description.append(host).append(':').append(port);
+        description.append('/').append(db).append(',');
         if (!useSSL) {
             description.append(" not");
         }

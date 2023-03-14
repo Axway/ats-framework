@@ -45,14 +45,35 @@ public class Test_DbConnMySQL extends BaseTest {
         assertEquals("pass", dbConnection.getPassword());
         assertEquals("jdbc:mysql://host:123/db", dbConnection.getURL());
         assertTrue(dbConnection.getConnHash().startsWith("host_123_db"));
-        assertEquals("MySQL connection to host:123/db", dbConnection.getDescription());
+        assertEquals("MySQL connection to host:123/db, not using SSL", dbConnection.getDescription());
+        assertEquals(Driver.class, dbConnection.getDriverClass());
+    }
+
+    @Test
+    public void accessorsWithSSLAndDefaultPort() {
+
+        Map<String, Object> customProperties = new HashMap<String, Object>();
+        //customProperties.put(DbKeys.PORT_KEY, 123);
+        customProperties.put(DbConnMySQL.USE_SSL_PROPERTY_NAME, "true");
+        customProperties.put(DbKeys.USE_SECURE_SOCKET, "true");
+
+        DbConnMySQL dbConnection = new DbConnMySQL("host", "db", "user", "pass", customProperties);
+
+        assertEquals(DbConnMySQL.DATABASE_TYPE, dbConnection.getDbType());
+        assertEquals("host", dbConnection.getHost());
+        assertEquals("db", dbConnection.getDb());
+        assertEquals("user", dbConnection.getUser());
+        assertEquals("pass", dbConnection.getPassword());
+        assertEquals("jdbc:mysql://host:3306/db?useSSL=true", dbConnection.getURL());
+        assertTrue(dbConnection.getConnHash().startsWith("host_3306_db"));
+        assertEquals("MySQL connection to host:3306/db, using SSL", dbConnection.getDescription());
         assertEquals(Driver.class, dbConnection.getDriverClass());
     }
 
     @Test
     public void getDataSource() {
 
-        DbConnMySQL dbConnection = new DbConnMySQL("host", "db", "user", "pass");
+        DbConnMySQL dbConnection = new DbConnMySQL("invalid_host", "db", "user", "pass");
 
         assertEquals(MysqlConnectionPoolDataSource.class, dbConnection.getDataSource().getClass());
     }
