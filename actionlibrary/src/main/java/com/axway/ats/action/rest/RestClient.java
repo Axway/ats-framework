@@ -85,7 +85,7 @@ public class RestClient {
 
     static {
         /*
-        * Fix for bug when doing Jersey multithreaded calls over non default SSL protocol version.
+        * Fix for bug when doing Jersey multi-threaded calls over non default SSL protocol version.
         * For example if more than one threads are doing TLSv1.2 calls, it happens that some of them are using the older protocol version TLSv1.
         *
         * The reason is that org.glassfish.jersey.client.internal.HttpUrlConnector@secureConnection checks whether
@@ -416,7 +416,7 @@ public class RestClient {
     /**
      * If the URI is not fully specified in the constructor,
      * you can navigate to an internal resource.<br>
-     * For example you can pass:
+     * For example, you can pass:
      * <ul>
      *   <li>"company"</li>
      *   <li>"company/department"</li>
@@ -431,11 +431,15 @@ public class RestClient {
 
         if (resourcePathArray != null) {
             for (String resourcePathToken : resourcePathArray) {
-                for (String token : resourcePathToken.split("/")) {
-                    if (token.length() > 0) {
-                        this.resourcePath.add(token);
-                        this.invalidateClient = true;
-                    }
+                if (StringUtils.isNullOrEmpty(resourcePathToken)) {
+                    log.warn("Null or empty value provided as resource path to add. Skipped.");
+                } else {
+                    for (String token : resourcePathToken.split("/")) {
+                        if (token.length() > 0) {
+                            this.resourcePath.add(token);
+                            this.invalidateClient = true;
+                        }
+                   }
                 }
             }
         } else {
