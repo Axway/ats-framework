@@ -38,15 +38,28 @@ import com.axway.ats.core.validation.ValidationType;
 import com.axway.ats.core.validation.Validator;
 
 /**
- * Operations on the file system.
- * If an ATS Agent is given (by the appropriate constructor), we are working remotely.
+ * Operations on the file system - either local or remote.
+ * Filesystem operations are remote if an ATS Agent is provided (by the appropriate constructor).
  *
- * <br><br>Note: On error all methods in this class are likely to throw FileSystemOperationException
- *
- * <br><br>
- * <b>User guide</b>
+ * <br><p><em>Note</em>: On error all methods in this class are likely to throw FileSystemOperationException.</p>
+ * <p><em>Copy operations</em>: Copy operations open data transfer ports. This is applicable for file/directory copy:
+ * <ul>
+ *     <li>from test executor to agent,</li>
+ *     <li>from agent to test executor,</li>
+ *     <li>and remote ones (agent to another agent)</li>
+ * </ul>
+ * The general rule is that the receiving part opens data port and the sending ones connects to it. You should ensure
+ * that there is connectivity between both parts and for example the ports are permitted in firewall configurations.
+ * For a customization you may specify port range for these data ports
+ * ({@link com.axway.ats.action.ActionLibraryConfigurator#setCopyFileStartPort(int)} and
+ * {@link com.axway.ats.action.ActionLibraryConfigurator#setCopyFileEndPort(int)}) or even copy in passive
+ * mode {@link #setCopyInPassiveMode(boolean)}.
+ * </p>
+ *   <br>
+ * <p>For more details please refer to the <b>user guide</b>
  * <a href="https://axway.github.io/ats-framework/File-System-Operations.html">page</a>
- * related to this class
+ * related to this class.
+ * </p>
  */
 @PublicAtsApi
 public class FileSystemOperations {
@@ -478,7 +491,8 @@ public class FileSystemOperations {
      * Copies the contents of a file <strong>from</strong> atsAgent host to a new file on the local host (Test Executor).
      * <br>
      * <b>Note:</b> If no atsAgent is specified in constructor or it is local, then the source files is searched on the
-     * local host.
+     * local host. <br>
+     * Check data port notes in the description of the class.
      *
      * @param fromFile the source file located on the ATS Agent
      * @param toFile the local destination file
@@ -505,7 +519,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a file from the local host (Test Executor) to a new file on the atsAgent host
+     * Copies the contents of a file from the local host (Test Executor) to a new file on the atsAgent host.
+     * <br>
+     * Check data port notes in the description of the class.
      *
      * @param fromFile the source file to copy
      * @param toFile the destination file name path (not just the directory) to copy to. Absolute path is expected
@@ -540,7 +556,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a file from one remote host to another remote host
+     * Copies the contents of a file from one remote host to another remote host.
+     * Both hosts should have ATS agents running.<br>
+     * Check data port notes in the description of the class.
      *
      * @param fromHost the address of the ATS agent on the source host.<br />
      * If you provide null then local host will be used. In such case it is recommended to use
@@ -708,7 +726,8 @@ public class FileSystemOperations {
     /**
      * Creates a directory on with a specific user and group id
      *
-     * @param directoryName the name of the new directory<br>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final), all of the missing directories will be created
+     * @param directoryName the name of the new directory<br>If the name consist of multiple levels (/dir1/dir2/dir3/dir_final),
+     *                      all the missing directories will be created
      * @param userId the identification number of the user this file should belong to
      * @param groupId the identification number of the group this file should belong to
      * Note group and user ID are applied only to the last directory
@@ -801,7 +820,9 @@ public class FileSystemOperations {
     }
 
     /**
-     * Copies the contents of a directory located on a remote host to another remote host
+     * Copies the contents of a directory located on a remote host to another remote host.<br>
+     * Both hosts should have ATS agents running.<br>
+     * Check data port notes in the description of the class.
      *
      * @param fromHost the address of the ATS agent on the source host
      * @param fromDirectory the source file to copy

@@ -143,7 +143,7 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
     // Used to keep track of pending file transfers and wait to complete. Map of open-port:FileTransferStatus pairs.
     // Instance should be Hashtable to synchronize access operations;
     private final        Map<Integer, FileTransferStatus> fileTransferStates         = new Hashtable<Integer, FileTransferStatus>();
-    // One time warning sent to the user if non recommended relative
+    // One time warning sent to the user if non-recommended relative
     // path is used for construction of the destination file path
     private              boolean                          firstTimeWarn              = false;
     private              Integer                          copyFileStartPort;
@@ -784,7 +784,8 @@ public class LocalFileSystemOperations implements IFileSystemOperations {
                     } catch (SocketTimeoutException ste) {
                         // timeout usually will be when waiting for client connection but theoretically could be also in the middle of reading data
                         log.error("Reached timeout of " + (FILE_TRANSFER_TIMEOUT / 1000)
-                                  + " seconds while waiting for file/directory copy operation.", ste);
+                                  + " seconds while waiting for file/directory copy operation. Data connection not"
+                                  + " received. Check network/port connectivity to the receiving part", ste);
                         transferStatus.transferException = ste;
                     } catch (IOException e) {
                         log.error("An I/O error occurred", e);
