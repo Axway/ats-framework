@@ -20,7 +20,7 @@
 
     <properties>
         <javax.jms.jms-api.version>1.1-rev-1</javax.jms.jms-api.version>
-        <org.json.json.version>20140107</org.json.json.version>
+        <org.json.json.version>20230227</org.json.json.version>
         <org.json.simple.version>1.1.1</org.json.simple.version>
         <org.jaxen.version>1.1.1</org.jaxen.version>
     </properties>
