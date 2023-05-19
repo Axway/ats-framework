@@ -17,11 +17,12 @@ package com.axway.ats.core.dbaccess;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
+import java.util.TreeMap;
 
 import com.axway.ats.core.dbaccess.exceptions.DbException;
 import com.axway.ats.core.utils.StringUtils;
 
-@SuppressWarnings( "serial")
 public class DbRecordValuesList extends ArrayList<DbRecordValue> {
 
     public Object get( String columnName ) throws DbException {
@@ -94,7 +95,7 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
     @Override
     public String toString() {
 
-        StringBuilder sBuilder = new StringBuilder();
+        Map<String, String> sortedRecords = new TreeMap<>();
 
         Iterator<DbRecordValue> elementsIter = iterator();
         while (elementsIter.hasNext()) {
@@ -102,9 +103,9 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
             String recordValueString = recordValue.getValueAsString();
 
             ColumnDescription columnDescription = new ColumnDescription(recordValue.getDbColumn()
-                                                                                   .getColumnName(),
-                                                                        recordValue.getDbColumn()
-                                                                                   .getColumnType());
+                    .getColumnName(),
+                    recordValue.getDbColumn()
+                            .getColumnType());
 
             if (recordValueString != null) {
                 if (columnDescription.getType() != null && (columnDescription.isTypeBinary())) {
@@ -114,14 +115,16 @@ public class DbRecordValuesList extends ArrayList<DbRecordValue> {
             } else {
                 recordValueString = "NULL";
             }
-            sBuilder.append(recordValue.getDbColumn().getColumnName());
-            sBuilder.append("=");
-            sBuilder.append(recordValueString);
-            sBuilder.append("|");
-        }
-        
-        sBuilder.setLength(sBuilder.length() - 1);
 
+            sortedRecords.put(recordValue.getDbColumn().getColumnName(), recordValueString);
+
+        }
+
+        StringBuilder sBuilder = new StringBuilder();
+        if (!sortedRecords.isEmpty()) {
+            sortedRecords.forEach((key, value) -> sBuilder.append(key).append("=").append(value).append("|"));
+            sBuilder.setLength(sBuilder.length() - 1);
+        }
         return sBuilder.toString();
     }
 }
