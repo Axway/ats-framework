@@ -55,7 +55,7 @@ import com.axway.ats.core.utils.StringUtils;
  */
 @PublicAtsApi
 public class FileTransferHttpClient extends HttpClient implements IFileTransferClient {
-
+//
     private static final Logger log                                   = Logger.getLogger(FileTransferHttpClient.class);
 
     private static final int    DEFAULT_HTTP_PORT                     = 80;
