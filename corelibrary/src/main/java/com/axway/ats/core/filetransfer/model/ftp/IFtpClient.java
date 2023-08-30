@@ -63,7 +63,7 @@ public interface IFtpClient {
 
     public String mlst( String directory );
 
-    public String mlsd( String directory );
+    public List<String> mlsd( String directory );
 
     /**
      * Like ls

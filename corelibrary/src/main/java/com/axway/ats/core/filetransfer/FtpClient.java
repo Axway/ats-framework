@@ -501,9 +501,18 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     }
 
     @Override
-    public String mlsd(String fileName) {
+    public List<String> mlsd(String directory) {
 
-        return executeCommand("MLSD " + fileName);
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("MLSD " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
+            return fileNames;
+        }
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
+        }
+        return fileNames;
     }
 
     @Override
