@@ -15,14 +15,17 @@
  */
 package com.axway.ats.core.filetransfer;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.security.KeyStore;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -38,7 +41,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.Vector;
 
+import com.axway.ats.core.filetransfer.model.ftp.ISftpClient;
+import com.axway.ats.core.utils.ExceptionUtils;
+import com.jcraft.jsch.SftpATTRS;
 import org.apache.commons.net.util.Base64;
 import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
@@ -66,7 +73,7 @@ import com.jcraft.jsch.UserInfo;
  * ( http://www.jcraft.com/jsch/ ) to initiate and execute SFTP connections
  * to a remote server.
  */
-public class SftpClient extends AbstractFileTransferClient {
+public class SftpClient extends AbstractFileTransferClient implements ISftpClient {
 
     private JSch                                jsch                                = null;
     private Session                             session                             = null;
@@ -358,7 +365,869 @@ public class SftpClient extends AbstractFileTransferClient {
     @Override
     public String executeCommand( String command ) throws FileTransferException {
 
-        throw new FileTransferException("Not implemented");
+        return this.executeCommand(command, new ByteArrayInputStream("".getBytes()));
+    }
+
+    public String executeCommand( String command, InputStream payload ) throws FileTransferException {
+
+        throw new FileTransferException("Not implemented. Use " + this.getClass().getName()
+                + ".executeCommand(" + String.class.getName() + ", java.lang.Object[]) instead");
+    }
+
+    @Override
+    public String pwd() {
+
+        try {
+            checkIfConnected();
+            return this.channel.pwd();
+        } catch (Exception e) {
+            throw new FileTransferException("Could not execute [pwd]", e);
+        }
+    }
+
+    @Override
+    public List<String> ls() {
+
+        return this.ls(this.pwd());
+    }
+
+    @Override
+    public List<String> ls( boolean namesOnly ) {
+
+        return this.ls(this.pwd(), namesOnly);
+    }
+
+    @Override
+    public List<String> ls( String filepath ) {
+
+        return this.ls(filepath, false);
+    }
+
+    @Override
+    public List<String> ls( String filepath, boolean namesOnly ) {
+
+        try {
+            checkIfConnected();
+            Vector<?> files = null;
+            if (StringUtils.isNullOrEmpty(filepath)) {
+                throw new IllegalArgumentException("Filepath could not be null/empty");
+            }
+            files = this.channel.ls(filepath);
+            Iterator<?> it = files.iterator();
+            List<String> filesList = new ArrayList<String>();
+            while (it.hasNext()) {
+                ChannelSftp.LsEntry file = (ChannelSftp.LsEntry) it.next();
+                if (namesOnly) {
+                    filesList.add(file.getFilename());
+                } else {
+                    filesList.add(file.getLongname());
+                }
+
+            }
+            return filesList;
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [ls " + filepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void cd( String directory ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(directory)) {
+                throw new IllegalArgumentException("Directory could not be null/empty");
+            }
+            this.channel.cd(directory);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [cd " + directory + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void cdup() {
+
+        String parentDir = null;
+        try {
+            checkIfConnected();
+            String pwd = this.pwd();
+            if (pwd.split("/").length <= 2) {
+                parentDir = "/";
+            } else {
+                parentDir = pwd.substring(0, pwd.lastIndexOf("/"));
+            }
+
+            this.channel.cd(parentDir);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [cdup]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void mkdir( String directory ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(directory)) {
+                throw new IllegalArgumentException("Directory could not be null/empty");
+            }
+            this.channel.mkdir(directory);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [mkdir " + directory + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void rmdir( String directory ) {
+
+        this.rmdir(directory, false);
+    }
+
+    @Override
+    public void rmdir( String directory, boolean recursive ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(directory)) {
+                throw new IllegalArgumentException("Directory could not be null/empty");
+            }
+            if (recursive) {
+                invoke_rmrf(directory);
+            } else {
+                this.channel.rmdir(directory);
+            }
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [rmdir " + ( (recursive)
+                    ? "-p "
+                    : "")
+                    + directory + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void rm( String filename ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(filename)) {
+                throw new IllegalArgumentException("Filename could not be null/empty");
+            }
+            this.channel.rm(filename);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [rm " + filename + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void put( InputStream inputStream, String remoteFile ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(remoteFile)) {
+                throw new IllegalArgumentException("Remote file could not be null/empty");
+            }
+            if (inputStream == null) {
+                throw new IllegalArgumentException("Input stream could not be null");
+            }
+            this.channel.put(inputStream, remoteFile);
+
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [put (input stream) " + remoteFile + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void put( String localFile, String remoteFile ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(localFile)) {
+                throw new IllegalArgumentException("Local file could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(remoteFile)) {
+                throw new IllegalArgumentException("Remote file could not be null/empty");
+            }
+            File file = new File(localFile);
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    throw new IllegalArgumentException("Provided local filepath '" + localFile
+                            + "' denotes a directory, while only regular files are supported as argument");
+                }
+            } else {
+                throw new FileNotFoundException("File '" + localFile + "' does not exist");
+            }
+            this.channel.put(localFile, remoteFile);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [put " + localFile + " " + remoteFile + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void put( String localFile ) {
+
+        String remoteFile = null;
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(localFile)) {
+                throw new IllegalArgumentException("Local file could not be null/empty");
+            }
+            File file = new File(localFile);
+            if (file.exists()) {
+                if (file.isDirectory()) {
+                    throw new IllegalArgumentException("Provided local filepath '" + localFile
+                            + "' denotes a directory, while only regular files are supported as argument");
+                }
+            } else {
+                throw new FileNotFoundException("File '" + localFile + "' does not exist");
+            }
+            remoteFile = this.pwd() + "/" + localFile.split(File.separator)[localFile.split(File.separator).length - 1];
+            this.channel.put(localFile, remoteFile);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [put " + localFile + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void get( String remoteFile, String localFile, boolean append ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(remoteFile)) {
+                throw new IllegalArgumentException("Remote file could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(localFile)) {
+                throw new IllegalArgumentException("Local file could not be null/empty");
+            }
+            if (append) {
+                this.channel.get(remoteFile, localFile, null, ChannelSftp.APPEND);
+            } else {
+                this.channel.get(remoteFile, localFile, null, ChannelSftp.OVERWRITE);
+            }
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [get " + localFile + " " + remoteFile + " mode = " + ( (append)
+                    ? "append"
+                    : "overwrite")
+                    + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public InputStream get( String remoteFile ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(remoteFile)) {
+                throw new IllegalArgumentException("Remote file could not be null/empty");
+            }
+            return this.channel.get(remoteFile);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [get " + remoteFile + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void rename( String oldfilepath, String newfilepath ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(oldfilepath)) {
+                throw new IllegalArgumentException("Old filepath could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(newfilepath)) {
+                throw new IllegalArgumentException("New filepath could not be null/empty");
+            }
+            this.channel.rename(oldfilepath, newfilepath);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [rename " + oldfilepath + " " + newfilepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void chmod( String filepath, int permissions ) {
+
+        this.chmod(filepath, permissions, false);
+    }
+
+    @Override
+    public void chmod( String filepath, int permissions, boolean recursive ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(filepath)) {
+                throw new IllegalArgumentException("Filepath could not be null/empty");
+            }
+            if (permissions < 0) {
+                throw new IllegalArgumentException("File permissions could not be less than 0 (zero)");
+            }
+            // construct absolute filepath
+
+            String absoluteFilepath = filepath;
+            if (!absoluteFilepath.startsWith("/")) { // the user provided filepath is not absolute
+                String pwd = this.pwd();
+                absoluteFilepath = (pwd.endsWith("/")
+                        ? pwd + filepath
+                        : pwd + "/" + filepath);
+            }
+
+            // from now on, use absoluteFilepath and not filepath variable
+
+            this.channel.chmod(permissions, filepath);
+            if (isDirectory(absoluteFilepath) && recursive) {
+                List<String> filesNames = this.ls(absoluteFilepath, true);
+                if (filesNames != null && !filepath.isEmpty()) {
+                    for (String fileName : filesNames) {
+                        if (fileName.equals(".") || fileName.equals("..")) {
+                            continue;
+                        }
+                        String absoluteFilepathForChild = null;
+                        if (!absoluteFilepath.endsWith("/")) {
+                            absoluteFilepathForChild = absoluteFilepath + "/" + fileName;
+                        } else {
+                            absoluteFilepathForChild = absoluteFilepath + fileName;
+                        }
+                        this.chmod(absoluteFilepathForChild, permissions, true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // use filepath, instead of absoluteFilepath, so the user can more easily track its code (where and how filepath is passed to this method)
+            String errorMessage = "Could not execute [chmod " + ( (recursive)
+                    ? "-R "
+                    : " ")
+                    + Integer.toOctalString(permissions) + " " + filepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void chgrp( String filepath, int gid ) {
+
+        this.chgrp(filepath, gid, false);
+
+    }
+
+    @Override
+    public void chgrp( String filepath, int gid, boolean recursive ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(filepath)) {
+                throw new IllegalArgumentException("Filepath could not be null/empty");
+            }
+            if (gid < 0) {
+                throw new IllegalArgumentException("GID could not be less than 0 (zero)");
+            }
+            // construct absolute filepath
+
+            String absoluteFilepath = filepath;
+            if (!absoluteFilepath.startsWith("/")) { // the user provided filepath is not absolute
+                String pwd = this.pwd();
+                absoluteFilepath = (pwd.endsWith("/")
+                        ? pwd + filepath
+                        : pwd + "/" + filepath);
+            }
+
+            // from now on, use absoluteFilepath and not filepath variable
+
+            this.channel.chgrp(gid, absoluteFilepath);
+            if (isDirectory(absoluteFilepath) && recursive) {
+                List<String> filesNames = this.ls(absoluteFilepath, true);
+                if (filesNames != null && !filepath.isEmpty()) {
+                    for (String fileName : filesNames) {
+                        if (fileName.equals(".") || fileName.equals("..")) {
+                            continue;
+                        }
+                        String absoluteFilepathForChild = null;
+                        if (!absoluteFilepath.endsWith("/")) {
+                            absoluteFilepathForChild = absoluteFilepath + "/" + fileName;
+                        } else {
+                            absoluteFilepathForChild = absoluteFilepath + fileName;
+                        }
+                        this.chgrp(absoluteFilepathForChild, gid, true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // use filepath, instead of absoluteFilepath, so the user can more easily track its code (where and how filepath is passed to this method)
+            String errorMessage = "Could not execute [chgrp " + ( (recursive)
+                    ? "-R "
+                    : "")
+                    + gid + " " + filepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void chown( String filepath, int uid ) {
+
+        this.chown(filepath, uid, false);
+
+    }
+
+    @Override
+    public void chown( String filepath, int uid, boolean recursive ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(filepath)) {
+                throw new IllegalArgumentException("Filepath could not be null/empty");
+            }
+            if (uid < 0) {
+                throw new IllegalArgumentException("UID could not be less than 0 (zero)");
+            }
+            // construct absolute filepath
+
+            String absoluteFilepath = filepath;
+            if (!absoluteFilepath.startsWith("/")) { // the user provided filepath is not absolute
+                String pwd = this.pwd();
+                absoluteFilepath = (pwd.endsWith("/")
+                        ? pwd + filepath
+                        : pwd + "/" + filepath);
+            }
+
+            // from now on, use absoluteFilepath and not filepath variable
+
+            this.channel.chown(uid, absoluteFilepath);
+            if (isDirectory(absoluteFilepath) && recursive) {
+                List<String> filesNames = this.ls(absoluteFilepath, true);
+                if (filesNames != null && !filepath.isEmpty()) {
+                    for (String fileName : filesNames) {
+                        if (fileName.equals(".") || fileName.equals("..")) {
+                            continue;
+                        }
+                        String absoluteFilepathForChild = null;
+                        if (!absoluteFilepath.endsWith("/")) {
+                            absoluteFilepathForChild = absoluteFilepath + "/" + fileName;
+                        } else {
+                            absoluteFilepathForChild = absoluteFilepath + fileName;
+                        }
+                        this.chown(absoluteFilepathForChild, uid, true);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            // use filepath, instead of absoluteFilepath, so the user can more easily track its code (where and how filepath is passed to this method)
+            String errorMessage = "Could not execute [chown " + ( (recursive)
+                    ? "-R "
+                    : " ")
+                    + uid + " " + filepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void ln( String oldpath, String newpath, boolean symbolic ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("Old path could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("New path could not be null/empty");
+            }
+            if (symbolic) {
+                this.symlink(oldpath, newpath);
+            } else {
+                this.hardlink(oldpath, newpath);
+            }
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [ln " + ( (symbolic)
+                    ? "-s"
+                    : "")
+                    + oldpath + " " + newpath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public String readlink( String filepath ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(filepath)) {
+                throw new IllegalArgumentException("Remote filepath could not be null/empty");
+            }
+            return channel.readlink(filepath);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [readlink " + filepath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+    }
+
+    @Override
+    public void symlink( String oldpath, String newpath ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("Old path could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("New path could not be null/empty");
+            }
+            this.channel.symlink(oldpath, newpath);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [symlink " + oldpath + " " + newpath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public void hardlink( String oldpath, String newpath ) {
+
+        try {
+            checkIfConnected();
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("Old path could not be null/empty");
+            }
+            if (StringUtils.isNullOrEmpty(oldpath)) {
+                throw new IllegalArgumentException("New path could not be null/empty");
+            }
+            this.channel.hardlink(oldpath, newpath);
+        } catch (Exception e) {
+            String errorMessage = "Could not execute [hardlink " + oldpath + " " + newpath + "]";
+            throw new FileTransferException(errorMessage, e);
+        }
+
+    }
+
+    @Override
+    public Object executeCommand( String command, Object[] arguments ) {
+
+        try {
+            Method[] methods = this.getClass().getMethods();
+            for (Method m : methods) {
+                if (m.getName().equals(command)) {
+                    Class<?>[] paramTypes = m.getParameterTypes();
+                    if (paramTypes == null) {
+                        if (arguments == null) {
+                            return m.invoke(this, arguments);
+                        }
+                    } else {
+                        if (paramTypes.length == arguments.length) {
+                            boolean argCheckOk = true;
+                            for (int i = 0; i < paramTypes.length; i++) {
+                                Class<?> expectedType = paramTypes[i];
+                                if (arguments[i] != null) {
+                                    Class<?> actualType = arguments[i].getClass();
+                                    if (expectedType.isPrimitive()) {
+                                        if (!expectedType.getTypeName()
+                                                .equals(actualType.getName()
+                                                        .split("\\.")[actualType.getName()
+                                                        .split("\\.").length
+                                                        - 1].toLowerCase())) {
+                                            argCheckOk = false;
+                                            break; // we have mismatch. Further check won't be necessary
+                                        }
+                                    } else {
+                                        if (!expectedType.isAssignableFrom(actualType)) {
+                                            argCheckOk = false;
+                                            break; // we have mismatch. Further check won't be necessary
+                                        } else {
+                                            argCheckOk = true;
+                                        }
+                                    }
+                                } else {
+                                    throw new IllegalArgumentException("Argument at position [" + i
+                                            + "] must not be null, but was");
+                                }
+                            }
+                            if (argCheckOk) {
+                                return m.invoke(this, arguments);
+                            }
+                        }
+                    }
+                }
+            }
+
+            throw new RuntimeException("Could not locate method '" + command + "' for SFTP client '"
+                    + this.getClass().getName() + "' that accepts the folowing argument types "
+                    + getTypes(arguments)
+                    + ". Either the command is not supported, or the arguments types and/or order is wrong");
+        } catch (Exception e) {
+            throw new FileTransferException("Could not execute command '" + command + "' with arguments "
+                    + ( (arguments != null)
+                    ? Arrays.toString(arguments)
+                    : "null"),
+                    e);
+        }
+    }
+
+    @Override
+    public boolean isDirectory( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.isDir();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could not check whether filepath '" + filepath + "' denotes a directory",
+                    e);
+        }
+    }
+
+    @Override
+    public boolean isFile( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.isReg();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could not check whether filepath '" + filepath + "' denotes a file", e);
+        }
+    }
+
+    @Override
+    public boolean isLink( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.isLink();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could not check whether filepath '" + filepath
+                    + "' denotes a (symbolic) link",
+                    e);
+        }
+    }
+
+    @Override
+    public boolean doesFileExist( String filepath ) {
+
+        try {
+            String[] fileTokens = filepath.split(File.separator);
+            String parentDir = null;
+            if (fileTokens.length == 1) {
+                parentDir = pwd();
+            } else {
+                parentDir = filepath.substring(0, filepath.lastIndexOf(File.separator));
+            }
+            List<String> files = ls(parentDir, true);
+            if (files != null && !files.isEmpty()) {
+                for (String file : files) {
+                    if (file.equals(fileTokens[fileTokens.length - 1])) {
+                        return true;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new FileTransferException("Could not check whether file '" + filepath + "' exists'", e);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean doesDirectoryExist( String directory ) {
+
+        try {
+            ls(directory);
+        } catch (Exception e) {
+            if (ExceptionUtils.containsMessage("is not a valid", e, true)
+                    || ExceptionUtils.containsMessage("No such file", e, true)) {
+                return false;
+            } else {
+                throw new FileTransferException("Could not check whether directory '" + directory + "' exists'", e);
+            }
+        }
+        return true;
+    }
+
+    @Override
+    public int getGID( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.getGId();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could get GID for filepath '" + filepath + "'", e);
+        }
+    }
+
+    @Override
+    public int getUID( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.getUId();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could get UID for filepath '" + filepath + "'", e);
+        }
+    }
+
+    @Override
+    public String getPermissions( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                String permissions = attr.getPermissionsString();
+                return permissionsAsInt(permissions) + "";
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could get file permissions of '" + filepath + "'", e);
+        }
+    }
+
+    @Override
+    public long getFileSize( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.getSize();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could get file size of '" + filepath + "'", e);
+        }
+    }
+
+    @Override
+    public long getModificationTime( String filepath ) {
+
+        try {
+            SftpATTRS attr = this.channel.stat(filepath);
+            if (attr != null) {
+                return attr.getMTime();
+            }
+            throw new FileTransferException("Could not obtain information about '" + filepath + "'");
+        } catch (Exception e) {
+            throw new FileTransferException("Could get modification time of '" + filepath + "'", e);
+        }
+    }
+
+    private void invoke_rmrf( String directory ) {
+
+        List<String> files = ls(directory);
+        int deletedEntries = 0;
+        boolean isEmpty = true;
+        for (int i = 0; i < files.size(); i++) {
+            String name = files.get(i).split(" ")[files.get(i).split(" ").length - 1];
+            if (name.equals(".") || name.equals("..")) {
+                continue;
+            }
+            isEmpty = false;
+            boolean isDirectory = files.get(i).startsWith("d");
+            if (isDirectory) {
+                invoke_rmrf(directory + "/" + name);
+                deletedEntries++;
+            } else {
+                rm(directory + "/" + name);
+                deletedEntries++;
+            }
+        }
+        if (deletedEntries + 2 == files.size()) { // the +2 is used so '.' and '..' entries are taken into consideration as well
+            isEmpty = true;
+        }
+        if (isEmpty) {
+            rmdir(directory);
+        }
+
+    }
+
+    private void checkIfConnected() throws IllegalStateException {
+
+        if (this.channel == null || this.channel.isClosed() || !this.channel.isConnected()) {
+
+            throw new IllegalStateException("No SFTP connection to '" + this.hostname + ":" + this.port
+                    + " is presented for this instance. Did you forget to invoke "
+                    + getClass().getSimpleName() + ".connect()?");
+        }
+
+    }
+
+    private int permissionsAsInt( String permissions ) {
+
+        String user = permissions.substring(1, 4);
+        int userPerm = 0;
+        if (user.contains("r")) {
+            userPerm += 4;
+        }
+        if (user.contains("w")) {
+            userPerm += 2;
+        }
+        if (user.contains("x")) {
+            userPerm += 1;
+        }
+
+        String group = permissions.substring(4, 7);
+        int groupPerm = 0;
+        if (group.contains("r")) {
+            groupPerm += 4;
+        }
+        if (group.contains("w")) {
+            groupPerm += 2;
+        }
+        if (group.contains("x")) {
+            groupPerm += 1;
+        }
+
+        String other = permissions.substring(7);
+        int otherPerm = 0;
+        if (other.contains("r")) {
+            otherPerm += 4;
+        }
+        if (other.contains("w")) {
+            otherPerm += 2;
+        }
+        if (other.contains("x")) {
+            otherPerm += 1;
+        }
+        return (userPerm * 100) + (groupPerm * 10) + otherPerm;
+    }
+
+    private String getTypes( Object[] arguments ) {
+
+        StringBuilder sb = new StringBuilder();
+        if (arguments == null) {
+            sb.append("no arguments provided");
+        } else {
+            sb.append("[");
+            for (Object arg : arguments) {
+                if (arg != null) {
+                    sb.append(arg.getClass().getName());
+                } else {
+                    sb.append("null argument");
+                }
+                sb.append(",");
+            }
+            sb.setLength(sb.length() - 1); // remove trailing comma
+            sb.append("]");
+        }
+        return sb.toString();
     }
 
     @Override

@@ -16,6 +16,7 @@
 package com.axway.ats.action.filetransfer;
 
 import java.io.File;
+import java.io.InputStream;
 
 import org.apache.log4j.Logger;
 
@@ -411,10 +412,52 @@ public class FileTransferClient {
             executeCommand( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command ) {
 
         // validate input parameters
+        // since payload can be null, we do not validate it at all
         new Validator().validateMethodParameters(new Object[]{ command });
 
         // execute the command
         return this.client.executeCommand(command);
+    }
+
+    /**
+     * Execute some custom command.
+     * This is specific for each protocol and remote server.
+     *
+     * @param command the command to execute
+     * @param payload the command payload
+     * @return the command output
+     */
+    @PublicAtsApi
+    public String
+    executeCommand( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
+            InputStream payload ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters(new Object[]{ command });
+
+        // execute the command
+        return this.client.executeCommand(command, payload);
+    }
+
+    /**
+     * Execute some custom command.
+     * This is specific for each protocol and remote server.
+     *
+     * @param command the command to execute
+     * @param arguments the command arguments. None of them must be null
+     * @return the command output
+     */
+    @PublicAtsApi
+    public Object
+    executeCommand( @Validate( name = "command", type = ValidationType.STRING_NOT_EMPTY) String command,
+            @Validate( name = "arguments", type = ValidationType.NOT_NULL) Object[] arguments ) {
+
+        // validate input parameters
+        new Validator().validateMethodParameters(new Object[]{ command });
+        new Validator().validateMethodParameters(new Object[]{ command, arguments });
+
+        // execute the command
+        return this.client.executeCommand(command, arguments);
     }
 
     /**

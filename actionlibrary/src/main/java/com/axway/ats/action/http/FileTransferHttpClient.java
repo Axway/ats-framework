@@ -19,6 +19,7 @@ package com.axway.ats.action.http;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
@@ -396,7 +397,21 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public String executeCommand( String command ) throws FileTransferException {
 
         // not applicable
-        return null;
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    @Override
+    public Object executeCommand(String command, Object[] arguments) throws FileTransferException {
+
+        // not applicable
+        throw new UnsupportedOperationException("Not supported");
+    }
+
+    @Override
+    public String executeCommand(String command, InputStream payload) throws FileTransferException {
+
+        // not applicable
+        throw new UnsupportedOperationException("Not supported");
     }
 
     @Override

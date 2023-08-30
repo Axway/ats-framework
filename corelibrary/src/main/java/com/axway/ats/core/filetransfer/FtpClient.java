@@ -15,13 +15,19 @@
  */
 package com.axway.ats.core.filetransfer;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.axway.ats.core.filetransfer.model.ftp.IFtpClient;
+import com.axway.ats.core.utils.IoUtils;
 import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.log4j.Logger;
 
@@ -38,9 +44,9 @@ import com.axway.ats.core.utils.StringUtils;
  * ( https://commons.apache.org/proper/commons-net/ ) to initiate and execute FTP
  * connections to a remote server.
  */
-public class FtpClient extends AbstractFileTransferClient {
+public class FtpClient extends AbstractFileTransferClient implements IFtpClient {
 
-    private org.apache.commons.net.ftp.FTPClient ftpConnection = null;
+    private org.apache.commons.net.ftp.FTPClient client = null;
     private static final Logger                  log           = Logger.getLogger(FtpClient.class);
 
     /**
@@ -62,15 +68,15 @@ public class FtpClient extends AbstractFileTransferClient {
     public void setTransferMode(
                                  TransferMode mode ) throws FileTransferException {
 
-        if (this.ftpConnection != null && this.ftpConnection.isConnected() && this.transferMode != mode) {
+        if (this.client != null && this.client.isConnected() && this.transferMode != mode) {
             try {
                 log.info("Set file transfer mode to " + mode);
                 if (mode == TransferMode.ASCII) {
-                    if (!this.ftpConnection.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)) {
+                    if (!this.client.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)) {
                         throw new Exception("Unable to set transfer mode to ASCII");
                     }
                 } else {
-                    if (!this.ftpConnection.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)) {
+                    if (!this.client.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)) {
                         throw new Exception("Unable to set transfer mode to BINARY");
                     }
                 }
@@ -103,7 +109,7 @@ public class FtpClient extends AbstractFileTransferClient {
                  + " and password " + password);
         // make new FTP object for every new connection
         disconnect();
-        this.ftpConnection = new org.apache.commons.net.ftp.FTPClient();
+        this.client = new org.apache.commons.net.ftp.FTPClient();
 
         /* 
          * When uploading/downloading file with encoding that the server does not, the server will return 452.
@@ -114,14 +120,14 @@ public class FtpClient extends AbstractFileTransferClient {
         boolean autodetectUTF8 = Boolean.valueOf(CoreLibraryConfigurator.getInstance().getFtpAutodetectUTF8());
 
         if (!StringUtils.isNullOrEmpty(controlEncoding)) {
-            this.ftpConnection.setControlEncoding(controlEncoding);
+            this.client.setControlEncoding(controlEncoding);
             if (log.isDebugEnabled()) {
                 log.debug("Control encoding is set to " + controlEncoding);
             }
 
         }
 
-        this.ftpConnection.setAutodetectUTF8(autodetectUTF8);
+        this.client.setAutodetectUTF8(autodetectUTF8);
         if (log.isDebugEnabled()) {
             log.debug("Autodetect for UTF-8 is " + ( (autodetectUTF8)
                                                                       ? "enabled"
@@ -135,29 +141,29 @@ public class FtpClient extends AbstractFileTransferClient {
 
         if (this.listener != null) {
             this.listener.setResponses(new ArrayList<String>());
-            this.ftpConnection.addProtocolCommandListener( ((FtpResponseListener) listener));
+            this.client.addProtocolCommandListener( ((FtpResponseListener) listener));
         }
         /* if debug mode is true, we log messages from all levels */
         if (isDebugMode()) {
-            this.ftpConnection.addProtocolCommandListener(new FtpListener());
+            this.client.addProtocolCommandListener(new FtpListener());
         }
         try {
-            this.ftpConnection.setConnectTimeout(this.timeout);
+            this.client.setConnectTimeout(this.timeout);
             // connect to the host
-            this.ftpConnection.connect(hostname, this.port);
+            this.client.connect(hostname, this.port);
             // login to the host
-            if (!this.ftpConnection.login(userName, password)) {
+            if (!this.client.login(userName, password)) {
                 throw new Exception("Invallid username and/or password");
             }
             // enter passive mode
-            this.ftpConnection.enterLocalPassiveMode();
+            this.client.enterLocalPassiveMode();
             // set transfer mode
             if (this.transferMode == TransferMode.ASCII) {
-                if (!this.ftpConnection.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)) {
+                if (!this.client.setFileType(org.apache.commons.net.ftp.FTPClient.ASCII_FILE_TYPE)) {
                     throw new Exception("Unable to set transfer mode to ASCII");
                 }
             } else {
-                if (!this.ftpConnection.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)) {
+                if (!this.client.setFileType(org.apache.commons.net.ftp.FTPClient.BINARY_FILE_TYPE)) {
                     throw new Exception("Unable to set transfer mode to BINARY");
                 }
             }
@@ -193,10 +199,10 @@ public class FtpClient extends AbstractFileTransferClient {
     @Override
     public void disconnect() throws FileTransferException {
 
-        if (this.ftpConnection != null && this.ftpConnection.isConnected()) {
+        if (this.client != null && this.client.isConnected()) {
             try {
-                this.ftpConnection.disconnect();
-                this.ftpConnection = null;
+                this.client.disconnect();
+                this.client = null;
             } catch (IOException e) {
                 throw new FileTransferException(e);
             }
@@ -226,13 +232,13 @@ public class FtpClient extends AbstractFileTransferClient {
 
             // download the file
             fos = new FileOutputStream(new File(localFile));
-            if (!this.ftpConnection.retrieveFile(remoteFileAbsPath, fos)) {
+            if (!this.client.retrieveFile(remoteFileAbsPath, fos)) {
                 throw new FileTransferException("Unable to retrieve "
                                                 + (remoteDir.endsWith("/")
                                                                            ? remoteDir
                                                                            : remoteDir + "/")
                                                 + remoteFile + " from "
-                                                + this.ftpConnection.getPassiveHost() + " as a " + localFile);
+                                                + this.client.getPassiveHost() + " as a " + localFile);
             }
         } catch (Exception e) {
             log.error("Unable to download file " + localFile, e);
@@ -252,7 +258,7 @@ public class FtpClient extends AbstractFileTransferClient {
             remoteDir += "/";
         }
         log.info("Successfully downloaded '" + localFile + "' from '" + remoteDir + remoteFile + "', host "
-                 + ftpConnection.getPassiveHost());
+                 + client.getPassiveHost());
     }
 
     @Override
@@ -278,9 +284,9 @@ public class FtpClient extends AbstractFileTransferClient {
 
             // upload the file
             fis = new FileInputStream(new File(localFile));
-            if (!this.ftpConnection.storeFile(remoteFileAbsPath, fis)) {
+            if (!this.client.storeFile(remoteFileAbsPath, fis)) {
                 throw new FileTransferException("Unable to store " + localFile + " to "
-                                                + this.ftpConnection.getPassiveHost() + " as a "
+                                                + this.client.getPassiveHost() + " as a "
                                                 + (remoteDir.endsWith("/")
                                                                            ? remoteDir
                                                                            : remoteDir + "/")
@@ -304,7 +310,50 @@ public class FtpClient extends AbstractFileTransferClient {
             remoteDir += "/";
         }
         log.info("Successfully uploaded '" + localFile + "' to '" + remoteDir + remoteFile + "', host "
-                 + ftpConnection.getPassiveHost());
+                 + client.getPassiveHost());
+    }
+
+    public String[] getAllReplyLines() {
+
+        return this.client.getReplyStrings();
+
+    }
+
+    public void logAllReplyLines() {
+
+        log.info("REPLY: " + getAllReplyLinesAsString());
+
+    }
+
+    public String getAllReplyLinesAsString() {
+
+        StringBuilder sb = new StringBuilder();
+
+        for (String line : getAllReplyLines()) {
+            sb.append(line);
+        }
+
+        return sb.toString();
+
+    }
+
+    public int pasv() {
+
+        if (this.passivePort != -1) {
+            log.warn("Already in passive mode");
+            return this.passivePort;
+        }
+        try {
+            int reply = this.client.pasv();
+            if (reply >= 400) {
+                throw new RuntimeException(constructExecutionErrorMessage("PASV", null));
+            }
+            this.passivePort = extractPassivePort(getAllReplyLinesAsString());
+            return this.passivePort;
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("PASV", null), e);
+        }
+
     }
 
     /**
@@ -314,21 +363,240 @@ public class FtpClient extends AbstractFileTransferClient {
      * @throws FileTransferException
      */
     @Override
-    public String executeCommand(
-                                  String command ) throws FileTransferException {
+    public String executeCommand(String command) throws FileTransferException {
+        return this.executeCommand(command, (InputStream) null);
 
-        log.info("Run '" + command + "'");
-        String returnCode = "";
+    }
 
+    @Override
+    public Object executeCommand(String command, Object[] arguments) throws FileTransferException {
+
+        throw new FileTransferException("Not implemented. Use " + this.getClass().getName()
+                + ".executeCommand(" + String.class.getName() + ", " + InputStream.class
+                + ") instead");
+    }
+
+    @Override
+    public String executeCommand(String command, InputStream localData) throws FileTransferException {
+        String result=null;
         try {
-            returnCode = String.valueOf(this.ftpConnection.sendCommand(command));
-        } catch (IOException e) {
-            log.error("Error running command: '" + command + "'", e);
-            throw new FileTransferException(e);
+            if(this.passivePort==-1){
+                this.pasv();
+            }
+            int replyCode=this.client.sendCommand(command);
+            if (replyCode == 150) { // data connection opened
+                Socket dataSocket = null;
+                InputStream dataInputStream = null;
+                OutputStream dataOutputStream = null;
+                try {
+                    dataSocket = new Socket(this.client.getRemoteAddress().getHostAddress(), this.passivePort);
+                    if (localData != null) {
+                        dataOutputStream = dataSocket.getOutputStream();
+                        IoUtils.copyStream(localData, dataOutputStream);
+                        dataOutputStream.flush();
+                    } else {
+                        dataInputStream = dataSocket.getInputStream();
+                        StringBuilder sb = new StringBuilder();
+                        int i;
+                        while ( (i = dataInputStream.read()) != -1) {
+                            sb.append((char) i);
+                        }
+                        result = sb.toString();
+                    }
+                } finally {
+                    if (dataSocket != null) {
+                        dataSocket.close();
+                    }
+                    this.passivePort = -1;
+                    replyCode = this.client.getReply();
+                }
+            } else if (replyCode >= 300 && replyCode < 400) { // command sequence started, server waiting for further FTP commands
+                return getAllReplyLinesAsString();
+            } else if (replyCode >= 400) {
+                throw new FileTransferException(constructExecutionErrorMessage(command, null));
+            } else if (replyCode >= 200 && replyCode < 300) {
+                this.passivePort = -1;
+                return getAllReplyLinesAsString();
+            }
+        }catch (Exception e){
+            this.passivePort=-1;
+            throw new FileTransferException(constructExceptionMessage(command, null),
+                    e);
         }
 
-        log.info("Return code is '" + returnCode + "'");
-        return returnCode;
+        return result;
+    }
+
+    @Override
+    public String help() {
+
+        String result = executeCommand("HELP");
+
+        return result;
+
+    }
+
+    @Override
+    public String pwd() {
+
+        String result = executeCommand("PWD");
+        String[] tokens = result.split(" ");
+        return tokens[1];
+    }
+
+    @Override
+    public void cwd( String directory ) {
+
+        executeCommand("CWD " + directory);
+
+    }
+
+    @Override
+    public String cdup() {
+
+        String result = executeCommand("CDUP");
+        String[] tokens = result.split(" ");
+        return tokens[1];
+    }
+
+    @Override
+    public void mkd( String directory ) {
+
+        executeCommand("MKD " + directory);
+
+    }
+
+    @Override
+    public void rmd( String directory ) {
+
+        executeCommand("RMD " + directory);
+
+    }
+
+    @Override
+    public long size( String file ) {
+
+        return Long.parseLong(executeCommand("SIZE " + file));
+    }
+
+    @Override
+    public List<String> list( String directory ) {
+
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("LIST " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
+            return fileNames;
+        }
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
+        }
+        return fileNames;
+    }
+
+    @Override
+    public String mlst(String fileName) {
+
+        return executeCommand("MLST " + fileName);
+    }
+
+    @Override
+    public String mlsd(String fileName) {
+
+        return executeCommand("MLSD " + fileName);
+    }
+
+    @Override
+    public List<String> nlst( String directory ) {
+
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("NLST " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
+            return fileNames;
+        }
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
+        }
+        return fileNames;
+    }
+
+    @Override
+    public void stor( String localFile, String remoteFile ) {
+
+        InputStream is = null;
+        try {
+            is = new FileInputStream(localFile);
+            executeCommand("STOR " + remoteFile, is);
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("STOR ", new String[]{ remoteFile }), e);
+        } finally {
+            IoUtils.closeStream(is);
+        }
+
+    }
+
+    @Override
+    public String retr( String file ) {
+
+        return executeCommand("RETR " + file);
+
+    }
+
+    @Override
+
+    public void retr( String remoteFile, String localFile ) {
+
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(localFile);
+            String result = retr(remoteFile);
+            fos.write(result.getBytes());
+            fos.flush();
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("RETR ", new String[]{ remoteFile }), e);
+        } finally {
+            IoUtils.closeStream(fos);
+        }
+
+    }
+
+    @Override
+    public void appe( String file, String content ) {
+
+        ByteArrayInputStream bais = null;
+        try {
+            bais = new ByteArrayInputStream(content.getBytes());
+            executeCommand("APPE " + file, bais);
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("APPE ", new String[]{ file }), e);
+        } finally {
+            IoUtils.closeStream(bais);
+        }
+
+    }
+
+    @Override
+    public void dele( String file ) {
+
+        executeCommand("DELE " + file);
+
+    }
+
+    @Override
+    public void rename(String from, String to) {
+
+        try {
+            executeCommand("RNFR " + from);
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("RNFR ", new String[] { from }), e);
+        }
+
+        try {
+            executeCommand("RNTO " + to);
+        } catch (Exception e) {
+            throw new RuntimeException(constructExceptionMessage("RNTO ", new String[] { to }), e);
+        }
     }
 
     @Override
@@ -337,7 +605,7 @@ public class FtpClient extends AbstractFileTransferClient {
 
         SynchronizationFtpTransferListener listener = new SynchronizationFtpTransferListener(this,
                                                                                              progressEventNumber);
-        this.ftpConnection.addProtocolCommandListener(listener);
+        this.client.addProtocolCommandListener(listener);
 
         return listener;
     }
@@ -346,7 +614,7 @@ public class FtpClient extends AbstractFileTransferClient {
     protected void removeListener(
                                    TransferListener listener ) {
 
-        this.ftpConnection.removeProtocolCommandListener((ProtocolCommandListener) listener);
+        this.client.removeProtocolCommandListener((ProtocolCommandListener) listener);
 
     }
 
@@ -368,13 +636,13 @@ public class FtpClient extends AbstractFileTransferClient {
         if (enable) {
             this.listener = new FtpResponseListener();
             // If it's connected add the listener to gather the responses
-            if (this.ftpConnection != null) {
-                this.ftpConnection.addProtocolCommandListener((FtpResponseListener) listener);
+            if (this.client != null) {
+                this.client.addProtocolCommandListener((FtpResponseListener) listener);
             }
         } else {
             // If it's connected remove the listener
-            if (this.ftpConnection != null) {
-                this.ftpConnection.removeProtocolCommandListener((FtpResponseListener) listener);
+            if (this.client != null) {
+                this.client.removeProtocolCommandListener((FtpResponseListener) listener);
             }
             this.listener = null;
         }
@@ -411,6 +679,54 @@ public class FtpClient extends AbstractFileTransferClient {
 
         throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
 
+    }
+
+    private String constructExceptionMessage( String command, String[] arguments ) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Unable to execute '" + command + " ");
+        if (arguments != null) {
+            for (String argument : arguments) {
+                sb.append(argument + " ");
+            }
+        }
+        sb.setLength(sb.toString().length() - 1);
+        sb.append("' command");
+
+        return sb.toString();
+
+    }
+
+    private String constructExecutionErrorMessage( String command, String[] arguments ) {
+
+        StringBuilder sb = new StringBuilder();
+
+        sb.append("Error occured while executing '" + command + " ");
+        if (arguments != null) {
+            for (String argument : arguments) {
+                sb.append(argument + " ");
+            }
+        }
+        sb.setLength(sb.toString().length() - 1);
+        sb.append("' command. Server's response was: " + getAllReplyLinesAsString());
+
+        return sb.toString();
+    }
+
+    private int extractPassivePort( String reply ) {
+
+        String[] tokens = reply.split("\\(");
+        if (tokens.length == 2) {
+            String[] addressTokens = tokens[1].split(",");
+            if (addressTokens.length == 6) {
+                int p1 = Integer.parseInt(addressTokens[4]);
+                int p2 = Integer.parseInt(addressTokens[5].split("\\)")[0]);
+                int port = (p1 * 256) + p2;
+                return port;
+            }
+        }
+        throw new RuntimeException("Could not obtain passive port from reply '" + reply + "'");
     }
 
 }
