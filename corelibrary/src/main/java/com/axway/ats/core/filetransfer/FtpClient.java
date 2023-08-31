@@ -24,7 +24,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.axway.ats.core.filetransfer.model.ftp.IFtpClient;
 import com.axway.ats.core.utils.IoUtils;
@@ -378,6 +380,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
 
     @Override
     public String executeCommand(String command, InputStream localData) throws FileTransferException {
+
         String result=null;
         try {
             if(this.passivePort==-1){
@@ -430,125 +433,214 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     @Override
     public String help() {
 
-        String result = executeCommand("HELP");
+        try {
+            this.client.help();
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("HELP", null), e);
+        }
 
-        return result;
+        return getAllReplyLinesAsString();
 
     }
 
     @Override
     public String pwd() {
 
-        String result = executeCommand("PWD");
+        try {
+            this.client.pwd();
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("PWD", null), e);
+        }
+        String result = getAllReplyLinesAsString();
         String[] tokens = result.split(" ");
         return tokens[1];
+
     }
 
     @Override
     public void cwd( String directory ) {
 
-        executeCommand("CWD " + directory);
+        try {
+            this.client.cwd(directory);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("CWD", null), e);
+        }
 
     }
 
     @Override
     public String cdup() {
 
-        String result = executeCommand("CDUP");
+        try {
+            this.client.cdup();
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("CDUP", null), e);
+        }
+        String result = getAllReplyLinesAsString();
         String[] tokens = result.split(" ");
         return tokens[1];
+
     }
 
     @Override
     public void mkd( String directory ) {
 
-        executeCommand("MKD " + directory);
+        try {
+            this.client.mkd(directory);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("MKD", null), e);
+        }
 
     }
 
     @Override
-    public void rmd( String directory ) {
+    public void rmd( String pathName ) {
 
-        executeCommand("RMD " + directory);
+        try {
+            this.client.rmd(pathName);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("RMD", null), e);
+        }
 
     }
 
     @Override
-    public long size( String file ) {
+    public long size(String file) {
 
-        return Long.parseLong(executeCommand("SIZE " + file));
+        try {
+            this.client.size(file);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("SIZE", null), e);
+        }
+
+        return Long.parseLong(getAllReplyLinesAsString());
+
     }
 
     @Override
     public List<String> list( String directory ) {
 
-        List<String> fileNames = new ArrayList<>();
-        String result = executeCommand("LIST " + directory);
-        if (StringUtils.isNullOrEmpty(result)) {
+        try {
+            if (this.passivePort == -1) {
+                this.pasv();
+            }
+            if (StringUtils.isNullOrEmpty(directory)) {
+                this.client.list();
+            } else {
+                this.client.list(directory);
+            }
+            List<String> fileNames = new ArrayList<>();
+            String result = getAllReplyLinesAsString();
+            if (StringUtils.isNullOrEmpty(result)) {
+                return fileNames;
+            }
+            String[] tokens = result.split("\n");
+            for (String token : tokens) {
+                fileNames.add(token.substring(0, token.length() - 1));
+            }
             return fileNames;
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("LIST", null), e);
+        } finally {
+            this.passivePort = -1;
         }
-        String[] tokens = result.split("\n");
-        for (String token : tokens) {
-            fileNames.add(token.substring(0, token.length() - 1));
-        }
-        return fileNames;
     }
 
     @Override
-    public String mlst(String fileName) {
+    public String[] mlst(String path) {
 
-        return executeCommand("MLST " + fileName);
+        try {
+            if (StringUtils.isNullOrEmpty(path)) {
+                this.client.mlst();
+            } else {
+                this.client.mlst(path);
+            }
+        } catch (Exception e) {
+            throw new FileTransferException(constructExceptionMessage("MLST", null), e);
+        }
+        return getAllReplyLines();
+    }
+
+    @Override
+    public int getLastReplyCode(){
+        return this.client.getReplyCode();
     }
 
     @Override
     public List<String> mlsd(String directory) {
 
-        List<String> fileNames = new ArrayList<>();
-        String result = executeCommand("MLSD " + directory);
-        if (StringUtils.isNullOrEmpty(result)) {
+        try {
+            if (this.passivePort == -1) {
+                this.pasv();
+            }
+            if (StringUtils.isNullOrEmpty(directory)) {
+                this.client.mlsd();
+            } else {
+                this.client.mlsd(directory);
+            }
+            List<String> fileNames = new ArrayList<>();
+            String result = getAllReplyLinesAsString();
+            if (StringUtils.isNullOrEmpty(result)) {
+                return fileNames;
+            }
+            String[] tokens = result.split("\n");
+            for (String token : tokens) {
+                fileNames.add(token.substring(0, token.length() - 1));
+            }
             return fileNames;
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("MLSD", null), e);
+        } finally {
+            this.passivePort = -1;
         }
-        String[] tokens = result.split("\n");
-        for (String token : tokens) {
-            fileNames.add(token.substring(0, token.length() - 1));
-        }
-        return fileNames;
+
     }
 
     @Override
     public List<String> nlst( String directory ) {
 
-        List<String> fileNames = new ArrayList<>();
-        String result = executeCommand("NLST " + directory);
-        if (StringUtils.isNullOrEmpty(result)) {
-            return fileNames;
-        }
-        String[] tokens = result.split("\n");
-        for (String token : tokens) {
-            fileNames.add(token.substring(0, token.length() - 1));
-        }
-        return fileNames;
-    }
-
-    @Override
-    public void stor( String localFile, String remoteFile ) {
-
-        InputStream is = null;
         try {
-            is = new FileInputStream(localFile);
-            executeCommand("STOR " + remoteFile, is);
-        } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("STOR ", new String[]{ remoteFile }), e);
+            if (this.passivePort == -1) {
+                this.pasv();
+            }
+            if (StringUtils.isNullOrEmpty(directory)) {
+                this.client.nlst();
+            } else {
+                this.client.nlst(directory);
+            }
+            List<String> fileNames = new ArrayList<>();
+            String result = getAllReplyLinesAsString();
+            if (StringUtils.isNullOrEmpty(result)) {
+                return fileNames;
+            }
+            String[] tokens = result.split("\n");
+            for (String token : tokens) {
+                fileNames.add(token.substring(0, token.length() - 1));
+            }
+            return fileNames;
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("NLST", null), e);
         } finally {
-            IoUtils.closeStream(is);
+            this.passivePort = -1;
         }
 
     }
 
     @Override
-    public String retr( String file ) {
+    public String retr(String file) {
 
-        return executeCommand("RETR " + file);
+        try {
+            if (this.passivePort == -1) {
+                this.pasv();
+            }
+            this.client.retr(file);
+
+            return getAllReplyLinesAsString();
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("RETR", null), e);
+        } finally {
+            this.passivePort = -1;
+        }
 
     }
 
@@ -575,11 +667,15 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
 
         ByteArrayInputStream bais = null;
         try {
+            if (this.passivePort == -1) {
+                this.pasv();
+            }
             bais = new ByteArrayInputStream(content.getBytes());
-            executeCommand("APPE " + file, bais);
+            this.client.appendFile(file, bais);
         } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("APPE ", new String[]{ file }), e);
+            throw new RuntimeException(constructExceptionMessage("APPE ", new String[] { file }), e);
         } finally {
+            this.passivePort = -1;
             IoUtils.closeStream(bais);
         }
 
@@ -588,7 +684,11 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     @Override
     public void dele( String file ) {
 
-        executeCommand("DELE " + file);
+        try {
+            this.client.deleteFile(file);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("DELE", null), e);
+        }
 
     }
 
@@ -596,16 +696,11 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     public void rename(String from, String to) {
 
         try {
-            executeCommand("RNFR " + from);
-        } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("RNFR ", new String[] { from }), e);
+            this.client.rename(from, to);
+        } catch (IOException e) {
+            throw new FileTransferException(constructExceptionMessage("RENAME", null), e);
         }
 
-        try {
-            executeCommand("RNTO " + to);
-        } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("RNTO ", new String[] { to }), e);
-        }
     }
 
     @Override

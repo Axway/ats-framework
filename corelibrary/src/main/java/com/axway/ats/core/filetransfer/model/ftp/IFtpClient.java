@@ -61,7 +61,9 @@ public interface IFtpClient {
      * */
     public List<String> list( String directory );
 
-    public String mlst( String directory );
+    public String[] mlst( String directory );
+
+    int getLastReplyCode();
 
     public List<String> mlsd( String directory );
 
@@ -70,7 +72,6 @@ public interface IFtpClient {
      * */
     public List<String> nlst( String directory );
 
-    public void stor( String localFile, String remoteFile );
 
     /**
      * Retrieve file and return it's content
