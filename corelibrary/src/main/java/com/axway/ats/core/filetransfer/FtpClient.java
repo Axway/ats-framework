@@ -315,18 +315,21 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
                  + client.getPassiveHost());
     }
 
+    @Override
     public String[] getAllReplyLines() {
 
         return this.client.getReplyStrings();
 
     }
 
+    @Override
     public void logAllReplyLines() {
 
         log.info("REPLY: " + getAllReplyLinesAsString());
 
     }
 
+    @Override
     public String getAllReplyLinesAsString() {
 
         StringBuilder sb = new StringBuilder();
@@ -339,6 +342,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
 
     }
 
+    @Override
     public int pasv() {
 
         if (this.passivePort != -1) {
@@ -453,7 +457,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
         }
         String result = getAllReplyLinesAsString();
         String[] tokens = result.split(" ");
-        return tokens[1];
+        return tokens[1].replace("\"","");
 
     }
 
@@ -508,46 +512,39 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     public long size(String file) {
 
         try {
-            this.client.size(file);
+           return Long.parseLong(this.client.getSize(file));
         } catch (IOException e) {
             throw new FileTransferException(constructExceptionMessage("SIZE", null), e);
         }
-
-        return Long.parseLong(getAllReplyLinesAsString());
 
     }
 
     @Override
     public List<String> list( String directory ) {
 
-        try {
-            if (this.passivePort == -1) {
-                this.pasv();
-            }
-            if (StringUtils.isNullOrEmpty(directory)) {
-                this.client.list();
-            } else {
-                this.client.list(directory);
-            }
-            List<String> fileNames = new ArrayList<>();
-            String result = getAllReplyLinesAsString();
-            if (StringUtils.isNullOrEmpty(result)) {
-                return fileNames;
-            }
-            String[] tokens = result.split("\n");
-            for (String token : tokens) {
-                fileNames.add(token.substring(0, token.length() - 1));
-            }
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("LIST " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
             return fileNames;
+        }
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
+        }
+        return fileNames;
+    }
+
+    @Override
+    public List<String>listFileNames(String directory){
+        try {
+          return Arrays.stream(this.client.listNames(directory)).collect(Collectors.toList());
         } catch (IOException e) {
             throw new FileTransferException(constructExceptionMessage("LIST", null), e);
-        } finally {
-            this.passivePort = -1;
         }
     }
 
     @Override
-    public String[] mlst(String path) {
+    public String mlst(String path) {
 
         try {
             if (StringUtils.isNullOrEmpty(path)) {
@@ -558,7 +555,7 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
         } catch (Exception e) {
             throw new FileTransferException(constructExceptionMessage("MLST", null), e);
         }
-        return getAllReplyLines();
+        return getAllReplyLines()[1];
     }
 
     @Override
@@ -569,96 +566,32 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
     @Override
     public List<String> mlsd(String directory) {
 
-        try {
-            if (this.passivePort == -1) {
-                this.pasv();
-            }
-            if (StringUtils.isNullOrEmpty(directory)) {
-                this.client.mlsd();
-            } else {
-                this.client.mlsd(directory);
-            }
-            List<String> fileNames = new ArrayList<>();
-            String result = getAllReplyLinesAsString();
-            if (StringUtils.isNullOrEmpty(result)) {
-                return fileNames;
-            }
-            String[] tokens = result.split("\n");
-            for (String token : tokens) {
-                fileNames.add(token.substring(0, token.length() - 1));
-            }
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("MLSD " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
             return fileNames;
-        } catch (IOException e) {
-            throw new FileTransferException(constructExceptionMessage("MLSD", null), e);
-        } finally {
-            this.passivePort = -1;
         }
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
+        }
+        return fileNames;
 
     }
 
     @Override
     public List<String> nlst( String directory ) {
 
-        try {
-            if (this.passivePort == -1) {
-                this.pasv();
-            }
-            if (StringUtils.isNullOrEmpty(directory)) {
-                this.client.nlst();
-            } else {
-                this.client.nlst(directory);
-            }
-            List<String> fileNames = new ArrayList<>();
-            String result = getAllReplyLinesAsString();
-            if (StringUtils.isNullOrEmpty(result)) {
-                return fileNames;
-            }
-            String[] tokens = result.split("\n");
-            for (String token : tokens) {
-                fileNames.add(token.substring(0, token.length() - 1));
-            }
+        List<String> fileNames = new ArrayList<>();
+        String result = executeCommand("NLST " + directory);
+        if (StringUtils.isNullOrEmpty(result)) {
             return fileNames;
-        } catch (IOException e) {
-            throw new FileTransferException(constructExceptionMessage("NLST", null), e);
-        } finally {
-            this.passivePort = -1;
         }
-
-    }
-
-    @Override
-    public String retr(String file) {
-
-        try {
-            if (this.passivePort == -1) {
-                this.pasv();
-            }
-            this.client.retr(file);
-
-            return getAllReplyLinesAsString();
-        } catch (IOException e) {
-            throw new FileTransferException(constructExceptionMessage("RETR", null), e);
-        } finally {
-            this.passivePort = -1;
+        String[] tokens = result.split("\n");
+        for (String token : tokens) {
+            fileNames.add(token.substring(0, token.length() - 1));
         }
-
-    }
-
-    @Override
-
-    public void retr( String remoteFile, String localFile ) {
-
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(localFile);
-            String result = retr(remoteFile);
-            fos.write(result.getBytes());
-            fos.flush();
-        } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("RETR ", new String[]{ remoteFile }), e);
-        } finally {
-            IoUtils.closeStream(fos);
-        }
+        return fileNames;
 
     }
 
@@ -667,15 +600,11 @@ public class FtpClient extends AbstractFileTransferClient implements IFtpClient 
 
         ByteArrayInputStream bais = null;
         try {
-            if (this.passivePort == -1) {
-                this.pasv();
-            }
             bais = new ByteArrayInputStream(content.getBytes());
-            this.client.appendFile(file, bais);
+            executeCommand("APPE " + file, bais);
         } catch (Exception e) {
-            throw new RuntimeException(constructExceptionMessage("APPE ", new String[] { file }), e);
+            throw new RuntimeException(constructExceptionMessage("APPE ", new String[]{ file }), e);
         } finally {
-            this.passivePort = -1;
             IoUtils.closeStream(bais);
         }
 

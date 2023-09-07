@@ -61,7 +61,9 @@ public interface IFtpClient {
      * */
     public List<String> list( String directory );
 
-    public String[] mlst( String directory );
+    List<String>listFileNames(String directory);
+
+    public String mlst( String directory );
 
     int getLastReplyCode();
 
@@ -71,17 +73,6 @@ public interface IFtpClient {
      * Like ls
      * */
     public List<String> nlst( String directory );
-
-
-    /**
-     * Retrieve file and return it's content
-     * */
-    public String retr( String file );
-
-    /**
-     * Retrieve file and save it on the local file system
-     * */
-    public void retr( String remoteFile, String localFile );
 
     public void appe( String file, String content );
 
