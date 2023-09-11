@@ -61,20 +61,20 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
 
     private static final int    DEFAULT_HTTP_PORT                     = 80;
 
-    public final static String  UPLOAD_METHOD                         = "HTTP_HTTPS_UPLOAD_METHOD";
-    public final static String  UPLOAD_METHOD__PUT                    = "HTTP_HTTPS_UPLOAD_METHOD__PUT";
-    public final static String  UPLOAD_METHOD__POST                   = "HTTP_HTTPS_UPLOAD_METHOD__POST";
+    public static final String  UPLOAD_METHOD                         = "HTTP_HTTPS_UPLOAD_METHOD";
+    public static final String  UPLOAD_METHOD__PUT                    = "HTTP_HTTPS_UPLOAD_METHOD__PUT";
+    public static final String  UPLOAD_METHOD__POST                   = "HTTP_HTTPS_UPLOAD_METHOD__POST";
     private String              uploadMethod;
 
-    public final static String  PREEMPTIVE_BASIC_AUTHENTICATION       = "HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION";
-    public final static String  PREEMPTIVE_BASIC_AUTHENTICATION__TRUE = "HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE";
+    public static final String  PREEMPTIVE_BASIC_AUTHENTICATION       = "HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION";
+    public static final String  PREEMPTIVE_BASIC_AUTHENTICATION__TRUE = "HTTP_HTTPS_PREEMPTIVE_BASIC_AUTHENTICATION__TRUE";
 
-    public final static String  UPLOAD_CONTENT_TYPE                   = "HTTP_HTTPS_UPLOAD_CONTENT_TYPE";
+    public static final String  UPLOAD_CONTENT_TYPE                   = "HTTP_HTTPS_UPLOAD_CONTENT_TYPE";
     private ContentType         contentType;
 
-    public final static String  REQUEST_HEADER                        = "HTTP_HTTPS_REQUEST_HEADER";
+    public static final String  REQUEST_HEADER                        = "HTTP_HTTPS_REQUEST_HEADER";
 
-    public final static String  SOCKET_READ_TIMEOUT                   = "HTTP_HTTPS_SOCKET_READ_TIMEOUT";
+    public static final String  SOCKET_READ_TIMEOUT                   = "HTTP_HTTPS_SOCKET_READ_TIMEOUT";
 
     /**
      * Set the <strong>Transfer-Encoding</strong> value.<br> Currently the only supported value is <strong>chunked</strong>
@@ -83,9 +83,9 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
     public static final String  TRANSFER_ENCODING_MODE_CHUNKED        = "chunked";
     private String              transferEncoding                      = null;
 
-    public final static String  SOCKET_BUFFER_SIZE                    = "HTTP_SOCKET_BUFFER_SIZE";                         // used both for send and receive
-    private final static int    SOCKET_BUFFER_SIZE_MAX_VALUE          = 4 * 1024 * 1024;
-    private final static int    DEFAULT_SOCKET_BUFFER_SIZE            = 8196;
+    public static final String  SOCKET_BUFFER_SIZE                    = "HTTP_SOCKET_BUFFER_SIZE";                         // used both for send and receive
+    private static final int    SOCKET_BUFFER_SIZE_MAX_VALUE          = 4 * 1024 * 1024;
+    private static final int    DEFAULT_SOCKET_BUFFER_SIZE            = 8196;
 
     private String              connectionDescription;
 
