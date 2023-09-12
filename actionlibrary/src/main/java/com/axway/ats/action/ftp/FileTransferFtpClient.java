@@ -36,13 +36,16 @@ import java.util.List;
  */
 @PublicAtsApi
 public class FileTransferFtpClient implements IFileTransferClient {
-
+    private static final Logger log = Logger.getLogger(FtpClient.class);
     private FtpClient ftpClient = null;
 
     @PublicAtsApi
     @Override
     public void setTransferMode(TransferMode mode) throws FileTransferException {
-        this.ftpClient.setTransferMode(mode);
+
+        if (this.ftpClient != null && this.ftpClient.isConnected()) {
+            this.ftpClient.setTransferMode(mode);
+        }
     }
 
     @PublicAtsApi
@@ -60,6 +63,8 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void connect(String hostname, String userName, String password) throws FtpException {
+        disconnect();
+        this.ftpClient = new FtpClient();
         this.ftpClient.connect(hostname, userName, password);
     }
 
@@ -67,13 +72,18 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @Override
     public void connect(String hostname, String keystoreFile, String keystorePassword, String publicKeyAlias)
             throws FtpException {
+        disconnect();
+        this.ftpClient = new FtpClient();
         this.ftpClient.connect(hostname, keystoreFile, keystorePassword, publicKeyAlias);
     }
 
     @PublicAtsApi
     @Override
     public void disconnect() throws FtpException {
-        this.ftpClient.disconnect();
+        if (this.ftpClient != null && this.ftpClient.isConnected()) {
+            this.ftpClient.disconnect();
+            this.ftpClient = null;
+        }
     }
 
     @PublicAtsApi

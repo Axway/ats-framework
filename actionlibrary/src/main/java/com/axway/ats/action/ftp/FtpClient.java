@@ -20,10 +20,8 @@ import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.core.CoreLibraryConfigurator;
 import com.axway.ats.core.filetransfer.AbstractFileTransferClient;
-import com.axway.ats.core.filetransfer.model.TransferListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpListener;
 import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
-import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListener;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
@@ -52,6 +50,7 @@ public class FtpClient extends AbstractFtpClient implements IFtpClient {
     private org.apache.commons.net.ftp.FTPClient client = null;
     private static final Logger log = Logger.getLogger(FtpClient.class);
 
+    @PublicAtsApi
     public FtpClient() {
 
         super();
@@ -95,6 +94,11 @@ public class FtpClient extends AbstractFtpClient implements IFtpClient {
         } finally {
             this.isTransferStartedAndPaused = false; // the paused transfer has finished
         }
+    }
+
+    @PublicAtsApi
+    public boolean isConnected(){
+        return this.client.isConnected();
     }
 
     @PublicAtsApi
