@@ -102,22 +102,22 @@ public class FtpsClient extends AbstractFtpClient implements IFtpClient {
         super();
     }
 
-    PublicAtsApi
+    @PublicAtsApi
     public boolean isImplicit() {
         return implicit;
     }
 
-    PublicAtsApi
+    @PublicAtsApi
     public void setImplicit(boolean implicit) {
         this.implicit = implicit;
     }
 
-    PublicAtsApi
+    @PublicAtsApi
     public String getProtocol() {
         return protocol;
     }
 
-    PublicAtsApi
+    @PublicAtsApi
     public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
