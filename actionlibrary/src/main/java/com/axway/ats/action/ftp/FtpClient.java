@@ -64,37 +64,6 @@ public class FtpClient extends AbstractFtpClient implements IFtpClient {
         this.client.removeProtocolCommandListener(listener);
     }
 
-    public synchronized void resumePausedTransfer() throws FileTransferException {
-
-        checkPausedTransferRunning(true);
-
-        final Logger log = Logger.getLogger(AbstractFileTransferClient.class);
-
-        while (!canResume) {
-            try {
-                log.debug("Waiting for the transfer to start...");
-                // Wait to be notified when the transfer is started and will be paused.
-                this.wait();
-            } catch (InterruptedException e) {
-                throw new FileTransferException("Interrupted while waiting for a transfer to start", e);
-            }
-        }
-
-        canResume = false; // for the next resume
-
-        // Notify the thread that is performing the transfer to continue.
-        this.notifyAll();
-
-        try {
-            log.debug("Waiting for the transfer to finish...");
-            // Wait to be notified that the transfer is done.
-            this.wait();
-        } catch (InterruptedException e) {
-            throw new FileTransferException("Interrupted while waiting for a transfer to finish", e);
-        } finally {
-            this.isTransferStartedAndPaused = false; // the paused transfer has finished
-        }
-    }
 
     @PublicAtsApi
     public boolean isConnected(){
@@ -252,6 +221,12 @@ public class FtpClient extends AbstractFtpClient implements IFtpClient {
 
     }
 
+    /**
+     * Currently not supporting commands requiring opening of data connection
+     * @param command the command to run
+     * @return String representing the return code
+     * @throws FileTransferException
+     */
     @Override
     public Object executeCommand(String command, Object[] arguments) throws FileTransferException {
 

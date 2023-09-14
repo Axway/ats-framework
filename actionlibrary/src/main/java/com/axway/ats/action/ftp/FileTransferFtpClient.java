@@ -36,7 +36,7 @@ import java.util.List;
  */
 @PublicAtsApi
 public class FileTransferFtpClient implements IFileTransferClient {
-    private static final Logger log = Logger.getLogger(FtpClient.class);
+    private static final String UNSUPPORTED_OPERATION_MESSAGE="FTP Connections over SSL are not supported.";
     private FtpClient ftpClient = null;
 
     @PublicAtsApi
@@ -51,13 +51,13 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void uploadFile(String localFile, String remoteDir, String remoteFile) throws FileTransferException {
-        this.ftpClient.performUploadFile(localFile, remoteDir, remoteFile);
+        this.ftpClient.storeFile(localFile, remoteDir, remoteFile);
     }
 
     @PublicAtsApi
     @Override
     public void downloadFile(String localFile, String remoteDir, String remoteFile) throws FileTransferException {
-        this.ftpClient.performDownloadFile(localFile, remoteDir, remoteFile);
+        this.ftpClient.retrieveFile(localFile, remoteDir, remoteFile);
     }
 
     @PublicAtsApi
@@ -100,17 +100,17 @@ public class FileTransferFtpClient implements IFileTransferClient {
 
     @Override
     public void setKeystore(String keystoreFile, String keystorePassword, String alias) {
-        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_MESSAGE);
     }
 
     @Override
     public void setTrustStore(String truststoreFile, String truststorePassword) {
-        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_MESSAGE);
     }
 
     @Override
     public void setTrustedServerSSLCertificate(String certificateFile) {
-        throw new UnsupportedOperationException("FTP Connections over SSL are not supported.");
+        throw new UnsupportedOperationException(UNSUPPORTED_OPERATION_MESSAGE);
     }
 
     @Override

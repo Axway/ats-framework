@@ -17,7 +17,9 @@ package com.axway.ats.action.ftp;
 
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
+import com.axway.ats.core.filetransfer.AbstractFileTransferClient;
 import com.axway.ats.core.filetransfer.model.AbstractResponseListener;
+import org.apache.log4j.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -216,6 +218,38 @@ public abstract class AbstractFtpClient {
         }
 
         return sb.toString();
+    }
+
+    protected synchronized void resumePausedTransfer() throws FileTransferException {
+
+        checkPausedTransferRunning(true);
+
+        final Logger log = Logger.getLogger(AbstractFileTransferClient.class);
+
+        while (!canResume) {
+            try {
+                log.debug("Waiting for the transfer to start...");
+                // Wait to be notified when the transfer is started and will be paused.
+                this.wait();
+            } catch (InterruptedException e) {
+                throw new FileTransferException("Interrupted while waiting for a transfer to start", e);
+            }
+        }
+
+        canResume = false; // for the next resume
+
+        // Notify the thread that is performing the transfer to continue.
+        this.notifyAll();
+
+        try {
+            log.debug("Waiting for the transfer to finish...");
+            // Wait to be notified that the transfer is done.
+            this.wait();
+        } catch (InterruptedException e) {
+            throw new FileTransferException("Interrupted while waiting for a transfer to finish", e);
+        } finally {
+            this.isTransferStartedAndPaused = false; // the paused transfer has finished
+        }
     }
 
 }
