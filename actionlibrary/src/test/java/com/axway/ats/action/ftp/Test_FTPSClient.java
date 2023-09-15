@@ -199,7 +199,7 @@ public class Test_FTPSClient extends BaseTest {
         testObject.connect(HOSTNAME, KEYSTORE_FILE, KEYSTORE_PASSWORD, ALIAS);
     }
 
-    @Test( expected = FileTransferException.class)
+    @Test( expected = FtpException.class)
     public void testConnectNegative() {
 
         FtpsClient client = new FtpsClient();

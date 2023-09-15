@@ -29,6 +29,7 @@ import java.io.File;
 
 import com.axway.ats.action.ftp.FileTransferFtpClient;
 import com.axway.ats.action.ftp.FtpClient;
+import com.axway.ats.action.ftp.FtpException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -199,10 +200,9 @@ public class Test_GenericTransferClient extends BaseTest {
 
     /**
      * Test case
-     * @throws Exception
      */
-    @Test( expected = FileTransferException.class)
-    public void testSecureConnect() throws Exception {
+    @Test( expected = FtpException.class)
+    public void testSecureConnect() {
 
         // execute operations
         testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, SAMPLE_KEY_ALIAS);
