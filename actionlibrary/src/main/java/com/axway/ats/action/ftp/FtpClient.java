@@ -25,6 +25,7 @@ import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
 import com.axway.ats.core.utils.IoUtils;
 import com.axway.ats.core.utils.StringUtils;
 import org.apache.commons.net.ProtocolCommandListener;
+import org.apache.commons.net.ftp.FTPClient;
 import org.apache.log4j.Logger;
 
 import java.io.ByteArrayInputStream;
@@ -47,7 +48,7 @@ import java.util.stream.Collectors;
 @PublicAtsApi
 public class FtpClient extends AbstractFtpClient implements IFtpClient {
 
-    private org.apache.commons.net.ftp.FTPClient client = null;
+    protected org.apache.commons.net.ftp.FTPClient client = null;
     private static final Logger log = Logger.getLogger(FtpClient.class);
 
     @PublicAtsApi
@@ -56,18 +57,14 @@ public class FtpClient extends AbstractFtpClient implements IFtpClient {
         super();
     }
 
+    @PublicAtsApi
     public void addProtocolCommandListener(ProtocolCommandListener listener) {
         this.client.addProtocolCommandListener(listener);
     }
 
+    @PublicAtsApi
     public void removeProtocolListener(ProtocolCommandListener listener) {
         this.client.removeProtocolCommandListener(listener);
-    }
-
-
-    @PublicAtsApi
-    public boolean isConnected(){
-        return this.client.isConnected();
     }
 
     @PublicAtsApi

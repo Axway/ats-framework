@@ -16,19 +16,10 @@
 package com.axway.ats.action.ftp;
 
 import com.axway.ats.common.PublicAtsApi;
-import com.axway.ats.common.filetransfer.FileTransferException;
-import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
-import com.axway.ats.core.filetransfer.model.TransferListener;
-import com.axway.ats.core.filetransfer.model.ftp.FtpResponseListener;
-import com.axway.ats.core.filetransfer.model.ftp.SynchronizationFtpTransferListener;
 import com.axway.ats.core.utils.StringUtils;
-import org.apache.commons.net.ProtocolCommandListener;
 import org.apache.log4j.Logger;
 
-import java.io.File;
-import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -41,67 +32,19 @@ import java.util.Set;
  * local trusted CA store!
  */
 @PublicAtsApi
-public class FileTransferFtpsClient implements IFileTransferClient {
+public class FileTransferFtpsClient extends FileTransferFtpClient implements IFileTransferClient {
     private static final Logger log = Logger.getLogger(FileTransferFtpsClient.class);
 
-    private FtpsClient ftpsClient = null;
-
-    @PublicAtsApi
-    @Override
-    public void setTransferMode(TransferMode mode) throws FileTransferException {
-        if (this.ftpsClient != null && this.ftpsClient.isConnected()) {
-            this.ftpsClient.setTransferMode(mode);
-        }
-    }
-
-    @PublicAtsApi
-    @Override
-    public void uploadFile(String localFile, String remoteDir, String remoteFile) throws FileTransferException {
-        this.ftpsClient.storeFile(localFile, remoteDir, remoteFile);
-    }
-
-    @PublicAtsApi
-    @Override
-    public void downloadFile(String localFile, String remoteDir, String remoteFile) throws FileTransferException {
-        this.ftpsClient.retrieveFile(localFile, remoteDir, remoteFile);
-    }
-
-    @PublicAtsApi
-    @Override
-    public void connect(String hostname, String userName, String password) throws FtpException {
-        disconnect();
-        this.ftpsClient = new FtpsClient();
-        this.ftpsClient.connect(hostname, userName, password);
+    public FileTransferFtpsClient() {
+        this.ftpClient = new FtpsClient();
     }
 
     @PublicAtsApi
     @Override
     public void connect(String hostname, String keystoreFile, String keystorePassword, String publicKeyAlias)
             throws FtpException {
-        disconnect();
-        this.ftpsClient = new FtpsClient();
-        this.ftpsClient.connect(hostname, keystoreFile, keystorePassword, publicKeyAlias);
-    }
-
-    @PublicAtsApi
-    @Override
-    public void disconnect() throws FileTransferException {
-        if (this.ftpsClient != null && this.ftpsClient.isConnected()) {
-            this.ftpsClient.disconnect();
-            this.ftpsClient = null;
-        }
-    }
-
-    @PublicAtsApi
-    @Override
-    public void setCustomPort(int port) {
-        this.ftpsClient.setCustomPort(port);
-    }
-
-    @PublicAtsApi
-    @Override
-    public void setConnectionTimeout(int newValue) {
-        this.ftpsClient.setConnectionTimeout(newValue);
+        this.ftpClient = new FtpsClient();
+        this.ftpClient.connect(hostname, keystoreFile, keystorePassword, publicKeyAlias);
     }
 
     /**
@@ -112,9 +55,10 @@ public class FileTransferFtpsClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void setKeystore(String keystoreFile, String keystorePassword, String alias) {
-        if (this.ftpsClient != null) {
-            this.ftpsClient.setKeyStoreFile(keystoreFile);
-            this.ftpsClient.setKeyStorePassword(keystorePassword);
+        if (this.ftpClient != null) {
+            FtpsClient ftpsClient = (FtpsClient) ftpClient;
+            ftpsClient.setKeyStoreFile(keystoreFile);
+            ftpsClient.setKeyStorePassword(keystorePassword);
         }
     }
 
@@ -128,15 +72,16 @@ public class FileTransferFtpsClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void setTrustStore(String truststoreFile, String truststorePassword) {
-        if (this.ftpsClient != null) {
-            this.ftpsClient.setTrustStoreFile(truststoreFile);
-            this.ftpsClient.setTrustStorePassword(truststorePassword);
+        if (this.ftpClient != null) {
+            FtpsClient ftpsClient = (FtpsClient) ftpClient;
+            ftpsClient.setTrustStoreFile(truststoreFile);
+            ftpsClient.setTrustStorePassword(truststorePassword);
 
             // invalidate any previously set trust server certificate
-            if (!StringUtils.isNullOrEmpty(this.ftpsClient.getTrustedServerSSLCertificateFile())) {
+            if (!StringUtils.isNullOrEmpty(ftpsClient.getTrustedServerSSLCertificateFile())) {
                 log.warn(
-                        "Previously set trust server certificate '" + this.ftpsClient.getTrustedServerSSLCertificateFile() + "' will be overridden and only certificates from truststore '" + truststoreFile + "' will be used for validation");
-                this.ftpsClient.setTrustedServerSSLCertificateFile(null);
+                        "Previously set trust server certificate '" + ftpsClient.getTrustedServerSSLCertificateFile() + "' will be overridden and only certificates from truststore '" + truststoreFile + "' will be used for validation");
+                ftpsClient.setTrustedServerSSLCertificateFile(null);
             }
         }
     }
@@ -150,133 +95,18 @@ public class FileTransferFtpsClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void setTrustedServerSSLCertificate(String certificateFile) {
-        if (this.ftpsClient != null) {
-            this.ftpsClient.setTrustedServerSSLCertificateFile(certificateFile);
+        if (this.ftpClient != null) {
+            FtpsClient ftpsClient = (FtpsClient) ftpClient;
+            ftpsClient.setTrustedServerSSLCertificateFile(certificateFile);
 
             // invalidate any previously set trust store
-            if (!StringUtils.isNullOrEmpty(this.ftpsClient.getTrustStoreFile())) {
+            if (!StringUtils.isNullOrEmpty(ftpsClient.getTrustStoreFile())) {
                 log.warn(
-                        "Previously set trust store '" + this.ftpsClient.getTrustStoreFile() + "' will be overridden and only the certificate '" + this.ftpsClient.getTrustedServerSSLCertificateFile() + "' will be used for validation");
-                this.ftpsClient.setTrustStoreFile(null);
-                this.ftpsClient.setTrustStorePassword(null);
+                        "Previously set trust store '" + ftpsClient.getTrustStoreFile() + "' will be overridden and only the certificate '" + ftpsClient.getTrustedServerSSLCertificateFile() + "' will be used for validation");
+                ftpsClient.setTrustStoreFile(null);
+                ftpsClient.setTrustStorePassword(null);
             }
         }
-    }
-
-    @PublicAtsApi
-    @Override
-    public String executeCommand(String command) throws FileTransferException {
-        return this.executeCommand(command, (InputStream) null);
-    }
-
-    /**
-     * Currently not supporting commands requiring opening of data connection
-     * @param command the command to run
-     * @return String representing the return code
-     * @throws FileTransferException
-     */
-    @Override
-    public Object executeCommand(String command, Object[] arguments) throws FileTransferException {
-        return this.ftpsClient.executeCommand(command, arguments);
-    }
-
-    @PublicAtsApi
-    @Override
-    public String executeCommand(String command, InputStream payload) throws FileTransferException {
-        return this.ftpsClient.executeCommand(command, payload);
-    }
-
-    @PublicAtsApi
-    @Override
-    public void resumePausedTransfer() throws FileTransferException {
-        this.ftpsClient.resumePausedTransfer();
-    }
-
-    @PublicAtsApi
-    @Override
-    public void startUploadAndPause(String localFile, String remoteDir, String remoteFile)
-            throws FileTransferException {
-
-        this.ftpsClient.checkPausedTransferRunning(false);
-        this.ftpsClient.setTransferStartedAndPaused(true); // a paused transfer is started.
-
-        final Thread currentThread = Thread.currentThread(); // get the executor thread.
-
-        final Thread uploadThread = new FileTransferFtpsClient.UploadThread("Upload Thread", this.ftpsClient) {
-            private final Logger log = Logger.getLogger(this.getName());
-            FtpsClient currentFtpsClient = this.getFtpsClient();
-
-            @Override
-            public void run() {
-                synchronized (FileTransferFtpsClient.this) {
-                    // Notify the executor thread that the upload is starting.
-                    // The executor thread will stop waiting for the upload to start
-                    // but will not do anything until it receives the object's monitor.
-                    currentFtpsClient.setCanResume(true);
-                    FileTransferFtpsClient.this.notifyAll();
-
-                    int progressEventNumber = 0; // the number of the progress event on which to wait
-                    if (new File(localFile).length() == 0) {
-                        // if the file is empty, no progress events will be fired
-                        progressEventNumber = -1;
-                    }
-
-                    // Add a listener to notify the executor that the transfer is paused.
-                    TransferListener listener = addListener(progressEventNumber);
-
-                    try {
-                        // Start the upload.
-                        FileTransferFtpsClient.this.uploadFile(localFile, remoteDir, remoteFile);
-
-                        // Notify the executor thread that the upload has finished successfully.
-                        FileTransferFtpsClient.this.notifyAll();
-                    } catch (FileTransferException e) {
-                        log.error("Upload failed.", e);
-
-                        // Interrupt the executor thread so that an exception can be thrown
-                        // while waiting for the upload to finish.
-                        currentThread.interrupt();
-                    } finally {
-                        // Ensure the listener is removed to prevent deadlocks in further transfers.
-                        removeListener(listener);
-                    }
-                }
-            }
-        };
-
-        uploadThread.start();
-
-    }
-
-    @PublicAtsApi
-    @Override
-    public void enableResponseCollection(boolean enable) {
-
-        if (enable) {
-            this.ftpsClient.listener = new FtpResponseListener();
-            // If it's connected, add the listener to gather the responses
-            if (this.ftpsClient != null) {
-                this.ftpsClient.addProtocolCommandListener((FtpResponseListener) this.ftpsClient.listener);
-            }
-        } else {
-            // If it's connected, remove the listener
-            if (this.ftpsClient != null) {
-                this.ftpsClient.removeProtocolListener((FtpResponseListener) this.ftpsClient.listener);
-                this.ftpsClient.listener = null;
-            }
-        }
-    }
-
-    @PublicAtsApi
-    @Override
-    public String[] getResponses() {
-        if (this.ftpsClient.listener == null) {
-            return new String[] {};
-        }
-
-        List<String> responses = this.ftpsClient.listener.getResponses();
-
-        return responses.toArray(new String[responses.size()]);
     }
 
     @PublicAtsApi
@@ -287,10 +117,10 @@ public class FileTransferFtpsClient implements IFileTransferClient {
                 throw new IllegalArgumentException(
                         "Value '" + value + "' for property key '" + key + "' has not supported type. " + FtpsClient.USE_ONE_OF_THE_FTPS_CONSTANTS);
             } else {
-                this.ftpsClient.customProperties.put(key, value);
+                this.ftpClient.customProperties.put(key, value);
             }
         } else if (key.equals(FtpsClient.FTPS_ENCRYPTION_PROTOCOLS)) {
-            this.ftpsClient.customProperties.put(key, value);
+            this.ftpClient.customProperties.put(key, value);
         } else {
             throw new IllegalArgumentException(
                     "Unknown property with key '" + key + "' is passed. " + FtpsClient.USE_ONE_OF_THE_FTPS_CONSTANTS);
@@ -300,33 +130,34 @@ public class FileTransferFtpsClient implements IFileTransferClient {
     @Override
     public void applyCustomProperties() throws IllegalArgumentException {
 
-        Set<Map.Entry<String, Object>> customPropertiesSet = this.ftpsClient.customProperties.entrySet();
+        Set<Map.Entry<String, Object>> customPropertiesSet = this.ftpClient.customProperties.entrySet();
         Object value;
         boolean clientTypeIsSet = false;
+        FtpsClient ftpsClient = (FtpsClient) ftpClient;
         for (Map.Entry<String, Object> customPropertyEntry : customPropertiesSet) {
             value = customPropertyEntry.getValue();
             if (customPropertyEntry.getKey().equals(FtpsClient.FTPS_CONNECTION_TYPE)) {
                 clientTypeIsSet = true;
                 if (value.equals(FtpsClient.FTPS_CONNECTION_TYPE__IMPLICIT)) {
                     log.debug("Setting FTPS connection type to IMPLICIT_SSL");
-                    this.ftpsClient.setImplicit(true);
-                    this.ftpsClient.setProtocol("SSL");
+                    ftpsClient.setImplicit(true);
+                    ftpsClient.setProtocol("SSL");
                 } else if (value.equals(FtpsClient.FTPS_CONNECTION_TYPE__AUTH_SSL)) {
                     log.debug("Setting FTPS connection type to AUTH_SSL");
-                    this.ftpsClient.setImplicit(false);
-                    this.ftpsClient.setProtocol("SSL");
+                    ftpsClient.setImplicit(false);
+                    ftpsClient.setProtocol("SSL");
                 } else if (value.equals(FtpsClient.FTPS_CONNECTION_TYPE__AUTH_TLS)) {
                     log.debug("Setting FTPS connection type to AUTH_TLS");
-                    this.ftpsClient.setImplicit(false);
-                    this.ftpsClient.setProtocol("TLSv1.2");
+                    ftpsClient.setImplicit(false);
+                    ftpsClient.setProtocol("TLSv1.2");
                 } else {
                     throw new IllegalArgumentException(
                             "Unknown value '" + value + "' for FTPS connection type. " + "Check value used in addCustomProperty() method. Use one of the GenericFileTransferClient.FTPS_CONNECTION_TYPE__* constants for value");
                 }
             } else if (customPropertyEntry.getKey().equals(FtpsClient.FTPS_ENCRYPTION_PROTOCOLS)) {
                 // currently we can set just one protocol
-                String[] encryptionProtocols = this.ftpsClient.parseCustomProperties(value.toString());
-                this.ftpsClient.setProtocol(encryptionProtocols[0]);
+                String[] encryptionProtocols = this.ftpClient.parseCustomProperties(value.toString());
+                ftpsClient.setProtocol(encryptionProtocols[0]);
             } else {
                 throw new IllegalArgumentException(
                         "Unknown property with key '" + customPropertyEntry.getKey() + "' is passed. " + FtpsClient.USE_ONE_OF_THE_FTPS_CONSTANTS);
@@ -334,45 +165,8 @@ public class FileTransferFtpsClient implements IFileTransferClient {
         }
         if (!clientTypeIsSet) { // explicitly set the default connection type
             log.debug("Using by default the FTPS connection type AUTH_TLS");
-            this.ftpsClient.setImplicit(false);
-            this.ftpsClient.setProtocol("TLSv1.2");
-        }
-    }
-
-    @PublicAtsApi
-    @Override
-    public boolean isDebugMode() {
-        return this.ftpsClient.isDebugMode();
-    }
-
-    @PublicAtsApi
-    @Override
-    public void setDebugMode(boolean turnDebug) {
-        this.ftpsClient.setDebugMode(turnDebug);
-    }
-
-    public TransferListener addListener(int progressEventNumber) {
-
-        SynchronizationFtpTransferListener listener = new SynchronizationFtpTransferListener(this, progressEventNumber);
-        this.ftpsClient.addProtocolCommandListener(listener);
-
-        return listener;
-    }
-
-    public void removeListener(TransferListener listener) {
-        this.ftpsClient.removeProtocolListener((ProtocolCommandListener) listener);
-    }
-
-    static class UploadThread extends Thread {
-        private final FtpsClient ftpsClient;
-
-        public UploadThread(String threadName, FtpsClient ftpsClient) {
-            super(threadName);
-            this.ftpsClient = ftpsClient;
-        }
-
-        public FtpsClient getFtpsClient() {
-            return ftpsClient;
+            ftpsClient.setImplicit(false);
+            ftpsClient.setProtocol("TLSv1.2");
         }
     }
 }

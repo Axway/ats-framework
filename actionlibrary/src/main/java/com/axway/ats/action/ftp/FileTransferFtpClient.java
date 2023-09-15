@@ -36,14 +36,18 @@ import java.util.List;
  */
 @PublicAtsApi
 public class FileTransferFtpClient implements IFileTransferClient {
-    private static final String UNSUPPORTED_OPERATION_MESSAGE="FTP Connections over SSL are not supported.";
-    private FtpClient ftpClient = null;
+    private static final String UNSUPPORTED_OPERATION_MESSAGE = "FTP Connections over SSL are not supported.";
+    protected FtpClient ftpClient = null;
+
+    public FileTransferFtpClient() {
+        this.ftpClient = new FtpClient();
+    }
 
     @PublicAtsApi
     @Override
     public void setTransferMode(TransferMode mode) throws FileTransferException {
 
-        if (this.ftpClient != null && this.ftpClient.isConnected()) {
+        if (this.ftpClient != null) {
             this.ftpClient.setTransferMode(mode);
         }
     }
@@ -63,8 +67,6 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void connect(String hostname, String userName, String password) throws FtpException {
-        disconnect();
-        this.ftpClient = new FtpClient();
         this.ftpClient.connect(hostname, userName, password);
     }
 
@@ -72,7 +74,6 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @Override
     public void connect(String hostname, String keystoreFile, String keystorePassword, String publicKeyAlias)
             throws FtpException {
-        disconnect();
         this.ftpClient = new FtpClient();
         this.ftpClient.connect(hostname, keystoreFile, keystorePassword, publicKeyAlias);
     }
@@ -80,9 +81,8 @@ public class FileTransferFtpClient implements IFileTransferClient {
     @PublicAtsApi
     @Override
     public void disconnect() throws FtpException {
-        if (this.ftpClient != null && this.ftpClient.isConnected()) {
+        if (this.ftpClient != null) {
             this.ftpClient.disconnect();
-            this.ftpClient = null;
         }
     }
 
@@ -118,6 +118,12 @@ public class FileTransferFtpClient implements IFileTransferClient {
         return this.ftpClient.executeCommand(command);
     }
 
+    /**
+     * Currently not supporting commands requiring opening of data connection
+     * @param command the command to run
+     * @return String representing the return code
+     * @throws FileTransferException
+     */
     @PublicAtsApi
     @Override
     public Object executeCommand(String command, Object[] arguments) throws FileTransferException {
@@ -198,7 +204,7 @@ public class FileTransferFtpClient implements IFileTransferClient {
         if (enable) {
             this.ftpClient.listener = new FtpResponseListener();
             // If it's connected, add the listener to gather the responses
-            if (this.ftpClient != null) {
+            if (this.ftpClient.client != null) {
                 this.ftpClient.addProtocolCommandListener((FtpResponseListener) this.ftpClient.listener);
             }
         } else {
@@ -254,6 +260,10 @@ public class FileTransferFtpClient implements IFileTransferClient {
 
     public void removeListener(TransferListener listener) {
         this.ftpClient.removeProtocolListener((ProtocolCommandListener) listener);
+    }
+
+    public FtpClient getFtpClient() {
+        return this.ftpClient;
     }
 
     static class UploadThread extends Thread {
