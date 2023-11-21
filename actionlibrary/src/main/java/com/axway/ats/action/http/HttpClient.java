@@ -553,8 +553,8 @@ public class HttpClient {
 
     /**
      * Get the list of HTTP headers sent by the HTTPClient to the endpoint. This will differ to
-     * what the user sets via the {@link #addRequestHeader(String, String) addRequestHeader}
-     * or {@link #setRequestHeaders(HttpHeader[]) setRequestHeaders}
+     * what the user sets via the {@link #addRequestHeader(String, String)}
+     * or {@link #setRequestHeaders(HttpHeader[])}
      * methods as the HTTPClient
      * will automatically add headers, e.g. Content-Length. Note that the Authorization header
      * will not show up in the list of headers returned from this method even though it will

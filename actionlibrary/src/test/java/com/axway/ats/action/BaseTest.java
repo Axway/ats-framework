@@ -29,12 +29,10 @@ public class BaseTest {
         //init log4j
         BasicConfigurator.configure(appender);
         // limit too verbose output as default severity is DEBUG
-        /*
         Logger.getLogger(com.axway.ats.action.filesystem.snapshot.Test_FileSystemSnapshot.class).setLevel(Level.INFO);
         Logger.getLogger(com.axway.ats.action.objects.Test_MimePackage.class).setLevel(Level.INFO);
         Logger.getLogger(com.axway.ats.action.objects.MimePackage.class).setLevel(Level.INFO);
         Logger.getLogger(com.axway.ats.core.validation.Validator.class).setLevel(Level.INFO);
-        */
 
         // More strict limit for faster build by default
         Logger.getRootLogger().setLevel(Level.INFO);
