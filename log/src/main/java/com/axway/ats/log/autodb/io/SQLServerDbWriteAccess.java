@@ -43,6 +43,8 @@ import com.axway.ats.log.model.LoadQueueResult;
 
 public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWriteAccess {
 
+    private static final String MSG_USING_THE_FOLLOWING_STATEMENT = " using the following statement: ";
+
     // the checkpoint log level
     protected static CheckpointLogLevel    checkpointLogLevel = CheckpointLogLevel.SHORT;
 
@@ -176,7 +178,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
             argValues.add(timestamp);
             argValues.add(hostName);
 
-            errMsg += " using the following statement: "
+            errMsg += MSG_USING_THE_FOLLOWING_STATEMENT
                       + constructStoredProcedureArgumentsMap(procedureName, argValues);
             throw new DatabaseAccessException(errMsg, e);
         } finally {
@@ -935,7 +937,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 argValues.add(threadName);
                 argValues.add(timestamp);
 
-                errMsg += " using the following statement: "
+                errMsg += MSG_USING_THE_FOLLOWING_STATEMENT
                           + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
@@ -1009,7 +1011,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                     argValues.add(threadName);
                     argValues.add(timestamp);
 
-                    errMsg += " using the following statement: "
+                    errMsg += MSG_USING_THE_FOLLOWING_STATEMENT
                               + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
@@ -1084,7 +1086,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                     argValues.add(threadName);
                     argValues.add(timestamp);
 
-                    errMsg += " using the following statement: "
+                    errMsg += MSG_USING_THE_FOLLOWING_STATEMENT
                               + constructStoredProcedureArgumentsMap(procedureName, argValues);
                     throw new DatabaseAccessException(errMsg, e);
                 } finally {
@@ -1155,7 +1157,7 @@ public class SQLServerDbWriteAccess extends AbstractDbAccess implements IDbWrite
                 argValues.add(result);
                 argValues.add(checkpointLogLevel.toInt());
 
-                errMsg += " using the following statement: "
+                errMsg += MSG_USING_THE_FOLLOWING_STATEMENT
                           + constructStoredProcedureArgumentsMap(procedureName, argValues);
                 throw new DatabaseAccessException(errMsg, e);
             } finally {
