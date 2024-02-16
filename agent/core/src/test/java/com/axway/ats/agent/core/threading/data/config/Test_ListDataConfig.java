@@ -171,6 +171,32 @@ public class Test_ListDataConfig extends BaseTest {
         assertEquals(args.get(3), currentValues.get(1));
         assertEquals(args.get(4), currentValues.get(2));
     }
+    @Test
+    public void test_2_loaders_1_value() {
+
+        final List<String> args = generateValues(1);
+        final String paramName = "param1";
+
+        final int loadersCount = 2;
+
+        ListDataConfig listDataConfig = new ListDataConfig(paramName, args);
+
+        List<ParameterDataConfig> dustributedDataConfigs = listDataConfig.distribute(loadersCount);
+        assertEquals(loadersCount, dustributedDataConfigs.size());
+
+        ListDataConfig currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(0);
+        List<?> currentValues = currentListDataConfig.getValues();
+        assertEquals(2, currentValues.size());
+        assertEquals(args.get(0), currentValues.get(0));
+        assertEquals(args.get(1), currentValues.get(1));
+
+        currentListDataConfig = (ListDataConfig) dustributedDataConfigs.get(1);
+        currentValues = currentListDataConfig.getValues();
+        assertEquals(3, currentValues.size());
+        assertEquals(args.get(2), currentValues.get(0));
+        assertEquals(args.get(3), currentValues.get(1));
+        assertEquals(args.get(4), currentValues.get(2));
+    }
     
     @Test
     public void test_3_loaders_6_values() {

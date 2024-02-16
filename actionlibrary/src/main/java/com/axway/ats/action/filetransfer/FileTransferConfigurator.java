@@ -88,14 +88,15 @@ public class FileTransferConfigurator extends AbstractConfigurator {
 
     /**
      * @return the custom class for the given transfer protocol.
-     * @throws FileTransferConfiguratorException if could not load the needed custom class name from the properties file.
+     * @throws FileTransferConfiguratorException thrown if custom class could not be loaded. Class name is passed from
+     * the ats-adapters.properties file.
      */
     public String getFileTransferClient( String customProtocol ) {
 
         for (Entry<String, String> entry : fileTransferClientsMap.entrySet()) {
             if (entry.getKey().equalsIgnoreCase(CUSTOM_FILE_TRANSFER_CLIENT + customProtocol)) {
                 if (StringUtils.isNullOrEmpty(entry.getValue())) {
-                    throw new FileTransferConfiguratorException("Uknown custom client for " + customProtocol
+                    throw new FileTransferConfiguratorException("Unknown custom client for " + customProtocol
                                                                 + " protocol. Either " + ATS_ADAPTERS_FILE
                                                                 + " file is not in the classpath or "
                                                                 + entry.getKey()

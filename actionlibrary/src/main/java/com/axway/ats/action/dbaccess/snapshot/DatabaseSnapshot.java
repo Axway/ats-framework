@@ -553,14 +553,14 @@ public class DatabaseSnapshot {
                     // handle expected differences
                     handleExpectedDifferentNumberOfRows(compareOptions, equality);
                 } catch (Exception e) {
-                    log.error("Error occured while handling different number of rows", e);
+                    log.error("Error occurred while handling different number of rows", e);
                 }*/
 
                 try {
                     // handle expected differences
                     handleExpectedMissingRows(compareOptions, equality);
                 } catch (Exception e) {
-                    log.error("Error occured while handling missing rows", e);
+                    log.error("Error occurred while handling missing rows", e);
                 }
             }
 
