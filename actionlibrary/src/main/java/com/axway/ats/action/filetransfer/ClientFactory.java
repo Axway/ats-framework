@@ -122,11 +122,12 @@ public class ClientFactory {
     /**
      * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
      * 
+     * @param customFileTransferClient the class name of the custom client. Used when default implementations in
+     *         {@link TransferProtocol} are not enough
      * @param port a custom port to use when connecting
-     * @param customFileTransferClient the class name of the custom client
      * @return the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}
-     * @throws FileTransferException 
-     * @see {@link TransferProtocol}
+     * @throws FileTransferException in case of instantiation error
+     * @see com.axway.ats.common.filetransfer.TransferProtocol
      */
     public IFileTransferClient getClient( String customFileTransferClient,
                                           int port ) throws FileTransferException {

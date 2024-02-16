@@ -16,6 +16,7 @@
 
 package com.axway.ats.action.http;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -331,7 +332,7 @@ public class FileTransferHttpClient extends HttpClient implements IFileTransferC
             // save the file
             responseEntity = response.getEntity();
             if (responseEntity != null) {
-                outstream = new FileOutputStream(localFile);
+                outstream = new BufferedOutputStream( new FileOutputStream(localFile));
                 responseEntity.writeTo(outstream);
                 outstream.flush();
                 errorSavingFile = false;

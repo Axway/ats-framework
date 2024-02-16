@@ -15,8 +15,16 @@
  */
 package com.axway.ats.common.filesystem;
 
+import com.axway.ats.common.PublicAtsApi;
+
 import java.io.Serializable;
 
+/**
+ * Contains composite data about partial read file operation. The most suitable use case is to read new file content from
+ * log file. Check information of retrieved data from the getters.
+ * <p>Also check FileSystemOperations.readFile().</p>
+ */
+@PublicAtsApi
 public class FileTailInfo implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -34,16 +42,32 @@ public class FileTailInfo implements Serializable {
         this.newContent = newContent;
     }
 
+    /**
+     * Position/offset from where <em>next</em> read operation should start.
+     * @return position for next read
+     */
+    @PublicAtsApi
     public long getCurrentPosition() {
 
         return currentPosition;
     }
 
+    /**
+     * Flag whether file rotation is detected. Proper detection is not guaranteed because file might have been rotated
+     * and the new size is already bigger than the seek position passed.
+     * @return <em>true</em> if file rotation is detected, i.e. current file size is smaller than the previous one.
+     */
+    @PublicAtsApi
     public boolean isFileRotated() {
 
         return isFileRotated;
     }
 
+    /**
+     * Content of the file after the last seek position.
+     * @return new part content
+     */
+    @PublicAtsApi
     public String getNewContent() {
 
         return newContent;
