@@ -34,11 +34,6 @@
                 <artifactId>xercesImpl</artifactId>
                 <version>${apache.xercesImpl.version}</version>
             </dependency>
-            <dependency>
-                <groupId>xalan</groupId>
-                <artifactId>xalan</artifactId>
-                <version>${apache.xalan.version}</version>
-            </dependency>
             <dependency> <!-- for Agent core and webapp components. Another one used for agent all -->
                 <groupId>javax.servlet</groupId>
                 <artifactId>servlet-api</artifactId>
