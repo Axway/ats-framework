@@ -77,10 +77,6 @@
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
         </dependency>
-        <dependency>
-            <groupId>xalan</groupId>
-            <artifactId>serializer</artifactId>
-        </dependency>
         <!-- Needed for jTDS -->
         <dependency>
             <groupId>org.apache.commons</groupId>
