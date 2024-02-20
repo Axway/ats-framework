@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2023 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,13 +15,13 @@
  */
 package com.axway.ats.action.filetransfer;
 
+import com.axway.ats.action.ftp.FileTransferFtpClient;
+import com.axway.ats.action.ftp.FileTransferFtpsClient;
 import org.apache.log4j.Logger;
 
 import com.axway.ats.action.http.FileTransferHttpClient;
 import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferProtocol;
-import com.axway.ats.core.filetransfer.FtpClient;
-import com.axway.ats.core.filetransfer.FtpsClient;
 import com.axway.ats.core.filetransfer.SftpClient;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 
@@ -57,19 +57,15 @@ public class ClientFactory {
      * 
      * @return the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}
      * @param protocol the {@link TransferProtocol} to use
-     * @param keystoreFile the file containing the key store
-     * @param keystringPassphrase the pass phrase to the key store
      * @throws Exception
      * @see {@link TransferProtocol}
      */
     public final IFileTransferClient getClient(
-                                               TransferProtocol protocol,
-                                               String keystoreFile,
-                                               String keystringPassphrase ) throws Exception {
+                                               TransferProtocol protocol ) throws Exception {
 
         switch( protocol ){
             case FTPS:
-                FtpsClient ftps = new FtpsClient();
+                FileTransferFtpsClient ftps = new FileTransferFtpsClient();
                 ftps.setCustomPort( protocol.getDefaultPort() );
                 return ftps;
             case HTTPS:
@@ -97,11 +93,11 @@ public class ClientFactory {
 
         switch( protocol ){
             case FTP:
-                FtpClient ftp = new FtpClient();
+                FileTransferFtpClient ftp = new FileTransferFtpClient();
                 ftp.setCustomPort( port );
                 return ftp;
             case FTPS:
-                FtpsClient ftps = new FtpsClient();
+                FileTransferFtpsClient ftps = new FileTransferFtpsClient();
                 ftps.setCustomPort( port );
                 return ftps;
             case SFTP:
@@ -127,7 +123,7 @@ public class ClientFactory {
      * Returns a product specific {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}.
      * 
      * @param customFileTransferClient the class name of the custom client. Used when default implementations in
-     *     {@link TransferProtocol} are not enough
+     *         {@link TransferProtocol} are not enough
      * @param port a custom port to use when connecting
      * @return the {@link IFileTransferClient} that handles transfers via the specified {@link TransferProtocol}
      * @throws FileTransferException in case of instantiation error

@@ -1,5 +1,5 @@
 /*
- * Copyright 2017 Axway Software
+ * Copyright 2017-2023 Axway Software
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@ package com.axway.ats.core.filetransfer.model;
 
 import com.axway.ats.core.filetransfer.AbstractFileTransferClient;
 import com.axway.ats.common.filetransfer.FileTransferException;
+
+import java.io.InputStream;
 
 /**
  * Common methods that each {@link IFileTransferClient} should implement
@@ -140,6 +142,28 @@ public interface IFileTransferClient {
      */
     public String executeCommand(
                                   String command ) throws FileTransferException;
+
+    /**
+     * Execute some custom command. This is specific for each protocol and remote server.
+     *
+     * @param command the command to run
+     * @param arguments the command arguments
+     * @return the command output
+     * @throws FileTransferException thrown on failure
+     */
+    public Object executeCommand(
+            String command, Object[] arguments ) throws FileTransferException;
+
+    /**
+     * Execute some custom command. This is specific for each protocol and remote server.
+     *
+     * @param command the command to run
+     * @param payload the command payload
+     * @return the command output
+     * @throws FileTransferException thrown on failure
+     */
+    public String executeCommand(
+            String command, InputStream payload ) throws FileTransferException;
 
     /**
      * Resumes a transfer that was started and paused.
