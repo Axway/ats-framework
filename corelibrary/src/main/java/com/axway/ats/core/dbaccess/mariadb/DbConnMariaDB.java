@@ -209,19 +209,17 @@ public class DbConnMariaDB extends DbConnection {
                     .append("&allowMultiQueries=true");
 
             if (useSSL) {
-                sb.append("&useSSL=true");
+                sb.append("&useSSL=true&trustServerCertificate=true"); // temp
                 // Optionally, if you want (but it is not recommended), you can add trustServerCertificate=true
                 // This will prevent failure, when server certificate is not provided to the client
                 // More information here -> https://mariadb.com/kb/en/using-tls-ssl-with-mariadb-java-connector/#one-way-ssl-authentication
-                if (log.isDebugEnabled()) {
-                    log.debug("SSL enabled!");
-                }
+                log.info("SSL is enabled with trustServerCertificate!");
             }
 
             if (!StringUtils.isNullOrEmpty(connectTimeout)) {
                 sb.append("&" + CONNECT_TIMEOUT + "=" + connectTimeout);
                 if (log.isDebugEnabled()) {
-                    log.info("Added connection timeout!");
+                    log.debug("Added connection timeout!");
                 }
             }
 
