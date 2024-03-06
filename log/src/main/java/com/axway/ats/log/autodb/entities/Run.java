@@ -37,8 +37,8 @@ public class Run extends DbEntity {
     public String             testcasesPassedPercent;
     public boolean            testcaseIsRunning;
 
-    public String             total;
-    public String             failed;
+    public String             total; // Composite string: scenarios / testcases
+    public String             failed; // Composed string: scenarios / testcases
 
     public String             userNote;
 

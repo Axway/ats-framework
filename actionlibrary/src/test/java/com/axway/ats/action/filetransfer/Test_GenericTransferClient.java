@@ -27,6 +27,9 @@ import static org.powermock.api.easymock.PowerMock.verifyAll;
 
 import java.io.File;
 
+import com.axway.ats.action.ftp.FileTransferFtpClient;
+import com.axway.ats.action.ftp.FtpClient;
+import com.axway.ats.action.ftp.FtpException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -40,7 +43,6 @@ import com.axway.ats.common.filetransfer.FileTransferException;
 import com.axway.ats.common.filetransfer.TransferMode;
 import com.axway.ats.common.filetransfer.TransferProtocol;
 import com.axway.ats.common.system.OperatingSystemType;
-import com.axway.ats.core.filetransfer.FtpClient;
 import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.validation.exceptions.InvalidInputArgumentsException;
 
@@ -65,7 +67,7 @@ public class Test_GenericTransferClient extends BaseTest {
     private static final int         SAMPLE_CUSTOM_PORT       = 22;
     private final FileTransferClient testObject               = new FileTransferClient(TransferProtocol.FTP);
     private FileTransferClient       mockedTestObject         = null;
-    private FtpClient                ftpMock                  = null;
+    private FileTransferFtpClient    ftpMock                  = null;
     private ClientFactory            factoryMock              = null;
 
     /**
@@ -77,7 +79,7 @@ public class Test_GenericTransferClient extends BaseTest {
         mockedTestObject = new FileTransferClient(TransferProtocol.FTP);
 
         // create a mock file transfer client
-        ftpMock = createMock(FtpClient.class);
+        ftpMock = createMock(FileTransferFtpClient.class);
         factoryMock = createMock(ClientFactory.class);
 
         // inject the mock client into the test object
@@ -198,10 +200,9 @@ public class Test_GenericTransferClient extends BaseTest {
 
     /**
      * Test case
-     * @throws Exception
      */
-    @Test( expected = FileTransferException.class)
-    public void testSecureConnect() throws Exception {
+    @Test( expected = FtpException.class)
+    public void testSecureConnect() {
 
         // execute operations
         testObject.connect(SAMPLE_HOST_NAME, SAMPLE_USER_NAME, SAMPLE_PASSWORD, SAMPLE_KEY_ALIAS);

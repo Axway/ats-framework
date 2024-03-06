@@ -134,9 +134,10 @@ public class TestcaseStateListener implements ITestcaseStateListener {
                                                                                  AtsSystemProperties.FAIL_ON_ATS_VERSION_MISMATCH,
                                                                                  false)) {
                                         throw new IllegalStateException(String.format(
-                                                                                      "ATS Version mismatch! ATS Agent/Loader at '%s' is version '%s' while you are using ATS Framework version '%s'!",
-                                                                                      HostUtils.getAtsAgentIpAndPort(atsAgent),
-                                                                                      agentVersion, atsVersion));
+                                                     "ATS Version mismatch! ATS Agent/Loader at '%s' is version '%s' " +
+                                                     "while you are using ATS Framework version '%s'!",
+                                                     HostUtils.getAtsAgentIpAndPort(atsAgent),
+                                                     agentVersion, atsVersion));
                                     } else {
                                         log.warn("*** ATS WARNING *** You are using ATS version '" + atsVersion
                                                  + "' with ATS Agent version '" + agentVersion + "' located at '"

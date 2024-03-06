@@ -29,7 +29,7 @@ import com.axway.ats.core.filetransfer.model.IFileTransferClient;
 import com.axway.ats.core.filetransfer.model.TransferListener;
 
 /**
- * The {@link AbstractFileTransferClient} implements logic that is basic for all {@link IFileTransferClient}s
+ * The {@link AbstractFileTransferClient} implements logic that is basic for all {@link IFileTransferClient}s, except HTTP/HTTPS
  */
 public abstract class AbstractFileTransferClient implements IFileTransferClient {
 
@@ -41,6 +41,8 @@ public abstract class AbstractFileTransferClient implements IFileTransferClient 
     protected int                      timeout                    = DEFAULT_CONNECTION_TIMEOUT;
 
     protected int                      port;
+
+    protected int                      passivePort               = -1; // available only when working with FTP/FTPS clients
 
     protected TransferMode             transferMode               = TransferMode.BINARY;
 

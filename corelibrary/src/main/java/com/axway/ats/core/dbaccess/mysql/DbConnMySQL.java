@@ -43,10 +43,10 @@ import com.mysql.cj.conf.PropertyDefinitions.DatabaseTerm;
  */
 public class DbConnMySQL extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMySQL.class);
-
     public static final String MYSQL_JDBS_8_DATASOURCE_CLASS_NAME = "com.mysql.cj.jdbc.MysqlConnectionPoolDataSource";
     public static final String MYSQL_JDBC_5_DATASOURCE_CLASS_NAME = "com.mysql.jdbc.jdbc2.optional.MysqlConnectionPoolDataSource";
+    private static final Logger log = Logger.getLogger(DbConnMySQL.class);
+
     /**
      * Default DB port
      */
@@ -56,6 +56,7 @@ public class DbConnMySQL extends DbConnection {
      */
     private static final String JDBC_MYSQL_PREFIX = "jdbc:mysql://";
     public static final String DATABASE_TYPE = "MYSQL";
+    public static final String USE_SSL_PROPERTY_NAME = "useSSL";
 
     /**
      * The connection URL
@@ -110,10 +111,17 @@ public class DbConnMySQL extends DbConnection {
         super(DATABASE_TYPE, host, port, db, user, password, customProperties);
 
         // should we add other settings like the server time zone for example?
-        url = new StringBuilder().append(JDBC_MYSQL_PREFIX).append(host).append(":")
+        StringBuilder urlSB = new StringBuilder().append(JDBC_MYSQL_PREFIX).append(host).append(":")
                 // because the port can be changed after execution of the parent constructor,
                 // use this.port, instead of port
-                .append(this.port).append("/").append(db).append(((useSSL) ? "?useSSL=true" : "")).toString();
+                .append(this.port).append("/").append(db);
+        if (customProperties != null) {
+            Object useSSLObj = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if (useSSLObj != null) { // explicit value provided in properties
+                urlSB.append("?useSSL=").append(useSSL);
+            }
+        }
+        url = urlSB.toString();
     }
 
     @Override
@@ -135,8 +143,8 @@ public class DbConnMySQL extends DbConnection {
                 this.serverTimeZone = (String) serverTimeZone;
             }
 
-            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
-                    && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+            Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if ( secProp != null && Boolean.parseBoolean(secProp.toString())) {
                 useSSL = true;
             }
         }
@@ -230,15 +238,18 @@ public class DbConnMySQL extends DbConnection {
                 ReflectionUtils.invokeMethod(ReflectionUtils.getMethod(mysqlDataSourceClass, "setAllowMultiQueries",
                         new Class<?>[] { boolean.class }, true), dataSourceInstance, new Object[] { true });
 
-                if (useSSL) {
-                    // Note that this will still connect to a non-ssl server
-                    // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
-                    ReflectionUtils.invokeMethod(
-                                                 ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
-                                                                           new Class<?>[]{ boolean.class }, true),
-                                                 dataSourceInstance, new Object[]{ useSSL });
-                    if (log.isDebugEnabled()) {
+
+                // Note that this will still connect to a non-ssl server
+                // If you want to require SSL connection, add setRequireSSL=true, e.g invoke setRequireSSL method with true as an argument
+                ReflectionUtils.invokeMethod(
+                                             ReflectionUtils.getMethod(mysqlDataSourceClass, "setUseSSL",
+                                                                       new Class<?>[]{ boolean.class }, true),
+                                             dataSourceInstance, new Object[]{ useSSL });
+                if (log.isDebugEnabled()) {
+                    if (useSSL) {
                         log.debug("SSL enabled!");
+                    } else {
+                        log.debug("SSL is disabled!");
                     }
                 }
 
@@ -378,10 +389,12 @@ public class DbConnMySQL extends DbConnection {
     public String getDescription() {
 
         StringBuilder description = new StringBuilder("MySQL connection to ");
-        description.append(host);
-        description.append(":").append(port);
-        description.append("/").append(db);
-        //TODO maybe add that SSL is supported (or not) as well?
+        description.append(host).append(':').append(port);
+        description.append('/').append(db).append(',');
+        if (!useSSL) {
+            description.append(" not");
+        }
+        description.append(" using SSL");
         return description.toString();
     }
 

@@ -114,7 +114,6 @@ public class SshClient implements Closeable {
      * Starts and a command and waits for its completion
      *
      * @param command SSH command to execute
-     * @return the exit code
      */
     @PublicAtsApi
     public void execute(

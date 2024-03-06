@@ -15,7 +15,7 @@
     <url>https://github.com/Axway/ats-framework</url>
 
     <properties>
-        <org.apache.commons.net.version>3.9.0</org.apache.commons.net.version>
+        <org.apache.commons.net.version>3.10.0</org.apache.commons.net.version>
         <!-- Minimum version fixing error when using Java 11. https://bugs.mysql.com/bug.php?id=93590,
             Error example: javax.net.ssl.SSLException: closing inbound before receiving
             peer's close_notify -->
@@ -98,7 +98,10 @@
         <dependency>
             <groupId>xalan</groupId>
             <artifactId>xalan</artifactId>
-            <version>${apache.xalan.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>xalan</groupId>
+            <artifactId>serializer</artifactId>
         </dependency>
         <dependency>
             <groupId>org.dom4j</groupId>

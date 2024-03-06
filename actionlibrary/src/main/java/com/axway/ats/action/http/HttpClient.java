@@ -44,6 +44,7 @@ import java.util.Map.Entry;
 
 import javax.net.ssl.SSLContext;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -369,7 +370,7 @@ public class HttpClient {
     }
 
     /**
-     * Remove a request(also called query) parameter<br></br/>
+     * Remove a request (also called query) parameter<br>
      *
      * @param name the name of the parameter
      */
@@ -392,7 +393,7 @@ public class HttpClient {
     }
 
     /**
-     * Remove one or more request(also called query) parameters<br></br/>
+     * Remove one or more request (also called query) parameters<br>
      *
      * @param names the names of the parameters
      */
@@ -451,7 +452,7 @@ public class HttpClient {
     /**
      * If the URI is not fully specified in the constructor,
      * you can navigate to an internal resource.<br>
-     * For example you can pass:
+     * For example, you can pass:
      * <ul>
      *   <li>"company"</li>
      *   <li>"company/department"</li>
@@ -491,7 +492,7 @@ public class HttpClient {
     }
 
     /**
-     * Remove a a user-specified HTTP header.
+     * Remove a user-specified HTTP header.
      *
      * @param name the header name
      */
@@ -552,8 +553,8 @@ public class HttpClient {
 
     /**
      * Get the list of HTTP headers sent by the HTTPClient to the endpoint. This will differ to
-     * what the user sets via the {@link #addRequestHeader(String, String) addRequestHeader}
-     * or {@link #setRequestHeaders(HttpHeader[]) setRequestHeaders}
+     * what the user sets via the {@link #addRequestHeader(String, String)}
+     * or {@link #setRequestHeaders(HttpHeader[])}
      * methods as the HTTPClient
      * will automatically add headers, e.g. Content-Length. Note that the Authorization header
      * will not show up in the list of headers returned from this method even though it will
@@ -1011,7 +1012,7 @@ public class HttpClient {
      *
      * @return The request body as a Document
      *
-     * @throws IOException
+     * @throws HttpException in case of an error
      */
     @PublicAtsApi
     public Document getRequestBodyAsXML() throws HttpException {
@@ -1023,6 +1024,12 @@ public class HttpClient {
         }
 
         DocumentBuilderFactory newInstance = DocumentBuilderFactory.newInstance();
+        // completely disable DOCTYPE declaration to prevent external entities
+        try {
+            newInstance.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+        } catch (ParserConfigurationException e) {
+            throw new HttpException(e);
+        }
         newInstance.setNamespaceAware(true);
         try {
             return newInstance.newDocumentBuilder()
@@ -1226,7 +1233,7 @@ public class HttpClient {
 
     /**
      * Causes the internal client to be (re)initialized on
-     * the next HTTP call.
+     * the next HTTP call.<br />
      * 
      * TODO: There are some cases when this method is called even 
      * if no real change is made to the configuration

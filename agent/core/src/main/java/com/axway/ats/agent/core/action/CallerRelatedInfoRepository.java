@@ -74,8 +74,8 @@ public class CallerRelatedInfoRepository {
     /**
      * Add an object into the repository and return its unique counter which will be used
      * in next calls to this object
-     *  
-     * @param key key describing the incoming object. This key is used in generating the UID.
+     *
+     * @param keyPrefix key describing the incoming object. This key is used in generating the UID.
      * @param object the object to put into the repository
      * @return the object's UID
      */

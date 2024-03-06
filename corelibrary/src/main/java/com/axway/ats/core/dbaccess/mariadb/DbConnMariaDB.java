@@ -40,9 +40,9 @@ import com.axway.ats.core.utils.StringUtils;
  */
 public class DbConnMariaDB extends DbConnection {
 
-    private static Logger log = Logger.getLogger(DbConnMariaDB.class);
-
     public static final String MARIADB_JDBS_DATASOURCE_CLASS_NAME = "org.mariadb.jdbc.MariaDbPoolDataSource";
+    private static final Logger log = Logger.getLogger(DbConnMariaDB.class);
+
 
     /**
      * Default DB port
@@ -132,9 +132,7 @@ public class DbConnMariaDB extends DbConnection {
                 .append(this.port)
                 .append("/")
                 .append(db)
-                .append(((useSSL)
-                        ? "?useSSL=true"
-                        : ""))
+                .append(((useSSL)? "?useSSL=true": ""))
                 .toString();
     }
 
@@ -166,8 +164,8 @@ public class DbConnMariaDB extends DbConnection {
                 this.serverTimeZone = (String) serverTimeZone;
             }
 
-            if (customProperties.containsKey(DbKeys.USE_SECURE_SOCKET)
-                    && "true".equals(customProperties.get(DbKeys.USE_SECURE_SOCKET))) {
+            Object secProp = customProperties.get(DbKeys.USE_SECURE_SOCKET);
+            if ( secProp != null && Boolean.parseBoolean(secProp.toString())) {
                 useSSL = true;
             }
 
@@ -211,19 +209,17 @@ public class DbConnMariaDB extends DbConnection {
                     .append("&allowMultiQueries=true");
 
             if (useSSL) {
-                sb.append("&useSSL=true");
+                sb.append("&useSSL=true&trustServerCertificate=true"); // temp
                 // Optionally, if you want (but it is not recommended), you can add trustServerCertificate=true
                 // This will prevent failure, when server certificate is not provided to the client
                 // More information here -> https://mariadb.com/kb/en/using-tls-ssl-with-mariadb-java-connector/#one-way-ssl-authentication
-                if (log.isDebugEnabled()) {
-                    log.debug("SSL enabled!");
-                }
+                log.info("SSL is enabled with trustServerCertificate!");
             }
 
             if (!StringUtils.isNullOrEmpty(connectTimeout)) {
                 sb.append("&" + CONNECT_TIMEOUT + "=" + connectTimeout);
                 if (log.isDebugEnabled()) {
-                    log.info("Added connection timeout!");
+                    log.debug("Added connection timeout!");
                 }
             }
 
@@ -325,9 +321,12 @@ public class DbConnMariaDB extends DbConnection {
     public String getDescription() {
 
         StringBuilder description = new StringBuilder("MariaDB connection to ");
-        description.append(host);
-        description.append(":").append(port);
-        description.append("/").append(db);
+        description.append(host).append(':').append(port);
+        description.append('/').append(db).append(',');
+        if (!useSSL) {
+            description.append(" not");
+        }
+        description.append(" using SSL");
 
         return description.toString();
     }

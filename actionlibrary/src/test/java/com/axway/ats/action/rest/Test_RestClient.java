@@ -72,7 +72,7 @@ public class Test_RestClient extends BaseTest {
         certFileName = "certFileName";
         certPassword = "certPassword";
     }
-    
+
     @After
     public void after() {
         SslUtils.registerBCProvider();
@@ -115,5 +115,17 @@ public class Test_RestClient extends BaseTest {
                              .containsAll(propMap.entrySet()));
         assertTrue(clientCopy.getClientConfigurator().getProviderClasses().containsAll(providerClasses));
         assertTrue(clientCopy.getClientConfigurator().getProviders().containsAll(providers));
+    }
+
+    /**
+     * Test with null data. Should skip it amd not throw exception
+     */
+    @Test
+    public void testAddResourcePathNegative() {
+        RestClient client = new RestClient("http://www.test.com");
+        client.addResourcePath(null); // skip
+        client.addResourcePath(new String[] {});
+        client.addResourcePath(new String[] {null});
+        client.addResourcePath(new String[] {"1/2", null, "", "2"});
     }
 }

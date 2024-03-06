@@ -170,7 +170,7 @@ public class RestClientConfigurator {
 
         try {
             registerApacheConnectorProvider((ConnectorProvider) Class.forName(RestClient.APACHE_CONNECTOR_CLASSNAME)
-                                                                     .newInstance(),
+                                                    .getDeclaredConstructor().newInstance(),
                                             null, null, null);
         } catch (Exception e) {
             throw new RuntimeException("Could not register connector provider '" + RestClient.APACHE_CONNECTOR_CLASSNAME
@@ -188,7 +188,7 @@ public class RestClientConfigurator {
 
         try {
             registerApacheConnectorProvider((ConnectorProvider) Class.forName(RestClient.APACHE_CONNECTOR_CLASSNAME)
-                                                                     .newInstance(),
+                                                                     .getDeclaredConstructor().newInstance(),
                                             properties, null, null);
         } catch (Exception e) {
             throw new RuntimeException("Could not register connector provider '" + RestClient.APACHE_CONNECTOR_CLASSNAME
