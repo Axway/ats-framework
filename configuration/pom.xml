@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.axway.ats.framework</groupId>
         <artifactId>ats-framework</artifactId>
-        <version>4.0.11-log4j1-SNAPSHOT</version>
+        <version>4.0.11-M3</version>
     </parent>
 
     <artifactId>ats-configuration</artifactId>
